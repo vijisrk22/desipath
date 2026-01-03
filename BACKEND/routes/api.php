@@ -23,9 +23,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 
-Route::options('{any}', function () {
-    return response()->json([], 200);
-})->where('any', '.*');
 
 Route::post('/auth/google', [GoogleAuthController::class, 'login']);
 Route::post('/auth/googlecheck', [GoogleAuthController::class, 'googlecheck']);

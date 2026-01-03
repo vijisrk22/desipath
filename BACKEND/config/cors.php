@@ -12,15 +12,7 @@ return [
     // ],
     // 'allowed_origins' => ['*'], // allow all domains
     // 'allowed_origins' => ['http://localhost:3000'],
-    'allowed_origins' => [
-        'https://jolly-island-01b6ff91e.1.azurestaticapps.net',
-        'https://desipathdev.azurewebsites.net',
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'http://localhost:8000',
-        'http://127.0.0.1:8000',
-        'http://localhost:5173',
-    ],
+    'allowed_origins' => ['*'],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
