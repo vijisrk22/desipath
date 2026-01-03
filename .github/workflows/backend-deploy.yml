@@ -28,16 +28,9 @@ jobs:
           cd BACKEND
           composer install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader
 
-      - name: Prepare Deployment Package
-        run: |
-          # Move everything from BACKEND to the root of the runner so it's deployed to /home/site/wwwroot/ correctly
-          cp -r BACKEND/. .
-          rm -rf BACKEND
-          rm -rf FRONTEND
-
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'desipathapi' # Matches your Azure Web App name
+          app-name: 'desipathapi'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: .
+          package: ./BACKEND
