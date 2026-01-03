@@ -24,6 +24,14 @@ use Illuminate\Validation\ValidationException;
 use App\Models\User;
 
 
+
+Route::options('{any}', function () {
+    return response()->json([], 200)
+        ->header('Access-Control-Allow-Origin', '*')
+        ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+})->where('any', '.*');
+
 Route::post('/auth/google', [GoogleAuthController::class, 'login']);
 Route::post('/auth/googlecheck', [GoogleAuthController::class, 'googlecheck']);
 
