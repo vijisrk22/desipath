@@ -13,7 +13,7 @@ return [
     // 'allowed_origins' => ['*'], // allow all domains
     // 'allowed_origins' => ['http://localhost:3000'],
     'allowed_origins' => [
-        'https://happy-pebble-0f4bc7310.6.azurestaticapps.net',
+        'https://jolly-island-01b6ff91e.1.azurestaticapps.net',
         'https://desipathdev.azurewebsites.net',
         'http://localhost:3000',
         'http://127.0.0.1:3000',

@@ -3,7 +3,7 @@ import axios from 'axios';
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
     ? "http://localhost:8000"
-    : "https://desipath-backend-api.azurewebsites.net", // Replace with your actual Azure URL
+    : "https://desipathapi.azurewebsites.net", // Corrected app name
 });
 
 api.interceptors.request.use(
