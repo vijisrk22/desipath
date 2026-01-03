@@ -1,0 +1,43 @@
+name: Deploy Laravel Backend to Azure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'BACKEND/**'
+      - '.github/workflows/backend-deploy.yml'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, hash, json, openssl, pcre, session, tokenizer, zip
+          coverage: none
+
+      - name: Install Dependencies
+        run: |
+          cd BACKEND
+          composer install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader
+
+      - name: Prepare Deployment Package
+        run: |
+          # Move everything from BACKEND to the root of the runner so it's deployed to /home/site/wwwroot/ correctly
+          cp -r BACKEND/. .
+          rm -rf BACKEND
+          rm -rf FRONTEND
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'desipath-backend-api' # Ensure this matches your Azure Web App name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
