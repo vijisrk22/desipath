@@ -27,6 +27,15 @@ jobs:
         run: |
           cd BACKEND
           composer install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader
+          
+          # Remove cache files to prevent path issues on the server
+          rm -f bootstrap/cache/*.php
+          
+          # Ensure essential directories exist
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/views
+          mkdir -p storage/framework/cache
+          chmod -R 775 storage bootstrap/cache
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
