@@ -62,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/location/states', [LocationController::class, 'getstates']);
     Route::get('/location/cities', [LocationController::class, 'getcities']);
     Route::get('/location/zipcodes', [LocationController::class, 'getzipcodes']);
+    Route::get('/location/reverse', [LocationController::class, 'reverseGeocode']);
 });
 
 // Route::middleware([])->group(function () {

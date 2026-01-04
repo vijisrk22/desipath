@@ -5,6 +5,7 @@ import { useWatch } from "react-hook-form";
 import debounce from "lodash.debounce";
 import axios from "axios";
 import api from "../../utils/api";
+import { MdMyLocation } from "react-icons/md";
 
 function LocationAutocompleteInput({
   control,
@@ -21,6 +22,31 @@ function LocationAutocompleteInput({
   const input = useWatch({ control, name: "location" }) || "";
   const [suggestions, setSuggestions] = useState([]);
 
+  const handleGeolocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const res = await api.get(\`/api/location/reverse?lat=\${latitude}&lng=\${longitude}\`);
+            const loc = res.data;
+            if (loc) {
+                const formatted = \`\${loc.city}, \${loc.state_name}, \${loc.zip}\`;
+                setValue("location", formatted);
+                previousInputRef.current = formatted;
+                skipNextEffectRef.current = true; // Avoid searching again immediately
+            }
+          } catch (error) {
+            console.error("Geolocation error:", error);
+          }
+        },
+        (error) => {
+          console.error("Geolocation permission denied or error:", error);
+        }
+      );
+    }
+  };
+
   const fetchSuggestions = useCallback(
     debounce(async (query) => {
       const parts = query.split(",").map((p) => p.trim());
@@ -36,10 +62,10 @@ function LocationAutocompleteInput({
         const filtered =
           parts.length > 1
             ? cachedResults.filter((item) =>
-                item
-                  .toLowerCase()
-                  .includes(parts.slice(0, -1).join(", ").toLowerCase())
-              )
+              item
+                .toLowerCase()
+                .includes(parts.slice(0, -1).join(", ").toLowerCase())
+            )
             : cachedResults;
 
         setSuggestions(filtered);
@@ -53,7 +79,7 @@ function LocationAutocompleteInput({
 
       try {
         const res = await api.get(
-          `/api/location/locations?filter=${searchTerm}`,
+          `/ api / location / locations ? filter = ${ searchTerm }`,
           {
             cancelToken: cancelTokenRef.current.token,
           }
@@ -61,7 +87,7 @@ function LocationAutocompleteInput({
 
         const results = res.data;
         const formatted = results.map(
-          (loc) => `${loc.city}, ${loc.state_name}, ${loc.zip}`
+          (loc) => `${ loc.city }, ${ loc.state_name }, ${ loc.zip }`
         );
 
         const uniqueSuggestions = [...new Set(formatted)];
@@ -70,10 +96,10 @@ function LocationAutocompleteInput({
         const filtered =
           parts.length > 1
             ? uniqueSuggestions.filter((item) =>
-                item
-                  .toLowerCase()
-                  .includes(parts.slice(0, -1).join(", ").toLowerCase())
-              )
+              item
+                .toLowerCase()
+                .includes(parts.slice(0, -1).join(", ").toLowerCase())
+            )
             : uniqueSuggestions;
 
         setSuggestions(filtered);
@@ -126,7 +152,7 @@ function LocationAutocompleteInput({
     <div ref={wrapperRef} style={{ position: "relative" }}>
       {type === "search" ? (
         // Custom UI for 'search' input
-        <div className="p-2 sm:p-4 md:p-6 rounded-[30px] text-md md:text-sm lg:text-base border border-gray-400 flex  w-full ">
+        <div className="p-2 sm:p-4 md:p-6 rounded-[30px] text-md md:text-sm lg:text-base border border-gray-400 flex  w-full items-center">
           <input
             name="location"
             autoComplete="off"
@@ -134,6 +160,11 @@ function LocationAutocompleteInput({
             value={input}
             onChange={(e) => setValue("location", e.target.value)}
             className="outline-none px-1 py-1  flex-1 min-w-0 rounded-lg"
+          />
+          <MdMyLocation
+            className="cursor-pointer text-gray-500 hover:text-blue-500 ml-2"
+            onClick={handleGeolocation}
+            title="Use my current location"
           />
         </div>
       ) : (
@@ -145,6 +176,13 @@ function LocationAutocompleteInput({
           text="Location"
           customProps={{
             autoComplete: "off",
+            InputProps: {
+              endAdornment: (
+                <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={handleGeolocation}>
+                  <MdMyLocation style={{ color: '#757575' }} />
+                </div>
+              )
+            }
           }}
         />
       )}

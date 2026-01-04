@@ -5,6 +5,7 @@ import SearchButton from "./SearchButton";
 
 import { searchRoom } from "../store/RoommatesSlice";
 import { searchCar } from "../store/CarsSlice";
+import { searchRentalHome } from "../store/RentalHomesSlice";
 
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
@@ -59,8 +60,10 @@ function SearchFieldInput({ inputs, title }) {
       }
     } else if (title === "Rent a Home") {
       const searchQuery = {
-        location: data?.location ? data?.location : "",
-        rentalHometype: data?.rentalHomeType
+        city: data?.location ? data?.location.split(",")[0].trim() : "",
+        state: data?.location ? data?.location.split(",")[1].trim() : "",
+        zipcode: data?.location ? data?.location.split(",")[2].trim() : "",
+        rentalHomeType: data?.rentalHomeType
           ? Object.entries(data.rentalHomeType)
             .filter(([_, value]) => value)
             .map(([key]) => key)
