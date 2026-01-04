@@ -79,7 +79,7 @@ function ReviewRentalHomePost({ open, onClose, formDetails, images }) {
 
       // Handle success after post
       console.log("Post successful:", result);
-      navigate("/services/rentalHomes/postConfirmation");
+      navigate("/services/rentalHomes/findRentalHome");
     } catch (error) {
       console.error("Failed to post listing:", error);
       onClose();
@@ -119,9 +119,9 @@ function ReviewRentalHomePost({ open, onClose, formDetails, images }) {
         <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
           {formDetails.deposit_rent
             ? parseFloat(formDetails.deposit_rent).toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })
+              style: "currency",
+              currency: "USD",
+            })
             : "$0.00"}
         </div>
         <div className=" text-gray-800 text-[26px] font-bold font-dmsans">
