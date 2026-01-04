@@ -50,8 +50,7 @@ function RentalHomeDetails() {
 
     try {
       navigate(
-        `/chat?adType=rentalhome&adId=${
-          rentalHomeDetails.id
+        `/chat?adType=rentalhome&adId=${rentalHomeDetails.id
         }&chatPartnerInfo=${encodeURIComponent(
           JSON.stringify(chatPartnerInfo)
         )}`
@@ -137,8 +136,8 @@ function RentalHomeDetails() {
           <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
             {rentalHomeDetails?.deposit_rent
               ? `$${Number(rentalHomeDetails.deposit_rent).toLocaleString(
-                  "en-US"
-                )}`
+                "en-US"
+              )}`
               : "Loading..."}
           </div>
           <div className="text-gray-800 text-[26px] font-bold font-dmsans">
@@ -147,7 +146,7 @@ function RentalHomeDetails() {
           <div className="text-gray-400 text-[26px] font-bold font-dmsans">
             Owner - {rentalHomeDetails?.owner_name}
           </div>
-          <ReviewPostContent contents={contents} />
+          <ReviewPostContent contents={contents} type="display" />
         </div>
 
         <div className="flex flex-col gap-3">
@@ -161,9 +160,8 @@ function RentalHomeDetails() {
           <button
             onClick={handleClick}
             disabled={rentalHomeDetails.owner_id === user.id}
-            className={`px-5 py-2.5 rounded-[57px] inline-flex justify-center items-center gap-2.5 ${
-              rentalHomeDetails.owner_id === user.id ? "cursor-not-allowed" : ""
-            }`}
+            className={`px-5 py-2.5 rounded-[57px] inline-flex justify-center items-center gap-2.5 ${rentalHomeDetails.owner_id === user.id ? "cursor-not-allowed" : ""
+              }`}
           >
             <SmsOutlinedIcon color="primary" />
             <div className="justify-end text-[#ffa41c] text-base font-bold font-dmsans">
