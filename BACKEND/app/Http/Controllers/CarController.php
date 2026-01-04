@@ -244,8 +244,8 @@ public function testCars()
                 $photos[] = 'storage/cars/' . $filename;
             }
             
-            // Store the photos array as JSON in the database
-            $data['pictures'] = json_encode($photos);
+            // Store the photos array directly (Eloqent casts will handle JSON encoding)
+            $data['pictures'] = $photos;
         }
         $car = BuySellCar::create($data);
         return response()->json(['message' => 'Car added successfully', 'data' => $car], 201);
@@ -497,7 +497,7 @@ public function testCars()
         }
 
         $allPhotos = array_merge($photos, $existingPhotos);
-        $data['pictures'] = json_encode($allPhotos);
+        $data['pictures'] = $allPhotos;
         $car->update($data);
 
         // Return photos as array in response

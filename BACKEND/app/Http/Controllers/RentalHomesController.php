@@ -240,8 +240,8 @@ class RentalHomesController extends Controller
                 $photos[] = 'storage/rentalhomes/' . $filename;
             }
             
-            // Store the photos array as JSON in the database
-            $data['images'] = json_encode($photos);
+            // Store the photos array directly (Eloqent casts will handle JSON encoding)
+            $data['images'] = $photos;
         }
 
         $rentalHome = RentalHome::create($data);
@@ -485,7 +485,7 @@ class RentalHomesController extends Controller
         }
 
         $allPhotos = array_merge($photos, $existingPhotos);
-        $data['images'] = json_encode($allPhotos);
+        $data['images'] = $allPhotos;
         $rentalHome->update($data);
 
         // $updated = $rentalHome->update($data);
