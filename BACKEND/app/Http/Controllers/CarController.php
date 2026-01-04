@@ -228,8 +228,14 @@ public function testCars()
                 // Generate a unique filename for the image
                 $filename = uniqid() . '.' . $extension;
                 
+                // Ensure the directory exists
+                $directory = storage_path('app/public/cars');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
                 // Store the file in the storage directory
-                $path = storage_path('app/public/cars/' . $filename); // Full path
+                $path = $directory . '/' . $filename; // Full path
                 
                 // Write the decoded data to the file
                 file_put_contents($path, $imageData);
@@ -475,7 +481,12 @@ public function testCars()
 
                 $filename = uniqid() . '.' . $extension;
 
-                $path = storage_path('app/public/cars/' . $filename);
+                $directory = storage_path('app/public/cars');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                $path = $directory . '/' . $filename;
 
                 file_put_contents($path, $imageData);
 
