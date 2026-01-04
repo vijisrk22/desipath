@@ -7,9 +7,14 @@ import FindRentalHome from "./FindRentalHome";
 import PostRentalHome from "./PostRentalHome";
 import PostConfirmation from "../PostConfirmation";
 import RentalHomeDetails from "./RentalHomeDetails";
+import { useEffect } from "react";
 
 function RentalHome() {
   const { action } = useParams();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [action]);
 
   const pageDetails = {
     path1: "findRentalHome",
@@ -34,7 +39,7 @@ function RentalHome() {
         <>
           {" "}
           <div className="flex-grow bg-[#f0f8ff]">
-            <ServiceHeroSection pageDetails={pageDetails} />
+            <ServiceHeroSection pageDetails={pageDetails} bgImg="/rentalHomeHero.png" />
           </div>
           <div className="bg-[#f0f8ff]">
             <Footer newsletter={"block"} />

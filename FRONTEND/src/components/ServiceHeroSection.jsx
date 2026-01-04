@@ -4,14 +4,11 @@ import HeadingAndButton from "./HeadingAndButton";
 function ServiceHeroSection({ pageDetails, bgImg }) {
   return (
     <div
-      className={`flex flex-wrap-reverse justify-center sm:items-center ${
-        bgImg ? "sm:justify-between" : "sm:justify-around py-16"
-      } px-4`}
+      className={`flex flex-wrap-reverse justify-center sm:items-center sm:justify-around py-16 px-4`}
     >
       <div
-        className={`flex flex-col gap-[30px] m-4 text-center sm:text-start ${
-          bgImg ? "flex-1 max-w-md mx-auto " : ""
-        }`}
+        className={`flex flex-col gap-[30px] m-4 text-center sm:text-start ${bgImg ? "flex-1 max-w-md mx-auto " : ""
+          }`}
       >
         <HeadingAndButton
           description={pageDetails.description1}
@@ -27,8 +24,12 @@ function ServiceHeroSection({ pageDetails, bgImg }) {
       </div>
 
       {bgImg ? (
-        <div className="bg-black md:bg-transparent">
-          <img src={bgImg} className="w-auto h-auto" />
+        <div className="md:bg-transparent flex justify-center">
+          <img
+            src={bgImg}
+            className="h-[350px] md:h-[500px] lg:h-[550px] xl:h-[600px] w-auto object-contain"
+            alt="Hero Service"
+          />
         </div>
       ) : (
         <div className="">
