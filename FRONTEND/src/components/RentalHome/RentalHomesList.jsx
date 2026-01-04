@@ -11,48 +11,33 @@ function RentalHomesList() {
   // backend API endpoint /api/rooms
   // State for events
   const dispatch = useDispatch();
-  const { loading, error, rentalHomes } = useSelector(
+  const { loading, error, rentalHomes, pagination } = useSelector(
     (state) => state.rentalHomes
   );
-  const roomsPerPage = 9;
+
+  // const roomsPerPage = 9; // Handled by backend now
+  // const [page, setPage] = useState(1); // We can still use local state or use pagination.current_page
+
+  // Sync page state with pagination from store if needed, or just rely on local page state to trigger fetch
   const [page, setPage] = useState(1);
-  const startIndex = (page - 1) * roomsPerPage;
 
   console.log(rentalHomes);
 
-  const [sortOption, setSortOption] = useState("");
-  const getSortedRentalHomes = () => {
-    const rentalHomesCopy = [...rentalHomes];
+  const [sortOption, setSortOption] = useState("created_at-desc");
 
-    switch (sortOption) {
-      case "price-asc":
-        return rentalHomesCopy.sort((a, b) => a.deposit_rent - b.deposit_rent);
-      case "price-desc":
-        return rentalHomesCopy.sort((a, b) => b.deposit_rent - a.deposit_rent);
-      case "name-asc":
-        return rentalHomesCopy.sort((a, b) =>
-          a.address.localCompare(b.address)
-        );
-      case "name-desc":
-        return rentalHomesCopy.sort((a, b) =>
-          a.address.localCompare(b.address)
-        );
-      default:
-        return rentalHomesCopy;
-    }
-  };
+  // Client-side sort is removed, now we pass sortOption to backend
+  // const getSortedRentalHomes = () => { ... }
 
-  const sortedRentalHomes = getSortedRentalHomes();
-  const numsOfPage = Math.ceil(rentalHomes.length / roomsPerPage);
-  const displayedRooms = sortedRentalHomes.slice(
-    startIndex,
-    startIndex + roomsPerPage
-  );
+  // const sortedRentalHomes = getSortedRentalHomes();
+  // const numsOfPage = Math.ceil(rentalHomes.length / roomsPerPage);
+  // const displayedRooms = sortedRentalHomes.slice(...)
 
-  // Set rentalHomes on mount
+  // Fetch rentalHomes on mount and when page or sort parameters change
   useEffect(() => {
-    dispatch(fetchRentalHomes());
-  }, [dispatch]);
+    dispatch(fetchRentalHomes({ page, sortOption }));
+  }, [dispatch, page, sortOption]);
+
+  const numsOfPage = pagination?.last_page || 1;
 
   if (loading) {
     return <Loader />;
@@ -67,27 +52,28 @@ function RentalHomesList() {
           sortOption={sortOption}
           setSortOption={(value) => {
             setSortOption(value);
-            setPage(1);
+            setPage(1); // Reset to page 1 on sort change
           }}
         />
       </div>
 
       <div className="flex justify-center items-center flex-wrap gap-4">
-        {displayedRooms.map((rentalHome, index) => {
+        {rentalHomes.map((rentalHome, index) => {
           return <RentalHomeCard key={index} rentalHome={rentalHome} />;
         })}
       </div>
 
       <div className="max-w-screen-lg mx-auto flex justify-between gap-12 items-center my-10 px-6 py-3 bg-white">
         <div className="text-[#323232] text-sm font-normal font-dmsans">
-          {page}-{numsOfPage.toString().padStart(2, "0")} of{" "}
-          {rentalHomes.length} items
+          {pagination?.current_page}-{numsOfPage.toString().padStart(2, "0")} of{" "}
+          {pagination?.total} items
         </div>
         <Pagination
           count={numsOfPage}
           size="large"
           variant="outlined"
           shape="rounded"
+          page={page}
           onChange={(event, value) => setPage(value)}
           showFirstButton
           showLastButton
@@ -104,10 +90,10 @@ function RentalHomesList() {
               fontWeight: "bold",
             },
             "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
-              {
-                color: "#ffa41",
-                mx: "16px",
-              },
+            {
+              color: "#ffa41",
+              mx: "16px",
+            },
           }}
         />
       </div>

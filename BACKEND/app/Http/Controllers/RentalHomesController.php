@@ -47,16 +47,47 @@ class RentalHomesController extends Controller
      *     @OA\Response(response=200, description="List of rental homes")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $rentalhomes = RentalHome::all();
+        $perPage = 9;
+        $query = RentalHome::query();
 
-        // Images are now automatically handled by the model accessor
-        // No need to manually decode here
+        // Sorting
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'price-asc':
+                    $query->orderBy('deposit_rent', 'asc');
+                    break;
+                case 'price-desc':
+                    $query->orderBy('deposit_rent', 'desc');
+                    break;
+                case 'name-asc':
+                    $query->orderBy('address', 'asc'); // Treating address as name for sorting
+                    break;
+                case 'name-desc':
+                    $query->orderBy('address', 'desc');
+                    break;
+                default:
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $rentalhomes = $query->paginate($perPage);
+
+        // Transform the collection inside the paginator
+        $rentalhomes->getCollection()->transform(function ($rentalhome) {
+            if (is_string($rentalhome->images) && !empty($rentalhome->images)) {
+                $rentalhome->images = json_decode($rentalhome->images, true);
+            }
+            return $rentalhome;
+        });
 
         return response()->json($rentalhomes);
     }
-
+    
      /**
      * Dummy Insert API for RentalHome
      *
@@ -378,10 +409,34 @@ class RentalHomesController extends Controller
             });
         });
 
-        $rentalhomes = $query->get();
+        // Sorting
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'price-asc':
+                    $query->orderBy('deposit_rent', 'asc');
+                    break;
+                case 'price-desc':
+                    $query->orderBy('deposit_rent', 'desc');
+                    break;
+                case 'name-asc':
+                    $query->orderBy('address', 'asc');
+                    break;
+                case 'name-desc':
+                    $query->orderBy('address', 'desc');
+                    break;
+                default:
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+        } else {
+             $query->orderBy('created_at', 'desc');
+        }
+
+        $perPage = 9;
+        $rentalhomes = $query->paginate($perPage);
 
         // Automatically decode JSON-encoded 'photos' field to an array
-        $rentalhomes->transform(function ($rentalhome) {
+        $rentalhomes->getCollection()->transform(function ($rentalhome) {
             if (is_string($rentalhome->images) && !empty($rentalhome->images)) {
                 $rentalhome->images = json_decode($rentalhome->images, true);
             }
