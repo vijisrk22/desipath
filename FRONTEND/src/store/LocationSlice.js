@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api/api"; // Assuming api instance exists
+import api from "../utils/api";
 
 export const fetchLocations = createAsyncThunk(
     "location/fetchLocations",
