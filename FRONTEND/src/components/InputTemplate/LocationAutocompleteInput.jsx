@@ -79,7 +79,7 @@ function LocationAutocompleteInput({
 
       try {
         const res = await api.get(
-          `/ api / location / locations ? filter = ${searchTerm}`,
+          `/api/location/locations?filter=${searchTerm}`,
           {
             cancelToken: cancelTokenRef.current.token,
           }
