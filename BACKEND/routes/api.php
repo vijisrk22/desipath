@@ -56,8 +56,7 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
 
 Route::middleware('auth:sanctum')->patch('/profile', [ProfileController::class, 'update']);
 
-Route::middleware('auth:sanctum')->group(function () { 
-// Route::middleware([])->group(function () {
+Route::middleware([])->group(function () {
     Route::get('/location/locations', [LocationController::class, 'getlocations']);    
     Route::get('/location/states', [LocationController::class, 'getstates']);
     Route::get('/location/cities', [LocationController::class, 'getcities']);
