@@ -28,13 +28,13 @@ function LocationAutocompleteInput({
         async (position) => {
           try {
             const { latitude, longitude } = position.coords;
-            const res = await api.get(\`/api/location/reverse?lat=\${latitude}&lng=\${longitude}\`);
+            const res = await api.get(`/api/location/reverse?lat=${latitude}&lng=${longitude}`);
             const loc = res.data;
             if (loc) {
-                const formatted = \`\${loc.city}, \${loc.state_name}, \${loc.zip}\`;
-                setValue("location", formatted);
-                previousInputRef.current = formatted;
-                skipNextEffectRef.current = true; // Avoid searching again immediately
+              const formatted = `${loc.city}, ${loc.state_name}, ${loc.zip}`;
+              setValue("location", formatted);
+              previousInputRef.current = formatted;
+              skipNextEffectRef.current = true; // Avoid searching again immediately
             }
           } catch (error) {
             console.error("Geolocation error:", error);
@@ -79,7 +79,7 @@ function LocationAutocompleteInput({
 
       try {
         const res = await api.get(
-          `/ api / location / locations ? filter = ${ searchTerm }`,
+          `/ api / location / locations ? filter = ${searchTerm}`,
           {
             cancelToken: cancelTokenRef.current.token,
           }
@@ -87,7 +87,7 @@ function LocationAutocompleteInput({
 
         const results = res.data;
         const formatted = results.map(
-          (loc) => `${ loc.city }, ${ loc.state_name }, ${ loc.zip }`
+          (loc) => `${loc.city}, ${loc.state_name}, ${loc.zip}`
         );
 
         const uniqueSuggestions = [...new Set(formatted)];
