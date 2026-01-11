@@ -232,6 +232,7 @@ class RentalHomesController extends Controller
             'smoking' => 'required|in:Ok,Not okay',
             'owner_id' => 'nullable|exists:users,id',
             'description' => 'nullable|string|max:1000',
+            'contact_no' => ['nullable', 'string', 'max:20', 'regex:/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/'],
         ]);
 
         $receiver = User::find($request->owner_id);
@@ -367,6 +368,8 @@ class RentalHomesController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+
+
         $query = RentalHome::query();
 
         $city = trim($request->city);
@@ -375,39 +378,30 @@ class RentalHomesController extends Controller
         $priceMin = $request->priceMin;
         $priceMax = $request->priceMax;
 
-        $query->where(function ($q) use ($city, $state, $zipcode, $priceMin, $priceMax, $request) {
-            $q->where(function ($query) use ($request) {
-        // $query->where(function ($q) use ($request) {
+        if ($request->filled('city') || $request->filled('state') || $request->filled('zipcode')) {
+            $query->where(function ($q) use ($request) {
                 if ($request->filled('city')) {
-                    $query->orWhere('location_city', 'like', '%' . $request->city . '%');
+                    $q->orWhere('location_city', 'like', '%' . $request->city . '%');
                 }
                 if ($request->filled('state')) {
-                    $query->orWhere('location_state', 'like', '%' . $request->state . '%');
+                    $q->orWhere('location_state', 'like', '%' . $request->state . '%');
                 }
                 if ($request->filled('zipcode')) {
-                    $query->orWhere('location_zipcode', 'like', '%' . $request->zipcode . '%');
-                }
-
-                if ($request->filled('priceMin') || $request->filled('priceMax')) {
-                    $query->orWhere(function ($subQuery) use ($request) {
-                        if ($request->filled('priceMin')) {
-                            // $q->orWhere('deposit_rent', '>=', $request->priceMin);
-                            $subQuery->where('deposit_rent', '>=', $request->priceMin);
-                        }
-                        if ($request->filled('priceMax')) {
-                            // $q->orWhere('deposit_rent', '<=', $request->priceMax);
-                            $subQuery->where('deposit_rent', '<=', $request->priceMax);
-                        }
-                    });        
-                }
-                // if ($request->filled('rentalHomeType')) {
-                //     $query->orWhere('property_type', 'like', '%' . $request->rentalHomeType . '%');
-                // }
-                if ($request->filled('rentalHomeType') && is_array($request->rentalHomeType)) {
-                    $query->orWhereIn('property_type', $request->rentalHomeType);
+                    $q->orWhere('location_zipcode', 'like', '%' . $request->zipcode . '%');
                 }
             });
-        });
+        }
+
+        if ($request->filled('priceMin')) {
+            $query->where('deposit_rent', '>=', $request->priceMin);
+        }
+        if ($request->filled('priceMax')) {
+            $query->where('deposit_rent', '<=', $request->priceMax);
+        }
+
+        if ($request->filled('rentalHomeType') && is_array($request->rentalHomeType) && count($request->rentalHomeType) > 0) {
+            $query->whereIn('property_type', $request->rentalHomeType);
+        }
 
         // Sorting
         if ($request->has('sort')) {
@@ -431,6 +425,8 @@ class RentalHomesController extends Controller
         } else {
              $query->orderBy('created_at', 'desc');
         }
+
+
 
         $perPage = 9;
         $rentalhomes = $query->paginate($perPage);

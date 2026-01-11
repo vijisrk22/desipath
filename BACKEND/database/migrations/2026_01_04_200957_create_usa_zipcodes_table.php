@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state_id')->nullable();
             $table->string('state_name')->nullable();
+            $table->string('state_id_state_name')->nullable();
+            $table->string('country')->nullable();
             $table->string('timezone')->nullable();
             $table->timestamps();
         });

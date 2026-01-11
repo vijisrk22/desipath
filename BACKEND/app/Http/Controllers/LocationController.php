@@ -59,7 +59,9 @@ class LocationController extends Controller
             $query->where(function($q) use ($filter) {
                 $q->whereRaw('LOWER(state_name) LIKE ?', ["%{$filter}%"])
                 ->orWhereRaw('LOWER(city) LIKE ?', ["%{$filter}%"])
-                ->orWhereRaw('LOWER(zip) LIKE ?', ["%{$filter}%"]);
+                ->orWhereRaw('LOWER(zip) LIKE ?', ["%{$filter}%"])
+                ->orWhereRaw('LOWER(state_id_state_name) LIKE ?', ["%{$filter}%"]) // Added
+                ->orWhereRaw('LOWER(country) LIKE ?', ["%{$filter}%"]); // Added
             });
         }
 

@@ -10,6 +10,7 @@ function TextFieldInput({
   customProps,
   type = "text",
   requiredAssertion = true,
+  rules = {},
 }) {
   return (
     <div>
@@ -30,9 +31,10 @@ function TextFieldInput({
           name={name}
           control={control}
           defaultValue=""
-          rules={
-            requiredAssertion ? { required: "This field is required" } : {}
-          }
+          rules={{
+            ...(requiredAssertion ? { required: "This field is required" } : {}),
+            ...rules,
+          }}
           render={({ field, fieldState }) => (
             <>
               <TextField

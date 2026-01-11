@@ -82,6 +82,7 @@ const rentalHomesSlice = createSlice({
         error: null,
         loading: false,
 
+        lastSearchQuery: null,
     },
     reducers: {
         setRentalHomes: (state, action) => {
@@ -157,6 +158,7 @@ const rentalHomesSlice = createSlice({
                     total: action.payload.total,
                     per_page: action.payload.per_page,
                 };
+                state.lastSearchQuery = action.meta.arg.searchQuery;
             })
             .addCase(searchRentalHome.rejected, (state, action) => {
                 state.loading = false;

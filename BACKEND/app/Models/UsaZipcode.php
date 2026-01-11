@@ -15,6 +15,8 @@ class UsaZipcode extends Model
         'city',
         'state_id',
         'state_name',
+        'state_id_state_name',
+        'country',
         'timezone',
     ];
 }

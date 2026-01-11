@@ -5,11 +5,12 @@ import ReviewPostContent from "../../components/RentalHome/ReviewPostContent";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { fetchRentalHomeById } from "../../store/RentalHomesSlice";
 import Loader from "../../components/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 
 import api from "../../utils/api";
 import { getRentalHomeContents } from "./DisplayRentalHomeDetail";
@@ -36,10 +37,16 @@ function RentalHomeDetails() {
     dispatch(fetchRentalHomeById(rentalHomeId));
   }, [dispatch]);
 
+  const [openContact, setOpenContact] = useState(false);
+
   // If loading, show loader
   if (loading) {
     return <Loader />;
   }
+
+  const handleContactClick = () => {
+    setOpenContact(true);
+  };
 
   const handleClick = () => {
     const chatPartnerInfo = {
@@ -150,12 +157,26 @@ function RentalHomeDetails() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <div className="mt-3 px-7 py-3 bg-[#ffa41c] rounded-[57px] inline-flex justify-center items-center gap-2.5">
+          <div onClick={handleContactClick} className="cursor-pointer mt-3 px-7 py-3 bg-[#ffa41c] rounded-[57px] inline-flex justify-center items-center gap-2.5">
             <PhoneOutlinedIcon />
             <div className=" text-gray-800 text-base font-bold font-dmsans">
               Contact
             </div>
           </div>
+
+          <Dialog open={openContact} onClose={() => setOpenContact(false)}>
+            <DialogTitle>Contact Owner</DialogTitle>
+            <DialogContent>
+              <div className="text-lg">
+                Phone Number: <strong>{rentalHomeDetails?.contact_no || "Not Available"}</strong>
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setOpenContact(false)} color="primary">
+                Close
+              </Button>
+            </DialogActions>
+          </Dialog>
 
           <button
             onClick={handleClick}

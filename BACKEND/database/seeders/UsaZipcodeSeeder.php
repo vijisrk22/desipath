@@ -84,6 +84,8 @@ class UsaZipcodeSeeder extends Seeder
                         elseif ($colLetter == 'E') $colIndex = 4;
                         elseif ($colLetter == 'F') $colIndex = 5;
                         elseif ($colLetter == 'G') $colIndex = 6;
+                        elseif ($colLetter == 'H') $colIndex = 7;
+                        elseif ($colLetter == 'I') $colIndex = 8;
                         else continue; // Skip other cols
                         
                         // Read value
@@ -117,17 +119,24 @@ class UsaZipcodeSeeder extends Seeder
                     if ($reader->nodeType == XMLReader::END_ELEMENT && $reader->name === 'row') {
                         // Process row
                         if (empty($row)) continue;
-                        
+
+                        // Skip header row
+                        if ($row[0] === 'zip' && $row[1] === 'city') {
+                             continue;
+                        }
+
                         // Prepare data
                         if (isset($row[0])) {
                             $batch[] = [
-                                'zip' => (string)$row[0],
+                                'zip' => str_pad((string)$row[0], 5, '0', STR_PAD_LEFT),
                                 'city' => $row[1] ?? null,
                                 'state_id' => $row[2] ?? null,
                                 'state_name' => $row[3] ?? null,
+                                'state_id_state_name' => $row[4] ?? null,
                                 'timezone' => $row[5] ?? null,
                                 'lat' => isset($row[6]) ? (float)$row[6] : null,
                                 'lng' => isset($row[7]) ? (float)$row[7] : null,
+                                'country' => $row[8] ?? null,
                                 'created_at' => now(),
                                 'updated_at' => now(),
                             ];
@@ -135,6 +144,9 @@ class UsaZipcodeSeeder extends Seeder
                             $count++;
                             
                             if (count($batch) >= $batchSize) {
+                                if ($count <= $batchSize) {
+                                     $this->command->info("Sample Row: " . json_encode($batch[0]));
+                                }
                                 UsaZipcode::insert($batch);
                                 $batch = [];
                                 $this->command->info("Seeded $count records...");

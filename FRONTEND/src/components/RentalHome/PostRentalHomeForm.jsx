@@ -27,8 +27,11 @@ function PostRentalHomeForm() {
     defaultValues: {
       location_state: "",
       location_city: "",
+      location_city: "",
       location_zipcode: "",
+      contact_no: "",
     },
+    mode: "onChange",
   });
 
   const [reviewSession, setReviewSession] = useState(false);
@@ -145,6 +148,18 @@ function PostRentalHomeForm() {
           text="Accommodates"
         />
         {/* Smoking */}
+        <TextFieldInput
+          name="contact_no"
+          defaultValue="Text"
+          control={control}
+          text="Contact Number"
+          rules={{
+            pattern: {
+              value: /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/,
+              message: "Invalid US Phone Number",
+            },
+          }}
+        />
         <TwoRadioInput
           name="smoking"
           text="Smoking"

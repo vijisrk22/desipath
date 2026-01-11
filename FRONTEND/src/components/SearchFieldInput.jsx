@@ -7,7 +7,7 @@ import { searchRoom } from "../store/RoommatesSlice";
 import { searchCar } from "../store/CarsSlice";
 import { searchRentalHome } from "../store/RentalHomesSlice";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import CarMakeModelInput from "./InputTemplate/CarMakeModelInput";
 import CheckBoxInput from "./InputTemplate/CheckBoxInput";
@@ -15,6 +15,41 @@ import CheckBoxInput from "./InputTemplate/CheckBoxInput";
 function SearchFieldInput({ inputs, title }) {
   const dispatch = useDispatch();
   const [priceRange, setPriceRange] = useState([1000, 10000]);
+
+  // Sync form with Redux active filters
+  const { lastSearchQuery } = useSelector((state) => state.rentalHomes);
+
+  useEffect(() => {
+    if (!lastSearchQuery) return;
+    if (title !== "Rent a Home") return;
+
+    // Sync Location
+    if (lastSearchQuery.city || lastSearchQuery.state || lastSearchQuery.zipcode) {
+      // Reconstruct location string if possible or just rely on what's there if it matches?
+      // Issue: We don't know the exact string user typed vs parsed. 
+      // But if we clear it, we should clear the input.
+      const locParts = [lastSearchQuery.city, lastSearchQuery.state, lastSearchQuery.zipcode].filter(Boolean);
+      // If all empty, clear location
+      if (locParts.length === 0) setValue("location", "");
+    } else {
+      // If query has NO location data, clear input
+      setValue("location", "");
+    }
+
+    // Sync Price - Update local state
+    if (lastSearchQuery.priceMin !== undefined && lastSearchQuery.priceMax !== undefined) {
+      setPriceRange([lastSearchQuery.priceMin, lastSearchQuery.priceMax]);
+    }
+
+    // Sync Type
+    // Loop through all known types and set them based on inclusion in lastSearchQuery.rentalHomeType
+    const allTypes = ["Condo", "Single family Home", "Apartment", "Basement Apartment"];
+    allTypes.forEach(type => {
+      const isChecked = lastSearchQuery.rentalHomeType?.includes(type);
+      setValue(`rentalHomeType.${type}`, isChecked); // CheckBoxInput uses "rentalHomeType.Condo" etc.
+    });
+
+  }, [lastSearchQuery, title, setValue]);
 
   useEffect(() => {
     setPriceRange([
@@ -54,6 +89,8 @@ function SearchFieldInput({ inputs, title }) {
         state = parts[1];
       } else {
         city = parts[0];
+        state = parts[0];
+        zipcode = parts[0];
       }
       return { city, state, zipcode };
     };
@@ -103,7 +140,7 @@ function SearchFieldInput({ inputs, title }) {
       };
       try {
         console.log("Sending searchQuery:", searchQuery);
-        await dispatch(searchRentalHome(searchQuery)).unwrap();
+        await dispatch(searchRentalHome({ searchQuery })).unwrap();
       } catch (err) {
         console.error("Search failed:", err);
       }

@@ -31,7 +31,7 @@ function LocationAutocompleteInput({
     return () => clearTimeout(handler);
   }, [input]);
 
-  const { data: suggestions = [], isLoading, isFetching } = useQuery(
+  const { data: suggestions = [], isLoading, isFetching, isError, error } = useQuery(
     ["locations", debouncedSearch],
     async () => {
       // Don't search if empty or too short
@@ -168,7 +168,14 @@ function LocationAutocompleteInput({
             </div>
           )}
 
-          {!isLoading && suggestions.length === 0 && (
+          {!isLoading && isError && (
+            <div className="p-3 text-center text-red-500">
+              <Typography variant="body2">Error: {error?.message}</Typography>
+              {error?.response && <Typography variant="caption" display="block">{error.response.status} {error.response.statusText}</Typography>}
+            </div>
+          )}
+
+          {!isLoading && !isError && suggestions.length === 0 && (
             <div className="p-3 text-center text-gray-500">
               <Typography variant="body2">No locations found</Typography>
             </div>
