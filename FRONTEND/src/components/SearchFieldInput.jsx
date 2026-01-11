@@ -13,11 +13,21 @@ import CarMakeModelInput from "./InputTemplate/CarMakeModelInput";
 import CheckBoxInput from "./InputTemplate/CheckBoxInput";
 
 function SearchFieldInput({ inputs, title }) {
+  const {
+    handleSubmit,
+    control,
+    register,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm();
+
   const dispatch = useDispatch();
   const [priceRange, setPriceRange] = useState([1000, 10000]);
 
   // Sync form with Redux active filters
-  const { lastSearchQuery } = useSelector((state) => state.rentalHomes);
+  const rentalHomesState = useSelector((state) => state.rentalHomes);
+  const lastSearchQuery = rentalHomesState?.lastSearchQuery;
 
   useEffect(() => {
     if (!lastSearchQuery) return;
@@ -146,14 +156,7 @@ function SearchFieldInput({ inputs, title }) {
       }
     }
   }
-  const {
-    handleSubmit,
-    control,
-    register,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm();
+
 
   // Handler for auto-submit on selection
   const handleLocationSelect = () => {

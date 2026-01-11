@@ -5,7 +5,8 @@ import { searchRentalHome } from "../../store/RentalHomesSlice";
 
 function ActiveSearchFilters() {
     const dispatch = useDispatch();
-    const { lastSearchQuery } = useSelector((state) => state.rentalHomes);
+    const rentalHomesState = useSelector((state) => state.rentalHomes);
+    const lastSearchQuery = rentalHomesState?.lastSearchQuery;
 
     if (!lastSearchQuery) return null;
 
