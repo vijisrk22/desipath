@@ -5,7 +5,10 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Provider } from "react-redux";
+import { QueryClient, QueryClientProvider } from "react-query";
 import store from "./store/index.js"; // Import your Redux store
+
+const queryClient = new QueryClient();
 
 const theme = createTheme({
   palette: {
@@ -20,11 +23,13 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       {/* Wrap your app with Redux Provider */}
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ThemeProvider>
+      </QueryClientProvider>
     </Provider>
   </StrictMode>
 );

@@ -118,19 +118,16 @@ class UsaZipcodeSeeder extends Seeder
                         // Process row
                         if (empty($row)) continue;
                         
-                        // Check header row (zip, lat, etc.)
-                        if (($row[0] ?? '') === 'zip') continue; 
-                        
                         // Prepare data
                         if (isset($row[0])) {
                             $batch[] = [
                                 'zip' => (string)$row[0],
-                                'lat' => isset($row[1]) ? (float)$row[1] : null,
-                                'lng' => isset($row[2]) ? (float)$row[2] : null,
-                                'city' => $row[3] ?? null,
-                                'state_id' => $row[4] ?? null,
-                                'state_name' => $row[5] ?? null,
-                                'timezone' => $row[6] ?? null,
+                                'city' => $row[1] ?? null,
+                                'state_id' => $row[2] ?? null,
+                                'state_name' => $row[3] ?? null,
+                                'timezone' => $row[5] ?? null,
+                                'lat' => isset($row[6]) ? (float)$row[6] : null,
+                                'lng' => isset($row[7]) ? (float)$row[7] : null,
                                 'created_at' => now(),
                                 'updated_at' => now(),
                             ];

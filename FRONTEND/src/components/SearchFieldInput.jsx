@@ -30,11 +30,40 @@ function SearchFieldInput({ inputs, title }) {
   }, []);
 
   async function onSubmit(data) {
+    // Robust parsing helper
+    const parseLocation = (loc) => {
+      if (!loc) return { city: "", state: "", zipcode: "" };
+      const parts = loc.split(",").map((s) => s.trim());
+      // Logic: 
+      // 1 part: Likely City or Zip (we'll try city first, or search across all)
+      // 2 parts: City, State
+      // 3 parts: City, State, Zip
+      // For now, let's map loosely. 
+      // Ideally backend search should handle single string. 
+      // But looking at Redux actions, they send structured object. 
+      // Let's do best effort mapping.
+
+      let city = "", state = "", zipcode = "";
+
+      if (parts.length >= 3) {
+        city = parts[0];
+        state = parts[1];
+        zipcode = parts[2];
+      } else if (parts.length === 2) {
+        city = parts[0];
+        state = parts[1];
+      } else {
+        city = parts[0];
+      }
+      return { city, state, zipcode };
+    };
+
     if (title === "Find a Room") {
+      const { city, state, zipcode } = parseLocation(data?.location);
       const searchQuery = {
-        city: data?.location ? data?.location.split(",")[0].trim() : "",
-        state: data?.location ? data?.location.split(",")[1].trim() : "",
-        zipcode: data?.location ? data?.location.split(",")[2].trim() : "",
+        city,
+        state,
+        zipcode,
         priceMin: priceRange[0],
         priceMax: priceRange[1],
       };
@@ -59,10 +88,11 @@ function SearchFieldInput({ inputs, title }) {
         console.error("Search failed:", err);
       }
     } else if (title === "Rent a Home") {
+      const { city, state, zipcode } = parseLocation(data?.location);
       const searchQuery = {
-        city: data?.location ? data?.location.split(",")[0].trim() : "",
-        state: data?.location ? data?.location.split(",")[1].trim() : "",
-        zipcode: data?.location ? data?.location.split(",")[2].trim() : "",
+        city,
+        state,
+        zipcode,
         rentalHomeType: data?.rentalHomeType
           ? Object.entries(data.rentalHomeType)
             .filter(([_, value]) => value)
@@ -88,6 +118,12 @@ function SearchFieldInput({ inputs, title }) {
     formState: { errors },
   } = useForm();
 
+  // Handler for auto-submit on selection
+  const handleLocationSelect = () => {
+    // Small timeout to allow state to update if needed, though setValue in child handles value.
+    handleSubmit(onSubmit)();
+  };
+
   return (
     <form
       method="POST"
@@ -103,6 +139,7 @@ function SearchFieldInput({ inputs, title }) {
                 control={control}
                 setValue={setValue}
                 type="search"
+                onSelect={handleLocationSelect}
               />
             ) : input === "makeAndModel" ? (
               <CarMakeModelInput
