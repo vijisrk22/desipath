@@ -146,7 +146,7 @@ class RentalHomesController extends Controller
             'amenities' => $faker->randomElements(['Gym', 'Swimming Pool', 'Club House'], $faker->numberBetween(1, 3)), // Now an array
             'pets' => $faker->boolean,
             'location' => $faker->city . ', ' . $faker->stateAbbr,
-            'images' => json_encode($photos),
+            'images' => $photos,
             'accommodates' => $faker->numberBetween(1, 10),
             'location_state' => $faker->state,
             'location_city' => $faker->city,
