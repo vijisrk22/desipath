@@ -49,7 +49,58 @@ class LocationController extends Controller
      */
     public function getlocations(Request $request)
     {
-        return response()->json(['status' => 'ok', 'message' => 'Smoke test passed']);
+        try {
+            $filter = $request->input('filter');
+
+            $query = UsaZipcode::query();
+
+            if ($filter) {
+                // $filter = strtolower($filter);
+                $query->where(function($q) use ($filter) {
+                    $q->where('state_name', 'LIKE', "%{$filter}%")
+                    ->orWhere('city', 'LIKE', "%{$filter}%")
+                    ->orWhere('zip', 'LIKE', "%{$filter}%");
+                });
+            }
+
+            // Limit results to avoid huge payload
+            $locations = $query->orderBy('state_name')->limit(50)->get();
+
+            if ($locations->isEmpty()) {
+                return response()->json([
+                    'error' => 'No matching locations found.'
+                ], 404);
+            }
+
+            return response()->json($locations);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Location Search Error: " . $e->getMessage());
+            return response()->json([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(), // Debug info
+                'line' => $e->getLine()  // Debug info
+            ], 500);
+        }
+    }
+
+    // Temporary helper to fix production DB
+    public function runMigrations()
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Migrations executed successfully',
+                'output' => \Illuminate\Support\Facades\Artisan::output()
+            ]);
+        } catch (\Throwable $e) {
+             return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
     }
     
     public function reverseGeocode(Request $request)
