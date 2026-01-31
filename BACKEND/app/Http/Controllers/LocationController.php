@@ -49,32 +49,42 @@ class LocationController extends Controller
      */
     public function getlocations(Request $request)
     {
-        $filter = $request->input('filter');
+        try {
+            $filter = $request->input('filter');
 
-        $query = UsaZipcode::query();
+            $query = UsaZipcode::query();
 
-        if ($filter) {
-            $filter = strtolower($filter);
+            if ($filter) {
+                // $filter = strtolower($filter); // Eloquent handles this better with LIKE usually, or use explicit lower if needed. 
+                // For broad compatibility, simple LIKE is often case-insensitive in MySQL/SQLServer by default collation.
+                // If strict case sensitivity is needed, we can revisit.
 
-            $query->where(function($q) use ($filter) {
-                $q->whereRaw('LOWER(state_name) LIKE ?', ["%{$filter}%"])
-                ->orWhereRaw('LOWER(city) LIKE ?', ["%{$filter}%"])
-                ->orWhereRaw('LOWER(zip) LIKE ?', ["%{$filter}%"]);
-                // ->orWhereRaw('LOWER(state_id_state_name) LIKE ?', ["%{$filter}%"]) // Added
-                // ->orWhereRaw('LOWER(country) LIKE ?', ["%{$filter}%"]); // Added
-            });
-        }
+                $query->where(function($q) use ($filter) {
+                    $q->where('state_name', 'LIKE', "%{$filter}%")
+                    ->orWhere('city', 'LIKE', "%{$filter}%")
+                    ->orWhere('zip', 'LIKE', "%{$filter}%");
+                    // ->orWhere('state_id_state_name', 'LIKE', "%{$filter}%")
+                    // ->orWhere('country', 'LIKE', "%{$filter}%");
+                });
+            }
 
-        // Limit results to avoid huge payload
-        $locations = $query->orderBy('state_name')->limit(50)->get();
+            // Limit results to avoid huge payload
+            $locations = $query->orderBy('state_name')->limit(50)->get();
 
-        if ($locations->isEmpty()) {
+            if ($locations->isEmpty()) {
+                return response()->json([
+                    'error' => 'No matching locations found.'
+                ], 404);
+            }
+
+            return response()->json($locations);
+        } catch (\Exception $e) {
             return response()->json([
-                'error' => 'No matching locations found.'
-            ], 404);
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(), // Exposed for debugging
+                'trace' => $e->getTraceAsString()
+            ], 500);
         }
-
-        return response()->json($locations);
     }
     
     public function reverseGeocode(Request $request)
