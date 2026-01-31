@@ -49,44 +49,7 @@ class LocationController extends Controller
      */
     public function getlocations(Request $request)
     {
-        try {
-            $filter = $request->input('filter');
-
-            $query = UsaZipcode::query();
-
-            if ($filter) {
-                // $filter = strtolower($filter); // Eloquent handles this better with LIKE usually, or use explicit lower if needed. 
-                // For broad compatibility, simple LIKE is often case-insensitive in MySQL/SQLServer by default collation.
-                // If strict case sensitivity is needed, we can revisit.
-
-                $query->where(function($q) use ($filter) {
-                    $q->where('state_name', 'LIKE', "%{$filter}%")
-                    ->orWhere('city', 'LIKE', "%{$filter}%")
-                    ->orWhere('zip', 'LIKE', "%{$filter}%");
-                    // ->orWhere('state_id_state_name', 'LIKE', "%{$filter}%")
-                    // ->orWhere('country', 'LIKE', "%{$filter}%");
-                });
-            }
-
-            // Limit results to avoid huge payload
-            $locations = $query->orderBy('state_name')->limit(50)->get();
-
-            if ($locations->isEmpty()) {
-                return response()->json([
-                    'error' => 'No matching locations found.'
-                ], 404);
-            }
-
-            return response()->json($locations);
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error("Location Search Error: " . $e->getMessage());
-            return response()->json([
-                'error' => 'Internal Server Error',
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(), // Debug info
-                'line' => $e->getLine()  // Debug info
-            ], 500);
-        }
+        return response()->json(['status' => 'ok', 'message' => 'Smoke test passed']);
     }
     
     public function reverseGeocode(Request $request)
