@@ -78,11 +78,13 @@ class LocationController extends Controller
             }
 
             return response()->json($locations);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Location Search Error: " . $e->getMessage());
             return response()->json([
                 'error' => 'Internal Server Error',
-                'message' => $e->getMessage(), // Exposed for debugging
-                'trace' => $e->getTraceAsString()
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(), // Debug info
+                'line' => $e->getLine()  // Debug info
             ], 500);
         }
     }
