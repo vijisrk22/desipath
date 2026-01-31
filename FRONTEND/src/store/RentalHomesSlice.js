@@ -93,6 +93,18 @@ const rentalHomesSlice = createSlice({
         },
         clearRentalHomeDetails: (state) => {
             state.rentalHomeDetails = null;
+        },
+        resetSearchState: (state) => {
+            state.rentalHomes = [];
+            state.pagination = {
+                current_page: 1,
+                last_page: 1,
+                total: 0,
+                per_page: 9
+            };
+            state.lastSearchQuery = null;
+            state.error = null;
+            state.loading = false;
         }
     },
     extraReducers: (builder) => {
@@ -211,5 +223,5 @@ const rentalHomesSlice = createSlice({
 
 })
 
-export const { setRentalHomes, clearRentalHomes, clearRentalHomeDetails } = rentalHomesSlice.actions;
+export const { setRentalHomes, clearRentalHomes, clearRentalHomeDetails, resetSearchState } = rentalHomesSlice.actions;
 export default rentalHomesSlice.reducer;

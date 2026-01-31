@@ -3,8 +3,17 @@ import ServiceTopBar from "../../components/ServiceTopBar";
 
 import RentalHomesList from "../../components/RentalHome/RentalHomesList";
 import ActiveSearchFilters from "../../components/RentalHome/ActiveSearchFilters";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { resetSearchState } from "../../store/RentalHomesSlice";
 
 function FindRentalHome() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(resetSearchState());
+  }, [dispatch]);
+
   const inputs = ["location", "type"];
   const paths = [
     { text: "Home", eP: "/" },
