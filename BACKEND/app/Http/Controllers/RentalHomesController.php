@@ -496,7 +496,8 @@ class RentalHomesController extends Controller
             'accommodates' => 'nullable|integer',
             'smoking' => 'sometimes|in:Ok,Not okay',
             'owner_id' => 'nullable|exists:users,id',
-            'description' => 'nullable|string|max:1000'
+            'description' => 'nullable|string|max:1000',
+            'contact_no' => ['nullable', 'string', 'max:20', 'regex:/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/'],
         ]);
         
         $receiver = User::find($request->owner_id);

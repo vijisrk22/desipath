@@ -48,6 +48,7 @@ function EditRentalHomePostModal({ open, onClose, formDetails, editFunc }) {
       bedrooms: Number(formDetails.bhk.split(" ")[0]),
       bathrooms: Number(formDetails.bhk.split(" ")[2]),
       description: formDetails.description || "",
+      contact_no: formDetails.contact_no || "",
     },
   });
 
@@ -242,6 +243,18 @@ function EditRentalHomePostModal({ open, onClose, formDetails, editFunc }) {
             text="Accommodates"
           />
           {/* Smoking */}
+          <TextFieldInput
+            name="contact_no"
+            defaultValue="Text"
+            control={control}
+            text="Contact Number"
+            rules={{
+              pattern: {
+                value: /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/,
+                message: "Invalid US Phone Number",
+              },
+            }}
+          />
           <TwoRadioInput
             name="smoking"
             text="Smoking"

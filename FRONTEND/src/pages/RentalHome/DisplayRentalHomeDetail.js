@@ -14,6 +14,7 @@ export function getRentalHomeContents(formDetails, images, mode = "post") {
     { text: "Pets", value: String(formDetails.pets) },
     { text: "Accommodates", value: formDetails.accommodates },
     { text: "Smoking", value: formDetails.smoking, },
+    { text: "Contact Number", value: formDetails.contact_no },
     { text: "Additional Information", value: formDetails.description },
     { text: "Photos", value: images },
   ];
