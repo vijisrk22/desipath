@@ -18,6 +18,8 @@ import EventsLanding from "./pages/Events/EventsLanding";
 import EventDetails from "./pages/Events/EventDetails";
 import ViewProfile from "./components/User/ViewProfile";
 import PrivateRoute from "./components/PrivateRoute";
+import AstrologyAds from "./pages/AstrologyAds/AstrologyAds";
+import ClassesForKids from "./pages/ClassesForKids/ClassesForKids";
 import EditProfile from "./components/User/EditProfile";
 import MyListings from "./components/User/MyListings";
 import ProfileLayout from "./components/User/ProfileLayout";
@@ -61,6 +63,7 @@ function App() {
 
           {/* Rental Home */}
           <Route path="rentalHomes/:action?" element={<RentalHome />} />
+          <Route path="rentalHomes/:action/:homeId" element={<RentalHome />} />
 
           {/* Buy/Sell Car */}
           <Route path="cars/:action?" element={<BuySellCar />} />
@@ -82,6 +85,12 @@ function App() {
           {/* Events */}
           <Route path="events/:action?" element={<EventsLanding />} />
           <Route path="events/:action/:eventId" element={<EventDetails />} />
+
+          {/* Astrology Ads */}
+          <Route path="astrologyAds/:action?" element={<AstrologyAds />} />
+          
+          {/* Classes For Kids */}
+          <Route path="classesForKids/:action?" element={<ClassesForKids />} />
         </Route>
       </Route>
     </Routes>
