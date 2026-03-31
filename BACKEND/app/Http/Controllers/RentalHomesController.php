@@ -439,9 +439,6 @@ class RentalHomesController extends Controller
             return $rentalhome;
         });
 
-        if ($rentalhomes->isEmpty()) {
-            return response()->json(['message' => 'No rental homes found'], 404);
-        }
         return response()->json($rentalhomes);
     }
 

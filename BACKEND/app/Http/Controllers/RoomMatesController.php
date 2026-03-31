@@ -369,10 +369,6 @@ class RoomMatesController extends Controller
             return $roommate;
         });
 
-        if ($roommates->isEmpty()) {
-            return response()->json(['message' => 'No roommates found'], 404);
-        }
-
         return response()->json($roommates);
     }
 

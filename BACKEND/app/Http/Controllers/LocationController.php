@@ -66,11 +66,7 @@ class LocationController extends Controller
             // Limit results to avoid huge payload
             $locations = $query->orderBy('state_name')->limit(50)->get();
 
-            if ($locations->isEmpty()) {
-                return response()->json([
-                    'error' => 'No matching locations found.'
-                ], 404);
-            }
+
 
             return response()->json($locations);
         } catch (\Throwable $e) {
@@ -136,9 +132,7 @@ class LocationController extends Controller
                     ->orderBy('state_name')
                     ->get();
 
-        if ($states->isEmpty()) {
-            return response()->json(['error' => 'No states found.'], 404);
-        }
+
         return response()->json($states);
     }
 
@@ -148,7 +142,7 @@ class LocationController extends Controller
         if (!$stateId) return response()->json(['error' => 'stateId is required.'], 400);
         
         $cities = UsaZipcode::where('state_id', $stateId)->select('city', 'zip', 'lat', 'lng', 'state_id', 'state_name')->limit(100)->get();
-        if ($cities->isEmpty()) return response()->json(['error' => 'No cities found.'], 404);
+
         return response()->json($cities);
     }
 
@@ -158,7 +152,7 @@ class LocationController extends Controller
         if (!$city) return response()->json(['error' => 'city is required.'], 400);
 
         $zipcodes = UsaZipcode::where('city', $city)->select('zip')->distinct()->orderBy('zip')->get();
-        if ($zipcodes->isEmpty()) return response()->json(['error' => 'No zipcodes found.'], 404);
+
         return response()->json($zipcodes);
     }
 }

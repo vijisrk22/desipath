@@ -398,10 +398,6 @@ class HomesController extends Controller
             return $buysellhome;
         });
 
-        if ($buysellhomes->isEmpty()) {
-            return response()->json(['message' => 'No Buy Sell homes found'], 404);
-        }
-
         return response()->json($buysellhomes);
     }
 

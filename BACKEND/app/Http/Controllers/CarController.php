@@ -370,9 +370,6 @@ public function testCars()
             return $car;
         });
 
-        if ($cars->isEmpty()) {
-            return response()->json(['message' => 'No cars found'], 404);
-        }
         return response()->json($cars);
     }
 
