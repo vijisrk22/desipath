@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../utils/api";
 
 export default function PostClass() {
   const navigate = useNavigate();
@@ -12,17 +13,10 @@ export default function PostClass() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const url = import.meta.env.VITE_BACKEND_URL 
-      ? `${import.meta.env.VITE_BACKEND_URL}/api/classesforkidsads` 
-      : "http://127.0.0.1:8000/api/classesforkidsads";
       
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(formData)
-    })
+    api.post('/api/classesforkidsads', formData)
     .then(res => {
-      if(res.ok) navigate('/services/classesForKids/postConfirmation');
+      if(res.status === 201 || res.status === 200) navigate('/services/classesForKids/postConfirmation');
       else alert("Failed to post class.");
     })
     .catch(err => console.error(err));

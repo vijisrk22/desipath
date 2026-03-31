@@ -1,17 +1,14 @@
 import { useState, useEffect } from "react";
 import ServiceTopBar from "../../components/ServiceTopBar";
+import api from "../../utils/api";
 
 export default function FindClasses() {
   const [ads, setAds] = useState([]);
 
   useEffect(() => {
-    const url = import.meta.env.VITE_BACKEND_URL 
-      ? `${import.meta.env.VITE_BACKEND_URL}/api/classesforkidsads` 
-      : "http://127.0.0.1:8000/api/classesforkidsads";
-      
-    fetch(url, { headers: { Accept: "application/json" } })
-      .then(res => res.json())
-      .then(data => {
+    api.get('/api/classesforkidsads')
+      .then(res => {
+         const data = res.data;
          if (Array.isArray(data)) setAds(data);
          else if (data && Array.isArray(data.data)) setAds(data.data);
       })

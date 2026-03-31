@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../utils/api";
 
 export default function PostAstrology() {
   const navigate = useNavigate();
@@ -13,19 +14,13 @@ export default function PostAstrology() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const url = import.meta.env.VITE_BACKEND_URL 
-      ? `${import.meta.env.VITE_BACKEND_URL}/api/astrologyads` 
-      : "http://127.0.0.1:8000/api/astrologyads";
       
-    // Assuming user might be logged in, we attach token if we had one
-    // But for a generic setup we just POST it.
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({...formData, language_specific: formData.language_specific ? 1 : 0})
+    api.post('/api/astrologyads', {
+      ...formData, 
+      language_specific: formData.language_specific ? 1 : 0
     })
     .then(res => {
-      if(res.ok) navigate('/services/astrologyAds/postConfirmation');
+      if(res.status === 201 || res.status === 200) navigate('/services/astrologyAds/postConfirmation');
       else alert("Failed to post ad.");
     })
     .catch(err => console.error(err));
