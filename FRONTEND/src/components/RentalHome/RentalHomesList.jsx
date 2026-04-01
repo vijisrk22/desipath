@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
 import SortBy from "../SortBy";
 
-import { searchRentalHome } from "../../store/RentalHomesSlice";
+import { searchRentalHome, fetchRentalHomes } from "../../store/RentalHomesSlice";
 
 function RentalHomesList() {
   // backend API endpoint /api/rooms
@@ -36,6 +36,8 @@ function RentalHomesList() {
   useEffect(() => {
     if (lastSearchQuery) {
       dispatch(searchRentalHome({ searchQuery: lastSearchQuery, page, sortOption }));
+    } else {
+      dispatch(fetchRentalHomes({ page, sortOption }));
     }
   }, [dispatch, page, sortOption, lastSearchQuery]);
 
