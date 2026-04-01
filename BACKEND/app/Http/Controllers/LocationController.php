@@ -98,6 +98,24 @@ class LocationController extends Controller
             ], 500);
         }
     }
+
+    public function runSeeders()
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'Database\Seeders\UsaZipcodeSeeder', '--force' => true]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Seeding executed successfully',
+                'output' => \Illuminate\Support\Facades\Artisan::output()
+            ]);
+        } catch (\Throwable $e) {
+             return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    }
     
     public function reverseGeocode(Request $request)
     {

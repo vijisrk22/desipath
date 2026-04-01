@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->patch('/profile', [ProfileController::class, 
 Route::middleware([])->group(function () {
     Route::get('/location/locations', [LocationController::class, 'getlocations']);    
     Route::get('/run-migrations', [LocationController::class, 'runMigrations']); // Temp helper
+    Route::get('/run-seeders', [LocationController::class, 'runSeeders']); // Temp helper to seed
     Route::get('/location/states', [LocationController::class, 'getstates']);
     Route::get('/location/cities', [LocationController::class, 'getcities']);
     Route::get('/location/zipcodes', [LocationController::class, 'getzipcodes']);
