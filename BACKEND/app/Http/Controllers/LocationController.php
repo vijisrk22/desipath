@@ -99,6 +99,40 @@ class LocationController extends Controller
         }
     }
 
+    public function deduplicateLocations()
+    {
+        try {
+            $before = \App\Models\UsaZipcode::count();
+            
+            // Delete all duplicate rows, keeping only the one with the lowest ID per unique zip+city+state
+            \Illuminate\Support\Facades\DB::statement('
+                DELETE FROM usa_zipcodes 
+                WHERE id NOT IN (
+                    SELECT min_id FROM (
+                        SELECT MIN(id) as min_id 
+                        FROM usa_zipcodes 
+                        GROUP BY zip, city, state_id
+                    ) AS keep
+                )
+            ');
+            
+            $after = \App\Models\UsaZipcode::count();
+            $removed = $before - $after;
+            
+            return response()->json([
+                'status'  => 'success',
+                'message' => "Deduplication complete. Removed {$removed} duplicates.",
+                'before'  => $before,
+                'after'   => $after,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function runSeeders()
     {
         try {
