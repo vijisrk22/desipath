@@ -63,7 +63,7 @@ function LocationInput({ control, watch, setValue }) {
   return (
     <div>
       {error && (
-        <div className="bg-red-100 text-red-800 p-3 mb-4 rounded">{error}</div>
+        <div className="bg-red-100 text-red-800 p-3 mb-4 rounded">{typeof error === 'object' ? error.message || error.error || JSON.stringify(error) : error}</div>
       )}
       {/*State  */}
       {states_data.length > 0 && (
