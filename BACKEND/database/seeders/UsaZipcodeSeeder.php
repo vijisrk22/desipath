@@ -15,6 +15,10 @@ class UsaZipcodeSeeder extends Seeder
      */
     public function run(): void
     {
+        // Truncate the table before seeding to prevent duplicates
+        $this->command->info("Truncating UsaZipcode table...");
+        UsaZipcode::truncate();
+
         // Path to the renamed XLSX (ZIP) file
         $filePath = storage_path('app/USA_Zipcode_table.zip');
 
