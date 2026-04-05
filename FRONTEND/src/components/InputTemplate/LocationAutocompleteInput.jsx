@@ -16,6 +16,7 @@ function LocationAutocompleteInput({
   const wrapperRef = useRef();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
 
   const input = useWatch({ control, name: "location" }) || "";
 
@@ -58,7 +59,7 @@ function LocationAutocompleteInput({
   );
 
   useEffect(() => {
-    if (debouncedSearch.length >= 2 && !isDropdownOpen) {
+    if (debouncedSearch.length >= 2 && debouncedSearch !== selectedLocation && !isDropdownOpen) {
       // Open dropdown when we have a valid search term
       setIsDropdownOpen(true);
     } else if (debouncedSearch.length < 2) {
@@ -77,6 +78,7 @@ function LocationAutocompleteInput({
             if (loc) {
               const formatted = `${loc.city}, ${loc.state_name}, ${loc.zip}`;
               setValue("location", formatted);
+              setSelectedLocation(formatted);
               setIsDropdownOpen(false); // Close dropdown after selection
             }
           } catch (error) {
@@ -186,6 +188,7 @@ function LocationAutocompleteInput({
               key={idx}
               onClick={() => {
                 setValue("location", s);
+                setSelectedLocation(s);
                 setIsDropdownOpen(false);
                 if (onSelect) onSelect(s);
               }}
