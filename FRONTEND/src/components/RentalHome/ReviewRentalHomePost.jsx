@@ -19,26 +19,23 @@ function ReviewRentalHomePost({ open, onClose, formDetails, images }) {
 
   const handleSubmit = async () => {
     const formFields = {};
-    let bhk = "";
+    
     // Add regular form data (text, boolean, integer, etc.)
     for (const key in formDetails) {
-      if (key === "bedrooms") {
-        bhk = formDetails[key] + " Bed ";
-      } else if (key === "bathrooms") {
-        bhk += formDetails[key] + " Bath";
+      if (key === "bedrooms" || key === "bathrooms") {
+        continue; // Handle below explicitly
       } else {
         if (formDetails[key] === "Yes" || formDetails[key] === "No") {
           formFields[key] = formDetails[key] === "Yes" ? true : false;
         } else {
           if (key === "available_from") {
-            formFields[key] = dayjs(formDetails.available_from).format(
-              "YYYY-MM-DD"
-            );
+            formFields[key] = dayjs(formDetails.available_from).format("YYYY-MM-DD");
           } else {
             if (key === "location") {
-              formFields["location_city"] = formDetails[key].split(",")[0];
-              formFields["location_state"] = formDetails[key].split(",")[1];
-              formFields["location_zipcode"] = formDetails[key].split(",")[2];
+              const locParts = formDetails[key].split(",");
+              formFields["location_city"] = locParts[0]?.trim();
+              formFields["location_state"] = locParts[1]?.trim();
+              formFields["location_zipcode"] = locParts[2]?.trim();
             } else {
               if (key === "accommodates") {
                 formFields[key] = parseInt(formDetails[key], 10);
@@ -47,8 +44,8 @@ function ReviewRentalHomePost({ open, onClose, formDetails, images }) {
                   formFields[key] = parseFloat(formDetails[key]);
                 } else {
                   if (key === "amenities") {
-                    formFields[key] = Object.keys(formDetails.amenities).filter(
-                      (key) => formDetails.amenities[key]
+                    formFields[key] = Object.keys(formDetails.amenities || {}).filter(
+                      (k) => formDetails.amenities[k]
                     );
                   } else formFields[key] = formDetails[key];
                 }
@@ -64,7 +61,7 @@ function ReviewRentalHomePost({ open, onClose, formDetails, images }) {
     formFields["owner_name"] = user.name;
 
     //Add bhk field
-    formFields["bhk"] = bhk;
+    formFields["bhk"] = `${formDetails.bedrooms} Bed ${formDetails.bathrooms} Bath`;
 
     try {
       // Convert images to base64
