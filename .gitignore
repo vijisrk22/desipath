@@ -28,6 +28,7 @@ Thumbs.db
 
 # Project specific
 BACKEND/storage/
+!BACKEND/storage/app/USA_Zipcode_table.zip
 FRONTEND/dist/
 BACKEND/vendor/
 FRONTEND/node_modules/
