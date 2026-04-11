@@ -151,21 +151,39 @@ class LocationController extends Controller
         }
     }
 
-    public function runCarMakeModelSeeder()
+    // Direct DB insert — avoids Artisan cache issues on Azure
+    public function runCarAttributesSetup()
     {
         try {
-            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'Database\Seeders\CarMakeModelSeeder', '--force' => true]);
-            return response()->json([
-                'status'  => 'success',
-                'message' => 'CarMakeModel seeding executed successfully',
-                'output'  => \Illuminate\Support\Facades\Artisan::output()
-            ]);
+            $db = \Illuminate\Support\Facades\DB::table('car_fuel_types');
+            if ($db->count() === 0) {
+                $now = now();
+                \Illuminate\Support\Facades\DB::table('car_fuel_types')->insert([
+                    ['name' => 'Gas',    'created_at' => $now, 'updated_at' => $now],
+                    ['name' => 'EV',     'created_at' => $now, 'updated_at' => $now],
+                    ['name' => 'Hybrid', 'created_at' => $now, 'updated_at' => $now],
+                    ['name' => 'Diesel', 'created_at' => $now, 'updated_at' => $now],
+                ]);
+            }
+            if (\Illuminate\Support\Facades\DB::table('car_transmissions')->count() === 0) {
+                $now = now();
+                \Illuminate\Support\Facades\DB::table('car_transmissions')->insert([
+                    ['name' => 'Automatic', 'created_at' => $now, 'updated_at' => $now],
+                    ['name' => 'Manual',    'created_at' => $now, 'updated_at' => $now],
+                    ['name' => 'CVT',       'created_at' => $now, 'updated_at' => $now],
+                ]);
+            }
+            if (\Illuminate\Support\Facades\DB::table('car_conditions')->count() === 0) {
+                $now = now();
+                \Illuminate\Support\Facades\DB::table('car_conditions')->insert([
+                    ['name' => 'Excellent', 'created_at' => $now, 'updated_at' => $now],
+                    ['name' => 'Good',      'created_at' => $now, 'updated_at' => $now],
+                    ['name' => 'Average',   'created_at' => $now, 'updated_at' => $now],
+                ]);
+            }
+            return response()->json(['status' => 'success', 'message' => 'Car attributes seeded successfully']);
         } catch (\Throwable $e) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString()
-            ], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
     

@@ -61,6 +61,7 @@ Route::middleware([])->group(function () {
     Route::get('/run-migrations', [LocationController::class, 'runMigrations']); // Temp helper
     Route::get('/run-seeders', [LocationController::class, 'runSeeders']); // Temp helper to seed
     Route::get('/run-car-makemodel-seeder', [LocationController::class, 'runCarMakeModelSeeder']); // Seed car make/model
+    Route::get('/run-car-attributes', [LocationController::class, 'runCarAttributesSetup']); // Direct DB seed for car attributes
     Route::get('/deduplicate-locations', [LocationController::class, 'deduplicateLocations']); // Fast dedup
     Route::get('/location/states', [LocationController::class, 'getstates']);
     Route::get('/location/cities', [LocationController::class, 'getcities']);
