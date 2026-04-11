@@ -39,14 +39,9 @@ function PostRentalHomeForm() {
   const [images, setImages] = useState([]);
 
   const onSubmit = (data) => {
-    if (Object.keys(errors).length === 0) {
-      // Only show review if no errors
-      console.log("Form Data:", data);
-      setFormDetails(data);
-      setReviewSession(true);
-    } else {
-      console.log("Form contains errors", errors);
-    }
+    console.log("Form Data:", data);
+    setFormDetails(data);
+    setReviewSession(true);
   };
 
   const amenitiesOptions = [
@@ -169,7 +164,22 @@ function PostRentalHomeForm() {
         />
         <PhotoUpload images={images} setImages={setImages} />
         <DescriptionInput name="description" control={control} />
-        <button className="mt-4 w-full px-10 py-5 bg-[#ffa41c] rounded-[28px] text-center  text-gray-800 text-base font-semibold font-dmsans">
+        {Object.keys(errors).length > 0 && (
+          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+            <p className="font-semibold mb-1">Please fill in all required fields:</p>
+            <ul className="list-disc list-inside space-y-1">
+              {Object.entries(errors).map(([field, err]) => (
+                <li key={field}>
+                  <span className="capitalize">{field.replace(/_/g, ' ')}</span>: {err?.message || 'Required'}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <button
+          type="submit"
+          className="mt-4 w-full px-10 py-5 bg-[#ffa41c] rounded-[28px] text-center text-gray-800 text-base font-semibold font-dmsans hover:bg-[#e8931a] transition-colors"
+        >
           Review Post
         </button>
       </form>
