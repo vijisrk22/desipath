@@ -66,21 +66,21 @@ export default function CarCard({ car }) {
             <div className="flex flex-col items-center gap-3">
               <img src="/img/cars/mileage.png" className="w-4 h-4" />
               <div className="text-gray-800 text-sm font-normal font-dmsans">
-                {car.mileage}
+                {car.miles ? `${Number(car.miles).toLocaleString()} mi` : "-"}
               </div>
             </div>
 
             <div className="flex flex-col items-center gap-3">
               <img src="/img/cars/fuel.svg" />
               <div className="text-gray-800 text-sm font-normal font-dmsans">
-                {car.fuel}
+                {car.fuel_type || car.fuelType?.name || "-"}
               </div>
             </div>
 
             <div className="flex flex-col items-center gap-3">
               <img src="/img/cars/transmissionType.svg" />
               <div className="text-gray-800 text-sm font-normal font-dmsans">
-                {car.transmission}
+                {car.transmission_name || car.transmission?.name || (typeof car.transmission === 'string' ? car.transmission : "-")}
               </div>
             </div>
           </div>
