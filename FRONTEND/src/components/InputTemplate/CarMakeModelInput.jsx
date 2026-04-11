@@ -27,8 +27,8 @@ function CarMakeModelInput({ control, watch, setValue, type = "" }) {
     }
   }, [dispatch, make]);
 
-  const makeOptions = [...(car_make || []), "Others"];
-  const modelOptions = [...(car_model?.map((m) => m.model) || []), "Others"];
+  const makeOptions = [...(car_make?.map((m) => (typeof m === 'object' ? m.make : m)) || []), "Others"];
+  const modelOptions = [...(car_model?.map((m) => (typeof m === 'object' ? m.model : m)) || []), "Others"];
   const showMakeOther = make === "Others";
   const showModelOther = model === "Others";
 
