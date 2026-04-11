@@ -73,7 +73,7 @@ export default function CarCard({ car }) {
             <div className="flex flex-col items-center gap-3">
               <img src="/img/cars/fuel.svg" />
               <div className="text-gray-800 text-sm font-normal font-dmsans">
-                {car.fuel_type || car.fuelType?.name || "-"}
+                {typeof car.fuel_type === 'string' ? car.fuel_type : car.fuel_type?.name || car.fuelType?.name || "-"}
               </div>
             </div>
 
