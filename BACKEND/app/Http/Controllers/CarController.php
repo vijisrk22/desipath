@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\BuySellCar;
+use App\Models\CarFuelType;
+use App\Models\CarTransmission;
+use App\Models\CarCondition;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -40,15 +43,16 @@ class CarController extends Controller
      */
     public function index()
     {
-        $buysellcars = BuySellCar::all();
-
-        $buysellcars->transform(function ($buysellcar) {
-            if (is_string($buysellcar->pictures) && !empty($buysellcar->pictures)) {
-                $buysellcar->pictures = json_decode($buysellcar->pictures, true);
+        $buysellcars = BuySellCar::with(['fuelType','transmission','condition'])->get();
+        $buysellcars->transform(function ($c) {
+            if (is_string($c->pictures) && !empty($c->pictures)) {
+                $c->pictures = json_decode($c->pictures, true);
             }
-            return $buysellcar;
+            $c->fuel_type  = $c->fuelType?->name;
+            $c->transmission_name = $c->transmission?->name;
+            $c->condition_name = $c->condition?->name;
+            return $c;
         });
-
         return response()->json($buysellcars);
     }
 
@@ -74,10 +78,21 @@ class CarController extends Controller
 *     @OA\Property(property="updated_at", type="string", format="date-time", nullable=true, example="2024-10-12T09:30:00Z", description="Timestamp when the record was last updated")
 * )
 */
-public function testCars()
-{
-    return BuySellCar::all();
-}
+public function testCars() { return BuySellCar::all(); }
+
+    /**
+     * @OA\Get(path="/api/cars/attributes", summary="Get car attribute lists", tags={"Cars"}, security={{"bearerAuth":{}}},
+     *   @OA\Response(response=200, description="Fuel types, transmissions, conditions")
+     * )
+     */
+    public function getCarAttributes()
+    {
+        return response()->json([
+            'fuel_types'    => CarFuelType::orderBy('id')->get(['id','name']),
+            'transmissions' => CarTransmission::orderBy('id')->get(['id','name']),
+            'conditions'    => CarCondition::orderBy('id')->get(['id','name']),
+        ]);
+    }
 
 
 
@@ -185,66 +200,49 @@ public function testCars()
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'make' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'year' => 'required|integer',
-            'miles' => 'nullable|integer',
-            'variant' => 'nullable|string|max:255',
-            'pictures.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
-                // Check if the value is a valid base64-encoded image
+            'make'            => 'required|string|max:255',
+            'model'           => 'required|string|max:255',
+            'year'            => 'required|integer',
+            'miles'           => 'nullable|integer',
+            'fuel_type_id'    => 'nullable|exists:car_fuel_types,id',
+            'transmission_id' => 'nullable|exists:car_transmissions,id',
+            'condition_id'    => 'nullable|exists:car_conditions,id',
+            'pictures.*'      => ['nullable', 'string', function ($attribute, $value, $fail) {
                 if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
-                // Validate the decoded image size
                 $imageData = substr($value, strpos($value, ',') + 1);
                 $imageData = base64_decode($imageData);
-                if (strlen($imageData) > 2 * 1024 * 1024) { // 2MB limit
+                if (strlen($imageData) > 2 * 1024 * 1024) {
                     $fail('The ' . $attribute . ' must be less than 2MB.');
                 }
             }],
-            'location' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'description' => 'nullable|string|max:1000',
-            'seller_id' => 'nullable|exists:users,id'
+            'location'        => 'required|string|max:255',
+            'price'           => 'required|numeric',
+            'description'     => 'nullable|string|max:1000',
+            'owner_contact'   => 'nullable|string|max:20',
+            'seller_id'       => 'nullable|exists:users,id',
         ]);
+
         $receiver = User::find($request->seller_id);
         if (!$receiver) {
             return response()->json(['error' => 'User not found'], 404);
         }
-        $data = $request->except('pictures'); // get all fields except photos
+        $data = $request->except('pictures');
         $data['seller_name'] = $receiver->name;
 
         if ($request->has('pictures') && !empty($request->pictures)) {
             $photos = [];
-            
             foreach ($request->pictures as $base64Image) {
-                // Get the file extension
                 preg_match('/data:image\/(.*);base64/', $base64Image, $matches);
-                $extension = $matches[1];  // e.g., 'jpeg', 'png'
-                
-                // Decode the base64 string
+                $extension = $matches[1];
                 $imageData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $base64Image));
-                
-                // Generate a unique filename for the image
-                $filename = uniqid() . '.' . $extension;
-                
-                // Ensure the directory exists
+                $filename  = uniqid() . '.' . $extension;
                 $directory = storage_path('app/public/cars');
-                if (!file_exists($directory)) {
-                    mkdir($directory, 0755, true);
-                }
-
-                // Store the file in the storage directory
-                $path = $directory . '/' . $filename; // Full path
-                
-                // Write the decoded data to the file
-                file_put_contents($path, $imageData);
-                
-                // Add the file path (relative to public storage) to the array
+                if (!file_exists($directory)) { mkdir($directory, 0755, true); }
+                file_put_contents($directory . '/' . $filename, $imageData);
                 $photos[] = 'storage/cars/' . $filename;
             }
-            
-            // Store the photos array directly (Eloqent casts will handle JSON encoding)
             $data['pictures'] = $photos;
         }
         $car = BuySellCar::create($data);
@@ -263,13 +261,16 @@ public function testCars()
      */
     public function show($id)
     {
-        $car = BuySellCar::find($id);
+        $car = BuySellCar::with(['fuelType','transmission','condition'])->find($id);
         if (!$car) {
             return response()->json(['message' => 'Car not found'], 404);
         }
         if (!empty($car->pictures) && is_string($car->pictures)) {
             $car->pictures = json_decode($car->pictures, true);
         }
+        $car->fuel_type_name      = $car->fuelType?->name;
+        $car->transmission_name   = $car->transmission?->name;
+        $car->condition_name      = $car->condition?->name;
         return response()->json($car);
     }
 

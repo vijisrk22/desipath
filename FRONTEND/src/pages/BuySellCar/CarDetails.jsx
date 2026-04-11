@@ -5,11 +5,12 @@ import ReviewPostContent from "../../components/BuySellCar/ReviewPostContent";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
 
-import { useEffect } from "react";
-import { fetchCarById } from "../../store/CarsSlice";
+import { useEffect, useState } from "react";
+import { fetchCarById, getCarAttributes } from "../../store/CarsSlice";
 import Loader from "../../components/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 
 import { getCarContents } from "./DisplayCarDetail";
 import api from "../../utils/api";
@@ -23,14 +24,14 @@ function CarDetails() {
 
   const { carId } = useParams();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.user);
-
   const dispatch = useDispatch();
-  const { loading, error, carDetails } = useSelector((state) => state.cars);
+  const { user } = useSelector((state) => state.user);
+  const { loading, error, carDetails, car_attributes } = useSelector((state) => state.cars);
+  const [openContact, setOpenContact] = useState(false);
 
-  // Fetch house details when the component mounts
   useEffect(() => {
     dispatch(fetchCarById(carId));
+    dispatch(getCarAttributes());
   }, [dispatch]);
 
   // If loading, show loader
@@ -74,10 +75,7 @@ function CarDetails() {
     }
   };
 
-  const contents = getCarContents(
-    carDetails,
-    carDetails?.pictures ? carDetails?.pictures : []
-  );
+  const contents = getCarContents(carDetails, carDetails?.pictures ? carDetails?.pictures : [], car_attributes);
 
   console.log("Car Details: ", carDetails);
 
@@ -131,12 +129,25 @@ function CarDetails() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <div className="mt-3 px-7 py-3 bg-[#ffa41c] rounded-[57px] inline-flex justify-center items-center gap-2.5">
+          <div
+            onClick={() => setOpenContact(true)}
+            className="cursor-pointer mt-3 px-7 py-3 bg-[#ffa41c] rounded-[57px] inline-flex justify-center items-center gap-2.5"
+          >
             <PhoneOutlinedIcon />
-            <div className=" text-gray-800 text-base font-bold font-dmsans">
-              Contact
-            </div>
+            <div className="text-gray-800 text-base font-bold font-dmsans">Contact</div>
           </div>
+
+          <Dialog open={openContact} onClose={() => setOpenContact(false)}>
+            <DialogTitle>Contact Owner</DialogTitle>
+            <DialogContent>
+              <div className="text-lg">
+                Phone: <strong>{carDetails?.owner_contact || "Not Available"}</strong>
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setOpenContact(false)} color="primary">Close</Button>
+            </DialogActions>
+          </Dialog>
 
           <button
             onClick={handleClick}

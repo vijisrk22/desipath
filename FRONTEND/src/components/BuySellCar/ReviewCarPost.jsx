@@ -8,34 +8,33 @@ import { postCar } from "../../store/CarsSlice";
 import { getCarContents } from "../../pages/BuySellCar/DisplayCarDetail";
 import { convertImagesToBase64 } from "../../utils/helper";
 
-function ReviewCarPost({ open, onClose, formDetails, images }) {
+function ReviewCarPost({ open, onClose, formDetails, images, carAttributes }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.cars);
+  const { loading } = useSelector((state) => state.cars);
   const { user } = useSelector((state) => state.user);
 
-  const contents = getCarContents(formDetails, images);
+  const contents = getCarContents(formDetails, images, carAttributes);
 
   const handleSubmit = async () => {
-    const formFields = {};
+    const formFields = { ...formDetails };
 
-    for (const key in formDetails) {
-      formFields[key] = formDetails[key];
+    // Resolve "Others" make/model to free-text values
+    if (formFields.make === "Others" && formFields.make_other) {
+      formFields.make = formFields.make_other;
     }
+    if (formFields.model === "Others" && formFields.model_other) {
+      formFields.model = formFields.model_other;
+    }
+    delete formFields.make_other;
+    delete formFields.model_other;
 
     formFields["seller_id"] = user.id;
-    formFields["seller_name"] = user.name;
 
     try {
-      // Convert images to base64
       const base64Images = await convertImagesToBase64(images);
-
-      // Add base64 images to the formFields object
       formFields["pictures"] = base64Images;
-
-      console.log(formFields);
-
-      const result = await dispatch(postCar(formFields)).unwrap(); // .unwrap to get payload or throw error
+      const result = await dispatch(postCar(formFields)).unwrap();
       console.log("Post successful:", result);
       navigate("/services/cars/postConfirmation");
     } catch (err) {
@@ -44,26 +43,16 @@ function ReviewCarPost({ open, onClose, formDetails, images }) {
     }
   };
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
 
   return (
     <Modal open={open} onClose={onClose}>
       <Box
         sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          bgcolor: "background.paper",
-          borderRadius: 2,
-          boxShadow: 24,
-          p: 4,
-          maxWidth: 600,
-          width: "100%",
-          maxHeight: "90vh", // Set a max height for the modal
-          overflowY: "auto",
+          position: "absolute", top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)", bgcolor: "background.paper",
+          borderRadius: 2, boxShadow: 24, p: 4,
+          maxWidth: 600, width: "100%", maxHeight: "90vh", overflowY: "auto",
         }}
       >
         <div className="flex justify-between items-center">
@@ -76,13 +65,9 @@ function ReviewCarPost({ open, onClose, formDetails, images }) {
         </div>
         <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
           {formDetails.price
-            ? parseFloat(formDetails.price).toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })
+            ? parseFloat(formDetails.price).toLocaleString("en-US", { style: "currency", currency: "USD" })
             : "$0.00"}
         </div>
-
         <ReviewPostContent contents={contents} />
         <div className="mx-auto mt-10 max-w-20">
           <button

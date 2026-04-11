@@ -88,6 +88,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cars', [CarController::class, 'store']);
     Route::get('/cars/make', [CarController::class, 'getcarmakes']);
     Route::get('/cars/models', [CarController::class, 'getcarmodels']);
+    Route::get('/cars/attributes', [CarController::class, 'getCarAttributes']);
     Route::get('/cars/{id}', [CarController::class, 'show'])->where('id', '[0-9]+');
     Route::put('/cars/{id}', [CarController::class, 'update'])->where('id', '[0-9]+');
     Route::delete('/cars/{id}', [CarController::class, 'destroy'])->where('id', '[0-9]+');

@@ -18,28 +18,36 @@ class BuySellCar extends Model
         'model',
         'year',
         'miles',
-        'variant',
         'pictures',
         'location',
         'seller_id',
         'seller_name',
         'price',
-        'description'
+        'description',
+        'fuel_type_id',
+        'transmission_id',
+        'condition_id',
+        'owner_contact',
     ];
 
-    // Cast properties to specific types
     protected $casts = [
         'make' => 'string',
         'model' => 'string',
         'year' => 'integer',
         'miles' => 'integer',
-        'variant' => 'string',
-        'pictures' => 'array', // assuming you're saving them as a JSON array in DB
+        'pictures' => 'array',
         'location' => 'string',
         'seller_id' => 'integer',
+        'fuel_type_id' => 'integer',
+        'transmission_id' => 'integer',
+        'condition_id' => 'integer',
         'price' => 'decimal:2',
-        'description' => 'string'
+        'description' => 'string',
     ];
+
+    public function fuelType() { return $this->belongsTo(CarFuelType::class, 'fuel_type_id'); }
+    public function transmission() { return $this->belongsTo(CarTransmission::class, 'transmission_id'); }
+    public function condition() { return $this->belongsTo(CarCondition::class, 'condition_id'); }
     /**
      * Relationship to the User (Seller)
      */

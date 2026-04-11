@@ -49,6 +49,15 @@ export const getCarMake = createAsyncThunk("cars/getCarMake", async(_, {rejectWi
     }
 })
 
+export const getCarAttributes = createAsyncThunk("cars/getCarAttributes", async(_, {rejectWithValue})=>{
+    try{
+        const response = await api.get("/api/cars/attributes");
+        return response.data;
+    }catch(error){
+        return rejectWithValue(error.response?.data || "Failed to fetch car attributes");
+    }
+})
+
 export const getCarModel = createAsyncThunk("cars/getCarModel", async(make, {rejectWithValue})=>{
     try{
         const response = await api.get(`/api/cars/models?make=${make}`);
@@ -84,6 +93,7 @@ const carsSlice = createSlice({
         cars: [],
         car_make:[],
         car_model: [],
+        car_attributes: { fuel_types: [], transmissions: [], conditions: [] },
         carDetails: null,
         error: null,
         loading: false,
@@ -175,6 +185,15 @@ const carsSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch car makes";
                 state.car_make = [];
+            })
+            .addCase(getCarAttributes.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(getCarAttributes.fulfilled, (state, action) => {
+                state.loading = false;
+                state.car_attributes = action.payload || { fuel_types: [], transmissions: [], conditions: [] };
+            })
+            .addCase(getCarAttributes.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch car attributes";
             })  
             .addCase(getCarModel.pending, (state) => {
                 state.loading = true;
