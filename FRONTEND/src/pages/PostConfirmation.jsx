@@ -3,16 +3,15 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-function PostConfirmation() {
+function PostConfirmation({ redirectTo = "/", message = "Your Post is successfully uploaded!!" }) {
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/services/events");
-    }, 3000); // Redirect after 3 seconds
-
+      navigate(redirectTo);
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, redirectTo]);
 
   return (
     <div className="bg-[#f3f5f7]">
@@ -27,14 +26,16 @@ function PostConfirmation() {
       <div className="max-w-md mx-auto bg-white py-8 px-8 my-20">
         <div className="flex flex-col justify-center gap-5 ">
           <div className="text-6xl">
-            <CheckCircleIcon color="green" fontSize="" />
+            <CheckCircleIcon color="success" fontSize="inherit" />
           </div>
           <div className=" text-[#0857d0] text-[20px] font-semibold font-dmsans">
-            Successfully posted your property
+            Successfully posted!
           </div>
-
           <div className="justify-center text-[#ffa41c] text-[14px] font-normal font-dmsans capitalize">
-            Thanks for using Desipath. Your Post is successfully uploaded!!
+            {message}
+          </div>
+          <div className="text-gray-400 text-[13px] font-dmsans">
+            Redirecting in 3 seconds...
           </div>
         </div>
       </div>

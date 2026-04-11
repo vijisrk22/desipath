@@ -50,7 +50,10 @@ function RentalHome() {
       ) : action === "postRentalHome" ? (
         <PostRentalHome />
       ) : action === "postConfirmation" ? (
-        <PostConfirmation />
+        <PostConfirmation 
+          redirectTo="/services/rentalHomes/findRentalHome" 
+          message="Thanks for using Desipath. Your rental home listing is live!" 
+        />
       ) : (
         <RentalHomeDetails />
       )}

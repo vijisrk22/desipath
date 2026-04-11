@@ -39,7 +39,12 @@ function AstrologyAds() {
 
       {action === "findAstrologer" && <FindAstrology />}
       {action === "postAstrologer" && <PostAstrology />}
-      {action === "postConfirmation" && <PostConfirmation />}
+      {action === "postConfirmation" && (
+        <PostConfirmation 
+          redirectTo="/services/astrologyAds/findAstrologer" 
+          message="Thanks for using Desipath. Your astrology ad is live!" 
+        />
+      )}
     </div>
   );
 }

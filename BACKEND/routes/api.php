@@ -83,19 +83,20 @@ Route::middleware('auth:sanctum')->group(function () { // Need to uncomment if t
     Route::post('/messages', [MessageController::class, 'store']);
 });
 
-// Need to uncommented in production
-Route::middleware('auth:sanctum')->group(function () { 
-// Route::middleware([])->group(function () {
+// Public car read routes (no auth required — anyone can browse listings)
+Route::get('/cars', [CarController::class, 'index']);
+Route::get('/cars/make', [CarController::class, 'getcarmakes']);
+Route::get('/cars/models', [CarController::class, 'getcarmodels']);
+Route::get('/cars/attributes', [CarController::class, 'getCarAttributes']);
+Route::get('/cars/{id}', [CarController::class, 'show'])->where('id', '[0-9]+');
+Route::post('/cars/search', [CarController::class, 'search']);
+
+// Auth-protected car write routes
+Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cars/dummy-insert', [CarController::class, 'dummyInsert']);
-    Route::get('/cars', [CarController::class, 'index']);
     Route::post('/cars', [CarController::class, 'store']);
-    Route::get('/cars/make', [CarController::class, 'getcarmakes']);
-    Route::get('/cars/models', [CarController::class, 'getcarmodels']);
-    Route::get('/cars/attributes', [CarController::class, 'getCarAttributes']);
-    Route::get('/cars/{id}', [CarController::class, 'show'])->where('id', '[0-9]+');
     Route::put('/cars/{id}', [CarController::class, 'update'])->where('id', '[0-9]+');
     Route::delete('/cars/{id}', [CarController::class, 'destroy'])->where('id', '[0-9]+');
-    Route::post('/cars/search', [CarController::class, 'search']);     // Search the cars
 });
 
 Route::middleware('auth:sanctum')->group(function () {

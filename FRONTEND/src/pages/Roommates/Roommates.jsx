@@ -45,7 +45,10 @@ function Roommates() {
       ) : action === "postRoom" ? (
         <PostRoom />
       ) : action === "postConfirmation" ? (
-        <PostConfirmation />
+        <PostConfirmation 
+          redirectTo="/services/roommates/findRoom" 
+          message="Thanks for using Desipath. Your roommate listing is live!" 
+        />
       ) : (
         <RoomDetails />
       )}

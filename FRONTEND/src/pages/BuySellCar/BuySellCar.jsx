@@ -40,7 +40,12 @@ function BuySellCar() {
 
       {action === "buyCar" && <BuyCar />}
       {action === "sellCar" && <SellCar />}
-      {action === "postConfirmation" && <PostConfirmation />}
+      {action === "postConfirmation" && (
+        <PostConfirmation
+          redirectTo="/services/cars/buyCar"
+          message="Thanks for using Desipath. Your car listing is live!"
+        />
+      )}
     </div>
   );
 }

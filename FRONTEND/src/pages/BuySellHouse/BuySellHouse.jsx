@@ -37,7 +37,12 @@ function BuySellHouse() {
 
       {action === "buyHouse" && <BuyHouse />}
       {action === "sellHouse" && <SellHouse />}
-      {action === "postConfirmation" && <PostConfirmation />}
+      {action === "postConfirmation" && (
+        <PostConfirmation 
+          redirectTo="/services/houses/buyHouse" 
+          message="Thanks for using Desipath. Your house listing is live!" 
+        />
+      )}
     </div>
   );
 }

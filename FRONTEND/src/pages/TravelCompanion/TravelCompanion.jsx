@@ -49,7 +49,12 @@ function TravelCompanion() {
 
       {action === "findCompanion" && <FindCompanion />}
       {action === "beCompanion" && <BeCompanion />}
-      {action === "postConfirmation" && <PostConfirmation />}
+      {action === "postConfirmation" && (
+        <PostConfirmation 
+          redirectTo="/services/travelCompanion/findCompanion" 
+          message="Thanks for using Desipath. Your travel companion ad is live!" 
+        />
+      )}
     </div>
   );
 }

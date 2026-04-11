@@ -39,7 +39,12 @@ function ClassesForKids() {
 
       {action === "findClasses" && <FindClasses />}
       {action === "postClass" && <PostClass />}
-      {action === "postConfirmation" && <PostConfirmation />}
+      {action === "postConfirmation" && (
+        <PostConfirmation 
+          redirectTo="/services/classesForKids/findClasses" 
+          message="Thanks for using Desipath. Your class is live!" 
+        />
+      )}
     </div>
   );
 }
