@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { useEffect } from "react";
 import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
 import ServiceHeroSection from "../../components/ServiceHeroSection";
@@ -9,6 +10,10 @@ import PostConfirmation from "../PostConfirmation";
 
 function BuySellHouse() {
   const { action } = useParams();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [action]);
 
   const pageDetails = {
     path1: "buyHouse",
