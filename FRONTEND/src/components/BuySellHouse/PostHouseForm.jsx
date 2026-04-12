@@ -8,16 +8,26 @@ import TextFieldInput from "../InputTemplate/TextFieldInput";
 import ReviewHousePost from "./ReviewHousePost";
 import { useState } from "react";
 import CheckBoxInput from "../InputTemplate/CheckBoxInput";
-
+import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
 function PostHouseForm() {
   const {
     handleSubmit,
     control,
     register,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      location_state: "",
+      location_city: "",
+      location_zipcode: "",
+      contact_no: "",
+    },
+    mode: "onChange",
+  });
   const [reviewSession, setReviewSession] = useState(false);
   const [formDetails, setFormDetails] = useState(null);
+  const [images, setImages] = useState([]);
 
   const onSubmit = (data) => {
     if (Object.keys(errors).length === 0) {
@@ -138,15 +148,42 @@ function PostHouseForm() {
           control={control}
         />
         <TwoRadioInput name="firePlace" text="Fireplace" control={control} />
+        
+        <LocationAutocompleteInput control={control} setValue={setValue} />
+        
+        <TextFieldInput
+          name="contact_no"
+          defaultValue="Text"
+          control={control}
+          text="Contact Number"
+          rules={{
+            pattern: {
+              value: /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/,
+              message: "Invalid US Phone Number",
+            },
+          }}
+        />
 
         <CheckBoxInput
           text="Flooring"
           options={flooringOptions}
           register={register}
         />
-        <PhotoUpload />
+        <PhotoUpload images={images} setImages={setImages} />
         <DescriptionInput name="description" control={control} />
-        <button className="mt-4 w-full px-10 py-5 bg-[#ffa41c] rounded-[28px] text-center  text-gray-800 text-base font-semibold font-dmsans">
+        {Object.keys(errors).length > 0 && (
+          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+            <p className="font-semibold mb-1">Please fill in all required fields:</p>
+            <ul className="list-disc list-inside space-y-1">
+              {Object.entries(errors).map(([field, err]) => (
+                <li key={field}>
+                  <span className="capitalize">{field.replace(/_/g, ' ')}</span>: {err?.message || 'Required'}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <button type="submit" className="mt-4 w-full px-10 py-5 bg-[#ffa41c] rounded-[28px] text-center  text-gray-800 text-base font-semibold font-dmsans hover:bg-[#e8931a] transition-colors">
           Review Post
         </button>
       </form>

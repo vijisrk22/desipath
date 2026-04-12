@@ -4,23 +4,25 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
 
-import { fetchHouses } from "../../store/HousesSlice";
+import SortBy from "../SortBy";
+
+import { searchHouse, fetchHouses } from "../../store/HousesSlice";
 
 function Houses() {
-  // backend API endpoint /api/rooms
-  // State for events
   const dispatch = useDispatch();
-  const { loading, error, houses } = useSelector((state) => state.houses);
-  const housesPerPage = 9;
-  const numsOfPage = Math.ceil(houses.length / housesPerPage);
+  const { loading, error, houses, pagination, lastSearchQuery } = useSelector((state) => state.houses);
+  
   const [page, setPage] = useState(1);
-  const startIndex = (page - 1) * housesPerPage;
-  const displayedHouses = houses.slice(startIndex, startIndex + housesPerPage);
-
-  // Set houses on mount
+  const [sortOption, setSortOption] = useState("created_at-desc");
   useEffect(() => {
-    dispatch(fetchHouses());
-  }, [dispatch]);
+    if (lastSearchQuery) {
+      dispatch(searchHouse({ searchQuery: lastSearchQuery, page, sortOption }));
+    } else {
+      dispatch(fetchHouses({ page, sortOption }));
+    }
+  }, [dispatch, page, sortOption, lastSearchQuery]);
+
+  const numsOfPage = pagination?.last_page || 1;
 
   if (loading) {
     return <Loader />;
@@ -34,30 +36,31 @@ function Houses() {
         <div className="text-[#007185] text-[40px] font-medium font-dmsans">
           Home
         </div>
-        <div className=" text-gray-500 text-[22px] font-semibold font-dmsans flex gap-1">
-          Sort by
-          <button>
-            <img src="/caretDown.svg" />
-          </button>
-        </div>
+        <SortBy
+          sortOption={sortOption}
+          setSortOption={(value) => {
+            setSortOption(value);
+            setPage(1); // Reset to page 1 on sort change
+          }}
+        />
       </div>
 
       <div className="flex justify-center items-center flex-wrap gap-4">
-        {displayedHouses.map((house, index) => {
+        {houses.map((house, index) => {
           return <HouseCard key={index} house={house} />;
         })}
       </div>
 
       <div className="max-w-screen-lg mx-auto flex justify-between gap-12 items-center my-10 px-6 py-3 bg-white">
         <div className="text-[#323232] text-sm font-normal font-dmsans">
-          {page}-{numsOfPage.toString().padStart(2, "0")} of {houses.length}{" "}
-          items
+          {pagination?.current_page}-{numsOfPage.toString().padStart(2, "0")} of {pagination?.total} items
         </div>
         <Pagination
           count={numsOfPage}
           size="large"
           variant="outlined"
           shape="rounded"
+          page={page}
           onChange={(event, value) => setPage(value)}
           showFirstButton
           showLastButton

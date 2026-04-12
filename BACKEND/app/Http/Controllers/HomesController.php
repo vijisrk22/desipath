@@ -59,11 +59,36 @@ class HomesController extends Controller
      *     @OA\Response(response=200, description="List of homes")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $buysellhomes = BuySellHome::all();
+        $perPage = 9;
+        $query = BuySellHome::query();
 
-        $buysellhomes->transform(function ($buysellhome) {
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'price-asc':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price-desc':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'name-asc':
+                    $query->orderBy('home_type', 'asc');
+                    break;
+                case 'name-desc':
+                    $query->orderBy('home_type', 'desc');
+                    break;
+                default:
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $buysellhomes = $query->paginate($perPage);
+
+        $buysellhomes->getCollection()->transform(function ($buysellhome) {
             if (is_string($buysellhome->images) && !empty($buysellhome->images)) {
                 $buysellhome->images = json_decode($buysellhome->images, true);
             }
@@ -376,22 +401,33 @@ class HomesController extends Controller
             }
         });
 
-        // if ($request->filled('city')) {
-        //     $query->where('location_city', 'like', '%' . $request->city . '%');
-        // }
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'price-asc':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price-desc':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'name-asc':
+                    $query->orderBy('home_type', 'asc');
+                    break;
+                case 'name-desc':
+                    $query->orderBy('home_type', 'desc');
+                    break;
+                default:
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+        } else {
+             $query->orderBy('created_at', 'desc');
+        }
 
-        // if ($request->filled('zipcode')) {
-        //     $query->where('location_zipcode', 'like', '%' . $request->zipcode . '%');
-        // }
-
-        // if ($request->filled('houseType')) {
-        //     $query->where('home_type', 'like', '%' . $request->houseType . '%');
-        // }
-
-        $buysellhomes = $query->get();
+        $perPage = 9;
+        $buysellhomes = $query->paginate($perPage);
 
         // Automatically decode JSON-encoded 'photos' field to an array
-        $buysellhomes->transform(function ($buysellhome) {
+        $buysellhomes->getCollection()->transform(function ($buysellhome) {
             if (is_string($buysellhome->images) && !empty($buysellhome->images)) {
                 $buysellhome->images = json_decode($buysellhome->images, true);
             }
