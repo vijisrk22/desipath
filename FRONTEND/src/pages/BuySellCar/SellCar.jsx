@@ -1,6 +1,5 @@
 import Footer from "../../components/Footer/Footer";
 import ServiceTopBar from "../../components/ServiceTopBar";
-import PostCarForm from "../../components/BuySellCar/PostCarForm";
 
 function SellCar() {
   const paths = [
@@ -15,7 +14,7 @@ function SellCar() {
         <ServiceTopBar title="Sell my Car" paths={paths} form="car" />
       </div>
       <div className="flex justify-center mb-16">
-        <PostCarForm />
+        
       </div>
       <Footer bgColor="bg-white" />
     </div>
