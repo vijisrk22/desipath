@@ -54,6 +54,7 @@ function PostHouseForm() {
           open={reviewSession}
           onClose={() => setReviewSession(false)}
           formDetails={formDetails}
+          images={images}
         />
       )}
       <form
