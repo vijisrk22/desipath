@@ -20,11 +20,23 @@ function HouseDetails() {
   const { houseId } = useParams();
   const dispatch = useDispatch();
   const { loading, error, houseDetails } = useSelector((state) => state.houses);
+  const [selectedImg, setSelectedImg] = useState(null);
 
   // Fetch house details when the component mounts
   useEffect(() => {
     dispatch(fetchHouseById(houseId));
   }, [dispatch, houseId]);
+
+  // Handle images initialization
+  const imgs = (houseDetails?.images && houseDetails.images.length > 0) 
+    ? (typeof houseDetails.images === 'string' ? JSON.parse(houseDetails.images) : houseDetails.images)
+    : ["/house-placeholder.png"];
+
+  useEffect(() => {
+    if (imgs.length > 0 && !selectedImg) {
+      setSelectedImg(imgs[0]);
+    }
+  }, [imgs, selectedImg]);
 
   // If loading, show loader
   if (loading) {
@@ -46,12 +58,6 @@ function HouseDetails() {
       </div>
     );
   }
-
-  const imgs = (houseDetails.images && houseDetails.images.length > 0) 
-    ? (typeof houseDetails.images === 'string' ? JSON.parse(houseDetails.images) : houseDetails.images)
-    : ["/house-placeholder.png"];
-
-  const [selectedImg, setSelectedImg] = useState(imgs[0]);
 
   // Manually map labels to flat fields
   const detailMappings = [
