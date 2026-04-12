@@ -110,7 +110,7 @@ function HouseDetails() {
       <div className="h-[476px] my-5 flex justify-center items-center overflow-hidden rounded-[10px]">
         <img
           className="h-full w-auto object-contain rounded-[10px]"
-          src={selectedImg || imgs[0]}
+          src={(selectedImg || imgs[0])?.startsWith('http') || (selectedImg || imgs[0])?.startsWith('/') ? (selectedImg || imgs[0]) : `${api.defaults.baseURL}/${selectedImg || imgs[0]}`}
           alt="House Image"
         />
       </div>
@@ -119,7 +119,7 @@ function HouseDetails() {
           <div key={indx} className="flex justify-center cursor-pointer" onClick={() => setSelectedImg(img)}>
             <img
               className={`w-[120px] h-[100px] object-cover rounded-md border-[3px] ${selectedImg === img ? 'border-[#ffa41c]' : 'border-gray-200'}`}
-              src={img}
+              src={img?.startsWith('http') || img?.startsWith('/') ? img : `${api.defaults.baseURL}/${img}`}
               alt={`Image ${indx}`}
             />
           </div>

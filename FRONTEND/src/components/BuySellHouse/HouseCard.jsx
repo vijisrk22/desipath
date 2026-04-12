@@ -33,7 +33,9 @@ export default function HouseCard({ house }) {
 
       <CardMedia
         component="img"
-        image={house.images && house.images.length > 0 ? house.images[0] : "/house-placeholder.png"}
+        image={house.images && house.images.length > 0 
+          ? `${api.defaults.baseURL}/${house.images[0]}` 
+          : "/house-placeholder.png"}
         title="house"
         sx={{
           p: 2,
