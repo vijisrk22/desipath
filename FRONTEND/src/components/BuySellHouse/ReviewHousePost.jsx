@@ -90,7 +90,13 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
     const formFields = {};
     
     formFields["user_type"] = formDetails.role;
-    formFields["home_type"] = formDetails.type;
+
+    let homeTypeMapped = formDetails.type;
+    if (homeTypeMapped === "Condominium") homeTypeMapped = "Condominum";
+    if (homeTypeMapped === "Single Family") homeTypeMapped = "Single family";
+    if (homeTypeMapped === "Town House") homeTypeMapped = "Town home";
+    formFields["home_type"] = homeTypeMapped;
+
     if (formDetails.price) formFields["price"] = parseFloat(formDetails.price);
     
     if (formDetails.builtArea) formFields["built_area"] = parseFloat(formDetails.builtArea);
@@ -101,7 +107,11 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
     if (formDetails.halfBathrooms) formFields["half_bathroom_total"] = parseInt(formDetails.halfBathrooms, 10);
     if (formDetails.basementSize) formFields["basement_size"] = parseFloat(formDetails.basementSize);
     
-    if (formDetails.basement) formFields["basement_status"] = formDetails.basement;
+    if (formDetails.basement) {
+      let basementMapped = formDetails.basement;
+      if (basementMapped === "Semi Finished") basementMapped = "Semi finished";
+      formFields["basement_status"] = basementMapped;
+    }
     
     if (formDetails.laundryInHouse) formFields["laundry_in_house"] = formDetails.laundryInHouse === "Yes";
     if (formDetails.numOfLevels) formFields["home_level"] = parseInt(formDetails.numOfLevels, 10);
