@@ -61,6 +61,26 @@ class HomesController extends Controller
      */
     public function index(Request $request)
     {
+        // One-time check for Azure: Ensure storage link and framework directories exist to prevent 500 errors
+        if (!file_exists(public_path('storage'))) {
+            try {
+                \Illuminate\Support\Facades\Artisan::call('storage:link');
+            } catch (\Exception $e) {
+                // Ignore if link creation fails
+            }
+        }
+
+        $frameworkPaths = [
+            storage_path('framework/views'),
+            storage_path('framework/cache'),
+            storage_path('framework/sessions'),
+        ];
+        foreach ($frameworkPaths as $path) {
+            if (!file_exists($path)) {
+                mkdir($path, 0775, true);
+            }
+        }
+
         $perPage = 9;
         $query = BuySellHome::query();
 
@@ -282,9 +302,15 @@ class HomesController extends Controller
             $data['flooring'] = implode(',', $data['flooring']);
         }
 
-        if ($request->has('images') && !empty($request->photos)) {
+        if ($request->has('images') && !empty($request->images)) {
             $photos = [];
             
+            // Ensure the directory exists
+            $directory = storage_path('app/public/buysellhomes');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0775, true);
+            }
+
             foreach ($request->images as $base64Image) {
                 // Get the file extension
                 preg_match('/data:image\/(.*);base64/', $base64Image, $matches);
@@ -297,7 +323,7 @@ class HomesController extends Controller
                 $filename = uniqid() . '.' . $extension;
                 
                 // Store the file in the storage directory
-                $path = storage_path('app/public/buysellhomes/' . $filename); // Full path
+                $path = $directory . '/' . $filename;
                 
                 // Write the decoded data to the file
                 file_put_contents($path, $imageData);
@@ -547,6 +573,12 @@ class HomesController extends Controller
 
         if ($request->has('images') && !empty($request->images)) {
             $photos = [];
+            
+            // Ensure the directory exists
+            $directory = storage_path('app/public/buysellhomes');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0775, true);
+            }
 
             foreach ($request->images as $base64Image) {
                 preg_match('/data:image\/(.*);base64/', $base64Image, $matches);
@@ -556,7 +588,7 @@ class HomesController extends Controller
 
                 $filename = uniqid() . '.' . $extension;
 
-                $path = storage_path('app/public/buysellhomes/' . $filename);
+                $path = $directory . '/' . $filename;
 
                 file_put_contents($path, $imageData);
 
