@@ -278,6 +278,10 @@ class HomesController extends Controller
         $data = $request->except('images'); // get all fields except photos
         $data['seller_name'] = $receiver->name;
 
+        if (isset($data['flooring']) && is_array($data['flooring'])) {
+            $data['flooring'] = implode(',', $data['flooring']);
+        }
+
         if ($request->has('images') && !empty($request->photos)) {
             $photos = [];
             
@@ -536,6 +540,10 @@ class HomesController extends Controller
         }
         $data = $request->except('images');
         $data['seller_name'] = $receiver->name;
+
+        if (isset($data['flooring']) && is_array($data['flooring'])) {
+            $data['flooring'] = implode(',', $data['flooring']);
+        }
 
         if ($request->has('images') && !empty($request->images)) {
             $photos = [];
