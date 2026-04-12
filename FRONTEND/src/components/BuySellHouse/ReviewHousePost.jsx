@@ -1,4 +1,4 @@
-import { Box, Button, Modal } from "@mui/material";
+import { Box, Button, Modal, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ReviewPostContent from "./ReviewPostContent";
 import { useNavigate } from "react-router-dom";
@@ -6,12 +6,15 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
 import { postHouse } from "../../store/HousesSlice";
 import { convertImagesToBase64 } from "../../utils/helper";
+import { useState } from "react";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 function ReviewHousePost({ open, onClose, formDetails, images }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.houses);
   const { user } = useSelector((state) => state.user);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const contents = [
     {
@@ -72,7 +75,7 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
     },
     {
       text: "Flooring",
-      value: Object.keys(formDetails.flooringOptions) // Get the keys
+      value: Object.keys(formDetails.flooringOptions || {}) // Get the keys
         .filter((option) => formDetails.flooringOptions[option] === true) // Keep only those with value true
         .join(" "), // Join the keys with a space
     },
@@ -152,12 +155,14 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
       }
 
       console.log("Submitting house:", formFields);
-      const result = await dispatch(postHouse(formFields)).unwrap(); 
-      console.log("Post successful:", result);
-      navigate("/services/houses");
+      await dispatch(postHouse(formFields)).unwrap(); 
+      setIsSuccess(true);
+      setTimeout(() => {
+        navigate("/services/houses");
+      }, 2500);
     } catch (err) {
       console.error("Failed to post house:", err);
-      onClose();
+      // Stay on modal if error occurred to let user check or close manually
     }
   };
 
@@ -166,7 +171,7 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
   }
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={isSuccess ? undefined : onClose}>
       <Box
         sx={{
           position: "absolute",
@@ -174,44 +179,68 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
           left: "50%",
           transform: "translate(-50%, -50%)",
           bgcolor: "background.paper",
-          borderRadius: 2,
+          borderRadius: 4,
           boxShadow: 24,
           p: 4,
           maxWidth: 600,
-          width: "100%",
-          maxHeight: "90vh", // Set a max height for the modal
+          width: "90%",
+          maxHeight: "90vh",
           overflowY: "auto",
         }}
       >
-        <div className="flex justify-between items-center">
-          <div className="justify-center text-[#007185] text-[22px] font-bold font-dmsans">
-            Review Your Listing And Submit
+        {isSuccess ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center animate-in fade-in duration-500">
+            <CheckCircleOutlineIcon sx={{ fontSize: 100, color: "#4caf50", mb: 2 }} />
+            <Typography variant="h4" sx={{ fontWeight: "bold", color: "#007185", mb: 1 }}>
+              Success!
+            </Typography>
+            <Typography variant="body1" sx={{ color: "#555", mb: 3 }}>
+              Your house listing has been posted successfully.
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#888" }}>
+              Redirecting you to the listings...
+            </Typography>
           </div>
-          <Button onClick={onClose}>
-            <EditIcon color="primary" variant="outline" />
-          </Button>
-        </div>
-        <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
-          {formDetails.price
-            ? parseFloat(formDetails.price).toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })
-            : "$0.00"}
-        </div>
-        <div className=" text-gray-800 text-[26px] font-bold font-dmsans">
-          {formDetails.type}
-        </div>
+        ) : (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <div className="text-[#007185] text-[22px] font-bold font-dmsans">
+                Review Your Listing And Submit
+              </div>
+              <Button onClick={onClose}>
+                <EditIcon color="primary" />
+              </Button>
+            </div>
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-100">
+                {typeof error === 'string' ? error : JSON.stringify(error)}
+              </div>
+            )}
+            <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-tight mb-2">
+              {formDetails.price
+                ? parseFloat(formDetails.price).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  })
+                : "$0.00"}
+            </div>
+            <div className="text-gray-800 text-[24px] font-bold font-dmsans mb-6">
+              {formDetails.type}
+            </div>
 
-        <ReviewPostContent contents={contents} />
-        <div className="mx-auto mt-10 max-w-20">
-          <button
-            onClick={handleSubmit}
-            className="px-5 py-3 bg-[#ffa41c] rounded-xl text-gray-800 text-center text-base font-medium font-dmsans"
-          >
-            Post
-          </button>
-        </div>
+            <ReviewPostContent contents={contents} />
+            
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full max-w-xs px-8 py-4 bg-[#ffa41c] rounded-2xl text-gray-800 text-lg font-bold font-dmsans hover:bg-[#ff9400] transition-colors shadow-lg active:scale-95 disabled:opacity-50"
+              >
+                Post Now
+              </button>
+            </div>
+          </>
+        )}
       </Box>
     </Modal>
   );

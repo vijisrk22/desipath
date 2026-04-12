@@ -18,15 +18,13 @@ function HouseDetails() {
   ];
 
   const { houseId } = useParams();
-  const imgs = Array(7).fill("/img/houses/house1.png");
-
   const dispatch = useDispatch();
   const { loading, error, houseDetails } = useSelector((state) => state.houses);
 
   // Fetch house details when the component mounts
   useEffect(() => {
-    dispatch(fetchHouseById(houseId)); // Assume r ID 1 for now
-  }, [dispatch]);
+    dispatch(fetchHouseById(houseId));
+  }, [dispatch, houseId]);
 
   // If loading, show loader
   if (loading) {
@@ -35,7 +33,7 @@ function HouseDetails() {
 
   // If there's an error fetching data
   if (error) {
-    return <div className="text-red-500">Error loading house details.</div>;
+    return <div className="text-red-500 p-10">Error loading house details: {error}</div>;
   }
 
   // Make sure houseDetails is available before accessing it
@@ -49,17 +47,47 @@ function HouseDetails() {
     );
   }
 
-  // Safe to access houseDetails now
-  const formattedDetails = Object.entries(houseDetails?.details || {}).map(
-    ([key, value]) => ({
-      text: key,
-      value,
-    })
-  );
+  const imgs = (houseDetails.images && houseDetails.images.length > 0) 
+    ? (typeof houseDetails.images === 'string' ? JSON.parse(houseDetails.images) : houseDetails.images)
+    : ["/house-placeholder.png"];
+
+  const [selectedImg, setSelectedImg] = useState(imgs[0]);
+
+  // Manually map labels to flat fields
+  const detailMappings = [
+    { label: "You Are an", key: "user_type" },
+    { label: "Type", key: "home_type" },
+    { label: "Built Area", key: "built_area" },
+    { label: "Lot Size", key: "lot_size" },
+    { label: "Hoa Fees If Any", key: "hoa_fees" },
+    { label: "Year Built", key: "year_built" },
+    { label: "Bedroom Total", key: "bedroom_total" },
+    { label: "Half Bathroom Total", key: "half_bathroom_total" },
+    { label: "Basement Size", key: "basement_size" },
+    { label: "Basement", key: "basement_status" },
+    { label: "Laundry In House", key: "laundry_in_house", isBool: true },
+    { label: "Level", key: "home_level" },
+    { label: "Kitchen Granite Top", key: "kitchen_granite_countertop", isBool: true },
+    { label: "Fireplace", key: "fireplace_count" },
+    { label: "Flooring", key: "flooring" },
+    { label: "Location", value: houseDetails.location_city ? `${houseDetails.location_city}, ${houseDetails.location_state} ${houseDetails.location_zipcode}` : "N/A" },
+    { label: "Additional Information", key: "description" },
+  ];
+
+  const formattedDetails = detailMappings.map(item => {
+    let value = item.value || houseDetails[item.key];
+    if (item.isBool) {
+      value = value ? "Yes" : "No";
+    }
+    return {
+      text: item.label,
+      value: value || "N/A"
+    };
+  });
 
   return (
     <div className=" mx-20 my-10">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center text-sm">
         <div className="text-[#0857d0] text-3xl font-normal font-fredoka">
           Desipath
         </div>
@@ -73,18 +101,18 @@ function HouseDetails() {
         color="[#667479]"
         additionalStyles={"leading-tight"}
       />
-      <div className="h-[476px] my-5 flex justify-center items-center ">
+      <div className="h-[476px] my-5 flex justify-center items-center overflow-hidden rounded-[10px]">
         <img
-          className="self-stretch rounded-[10px]"
-          src={imgs[0]}
+          className="h-full w-auto object-contain rounded-[10px]"
+          src={selectedImg || imgs[0]}
           alt="House Image"
         />
       </div>
       <div className="flex flex-wrap justify-center gap-4">
         {imgs.map((img, indx) => (
-          <div key={indx} className="flex justify-center">
+          <div key={indx} className="flex justify-center cursor-pointer" onClick={() => setSelectedImg(img)}>
             <img
-              className="w-[150px] h-[150px] rounded-md border-[3px] border-[#2e61b1]"
+              className={`w-[120px] h-[100px] object-cover rounded-md border-[3px] ${selectedImg === img ? 'border-[#ffa41c]' : 'border-gray-200'}`}
               src={img}
               alt={`Image ${indx}`}
             />
@@ -96,11 +124,11 @@ function HouseDetails() {
         <div>
           <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
             {houseDetails?.price
-              ? `${houseDetails.price.toLocaleString()}`
-              : "Loading..."}
+              ? `$${parseFloat(houseDetails.price).toLocaleString()}`
+              : "Contact for Price"}
           </div>
-          <div className="text-gray-800 text-[26px] font-bold font-dmsans">
-            {houseDetails?.details?.["Type"] || "Loading..."}
+          <div className="text-gray-800 text-[26px] font-bold font-dmsans mb-4">
+            {houseDetails?.home_type || "Property"}
           </div>
           <ReviewPostContent contents={formattedDetails} />
         </div>

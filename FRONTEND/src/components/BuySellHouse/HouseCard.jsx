@@ -33,7 +33,7 @@ export default function HouseCard({ house }) {
 
       <CardMedia
         component="img"
-        image={house.image}
+        image={house.images && house.images.length > 0 ? house.images[0] : "/house-placeholder.png"}
         title="house"
         sx={{
           p: 2,
@@ -50,7 +50,7 @@ export default function HouseCard({ house }) {
         <div className="justify-start items-center gap-2 inline-flex">
           <img src="/location.svg" className="w-[24px] h-[24px]" />
           <div className="justify-start text-gray-500 text-[22px] font-normal font-dmsans">
-            {house.address}
+            {house.location_city ? `${house.location_city}, ${house.location_state}` : "Location not available"}
           </div>
         </div>
       </CardContent>
@@ -58,12 +58,12 @@ export default function HouseCard({ house }) {
         <div className=" flex justify-between items-center flex-1">
           <div>
             <span className="text-gray-800 text-xl font-semibold font-dmsans">
-              $ {house.amount}
+              $ {house.price ? house.price.toLocaleString() : "Contact for Price"}
             </span>
           </div>
           <ButtonRight
             text="Details"
-            path={`/services/houses/buyRoom/${house.id}`}
+            path={`/services/houses/buyHouse/${house.id}`}
             textClass="text-base"
             paddingClass="px-[25px] py-[18px]"
           />
