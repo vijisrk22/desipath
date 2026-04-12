@@ -83,7 +83,7 @@ export default function ServicesSection() {
             <Link
               to={service.path}
               // ensure a fixed circular container so images render with the expected size
-              className="rounded-full overflow-hidden flex justify-center items-center cursor-pointer w-[167px] h-[167px]"
+              className="rounded-full overflow-hidden flex justify-center items-center cursor-pointer w-[120px] h-[120px] md:w-[140px] md:h-[140px] lg:w-[167px] lg:h-[167px]"
             >
               <img
                 className="w-full h-full object-cover"

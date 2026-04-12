@@ -9,8 +9,8 @@ function SearchAndFilter() {
   };
 
   return (
-    <div className=" py-[26px] max-w-screen-lg flex-col justify-start items-center gap-[36px] md:gap-[72px] flex xl:w-full">
-      <div className="text-center text-gray-800  text-[20px] xs:text-[24px] sm-text[34px] md:text-[44px] lg:text-[54px] font-medium font-dmsans md:leading-[80px]">
+    <div className=" py-[16px] max-w-screen-lg flex-col justify-start items-center gap-[24px] md:gap-[36px] flex xl:w-full">
+      <div className="text-center text-gray-800  text-[20px] xs:text-[24px] sm-text[34px] md:text-[44px] lg:text-[54px] font-medium font-dmsans md:leading-[60px]">
         New generation classifieds for <br />
         Desi people living abroad
       </div>

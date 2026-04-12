@@ -16,7 +16,7 @@ function LandingPage() {
         <SearchAndFilter />
       </div>
       <div className="px-[7%] lg:px-[108px]">
-        <div className="mt-[50px] pb-[30px]">
+        <div className="mt-[20px] md:mt-[30px] pb-[30px]">
           <Services />
         </div>
         <div className="mt-[50px] pb-[30px]">

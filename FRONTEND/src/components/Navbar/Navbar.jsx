@@ -12,9 +12,9 @@ function Navbar() {
 
   return (
     <div className="px-[7%] pt-6 pb-2 flex justify-between items-center">
-      <div className="text-[#0857d0] text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal font-fredoka ">
+      <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal font-fredoka hover:cursor-pointer">
         Desipath
-      </div>
+      </Link>
 
       <div className="md:flex gap-6 md:gap-12 hidden">
         {navPages.map((item, index) => {
