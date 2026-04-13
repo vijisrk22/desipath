@@ -35,7 +35,7 @@ export default function HouseCard({ house }) {
         component="img"
         image={house.images && house.images.length > 0 
           ? `${api.defaults.baseURL}/${house.images[0]}` 
-          : "/house-placeholder.png"}
+          : "/homesSmpl.png"}
         title="house"
         sx={{
           p: 2,
