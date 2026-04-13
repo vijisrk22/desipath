@@ -65,9 +65,9 @@ function SearchFieldInput({ inputs, title }) {
 
   useEffect(() => {
     setPriceRange([
-      1000,
+      0,
       title === "Find a Room"
-        ? 10000
+        ? 5000
         : title === "Buy a Car"
           ? 100000
           : title === "Rent a Home"
@@ -75,7 +75,7 @@ function SearchFieldInput({ inputs, title }) {
             : title === "Buy a home"
               ? 5000000
               : title === "Find an Event"
-                ? 2000
+                ? 1000
                 : 10000,
     ]);
   }, [title]);
