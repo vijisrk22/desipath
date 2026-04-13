@@ -6,7 +6,7 @@ import Houses from "../../components/BuySellHouse/Houses";
 import ActiveHouseSearchFilters from "../../components/BuySellHouse/ActiveHouseSearchFilters";
 
 function BuyHouse() {
-  const inputs = ["Location", "Zip Code"];
+  const inputs = ["location"];
   const paths = [
     { text: "Home", eP: "/" },
     { text: "Buy/Sell House", eP: "/services/houses" },

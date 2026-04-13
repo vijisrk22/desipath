@@ -6,6 +6,7 @@ import SearchButton from "./SearchButton";
 import { searchRoom } from "../store/RoommatesSlice";
 import { searchCar } from "../store/CarsSlice";
 import { searchRentalHome } from "../store/RentalHomesSlice";
+import { searchHouse } from "../store/HousesSlice";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -70,7 +71,9 @@ function SearchFieldInput({ inputs, title }) {
           ? 100000
           : title === "Rent a Home"
             ? 15000
-            : 10000,
+            : title === "Buy a home"
+              ? 5000000
+              : 10000,
     ]);
   }, []);
 
@@ -151,6 +154,21 @@ function SearchFieldInput({ inputs, title }) {
       try {
         console.log("Sending searchQuery:", searchQuery);
         await dispatch(searchRentalHome({ searchQuery })).unwrap();
+      } catch (err) {
+        console.error("Search failed:", err);
+      }
+    } else if (title === "Buy a home") {
+      const { city, state, zipcode } = parseLocation(data?.location);
+      const searchQuery = {
+        city,
+        state,
+        zipcode,
+        priceMin: priceRange[0],
+        priceMax: priceRange[1],
+      };
+      try {
+        console.log("Sending searchQuery:", searchQuery);
+        await dispatch(searchHouse({ searchQuery })).unwrap();
       } catch (err) {
         console.error("Search failed:", err);
       }

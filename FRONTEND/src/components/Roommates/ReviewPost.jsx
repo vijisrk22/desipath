@@ -26,20 +26,20 @@ function ReviewPost({ open, onClose, formDetails, images }) {
     for (const key in formDetails) {
       if (key === "location") {
         const splitLocation = formDetails[key].split(",");
-        formFields["location_city"] = splitLocation[0];
-        formFields["location_state"] = splitLocation[1];
-        formFields["location_zipcode"] = splitLocation[2];
+        formFields["location_city"] = splitLocation[0] ? splitLocation[0].trim() : "";
+        formFields["location_state"] = splitLocation[1] ? splitLocation[1].trim() : "";
+        formFields["location_zipcode"] = splitLocation[2] ? splitLocation[2].trim() : "";
       } else {
         if (formDetails[key] === "Yes" || formDetails[key] === "No") {
           formFields[key] = formDetails[key] === "Yes" ? true : false;
         } else {
           if (key === "available_from") {
             formFields[key] = dayjs(formDetails.available_from).format(
-              "DD-MM-YYYY"
+              "YYYY-MM-DD"
             );
           } else if (key === "available_to") {
             formFields[key] = dayjs(formDetails.available_to).format(
-              "DD-MM-YYYY"
+              "YYYY-MM-DD"
             );
           } else {
             if (key === "rent") {
