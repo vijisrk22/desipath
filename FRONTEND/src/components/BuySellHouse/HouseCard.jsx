@@ -11,8 +11,20 @@ export default function HouseCard({ house }) {
   const [isFavorited, setIsFavorited] = useState(false);
   return (
     <Card
-      sx={{ minHeight: 450, maxWidth: 350, p: 1, borderRadius: 5 }}
-      className="relative"
+      sx={{ 
+        width: "100%", 
+        maxWidth: 400,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: 4,
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0 12px 24px rgba(0,0,0,0.12)"
+        }
+      }}
+      className="relative shadow-sm border border-gray-100"
     >
       <button
         onClick={() => setIsFavorited(!isFavorited)}
@@ -38,36 +50,35 @@ export default function HouseCard({ house }) {
           : "/homesSmpl.png"}
         title="house"
         sx={{
-          p: 2,
-          height: 300,
-          objectFit: "cover", // optional, looks better
-          borderRadius: "8px", // optional, if you want rounded corners
+          p: 0,
+          height: 240,
+          objectFit: "cover",
         }}
       />
 
-      <CardContent>
-        <div className="text-gray-800 text-[26px] font-medium font-dmsans">
+      <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
+        <div className="text-gray-800 text-[24px] font-bold font-dmsans truncate mb-2">
           {house.home_type}
         </div>
-        <div className="justify-start items-center gap-2 inline-flex">
-          <img src="/location.svg" className="w-[24px] h-[24px]" />
-          <div className="justify-start text-gray-500 text-[22px] font-normal font-dmsans">
+        <div className="flex items-center gap-2 text-gray-500">
+          <img src="/location.svg" className="w-5 h-5 opacity-70" />
+          <div className="text-[16px] font-medium font-dmsans truncate">
             {house.location_city ? `${house.location_city}, ${house.location_state}` : "Location not available"}
           </div>
         </div>
       </CardContent>
-      <CardActions>
-        <div className=" flex justify-between items-center flex-1">
+      <CardActions sx={{ px: 3, pb: 3, pt: 1 }}>
+        <div className="flex justify-between items-center w-full">
           <div>
-            <span className="text-gray-800 text-xl font-semibold font-dmsans">
+            <span className="text-[#007185] text-xl font-bold font-dmsans">
               $ {house.price ? house.price.toLocaleString() : "Contact for Price"}
             </span>
           </div>
           <ButtonRight
             text="Details"
             path={`/services/houses/buyHouse/${house.id}`}
-            textClass="text-base"
-            paddingClass="px-[25px] py-[18px]"
+            textClass="text-sm font-bold"
+            paddingClass="px-6 py-2.5"
           />
         </div>
       </CardActions>
