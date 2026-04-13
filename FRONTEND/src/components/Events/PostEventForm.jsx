@@ -6,11 +6,13 @@ import DescriptionInput from "../InputTemplate/DescriptionInput";
 import TextFieldInput from "../InputTemplate/TextFieldInput";
 import ReviewEventPost from "./ReviewEventPost";
 import { useState } from "react";
+import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
 
 function PostEventForm() {
   const {
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm();
   const [reviewSession, setReviewSession] = useState(false);
@@ -68,11 +70,8 @@ function PostEventForm() {
 
         <TextFieldInput name="address" control={control} text="Address" />
 
-        <TextFieldInput
-          name="stateCityZipcode"
-          control={control}
-          text="State/City/Zipcode"
-        />
+        {/* Location Autocomplete */}
+        <LocationAutocompleteInput control={control} setValue={setValue} />
 
         <TextFieldInput name="ticketPrice" control={control} text="Ticket Cost" />
 

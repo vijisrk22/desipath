@@ -24,7 +24,7 @@ function ReviewEventPost({ open, onClose, formDetails }) {
     },
     {
       text: "State, City, Zipcode",
-      value: formDetails.stateCityZipcode,
+      value: formDetails.location,
     },
 
     //**************** */
