@@ -11,66 +11,13 @@ function EventsBody() {
   const { loading, error, events } = useSelector((state) => state.events);
   const eventsPerPage = 10;
 
-  const mockEvents = [
-    {
-      id: 1,
-      title: "Umesh Barot - Live Concert",
-      location: "Edison Expo Hall, NJ",
-      date: "2024-11-16T19:00:00",
-      image: "/img/events/eventSmpl1.png",
-      ticketPrice: "$30",
-    },
-    {
-      id: 2,
-      title: "Avenged Sevenfold",
-      location: "Jakarta, Indonesia",
-      date: "2024-11-16T19:30:00",
-      image: "/img/events/eventSmpl2.png",
-      ticketPrice: "$50",
-    },
-    {
-      id: 3,
-      title: "Karthik Live",
-      location: "Grand Pier, New York",
-      date: "2024-11-16T19:00:00",
-      image: "/img/events/eventSmpl3.png",
-      ticketPrice: "$100",
-    },
-    {
-      id: 4,
-      title: "Umesh Barot - Live Concert",
-      location: "Edison Expo Hall, NJ",
-      date: "2024-11-16T19:00:00",
-      image: "/img/events/eventSmpl1.png",
-      ticketPrice: "$30",
-    },
-    {
-      id: 5,
-      title: "Avenged Sevenfold",
-      location: "Jakarta, Indonesia",
-      date: "2024-11-16T19:30:00",
-      image: "/img/events/eventSmpl2.png",
-      ticketPrice: "$50",
-    },
-    {
-      id: 6,
-      title: "Karthik Live",
-      location: "Grand Pier, New York",
-      date: "2024-11-16T19:00:00",
-      image: "/img/events/eventSmpl3.png",
-      ticketPrice: "$100",
-    },
-  ];
-
   // Set events on mount
   useEffect(() => {
     dispatch(fetchEvents());
   }, [dispatch]);
 
-  // Merge API events (or mock) with Local Storage events
-  const localEvents = JSON.parse(localStorage.getItem('userPostedEvents') || '[]');
-  const apiEvents = Array.isArray(events) && events.length > 0 ? events : mockEvents;
-  const effectiveEvents = [...localEvents, ...apiEvents];
+  const apiEvents = Array.isArray(events) ? events : [];
+  const effectiveEvents = apiEvents;
 
   const numsOfPage = Math.ceil(effectiveEvents.length / eventsPerPage);
   const [page, setPage] = useState(1);

@@ -223,6 +223,7 @@ Route::middleware([])->group(function () {
     Route::prefix('events')->group(function () {
         Route::get('/', [EventsController::class, 'index']);
         Route::post('/', [EventsController::class, 'store']);
+        Route::post('/dummy-insert', [EventsController::class, 'dummyInsert']);
         Route::get('/{id}', [EventsController::class, 'show']);
         Route::put('/{id}', [EventsController::class, 'update']);
         Route::delete('/{id}', [EventsController::class, 'destroy']);
