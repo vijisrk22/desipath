@@ -221,8 +221,11 @@ class RoomMatesController extends Controller
                 // Generate a unique filename for the image
                 $filename = uniqid() . '.' . $extension;
                 
+                $directory = storage_path('app/public/roommates');
+                if (!file_exists($directory)) { mkdir($directory, 0755, true); }
+
                 // Store the file in the storage directory
-                $path = storage_path('app/public/roommates/' . $filename); // Full path
+                $path = $directory . '/' . $filename; // Full path
                 
                 // Write the decoded data to the file
                 file_put_contents($path, $imageData);
@@ -447,7 +450,10 @@ class RoomMatesController extends Controller
 
                 $filename = uniqid() . '.' . $extension;
 
-                $path = storage_path('app/public/roommates/' . $filename);
+                $directory = storage_path('app/public/roommates');
+                if (!file_exists($directory)) { mkdir($directory, 0755, true); }
+
+                $path = $directory . '/' . $filename;
 
                 file_put_contents($path, $imageData);
 
