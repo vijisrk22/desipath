@@ -177,7 +177,7 @@ const carsSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            })
+
             .addCase(searchCar.fulfilled, (state, action) => {
                 state.loading = false;
                 state.cars = action.payload.data || [];
