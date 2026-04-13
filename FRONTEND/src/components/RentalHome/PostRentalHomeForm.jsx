@@ -27,7 +27,6 @@ function PostRentalHomeForm() {
     defaultValues: {
       location_state: "",
       location_city: "",
-      location_city: "",
       location_zipcode: "",
       contact_no: "",
     },

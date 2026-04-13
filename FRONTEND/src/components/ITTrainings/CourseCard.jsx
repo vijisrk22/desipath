@@ -47,8 +47,7 @@ function CourseCard({ result }) {
             {result.numOfReviews} Reviews
           </div>
         </div>
-      </div>
-
+    </div>
   );
 }
 
