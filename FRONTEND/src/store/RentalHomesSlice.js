@@ -116,12 +116,13 @@ const rentalHomesSlice = createSlice({
             .addCase(fetchRentalHomes.fulfilled, (state, action) => {
                 state.loading = false;
                 // With server-side pagination, the response structure is { data: [...], current_page: 1, ... }
-                state.rentalHomes = action.payload.data || [];
+                const isArray = Array.isArray(action.payload);
+                state.rentalHomes = isArray ? action.payload : (action.payload?.data || []);
                 state.pagination = {
-                    current_page: action.payload.current_page,
-                    last_page: action.payload.last_page,
-                    total: action.payload.total,
-                    per_page: action.payload.per_page,
+                    current_page: action.payload?.current_page || 1,
+                    last_page: action.payload?.last_page || 1,
+                    total: action.payload?.total || (isArray ? action.payload.length : (action.payload?.data ? action.payload.data.length : 0)),
+                    per_page: action.payload?.per_page || 9,
                 };
             })
             .addCase(fetchRentalHomes.rejected, (state, action) => {
@@ -163,12 +164,13 @@ const rentalHomesSlice = createSlice({
             })
             .addCase(searchRentalHome.fulfilled, (state, action) => {
                 state.loading = false;
-                state.rentalHomes = action.payload.data || [];  // Update rentalHomes with the search result
+                const isArray = Array.isArray(action.payload);
+                state.rentalHomes = isArray ? action.payload : (action.payload?.data || []);
                 state.pagination = {
-                    current_page: action.payload.current_page,
-                    last_page: action.payload.last_page,
-                    total: action.payload.total,
-                    per_page: action.payload.per_page,
+                    current_page: action.payload?.current_page || 1,
+                    last_page: action.payload?.last_page || 1,
+                    total: action.payload?.total || (isArray ? action.payload.length : (action.payload?.data ? action.payload.data.length : 0)),
+                    per_page: action.payload?.per_page || 9,
                 };
                 state.lastSearchQuery = action.meta.arg.searchQuery;
             })

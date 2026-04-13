@@ -135,12 +135,13 @@ const carsSlice = createSlice({
                 state.error = null;
             }) .addCase(fetchCars.fulfilled, (state,action)=>{
                 state.loading = false;
-                state.cars = action.payload.data || [];
+                const isArray = Array.isArray(action.payload);
+                state.cars = isArray ? action.payload : (action.payload?.data || []);
                 state.pagination = {
-                    current_page: action.payload.current_page || 1,
-                    last_page: action.payload.last_page || 1,
-                    total: action.payload.total || (action.payload.data ? action.payload.data.length : 0),
-                    per_page: action.payload.per_page || 9,
+                    current_page: action.payload?.current_page || 1,
+                    last_page: action.payload?.last_page || 1,
+                    total: action.payload?.total || (isArray ? action.payload.length : (action.payload?.data ? action.payload.data.length : 0)),
+                    per_page: action.payload?.per_page || 9,
                 };
             })
             .addCase(fetchCars.rejected, (state,action)=>{
@@ -180,12 +181,13 @@ const carsSlice = createSlice({
 
             .addCase(searchCar.fulfilled, (state, action) => {
                 state.loading = false;
-                state.cars = action.payload.data || [];
+                const isArray = Array.isArray(action.payload);
+                state.cars = isArray ? action.payload : (action.payload?.data || []);
                 state.pagination = {
-                    current_page: action.payload.current_page || 1,
-                    last_page: action.payload.last_page || 1,
-                    total: action.payload.total || (action.payload.data ? action.payload.data.length : 0),
-                    per_page: action.payload.per_page || 9,
+                    current_page: action.payload?.current_page || 1,
+                    last_page: action.payload?.last_page || 1,
+                    total: action.payload?.total || (isArray ? action.payload.length : (action.payload?.data ? action.payload.data.length : 0)),
+                    per_page: action.payload?.per_page || 9,
                 };
                 state.lastSearchQuery = action.meta.arg;
             })
