@@ -71,8 +71,16 @@ export default function CarCard({ car }) {
           </div>
         </div>
 
-        <div className="text-gray-500 text-sm font-normal font-dmsans line-clamp-2 min-h-[40px] mb-4">
-          {car.description || "No description available for this vehicle."}
+        <div className="flex flex-col gap-1 min-h-[40px] mb-4">
+          <div className="flex items-start gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 mt-0.5 min-w-[16px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <div className="text-gray-500 text-sm font-normal font-dmsans line-clamp-2">
+              {car.location ? car.location : "Location not provided"}
+            </div>
+          </div>
         </div>
 
         <div className="border-t border-gray-100 py-4 flex justify-between items-center">

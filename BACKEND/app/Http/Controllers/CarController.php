@@ -318,8 +318,9 @@ public function testCars() { return BuySellCar::all(); }
     {
         // Validation
         $validator = Validator::make($request->all(), [
-            'Car Make' => 'nullable|string|max:100',
-            'Location' => 'nullable|string|max:255',
+            'carMake' => 'nullable|string|max:100',
+            'carModel' => 'nullable|string|max:100',
+            'location' => 'nullable|string|max:255',
             'priceMin' => 'nullable|numeric|min:0',
             'priceMax' => 'nullable|numeric|gte:priceMin',
         ]);
@@ -328,38 +329,23 @@ public function testCars() { return BuySellCar::all(); }
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $query = BuySellCar::query();
+        $query = BuySellCar::with(['fuelType','transmission','condition']);
 
-        $query->where(function ($q) use ($request) {
-            if ($request->filled('Car Make')) {
-                $q->orWhere('make', 'like', '%' . $request->input('Car Make') . '%');
-            }
-            if ($request->filled('Location')) {
-                $q->orWhere('location', 'like', '%' . $request->location . '%');
-            }
-            if ($request->filled('priceMin')) {
-                $q->orWhere('price', '>=', $request->priceMin);
-            }
-            if ($request->filled('priceMax')) {
-                $q->orWhere('price', '<=', $request->priceMax);
-            }
-        });
-
-        // if ($request->filled('Car Make')) {
-        //     $query->where('make', 'like', '%' . $request->input('Car Make') . '%');
-        // }
-
-        // if ($request->filled('Location')) {
-        //     $query->where('location', 'like', '%' . $request->location . '%');
-        // }
-
-        // if ($request->filled('priceMin')) {
-        //     $query->where('price', '>=', $request->priceMin);
-        // }
-
-        // if ($request->filled('priceMax')) {
-        //     $query->where('price', '<=', $request->priceMax);
-        // }
+        if ($request->filled('carMake')) {
+            $query->where('make', 'like', '%' . $request->input('carMake') . '%');
+        }
+        if ($request->filled('carModel')) {
+            $query->where('model', 'like', '%' . $request->input('carModel') . '%');
+        }
+        if ($request->filled('location')) {
+            $query->where('location', 'like', '%' . $request->input('location') . '%');
+        }
+        if ($request->filled('priceMin')) {
+            $query->where('price', '>=', $request->input('priceMin'));
+        }
+        if ($request->filled('priceMax')) {
+            $query->where('price', '<=', $request->input('priceMax'));
+        }
 
         $cars = $query->get();
 
@@ -368,6 +354,9 @@ public function testCars() { return BuySellCar::all(); }
             if (is_string($car->pictures) && !empty($car->pictures)) {
                 $car->pictures = json_decode($car->pictures, true);
             }
+            $car->fuel_type  = $car->fuelType?->name;
+            $car->transmission_name = $car->transmission?->name;
+            $car->condition_name = $car->condition?->name;
             return $car;
         });
 
