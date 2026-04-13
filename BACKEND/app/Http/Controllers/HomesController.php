@@ -61,8 +61,7 @@ class HomesController extends Controller
      */
     public function index(Request $request)
     {
-        // Ensure storage link and framework directories exist to prevent 500 errors on Azure
-        $this->repairServerPaths();
+        // Removed repairServerPaths as it causes the API to hang on Azure Production
 
         $perPage = 9;
         $query = BuySellHome::query();
