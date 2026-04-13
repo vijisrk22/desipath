@@ -26,8 +26,8 @@ function ServiceTopBar({ inputs = [], title, paths, form, plainBg = false }) {
         )}
       </div>
       <div className="mt-[32px] md:mt-[64px] lg:mt-[96px]">
-        <div className="w-[40%] h-[40px] md:h-[85px] relative rounded-t-2xl bg-white flex items-center">
-          <div className="relative text-center flex-grow  text-[#007185] text-[25px] md:text-[27px] lg:text-[30px] xl:text-[40px] font-semibold font-dmsans truncate mx-2">
+        <div className="inline-flex h-[40px] md:h-[85px] px-8 md:px-12 relative rounded-t-2xl bg-white items-center shadow-sm">
+          <div className="relative text-center text-[#007185] text-[25px] md:text-[27px] lg:text-[30px] xl:text-[40px] font-semibold font-dmsans">
             {title}
           </div>
         </div>

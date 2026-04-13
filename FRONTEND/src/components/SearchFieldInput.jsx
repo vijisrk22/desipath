@@ -186,7 +186,7 @@ function SearchFieldInput({ inputs, title }) {
     <form
       method="POST"
       onSubmit={handleSubmit(onSubmit)}
-      className="px-6 py-4 md:py-6 w-[90%] relative rounded-tr-2xl rounded-b-2xl bg-white flex flex-col gap-y-4  md:flex-row md:gap-12  md:items-center md:justify-around "
+      className="px-6 py-4 md:py-8 w-full relative rounded-tr-2xl rounded-b-2xl bg-white flex flex-col gap-y-4 md:flex-row md:gap-8 lg:gap-12 md:items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.05)]"
     >
       <div className="lg:min-w-[400px] xl:min-w-[600px] flex items-center justify-between gap-12 flex-1 flex-wrap">
         {inputs.map((input, index) => (
