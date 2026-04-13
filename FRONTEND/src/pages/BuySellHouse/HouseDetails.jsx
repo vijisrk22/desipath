@@ -30,7 +30,7 @@ function HouseDetails() {
   // Handle images initialization
   const imgs = (houseDetails?.images && houseDetails.images.length > 0) 
     ? (typeof houseDetails.images === 'string' ? JSON.parse(houseDetails.images) : houseDetails.images)
-    : ["/house-placeholder.png"];
+    : ["/homesSmpl.png"];
 
   useEffect(() => {
     if (imgs.length > 0 && !selectedImg) {
