@@ -44,6 +44,20 @@ export const postEvent = createAsyncThunk(
   }
 );      
 
+export const searchEvents = createAsyncThunk(
+  "events/searchEvents",
+  async (searchQuery, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/api/events/search", searchQuery);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Search failed"
+      );
+    }
+  }
+);      
+
 const eventsSlice = createSlice({
     name: "events", 
     initialState: {
@@ -101,6 +115,18 @@ const eventsSlice = createSlice({
             .addCase(postEvent.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to post event";
+            })
+            .addCase(searchEvents.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(searchEvents.fulfilled, (state, action) => {
+                state.loading = false;
+                state.events = action.payload.data || [];
+            })
+            .addCase(searchEvents.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Search failed";
             });
     }
 }); 

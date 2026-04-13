@@ -7,6 +7,7 @@ import { searchRoom } from "../store/RoommatesSlice";
 import { searchCar } from "../store/CarsSlice";
 import { searchRentalHome } from "../store/RentalHomesSlice";
 import { searchHouse } from "../store/HousesSlice";
+import { searchEvents } from "../store/EventsSlice";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -73,9 +74,11 @@ function SearchFieldInput({ inputs, title }) {
             ? 15000
             : title === "Buy a home"
               ? 5000000
-              : 10000,
+              : title === "Find an Event"
+                ? 2000
+                : 10000,
     ]);
-  }, []);
+  }, [title]);
 
   async function onSubmit(data) {
     // Robust parsing helper
@@ -172,6 +175,26 @@ function SearchFieldInput({ inputs, title }) {
       } catch (err) {
         console.error("Search failed:", err);
       }
+    } else if (title === "Find an Event") {
+      const { city, state, zipcode } = parseLocation(data?.location);
+      const searchQuery = {
+        city,
+        state,
+        zipcode,
+        eventType: data?.eventType
+          ? Object.entries(data.eventType)
+            .filter(([_, value]) => value)
+            .map(([key]) => key)
+          : [],
+        priceMin: priceRange[0],
+        priceMax: priceRange[1],
+      };
+      try {
+        console.log("Sending searchQuery:", searchQuery);
+        await dispatch(searchEvents(searchQuery)).unwrap();
+      } catch (err) {
+        console.error("Search failed:", err);
+      }
     }
   }
 
@@ -221,6 +244,19 @@ function SearchFieldInput({ inputs, title }) {
                     name: "rentalHomeType.Basement Apartment",
                     label: "Basement Apartment",
                   },
+                ]}
+                register={register}
+                type="search"
+              />
+            ) : input === "eventType" ? (
+              <CheckBoxInput
+                text="Event Type"
+                options={[
+                  { name: "eventType.Music", label: "Music" },
+                  { name: "eventType.Comedy", label: "Comedy" },
+                  { name: "eventType.Workshop", label: "Workshop" },
+                  { name: "eventType.Bollywood", label: "Bollywood" },
+                  { name: "eventType.Cultural", label: "Cultural" },
                 ]}
                 register={register}
                 type="search"

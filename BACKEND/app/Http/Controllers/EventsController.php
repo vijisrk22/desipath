@@ -173,6 +173,75 @@ class EventsController extends Controller
     }
 
     /**
+     * Search for events based on filters
+     */
+    public function search(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'zipcode' => 'nullable|string|max:20',
+            'priceMin' => 'nullable|numeric|min:0',
+            'priceMax' => 'nullable|numeric|gte:priceMin',
+            'eventType' => 'nullable|array',
+            'eventType.*' => 'string|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $query = Event::query();
+
+        if ($request->filled('city') || $request->filled('state') || $request->filled('zipcode')) {
+            $query->where(function ($q) use ($request) {
+                if ($request->filled('city')) {
+                    $q->orWhere('state_city_zipcode', 'like', '%' . $request->city . '%');
+                }
+                if ($request->filled('state')) {
+                    $q->orWhere('state_city_zipcode', 'like', '%' . $request->state . '%');
+                }
+                if ($request->filled('zipcode')) {
+                    $q->orWhere('state_city_zipcode', 'like', '%' . $request->zipcode . '%');
+                }
+            });
+        }
+
+        if ($request->filled('priceMin')) {
+            $query->where('ticket_price', '>=', $request->priceMin);
+        }
+        if ($request->filled('priceMax')) {
+            $query->where('ticket_price', '<=', $request->priceMax);
+        }
+
+        if ($request->filled('eventType') && is_array($request->eventType) && count($request->eventType) > 0) {
+            $query->whereIn('event_type', $request->eventType);
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        $perPage = 10;
+        $events = $query->paginate($perPage);
+
+        // Transform collection to match index() structure
+        $events->getCollection()->transform(function($event) {
+            $dateTime = new \DateTime($event->from_date);
+            return [
+                'id' => $event->id,
+                'title' => $event->event_name,
+                'location' => $event->state_city_zipcode,
+                'date' => $dateTime->format('Y-m-d\TH:i:s'),
+                'image' => !empty($event->cover_images) && is_array($event->cover_images) && count($event->cover_images) > 0 
+                    ? url($event->cover_images[0])
+                    : '/img/events/eventSmpl1.png',
+                'ticketPrice' => '$' . number_format($event->ticket_price, 0),
+            ];
+        });
+
+        return response()->json($events);
+    }
+
+    /**
      * Insert dummy data
      */
     public function dummyInsert()
