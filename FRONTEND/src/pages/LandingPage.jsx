@@ -1,4 +1,4 @@
-import Banner from "../components/Banner";
+
 import Chat from "../components/Chat/Chat";
 import Events from "../components/Events";
 import Footer from "../components/Footer/Footer";
@@ -27,9 +27,7 @@ function LandingPage() {
         </div>
       </div>
 
-      <div className="mt-[50px]">
-        <Banner />
-      </div>
+
 
       <div className="mt-[81px]">
         <Footer newsletter={"block"} />
