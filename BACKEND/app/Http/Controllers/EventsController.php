@@ -88,37 +88,40 @@ class EventsController extends Controller
             return $processed;
         };
 
-        // In the current frontend 'imgs' contains all images. 
-        // We can split them if the frontend distinguishes, but currently it sends them combined or just 'imgs'.
-        // For now, let's treat the first ones as cover and rest as poster if multiple, or just dump all in cover.
-        \Log::info('Images received:', [
-            'count' => count($imgs), 
-            'sample' => isset($imgs[0]) ? (is_string($imgs[0]) ? substr($imgs[0], 0, 50) : 'array/object') : 'none'
-        ]);
         $storedImages = $processImages($imgs);
-        \Log::info('Images stored:', ['paths' => $storedImages]);
 
-        // Parse the date with error handling
+        // Parse the date with better key matching
+        $eventDateStr = $details['Event Date and Time'] ?? $details['Event Date'] ?? null;
         $eventDate = now();
-        if (isset($details['Event Date'])) {
+        if ($eventDateStr) {
             try {
-                // Try DD-MM-YYYY format first
-                $eventDate = \Carbon\Carbon::createFromFormat('d-m-Y', $details['Event Date']);
+                // If it contains "at", extract just the part before "at" or handle the format
+                // Expected format from frontend: "DD-MM-YYYY [at] h:mm A"
+                if (str_contains($eventDateStr, ' at ')) {
+                    $cleanedDate = str_replace(' at ', ' ', $eventDateStr);
+                    $eventDate = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $cleanedDate);
+                } else {
+                    $eventDate = \Carbon\Carbon::parse($eventDateStr);
+                }
             } catch (\Exception $e) {
-                \Log::warning('Date parsing failed, using current date', ['date' => $details['Event Date'], 'error' => $e->getMessage()]);
+                \Log::warning('Date parsing failed', ['date' => $eventDateStr, 'error' => $e->getMessage()]);
             }
         }
 
         try {
+            // Clean ticket price (remove formatting like $, and cast to float)
+            $rawPrice = $request->input('ticketPrice', 0);
+            $cleanPrice = (float) preg_replace('/[^0-9.]/', '', $rawPrice);
+
             $event = Event::create([
                 'event_name' => $details['Event Name'] ?? 'Untitled Event',
                 'address' => $details['Address'] ?? '',
-                'state_city_zipcode' => $details['State, City, Zipcode'] ?? '',
+                'state_city_zipcode' => $details['State, City, Zipcode'] ?? $details['Location'] ?? '',
                 'from_date' => $eventDate,
                 'language' => $details['Language Specific'] ?? 'English',
                 'event_type' => $details['Event Type'] ?? 'General',
                 'description' => $details['Description'] ?? '',
-                'ticket_price' => $request->input('ticketPrice', 0),
+                'ticket_price' => $cleanPrice,
                 'cover_images' => $storedImages,
                 'poster_images' => [],
                 'user_type' => 'Owner',
@@ -128,7 +131,7 @@ class EventsController extends Controller
 
             return response()->json(['message' => 'Event created successfully', 'event' => $event], 201);
         } catch (\Exception $e) {
-            \Log::error('Event creation failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            \Log::error('Event creation failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Failed to create event: ' . $e->getMessage()], 500);
         }
     }
