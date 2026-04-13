@@ -3,92 +3,64 @@ import SectionHeadings from "./SectionHeadings";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useEffect, useState } from "react";
-import api from "../utils/api";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchEvents } from "../store/EventsSlice";
+import { CircularProgress } from "@mui/material";
 
 function Events({ title = "Events in your Location" }) {
-  const events = [
-    {
-      image: "/img/events/eventSmpl1.png",
-      title: "Universal Music Festival",
-      time: "Mon, Dec 28 / 18:00 - 23:00 PM",
-      location: "Grand Par, New York",
-    },
-    {
-      image: "/img/events/eventSmpl2.png",
-      title: "Tech Innovation Summit",
-      time: "Tue, Jan 15 / 09:00 - 17:00 PM",
-      location: "Silicon Valley, CA",
-    },
-    {
-      image: "/img/events/eventSmpl3.png",
-      title: "Art & Culture Exhibition",
-      time: "Wed, Feb 03 / 10:00 - 20:00 PM",
-      location: "Museum District, London",
-    },
-    {
-      image: "/img/events/eventSmpl1.png",
-      title: "Art & Culture Exhibition",
-      time: "Wed, Feb 03 / 10:00 - 20:00 PM",
-      location: "Museum District, London",
-    },
-  ];
+  const dispatch = useDispatch();
+  const { events, loading } = useSelector((state) => state.events);
 
   const settings = {
     dots: true,
     arrows: true,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
     responsive: [
       {
         breakpoint: 1280,
-        settings: { slidesToShow: 4 },
-      },
-      {
-        breakpoint: 1024,
         settings: { slidesToShow: 3 },
       },
       {
-        breakpoint: 768,
+        breakpoint: 1024,
         settings: { slidesToShow: 2 },
       },
       {
-        breakpoint: 480,
+        breakpoint: 600,
         settings: { slidesToShow: 1 },
       },
     ],
   };
 
-  // Uncomment this block of code to fetch events from the
-  // backend API endpoint /api/events
-
-  // // State for events
-  // const [events, setEvents] = useState([]);
-
-  // // Set events on mount
-  // useEffect(() => {
-  //   api
-  //     .get("/api/events")
-  //     .then((res) => {
-  //       setEvents(res.data);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }, []);
+  useEffect(() => {
+    dispatch(fetchEvents());
+  }, [dispatch]);
 
   return (
     <div className="flex flex-col justify-start items-center gap-[24px]">
       <SectionHeadings heading={title} link="/services/events" />
 
-      <div className="w-full">
-        <Slider {...settings}>
-          {events.map((event, index) => {
-            return <EventCard key={index} event={event} />;
-          })}
-        </Slider>
+      <div className="w-full h-full px-2 mt-4">
+        {loading && events.length === 0 ? (
+          <div className="flex justify-center items-center py-10">
+            <CircularProgress />
+          </div>
+        ) : events && events.length > 0 ? (
+          <Slider {...settings}>
+            {events.slice(0, 8).map((event, index) => (
+              <div key={index} className="px-2 pb-4 pt-1 h-full flex">
+                <EventCard event={event} />
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <div className="text-gray-500 text-center py-10">
+            No events available.
+          </div>
+        )}
       </div>
     </div>
   );
