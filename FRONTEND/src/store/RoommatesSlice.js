@@ -60,6 +60,7 @@ export const updateRoom = createAsyncThunk("roommates/updateRoom", async({roomId
 
 const roommatesSlice = createSlice({
     name: "roommates",
+    initialState: {
         rooms: [],
         pagination: {
             current_page: 1,
