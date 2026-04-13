@@ -106,12 +106,14 @@ export default function CarCard({ car }) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-          <div className="text-[#007185] text-2xl font-bold font-dmsans">
-            ${car.price ? Number(car.price).toLocaleString() : "TBD"}
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 gap-2">
+          <div className="text-[#007185] text-xl md:text-2xl font-bold font-dmsans whitespace-nowrap flex-shrink-0">
+            {car.price 
+              ? `$${Number(car.price).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` 
+              : "TBD"}
           </div>
 
-          <Link to={`/services/cars/buyCar/${car.id}`} className="px-5 py-2 bg-[#ffa41c] hover:bg-[#ff9900] rounded-full text-gray-800 text-sm font-bold transition-colors">
+          <Link to={`/services/cars/buyCar/${car.id}`} className="px-5 py-2 bg-[#ffa41c] hover:bg-[#ff9900] rounded-full text-gray-800 text-sm font-bold transition-colors whitespace-nowrap flex-shrink-0">
             Details
           </Link>
         </div>

@@ -73,12 +73,14 @@ export default function RoomCard({ room }) {
         </div>
       </CardContent>
       <CardActions sx={{ px: 3, pb: 3, pt: 1 }}>
-        <div className="flex justify-between items-center w-full">
-          <div className="flex items-baseline gap-1">
-            <span className="text-[#007185] text-xl font-bold font-dmsans">
-              $ {room.rent}
+        <div className="flex justify-between items-center w-full gap-2">
+          <div className="flex items-baseline gap-1 flex-shrink-0">
+            <span className="text-[#007185] text-xl font-bold font-dmsans whitespace-nowrap">
+              {room.rent 
+                ? `$${Number(room.rent).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` 
+                : "N/A"}
             </span>
-            <span className="text-gray-500 text-sm font-medium">/{room.rent_frequency}</span>
+            <span className="text-gray-500 text-sm font-medium whitespace-nowrap">/{room.rent_frequency}</span>
           </div>
           <ButtonRight
             text="Details"

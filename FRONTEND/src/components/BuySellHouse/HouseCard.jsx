@@ -67,19 +67,23 @@ export default function HouseCard({ house }) {
           </div>
         </div>
       </CardContent>
-      <CardActions sx={{ px: 3, pb: 3, pt: 1 }}>
-        <div className="flex justify-between items-center w-full">
-          <div>
-            <span className="text-[#007185] text-xl font-bold font-dmsans">
-              $ {house.price ? house.price.toLocaleString() : "Contact for Price"}
+      <CardActions sx={{ px: 2, pb: 3, pt: 1 }}>
+        <div className="flex justify-between items-center w-full gap-2 overflow-hidden">
+          <div className="flex-shrink-0">
+            <span className="text-[#007185] text-lg md:text-xl font-bold font-dmsans whitespace-nowrap">
+              {house.price 
+                ? `$${Number(house.price).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` 
+                : "Contact for Price"}
             </span>
           </div>
-          <ButtonRight
-            text="Details"
-            path={`/services/houses/buyHouse/${house.id}`}
-            textClass="text-sm font-bold"
-            paddingClass="px-6 py-2.5"
-          />
+          <div className="flex-shrink-0">
+            <ButtonRight
+              text="Details"
+              path={`/services/houses/buyHouse/${house.id}`}
+              textClass="text-sm font-bold"
+              paddingClass="px-4 py-2"
+            />
+          </div>
         </div>
       </CardActions>
     </Card>

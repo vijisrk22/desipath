@@ -65,14 +65,16 @@ export default function RentalHomeCard({ rentalHome }) {
 
       <Link to={`/services/rentalHomes/${rentalHome.id}`}>
         <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
-          <div className="flex justify-between items-baseline mb-3">
-            <div className="flex items-baseline gap-1">
-              <span className="text-[#007185] text-2xl font-bold font-dmsans">
-                ${rentalHome.deposit_rent}
+          <div className="flex justify-between items-baseline mb-3 gap-2 overflow-hidden">
+            <div className="flex items-baseline gap-1 flex-shrink-0">
+              <span className="text-[#007185] text-xl md:text-2xl font-bold font-dmsans whitespace-nowrap">
+                {rentalHome.deposit_rent 
+                  ? `$${Number(rentalHome.deposit_rent).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` 
+                  : "N/A"}
               </span>
-              <span className="text-gray-400 text-sm font-medium">/month</span>
+              <span className="text-gray-400 text-xs md:text-sm font-medium whitespace-nowrap">/month</span>
             </div>
-            <div className="text-gray-400 text-xs font-bold uppercase tracking-wider">
+            <div className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-wider truncate">
               {rentalHome?.property_type || "Rental"}
             </div>
           </div>

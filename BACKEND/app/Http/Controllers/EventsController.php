@@ -31,7 +31,7 @@ class EventsController extends Controller
                 'image' => !empty($event->cover_images) && is_array($event->cover_images) && count($event->cover_images) > 0 
                     ? url($event->cover_images[0])
                     : '/img/events/eventSmpl1.png',
-                'ticketPrice' => '$' . number_format($event->ticket_price, 2),
+                'ticketPrice' => '$' . number_format($event->ticket_price, 0),
             ];
         });
         
