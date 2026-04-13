@@ -2,34 +2,29 @@ import ButtonRight from "../ButtonRight";
 
 function CompanionCard({ text, path }) {
   return (
-    <div
-      className="max-w-[585px] min-h-64 rounded-[30px]"
-      style={{
-        background:
-          "linear-gradient(227deg, rgba(255, 255, 255, 0) 0%, rgba(107, 114, 128, 0.6) 100%), linear-gradient(90deg, #5a9df5 0%, white 100%)",
-        borderRadius: 30,
-      }}
-    >
-      <div className="px-[18px] md:px-[36px] py-[29px] relative flex items-start gap-8">
-        <img
-          src="/img/travelCompanion/companionCardThumbnail.png"
-          alt="Travel Companion"
-          className="rounded-l-[30px]"
-        />
-
-        <div>
-          <div className="text-gray-800  text-lg md:text-2xl font-semibold font-dmsans capitalize">
+    <div className="w-full h-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between transition-all duration-200 hover:translate-y-[-4px] hover:shadow-xl">
+      <div className="flex items-start gap-6">
+        <div className="w-20 h-20 flex-shrink-0 bg-sky-50 rounded-2xl flex items-center justify-center">
+          <img
+            src="/img/travelCompanion/companionCardThumbnail.png"
+            alt="Travel Companion"
+            className="w-14 h-14 object-contain"
+          />
+        </div>
+        <div className="flex-1">
+          <div className="text-[#007185] text-lg font-bold font-dmsans leading-tight mb-4">
             {text}
           </div>
-          <div className="w-full flex justify-end absolute bottom-4 right-5">
-            <ButtonRight
-              text=" Get Details"
-              path={path}
-              paddingClass="px-5 py-2 md:px-7 md:py-3"
-              arrowVisible={false}
-            />
-          </div>
         </div>
+      </div>
+      <div className="mt-4 flex justify-end">
+        <ButtonRight
+          text="Get Details"
+          path={path}
+          paddingClass="px-6 py-2.5"
+          arrowVisible={false}
+          textClass="text-sm font-bold"
+        />
       </div>
     </div>
   );

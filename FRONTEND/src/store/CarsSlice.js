@@ -91,12 +91,19 @@ const carsSlice = createSlice({
     name: "cars",
     initialState:{
         cars: [],
+        pagination: {
+            current_page: 1,
+            last_page: 1,
+            total: 0,
+            per_page: 9
+        },
         car_make:[],
         car_model: [],
         car_attributes: { fuel_types: [], transmissions: [], conditions: [] },
         carDetails: null,
         error: null,
         loading: false,
+        lastSearchQuery: null,
     },
     reducers:{
         setCars: (state,action) =>{
@@ -128,7 +135,13 @@ const carsSlice = createSlice({
                 state.error = null;
             }) .addCase(fetchCars.fulfilled, (state,action)=>{
                 state.loading = false;
-                state.cars = action.payload || [];
+                state.cars = action.payload.data || [];
+                state.pagination = {
+                    current_page: action.payload.current_page || 1,
+                    last_page: action.payload.last_page || 1,
+                    total: action.payload.total || (action.payload.data ? action.payload.data.length : 0),
+                    per_page: action.payload.per_page || 9,
+                };
             })
             .addCase(fetchCars.rejected, (state,action)=>{
                 state.loading = false;
@@ -164,14 +177,28 @@ const carsSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
+            })
             .addCase(searchCar.fulfilled, (state, action) => {
                 state.loading = false;
-                state.cars = action.payload || [];  // Update cars with the search result
+                state.cars = action.payload.data || [];
+                state.pagination = {
+                    current_page: action.payload.current_page || 1,
+                    last_page: action.payload.last_page || 1,
+                    total: action.payload.total || (action.payload.data ? action.payload.data.length : 0),
+                    per_page: action.payload.per_page || 9,
+                };
+                state.lastSearchQuery = action.meta.arg;
             })
             .addCase(searchCar.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || "Failed to search rooms";
+                state.error = action.payload || "Failed to search cars";
                 state.cars = [];
+                state.pagination = {
+                    current_page: 1,
+                    last_page: 1,
+                    total: 0,
+                    per_page: 9
+                };
             })
             .addCase(getCarMake.pending, (state) => {
                 state.loading = true;

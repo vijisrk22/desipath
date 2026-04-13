@@ -10,50 +10,45 @@ function CourseCard({ result }) {
   }
 
   return (
-    <li
+    <div
       key={result?.id}
-      className="flex flex-wrap border lg:border-0 justify-between px-2 rounded-lg shadow-sm hover:shadow-md transition gap-[10px]"
+      className="w-full max-w-[400px] h-full flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-200 hover:translate-y-[-4px] hover:shadow-xl cursor-pointer"
       onClick={handleClick}
     >
-      <div className="flex flex-wrap items-start gap-[30px]">
+      <div className="relative">
         <img
           src={result.image}
-          className="hidden lg:block w-64 h-40 object-cover rounded-lg"
+          className="w-full h-[200px] object-cover"
         />
-        <div className="m-3 lg:m-0 ">
-          <div className="text-gray-800 text-sm md:text-xl font-bold font-dmsans">
-            {result?.course}
+        <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+          <div className="text-amber-500 text-sm font-bold font-dmsans">
+            $249.99
           </div>
-          <div className="w-80 text-gray-500 text-sm md:text-base font-medium font-dmsans">
-            {result?.description}
-          </div>
+        </div>
+      </div>
+      
+      <div className="flex flex-col flex-grow p-5">
+        <div className="text-[#007185] text-xl font-bold font-dmsans line-clamp-1 mb-2">
+          {result?.course}
+        </div>
+        
+        <div className="text-gray-500 text-sm font-medium font-dmsans line-clamp-2 h-10 mb-4">
+          {result?.description}
+        </div>
 
-          <div className="flex items-center gap-3 mt-3">
-            <div className="text-gray-800 text-base font-medium font-dmsans">
+        <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="text-gray-800 text-sm font-bold font-dmsans">
               {result.rating.toFixed(1)}
             </div>
-            <div className="pb-1.5">
-              <StarRating rating={result.rating} />
-            </div>
-            <div className="text-gray-500 text-base font-medium font-dmsans">
-              {result.numOfReviews} Reviews
-            </div>
+            <StarRating rating={result.rating} />
+          </div>
+          <div className="text-gray-400 text-xs font-semibold">
+            {result.numOfReviews} Reviews
           </div>
         </div>
       </div>
-      <div className="m-2 lg:m-0 flex-1 lg:flex-none flex flex-row lg:flex-col justify-center items-center gap-[18px]">
-        <ButtonRight
-          text="Contact"
-          path=""
-          textClass="text-base"
-          arrowVisible={false}
-          paddingClass="px-7 py-3"
-        />
-        <div className="text-amber-500 text-base font-bold font-dmsans">
-          $ 200.99
-        </div>
-      </div>
-    </li>
+
   );
 }
 

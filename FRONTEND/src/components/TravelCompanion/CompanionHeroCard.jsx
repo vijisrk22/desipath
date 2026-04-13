@@ -2,82 +2,56 @@ import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
 
 function CompanionHeroCard({ personType }) {
   return (
-    <div className="flex flex-wrap items-center justify-center md:justify-between gap-8 px-10 py-[30px] bg-white rounded-2xl shadow-md">
-      <div className="flex-1">
-        {/* From City - To City */}
-        <div className="flex items-center gap-4">
-          <div className="text-gray-800 text-xl font-semibold font-dmsans">
-            {personType.fromCity} {personType.fromAirport}
-          </div>
-
-          <div className="flex justify-between items-center relative w-full">
-            <img
-              src="/img/travelCompanion/ellipseFilled.svg"
-              className="w-6 h-6"
-            />
-
-            <div className="relative flex-1 flex items-center justify-center mx-2">
-              <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 border-t border-dotted border-gray-400 z-0" />
-              <div className="bg-[#FFA41C] rounded-full p-2 z-10">
-                <img
-                  src="/img/travelCompanion/flight.svg"
-                  className="w-4 h-4"
-                />
-              </div>
+    <div className="w-full max-w-[400px] h-full flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:translate-y-[-4px] hover:shadow-xl">
+      <div className="flex-grow">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col items-center flex-1">
+            <span className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">From</span>
+            <div className="text-[#007185] text-lg font-bold font-dmsans text-center leading-tight">
+              {personType.fromCity}
+              <div className="text-gray-400 text-xs font-medium uppercase mt-1">({personType.fromAirport})</div>
             </div>
-
-            <img
-              src="/img/travelCompanion/ellipseOutline.svg"
-              className="w-6 h-6"
-            />
           </div>
 
-          <div className="text-gray-800 text-xl font-semibold font-dmsans">
-            {personType.toCity} {personType.toAirport}
+          <div className="flex-[0.5] flex flex-col items-center justify-center px-2">
+             <div className="w-full border-t border-dotted border-gray-300 relative flex justify-center">
+                <div className="absolute top-[-10px] bg-white p-1 rounded-full border border-gray-50 flex items-center justify-center z-10 shadow-sm transition-transform hover:scale-110">
+                   <img src="/img/travelCompanion/flight.svg" className="w-3.5 h-3.5 text-[#ffa41c]" style={{ filter: 'invert(75%) sepia(50%) saturate(1000%) hue-rotate(350deg)' }} />
+                </div>
+             </div>
+          </div>
+
+          <div className="flex flex-col items-center flex-1">
+            <span className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">To</span>
+            <div className="text-[#007185] text-lg font-bold font-dmsans text-center leading-tight">
+              {personType.toCity}
+              <div className="text-gray-400 text-xs font-medium uppercase mt-1">({personType.toAirport})</div>
+            </div>
           </div>
         </div>
 
-        {/* Flight Details */}
-
-        <div className="flex items-center justify-between mt-4">
-          {/* Date */}
-          <div className="flex flex-col gap-2 justify-center items-center">
-            <div className="text-gray-400 text-xl font-medium font-dmsans">
-              Date
-            </div>
-            <div className="text-gray-800 text-xl font-semibold font-dmsans">
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-50">
+            <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Travel Date</div>
+            <div className="text-gray-700 text-sm font-bold font-dmsans">
               {personType.travelDate}
             </div>
           </div>
-
-          {/* Time */}
-          <div className="flex flex-col gap-2 justify-center items-center">
-            <div className="text-gray-400 text-xl font-medium font-dmsans">
-              IST
-            </div>
-            <div className="text-gray-800 text-xl font-semibold font-dmsans">
-              {personType.departureTime}
-            </div>
-          </div>
-
-          {/* Travel Companion */}
-          <div className="flex flex-col gap-2 justify-center items-center">
-            <div className="text-gray-400 text-xl font-medium font-dmsans">
-              Travel Companion
-            </div>
-            <div className="text-gray-800 text-xl font-semibold font-dmsans">
-              {personType.travelCompanionGift}
+          <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-50">
+            <div className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Gift/Fee</div>
+            <div className="text-[#ffa41c] text-sm font-extrabold font-dmsans">
+              {personType.travelCompanionGift || "Discuss"}
             </div>
           </div>
         </div>
       </div>
 
-      <button className="px-5 py-2.5 text-white rounded-[57px] inline-flex justify-center items-center gap-2.5 bg-[#0857D0]">
-        <div className="justify-end text-base font-bold font-dmsans">
-          Chat with Travel Companion
-        </div>
-        <SmsOutlinedIcon />
-      </button>
+      <div className="mt-auto space-y-3">
+        <button className="w-full px-5 py-3 text-white rounded-xl inline-flex justify-center items-center gap-2.5 bg-[#007185] hover:bg-[#005a6a] transition-all font-bold text-sm shadow-sm">
+          Chat Now
+          <SmsOutlinedIcon sx={{ fontSize: '1.1rem' }} />
+        </button>
+      </div>
     </div>
   );
 }

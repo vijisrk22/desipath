@@ -11,8 +11,20 @@ export default function CarCard({ car }) {
   const [isFavorited, setIsFavorited] = useState(false);
   return (
     <Card
-      sx={{ minHeight: 450, maxWidth: 350, p: 1, borderRadius: 5 }}
-      className="relative"
+      sx={{ 
+        width: "100%", 
+        maxWidth: 400,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: 4,
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0 12px 24px rgba(0,0,0,0.12)"
+        }
+      }}
+      className="relative shadow-sm border border-gray-100"
     >
       <button
         onClick={() => setIsFavorited(!isFavorited)}
@@ -36,68 +48,64 @@ export default function CarCard({ car }) {
         image={
           car?.pictures && car.pictures.length > 0
             ? `${api.defaults.baseURL}/${car.pictures[0]}`
-            : "https://via.placeholder.com/167"
+            : "/img/cars/backgroundCarImg.png"
         }
         onError={(e) => {
           e.currentTarget.onerror = null;
-          e.currentTarget.src = "https://via.placeholder.com/167";
+          e.currentTarget.src = "/img/cars/backgroundCarImg.png";
         }}
         title="car"
         sx={{
-          height: 300,
-          objectFit: "cover", // optional, looks better
-          borderRadius: "15px", // optional, if you want rounded corners
+          height: 220,
+          objectFit: "cover",
+          p: 0
         }}
       />
-      <CardContent>
-        <div className="mx-3">
-          {/* Car make and model*/}
-          <div className="text-blue-700 text-lg font-semibold font-dmsans truncate">
-            {car.make} {car.model} – {car.year}
+      <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
+        <div className="flex justify-between items-start mb-2">
+          <div className="text-[#007185] text-[22px] font-bold font-dmsans truncate flex-1">
+            {car.make} {car.model}
           </div>
-
-          {/* Car Description */}
-          <div className="text-gray-800 text-sm font-normal font-dmsans truncate mt-1 mb-3">
-            {car.description}
+          <div className="text-gray-400 text-sm font-medium ml-2">
+            {car.year}
           </div>
+        </div>
 
-          {/* Car Main Features */}
-          <div className="border-t border-gray-200 py-2.5 flex gap-[75px] justify-center  items-center">
-            <div className="flex flex-col items-center gap-3">
-              <img src="/img/cars/mileage.png" className="w-4 h-4" />
-              <div className="text-gray-800 text-sm font-normal font-dmsans">
-                {car.miles ? `${Number(car.miles).toLocaleString()} mi` : "-"}
-              </div>
-            </div>
+        <div className="text-gray-500 text-sm font-normal font-dmsans line-clamp-2 min-h-[40px] mb-4">
+          {car.description || "No description available for this vehicle."}
+        </div>
 
-            <div className="flex flex-col items-center gap-3">
-              <img src="/img/cars/fuel.svg" />
-              <div className="text-gray-800 text-sm font-normal font-dmsans">
-                {typeof car.fuel_type === 'string' ? car.fuel_type : car.fuel_type?.name || car.fuelType?.name || "-"}
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center gap-3">
-              <img src="/img/cars/transmissionType.svg" />
-              <div className="text-gray-800 text-sm font-normal font-dmsans">
-                {car.transmission_name || car.transmission?.name || (typeof car.transmission === 'string' ? car.transmission : "-")}
-              </div>
+        <div className="border-t border-gray-100 py-4 flex justify-between items-center">
+          <div className="flex flex-col items-center gap-1.5 flex-1">
+            <img src="/img/cars/mileage.png" className="w-4 h-4 opacity-70" />
+            <div className="text-gray-600 text-xs font-semibold font-dmsans">
+              {car.miles ? `${Number(car.miles).toLocaleString()} mi` : "-"}
             </div>
           </div>
 
-          {/* Car Price and View Details */}
-
-          <div className="flex items-center justify-between mt-3">
-            <div className="text-gray-800 text-xl font-bold font-dmsans">
-              ${car.price}
+          <div className="flex flex-col items-center gap-1.5 flex-1 border-x border-gray-50">
+            <img src="/img/cars/fuel.svg" className="w-4 h-4 opacity-70" />
+            <div className="text-gray-600 text-xs font-semibold font-dmsans truncate w-full text-center px-1">
+              {typeof car.fuel_type === 'string' ? car.fuel_type : car.fuel_type?.name || car.fuelType?.name || "-"}
             </div>
-
-            <Link to={`/services/cars/buyCar/${car.id}`}>
-              <div className="text-blue-700 text-base font-medium font-dmsans leading-7">
-                View Details &#8594;
-              </div>
-            </Link>
           </div>
+
+          <div className="flex flex-col items-center gap-1.5 flex-1">
+            <img src="/img/cars/transmissionType.svg" className="w-4 h-4 opacity-70" />
+            <div className="text-gray-600 text-xs font-semibold font-dmsans truncate w-full text-center px-1">
+              {car.transmission_name || car.transmission?.name || (typeof car.transmission === 'string' ? car.transmission : "-")}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+          <div className="text-[#007185] text-2xl font-bold font-dmsans">
+            ${car.price ? Number(car.price).toLocaleString() : "TBD"}
+          </div>
+
+          <Link to={`/services/cars/buyCar/${car.id}`} className="px-5 py-2 bg-[#ffa41c] hover:bg-[#ff9900] rounded-full text-gray-800 text-sm font-bold transition-colors">
+            Details
+          </Link>
         </div>
       </CardContent>
     </Card>

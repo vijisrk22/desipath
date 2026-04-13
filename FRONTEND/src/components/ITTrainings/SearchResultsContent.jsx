@@ -40,29 +40,31 @@ function SearchResultsContent() {
   }
 
   return (
-    <div className="my-3.5">
-      <div className="text-cyan-700 text-3xl font-medium font-dmsans">
-        Choose from hundreds of IT Trainers and Training companies.
+    <div className="mt-12 mb-20">
+      <div className="mb-8">
+        <div className="text-[#007185] text-[32px] md:text-[40px] font-bold font-dmsans">
+          Recommended Courses
+        </div>
+        <div className="text-gray-500 text-base font-medium font-dmsans mt-2">
+          Found {searchResults.length} results for "<span className="text-[#007185] font-bold">{searchQuery}</span>"
+        </div>
       </div>
-      <p>
-        Here are the search results for your query{" "}
-        <span className="font-semibold">{searchQuery}</span>.
-      </p>
 
       {searchResults && searchResults.length > 0 ? (
-        <ul className="mt-4 space-y-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
           {displayedCourses.map((result) => (
             <CourseCard key={result.id} result={result} />
           ))}
-        </ul>
+        </div>
       ) : (
-        <p className="text-gray-500 mt-4">No results found.</p>
+        <div className="py-20 text-center text-gray-500 text-xl font-medium">
+          No courses found matching your query.
+        </div>
       )}
 
-      <div className="max-w-screen-lg mx-auto flex justify-around gap-12 items-center my-10 px-6 py-3 bg-white">
-        <div className="text-[#323232] text-sm font-normal font-dmsans">
-          {page}-{numsOfPage.toString().padStart(2, "0")} of{" "}
-          {searchResults.length} items
+      <div className="mx-auto flex flex-col md:flex-row justify-between gap-6 items-center mt-16 px-8 py-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div className="text-[#323232] text-sm font-medium font-dmsans">
+          Showing {startIndex + 1}-{Math.min(startIndex + coursesPerPage, searchResults.length)} of {searchResults.length} items
         </div>
         <Pagination
           count={numsOfPage}

@@ -15,64 +15,69 @@ export default function EventCard({ event }) {
 
   return (
     <Card
-      sx={{ maxWidth: 345, height: 650, borderRadius: 5 }}
-      className="relative"
+      sx={{ 
+        width: "100%", 
+        maxWidth: 400,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: 4,
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0 12px 24px rgba(0,0,0,0.12)"
+        }
+      }}
+      className="relative shadow-sm border border-gray-100"
     >
       <Link to={`/services/events/findEvent/${event.id}`}>
         <CardMedia
           component="img"
           image={event?.image}
           title={event?.title}
-          sx={{ p: 1 }}
+          sx={{ 
+            height: 240,
+            objectFit: "cover",
+            p: 0,
+          }}
         />
       </Link>
-      <CardContent>
-        <div className="mx-1">
-          {/* Event  title*/}
-          <div className=" text-blue-700 text-2xl font-bold font-dmsans">
-            {event.title}
-          </div>
-          {/* Event Location */}
-          <div className="justify-start items-center gap-[74px] inline-flex mt-2">
-            <div className="justify-start items-center gap-1 inline-flex">
-              <img
-                src="/location.svg"
-                className="w-[20px] h-[20px] text-color-blue-500 "
-              />
-              <div className="text-gray-500 text-sm font-medium font-dmsans capitalize">
-                {event.location}
-              </div>
+      <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
+        <div className="text-[#007185] text-[22px] font-bold font-dmsans truncate mb-3">
+          {event.title}
+        </div>
+        
+        <div className="flex flex-col gap-2 mb-4">
+          <div className="flex items-center gap-2 text-gray-500">
+            <img src="/location.svg" className="w-5 h-5 opacity-70" />
+            <div className="text-sm font-medium font-dmsans capitalize truncate">
+              {event.location}
             </div>
           </div>
-
-          {/* Event Date */}
-          <div className="justify-start items-center gap-[74px] inline-flex">
-            <div className="justify-start items-center gap-1 inline-flex">
-              <img src="/calendar.svg" className="w-[20px] h-[20px]" />
-              <div className="text-gray-500 text-sm font-medium font-dmsans capitalize">
-                {dayjs(event.date).format("ddd, DD/MM/YYYY [at] h:mm A")}
-              </div>
+          
+          <div className="flex items-center gap-2 text-gray-500">
+            <img src="/calendar.svg" className="w-5 h-5 opacity-70" />
+            <div className="text-sm font-medium font-dmsans capitalize">
+              {dayjs(event.date).format("ddd, DD/MM/YYYY [at] h:mm A")}
             </div>
           </div>
+        </div>
 
-          <div className="flex justify-between items-start  mt-3">
-            {/* Event Price */}
-            <div className="text-blue-700 text-xl font-bold font-dmsans">
-              {event.ticketPrice === 0 ? "Free" : event.ticketPrice}
-            </div>
+        <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
+          <div className="text-[#007185] text-xl font-bold font-dmsans">
+            {event.ticketPrice === 0 ? "Free" : event.ticketPrice}
+          </div>
 
-            <div>
-              <LikeButton
-                isFavorited={isFavorited}
-                setIsFavorited={setIsFavorited}
-              />
-              {/* Share button url */}
-              <ShareButton
-                url=""
-                IconComponent={ShareIcon}
-                iconProps={{ sx: { color: "#007185" } }}
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            <LikeButton
+              isFavorited={isFavorited}
+              setIsFavorited={setIsFavorited}
+            />
+            <ShareButton
+              url=""
+              IconComponent={ShareIcon}
+              iconProps={{ sx: { color: "#007185", fontSize: "1.25rem" } }}
+            />
           </div>
         </div>
       </CardContent>

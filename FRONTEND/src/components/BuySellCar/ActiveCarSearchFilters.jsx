@@ -1,0 +1,96 @@
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Chip, Stack } from "@mui/material";
+import { searchCar } from "../../store/CarsSlice";
+
+function ActiveCarSearchFilters() {
+    const dispatch = useDispatch();
+    const carsState = useSelector((state) => state.cars);
+    const lastSearchQuery = carsState?.lastSearchQuery;
+
+    if (!lastSearchQuery) return null;
+
+    const handleRemove = (key) => {
+        let newQuery = { ...lastSearchQuery };
+
+        if (key === "location") {
+            newQuery.location = "";
+        } else if (key === "price") {
+            delete newQuery.priceMin;
+            delete newQuery.priceMax;
+        } else if (key === "make") {
+            newQuery.carMake = "";
+            newQuery.carModel = "";
+        } else if (key === "model") {
+            newQuery.carModel = "";
+        }
+
+        dispatch(searchCar(newQuery));
+    };
+
+    const chips = [];
+
+    // Location Chip
+    if (lastSearchQuery.location) {
+        chips.push(
+            <Chip
+                key="location"
+                label={`Location: ${lastSearchQuery.location}`}
+                onDelete={() => handleRemove("location")}
+                color="primary"
+                variant="outlined"
+            />
+        );
+    }
+
+    // Price Chip
+    if (lastSearchQuery.priceMin !== undefined || lastSearchQuery.priceMax !== undefined) {
+        chips.push(
+            <Chip
+                key="price"
+                label={`Price: $${lastSearchQuery.priceMin || 0} - $${lastSearchQuery.priceMax || 'Any'}`}
+                onDelete={() => handleRemove("price")}
+                color="primary"
+                variant="outlined"
+            />
+        )
+    }
+
+    // Make Chip
+    if (lastSearchQuery.carMake) {
+        chips.push(
+            <Chip
+                key="make"
+                label={`Make: ${lastSearchQuery.carMake}`}
+                onDelete={() => handleRemove("make")}
+                color="primary"
+                variant="outlined"
+            />
+        );
+    }
+
+    // Model Chip
+    if (lastSearchQuery.carModel) {
+        chips.push(
+            <Chip
+                key="model"
+                label={`Model: ${lastSearchQuery.carModel}`}
+                onDelete={() => handleRemove("model")}
+                color="primary"
+                variant="outlined"
+            />
+        );
+    }
+
+    if (chips.length === 0) return null;
+
+    return (
+        <div className="py-2">
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                {chips}
+            </Stack>
+        </div>
+    );
+}
+
+export default ActiveCarSearchFilters;

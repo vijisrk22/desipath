@@ -17,20 +17,19 @@ function TravelCompanion() {
       {action === undefined && (
         <>
           {" "}
-          <div className="flex-grow px-[7%] py-16 min-h-screen ">
-            <div className="text-blue-700 text-5xl font-bold font-dmsans">
-              Travel companion
-            </div>
-            <div className="mt-4 text-gray-500 text-2xl font-medium font-dmsans leading-9">
-              Find the Travel companion for your spouse/parent who is travelling
-              to USA / from USA. <br />
-              Travel companion is a regular Traveller who is interested to help
-              any one travelling to USA /from USA. <br />
-              Some Travel companion may request an amazon gift card to keep them
-              motivated for spending time and helping.
+          <div className="flex-grow bg-[#f3f5f7] pb-20">
+            <div className="bg-[#007185] text-white px-[7%] py-20 mb-12">
+              <h1 className="text-4xl md:text-6xl font-extrabold font-dmsans mb-6">
+                Travel Companion
+              </h1>
+              <p className="max-w-3xl text-lg md:text-xl font-medium opacity-90 leading-relaxed">
+                Find the perfect travel companion for your spouse or parents. 
+                Whether you're looking for assistance on a long flight or want to offer 
+                your help as a regular traveler, Desipath connects you with the community.
+              </p>
             </div>
 
-            <div className="flex flex-wrap justify-start gap-x-40 gap-y-10 my-14">
+            <div className="px-[7%] grid grid-cols-1 md:grid-cols-2 gap-10">
               <CompanionCard
                 text="I am looking for a travel companion for my spouse/ parent"
                 path={`${location.pathname}/findCompanion`}

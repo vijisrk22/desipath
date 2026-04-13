@@ -98,7 +98,7 @@ function ActiveSearchFilters() {
     if (chips.length === 0) return null;
 
     return (
-        <div className="px-20 py-4">
+        <div className="py-2">
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 {chips}
             </Stack>

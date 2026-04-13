@@ -60,11 +60,17 @@ export const updateRoom = createAsyncThunk("roommates/updateRoom", async({roomId
 
 const roommatesSlice = createSlice({
     name: "roommates",
-    initialState:{
         rooms: [],
+        pagination: {
+            current_page: 1,
+            last_page: 1,
+            total: 0,
+            per_page: 9
+        },
         roomDetails: null,
         error: null,
         loading: false,
+        lastSearchQuery: null,
     },
     reducers:{
         setRooms: (state,action) =>{
@@ -84,7 +90,13 @@ const roommatesSlice = createSlice({
             })
             .addCase(fetchRooms.fulfilled, (state,action)=>{
                 state.loading = false;
-                state.rooms = action.payload || []; // Ensure rooms is an array
+                state.rooms = action.payload.data || [];
+                state.pagination = {
+                    current_page: action.payload.current_page || 1,
+                    last_page: action.payload.last_page || 1,
+                    total: action.payload.total || (action.payload.data ? action.payload.data.length : 0),
+                    per_page: action.payload.per_page || 9,
+                };
             })
             .addCase(fetchRooms.rejected, (state,action)=>{
                 state.loading = false;
@@ -121,13 +133,25 @@ const roommatesSlice = createSlice({
             })
             .addCase(searchRoom.fulfilled, (state, action) => {
                 state.loading = false;
-                console.log("Search result:", action.payload);
-                state.rooms = action.payload || [];  // Update rooms with the search result
+                state.rooms = action.payload.data || [];
+                state.pagination = {
+                    current_page: action.payload.current_page || 1,
+                    last_page: action.payload.last_page || 1,
+                    total: action.payload.total || (action.payload.data ? action.payload.data.length : 0),
+                    per_page: action.payload.per_page || 9,
+                };
+                state.lastSearchQuery = action.meta.arg;
             })
             .addCase(searchRoom.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to search rooms";
                 state.rooms = [];
+                state.pagination = {
+                    current_page: 1,
+                    last_page: 1,
+                    total: 0,
+                    per_page: 9
+                };
             })
             .addCase(deleteRoom.pending, (state) => {
                 state.loading = true;
