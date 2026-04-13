@@ -1,4 +1,5 @@
 import SearchFieldInput from "../SearchFieldInput";
+import DisplayPath from "../DisplayPath";
 
 function EventsHeader({ paths }) {
   const defaultPaths = [
