@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
 import { fetchEvents, searchEvents } from "../../store/EventsSlice";
-import { Link } from "react-router-dom";
-import EventsCategoryPills from "./EventsCategoryPills";
 import { useForm } from "react-hook-form";
 import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
+import MinimumDistanceSlider from "../PriceRangeSlider";
 
 function EventsBody() {
   const dispatch = useDispatch();
@@ -15,6 +14,7 @@ function EventsBody() {
   const eventsPerPage = 10;
 
   const { control, setValue, handleSubmit } = useForm();
+  const [priceRange, setPriceRange] = useState([0, 15000]);
 
   // Set events on mount
   useEffect(() => {
@@ -47,14 +47,18 @@ function EventsBody() {
       state,
       zipcode,
       eventType: [],
-      priceMin: 0,
-      priceMax: 1000,
+      priceMin: priceRange[0],
+      priceMax: priceRange[1],
     }));
   };
 
   const handleLocationSelect = () => {
     handleSubmit(onLocationSubmit)();
   };
+
+  useEffect(() => {
+    handleSubmit(onLocationSubmit)();
+  }, [priceRange]);
 
   const apiEvents = Array.isArray(events) ? events : [];
   const effectiveEvents = apiEvents;
@@ -70,34 +74,28 @@ function EventsBody() {
 
   return (
     <div className="w-full">
-      <div className="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
-        <h1 className="text-[#323232] text-2xl md:text-3xl font-bold font-dmsans whitespace-nowrap">
-          Events In Chennai
-        </h1>
+      <div className="mb-8 flex flex-col xl:flex-row justify-start items-start xl:items-center gap-6">
+        <form
+          onSubmit={handleSubmit(onLocationSubmit)}
+          className="w-full sm:w-[320px] bg-white rounded-[30px] shadow-sm flex items-center border border-gray-200"
+        >
+          <LocationAutocompleteInput
+            control={control}
+            setValue={setValue}
+            type="search"
+            onSelect={handleLocationSelect}
+          />
+        </form>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full xl:w-auto gap-4">
-          <form
-            onSubmit={handleSubmit(onLocationSubmit)}
-            className="w-full sm:w-[320px] bg-white rounded-[30px] shadow-sm flex items-center"
-          >
-            <LocationAutocompleteInput
-              control={control}
-              setValue={setValue}
-              type="search"
-              onSelect={handleLocationSelect}
-            />
-          </form>
-
-          <a
-            href="/services/events/postEvent"
-            className="px-6 py-2.5 bg-[#ffa41c] hover:bg-[#ff9900] transition-colors rounded-[57px] text-gray-800 text-sm font-bold font-dmsans whitespace-nowrap shadow-sm text-center"
-          >
-            Post An Event
-          </a>
+        <div className="w-full sm:w-[320px] bg-white rounded-[30px] shadow-sm flex items-center border border-gray-200 px-6 py-2">
+          <MinimumDistanceSlider
+            value={priceRange}
+            onChange={setPriceRange}
+            minRange={priceRange[0]}
+            maxRange={priceRange[1]}
+          />
         </div>
       </div>
-
-      <EventsCategoryPills />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
         {displayedEvents.length > 0 ? (
@@ -125,14 +123,14 @@ function EventsBody() {
           showLastButton
           sx={{
             "& .MuiPaginationItem-page": {
-              mx: "12px", // Adds spacing between page numbers
+              mx: "12px",
             },
             "& .MuiPaginationItem-page.Mui-selected": {
-              backgroundColor: "#ffa41c", // Sets the background color for the selected page
-              color: "white", // Ensures text is visible
+              backgroundColor: "#ffa41c",
+              color: "white",
             },
             "& .MuiPaginationItem-ellipsis": {
-              color: "#ffa41c", // Sets color for ellipsis (...)
+              color: "#ffa41c",
               fontWeight: "bold",
             },
             "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
