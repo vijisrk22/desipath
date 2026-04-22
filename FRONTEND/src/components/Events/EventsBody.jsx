@@ -72,7 +72,7 @@ function EventsBody() {
       <div className="mb-8">
         <form
           onSubmit={handleSubmit(onLocationSubmit)}
-          className="w-full sm:w-[320px] bg-white rounded-[30px] shadow-sm flex items-center border border-gray-200"
+          className="w-full sm:w-[320px]"
         >
           <LocationAutocompleteInput
             control={control}
