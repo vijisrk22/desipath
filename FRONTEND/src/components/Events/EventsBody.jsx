@@ -69,11 +69,7 @@ function EventsBody() {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-        <h1 className="text-[#323232] text-2xl md:text-3xl font-bold font-dmsans whitespace-nowrap">
-          Events In Chennai
-        </h1>
-
+      <div className="mb-8">
         <form
           onSubmit={handleSubmit(onLocationSubmit)}
           className="w-full sm:w-[320px] bg-white rounded-[30px] shadow-sm flex items-center border border-gray-200"
@@ -85,10 +81,6 @@ function EventsBody() {
             onSelect={handleLocationSelect}
           />
         </form>
-      </div>
-
-      <div className="mb-8">
-        <EventsCategoryPills />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
