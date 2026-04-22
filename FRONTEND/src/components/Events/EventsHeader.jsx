@@ -1,4 +1,3 @@
-import SearchFieldInput from "../SearchFieldInput";
 import DisplayPath from "../DisplayPath";
 
 function EventsHeader({ paths }) {
@@ -11,21 +10,13 @@ function EventsHeader({ paths }) {
   const breadcrumbs = paths || defaultPaths;
 
   return (
-    <div className="bg-sky-50 px-[7%] pb-14">
-      {/*Events Header path and search bar  */}
+    <div className="bg-sky-50 px-[7%] pb-8 pt-4">
+      {/*Events Header path */}
       <DisplayPath
         paths={breadcrumbs}
         color="gray-500"
-        additionalStyles="leading-tight"
+        additionalStyles="leading-tight mb-2"
       />
-
-      {/*Standardized Search Bar*/}
-      <div className="mt-10 max-w-7xl mx-auto">
-        <SearchFieldInput 
-          inputs={["location", "eventType"]} 
-          title="Find an Event" 
-        />
-      </div>
     </div>
   );
 }
