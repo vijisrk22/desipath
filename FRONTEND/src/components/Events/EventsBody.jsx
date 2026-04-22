@@ -3,19 +3,58 @@ import EventCard from "./EventCard";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
-import { fetchEvents } from "../../store/EventsSlice";
+import { fetchEvents, searchEvents } from "../../store/EventsSlice";
 import { Link } from "react-router-dom";
 import EventsCategoryPills from "./EventsCategoryPills";
+import { useForm } from "react-hook-form";
+import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
 
 function EventsBody() {
   const dispatch = useDispatch();
   const { loading, error, events } = useSelector((state) => state.events);
   const eventsPerPage = 10;
 
+  const { control, setValue, handleSubmit } = useForm();
+
   // Set events on mount
   useEffect(() => {
     dispatch(fetchEvents());
   }, [dispatch]);
+
+  const onLocationSubmit = (data) => {
+    const parseLocation = (loc) => {
+      if (!loc) return { city: "", state: "", zipcode: "" };
+      const parts = loc.split(",").map((s) => s.trim());
+      let city = "", state = "", zipcode = "";
+      if (parts.length >= 3) {
+        city = parts[0];
+        state = parts[1];
+        zipcode = parts[2];
+      } else if (parts.length === 2) {
+        city = parts[0];
+        state = parts[1];
+      } else {
+        city = parts[0];
+        state = parts[0];
+        zipcode = parts[0];
+      }
+      return { city, state, zipcode };
+    };
+
+    const { city, state, zipcode } = parseLocation(data?.location);
+    dispatch(searchEvents({
+      city,
+      state,
+      zipcode,
+      eventType: [],
+      priceMin: 0,
+      priceMax: 1000,
+    }));
+  };
+
+  const handleLocationSelect = () => {
+    handleSubmit(onLocationSubmit)();
+  };
 
   const apiEvents = Array.isArray(events) ? events : [];
   const effectiveEvents = apiEvents;
@@ -31,15 +70,27 @@ function EventsBody() {
 
   return (
     <div className="w-full">
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <h1 className="text-[#323232] text-2xl md:text-3xl font-bold font-dmsans">
+      <div className="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+        <h1 className="text-[#323232] text-2xl md:text-3xl font-bold font-dmsans whitespace-nowrap">
           Events In Chennai
         </h1>
 
-        <div className="flex items-center gap-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full xl:w-auto gap-4">
+          <form
+            onSubmit={handleSubmit(onLocationSubmit)}
+            className="w-full sm:w-[320px] bg-white rounded-[30px] shadow-sm flex items-center"
+          >
+            <LocationAutocompleteInput
+              control={control}
+              setValue={setValue}
+              type="search"
+              onSelect={handleLocationSelect}
+            />
+          </form>
+
           <a
             href="/services/events/postEvent"
-            className="px-6 py-2.5 bg-[#ffa41c] hover:bg-[#ff9900] transition-colors rounded-[57px] text-gray-800 text-sm font-bold font-dmsans whitespace-nowrap shadow-sm"
+            className="px-6 py-2.5 bg-[#ffa41c] hover:bg-[#ff9900] transition-colors rounded-[57px] text-gray-800 text-sm font-bold font-dmsans whitespace-nowrap shadow-sm text-center"
           >
             Post An Event
           </a>

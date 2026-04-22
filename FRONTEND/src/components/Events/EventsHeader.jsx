@@ -10,7 +10,7 @@ function EventsHeader({ paths }) {
   const breadcrumbs = paths || defaultPaths;
 
   return (
-    <div className="bg-sky-50 px-[7%] pb-8 pt-4">
+    <div className="px-[7%] pt-2">
       {/*Events Header path */}
       <DisplayPath
         paths={breadcrumbs}
