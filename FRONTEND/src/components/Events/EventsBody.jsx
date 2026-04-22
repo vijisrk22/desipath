@@ -6,7 +6,7 @@ import Loader from "../Loader";
 import { fetchEvents, searchEvents } from "../../store/EventsSlice";
 import { useForm } from "react-hook-form";
 import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
-import MinimumDistanceSlider from "../PriceRangeSlider";
+import EventsCategoryPills from "./EventsCategoryPills";
 
 function EventsBody() {
   const dispatch = useDispatch();
@@ -14,8 +14,7 @@ function EventsBody() {
   const eventsPerPage = 10;
 
   const { control, setValue, handleSubmit } = useForm();
-  const [priceRange, setPriceRange] = useState([0, 15000]);
-
+  
   // Set events on mount
   useEffect(() => {
     dispatch(fetchEvents());
@@ -47,18 +46,14 @@ function EventsBody() {
       state,
       zipcode,
       eventType: [],
-      priceMin: priceRange[0],
-      priceMax: priceRange[1],
+      priceMin: 0,
+      priceMax: 15000,
     }));
   };
 
   const handleLocationSelect = () => {
     handleSubmit(onLocationSubmit)();
   };
-
-  useEffect(() => {
-    handleSubmit(onLocationSubmit)();
-  }, [priceRange]);
 
   const apiEvents = Array.isArray(events) ? events : [];
   const effectiveEvents = apiEvents;
@@ -74,7 +69,11 @@ function EventsBody() {
 
   return (
     <div className="w-full">
-      <div className="mb-8 flex flex-col xl:flex-row justify-start items-start xl:items-center gap-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+        <h1 className="text-[#323232] text-2xl md:text-3xl font-bold font-dmsans whitespace-nowrap">
+          Events In Chennai
+        </h1>
+
         <form
           onSubmit={handleSubmit(onLocationSubmit)}
           className="w-full sm:w-[320px] bg-white rounded-[30px] shadow-sm flex items-center border border-gray-200"
@@ -86,15 +85,10 @@ function EventsBody() {
             onSelect={handleLocationSelect}
           />
         </form>
+      </div>
 
-        <div className="w-full sm:w-[320px] bg-white rounded-[30px] shadow-sm flex items-center border border-gray-200 px-6 py-2">
-          <MinimumDistanceSlider
-            value={priceRange}
-            onChange={setPriceRange}
-            minRange={priceRange[0]}
-            maxRange={priceRange[1]}
-          />
-        </div>
+      <div className="mb-8">
+        <EventsCategoryPills />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
