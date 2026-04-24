@@ -9,6 +9,7 @@ import Chat from "./components/Chat/Chat";
 import BuySellHouse from "./pages/BuySellHouse/BuySellHouse";
 import HouseDetails from "./pages/BuySellHouse/HouseDetails";
 import RentalHome from "./pages/RentalHome/RentalHome";
+import RentalHomeDetails from "./pages/RentalHome/RentalHomeDetails";
 import BuySellCar from "./pages/BuySellCar/BuySellCar";
 import CarDetails from "./pages/BuySellCar/CarDetails";
 import TravelCompanion from "./pages/TravelCompanion/TravelCompanion";
@@ -23,6 +24,19 @@ import ClassesForKids from "./pages/ClassesForKids/ClassesForKids";
 import EditProfile from "./components/User/EditProfile";
 import MyListings from "./components/User/MyListings";
 import ProfileLayout from "./components/User/ProfileLayout";
+import KidsClassLanding from "./pages/KidsClass/KidsClassLanding";
+import KidsClassSubcategory from "./pages/KidsClass/KidsClassSubcategory";
+import KidsClassDetails from "./pages/KidsClass/KidsClassDetails";
+import InstructorPortal from "./pages/KidsClass/InstructorPortal/InstructorPortal";
+import InstructorSuccess from "./pages/KidsClass/InstructorPortal/InstructorSuccess";
+import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
+import KidsClassAdmin from "./pages/AdminDashboard/KidsClassAdmin";
+import ListingAdmin from "./pages/AdminDashboard/ListingAdmin";
+import PostAdPage from "./pages/PostAdPage";
+import AboutUs from "./pages/AboutUs";
+import Contact from "./pages/Contact";
+import UsersAdmin from "./pages/AdminDashboard/UsersAdmin";
+
 
 function App() {
   return (
@@ -32,8 +46,11 @@ function App() {
         <Route index element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/postad" element={<PostAdPage />} />
+        <Route path="/aboutus" element={<AboutUs />} />
+        <Route path="/contact" element={<Contact />} />
         <Route
-          path="/chat"
+          path="/inbox"
           element={
             <PrivateRoute>
               <Chat />
@@ -44,7 +61,7 @@ function App() {
           path="/profile"
           element={
             <PrivateRoute>
-              <ProfileLayout /> {/* Shared layout with <Outlet /> */}
+              <ProfileLayout />
             </PrivateRoute>
           }
         >
@@ -56,44 +73,87 @@ function App() {
         <Route path="/services">
           {/* Roommates */}
           <Route path="roommates/:action?" element={<Roommates />} />
+          <Route path="roommates/:action/:roomId" element={<Roommates />} />
 
           {/* Buy/Sell House */}
           <Route path="houses/:action?" element={<BuySellHouse />} />
-          <Route path="houses/:action/:houseId" element={<HouseDetails />} />
+          <Route path="houses/:action/:houseId" element={<BuySellHouse />} />
 
           {/* Rental Home */}
-          <Route path="rentalHomes/:action?" element={<RentalHome />} />
-          <Route path="rentalHomes/:action/:homeId" element={<RentalHome />} />
+          <Route path="rentalhomes/:action?" element={<RentalHome />} />
+          <Route path="rentalhomes/:action/:homeId" element={<RentalHome />} />
 
           {/* Buy/Sell Car */}
           <Route path="cars/:action?" element={<BuySellCar />} />
-          <Route path="cars/:action/:carId" element={<CarDetails />} />
+          <Route path="cars/:action/:carId" element={<BuySellCar />} />
+          
+          {/* Events */}
+          <Route path="events/:action?" element={<EventsLanding />} />
+          <Route path="events/:action/:eventId" element={<EventsLanding />} />
 
-          {/* Travel Companion */}
           <Route
             path="travelCompanion/:action?"
             element={<TravelCompanion />}
           />
-
-          {/* IT Trainings */}
           <Route path="itTrainings/:action?" element={<ITTrainings />} />
           <Route
             path="itTrainings/:action/:courseId"
             element={<CourseDetailsPage />}
           />
-
-          {/* Events */}
-          <Route path="events/:action?" element={<EventsLanding />} />
-          <Route path="events/:action/:eventId" element={<EventDetails />} />
-
-          {/* Astrology Ads */}
           <Route path="astrologyAds/:action?" element={<AstrologyAds />} />
-          
-          {/* Classes For Kids */}
           <Route path="classesForKids/:action?" element={<ClassesForKids />} />
         </Route>
+
+        <Route path="/kids-class" element={<KidsClassLanding />} />
+        
+        {/* Unified Admin Dashboard */}
+        <Route path="/admindashboard" element={<AdminDashboard />}>
+          <Route index element={<div className="p-10 font-bold text-gray-500 text-xl text-center">
+            <div className="text-6xl mb-4">👑</div>
+            Welcome to Desipath Master Control.<br/>Select a module from the left to manage the marketplace.
+          </div>} />
+          <Route path="users" element={<UsersAdmin />} />
+          <Route path="kids-class" element={<KidsClassAdmin />} />
+          <Route path="rental-homes" element={<ListingAdmin endpoint="/api/rentalhomes" title="Rental Homes" categoryIcon="🏘️" />} />
+          <Route path="roommates" element={<ListingAdmin endpoint="/api/roommates" title="Roommates" categoryIcon="👥" />} />
+          <Route path="cars" element={<ListingAdmin endpoint="/api/cars" title="Buy/Sell Cars" categoryIcon="🚗" />} />
+          <Route path="houses" element={<ListingAdmin endpoint="/api/homes" title="Buy/Sell House" categoryIcon="🏡" customBasePath="houses" />} />
+          <Route path="events" element={<ListingAdmin endpoint="/api/events" title="Events" categoryIcon="🎟️" />} />
+          <Route path="travel" element={<ListingAdmin endpoint="/api/travelcompanions" title="Travel Companion" categoryIcon="✈️" customBasePath="travelCompanion" />} />
+          <Route path="trainings" element={<ListingAdmin endpoint="/api/trainingads" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
+          <Route path="*" element={<div className="p-10 font-bold text-gray-500">Module coming soon...</div>} />
+        </Route>
+
+        <Route
+          path="/kids-class/instructor-portal"
+          element={
+            <PrivateRoute>
+              <InstructorPortal />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/kids-class/instructor-portal/edit/:id"
+          element={
+            <PrivateRoute>
+              <InstructorPortal />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/kids-class/instructor-portal/success"
+          element={
+            <PrivateRoute>
+              <InstructorSuccess />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/kids-class/details/:id" element={<KidsClassDetails />} />
+        <Route path="/kids-class/:categorySlug/:subcategorySlug" element={<KidsClassSubcategory />} />
+
       </Route>
     </Routes>
   );
 }
+
 export default App;

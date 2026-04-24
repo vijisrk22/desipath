@@ -14,34 +14,55 @@ export default function SelectInput({
   return (
     <FormControl
       sx={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
         width: "100%",
-        gap: "1rem",
-        borderBottom: "1px solid ",
-        borderBottomColor: "grey.300",
-        py: "1rem",
+        py: "0.75rem",
+        gap: "0.5rem",
       }}
     >
-      <FormLabel>{label}</FormLabel>
+      <FormLabel 
+        sx={{ 
+          color: "gray.800", 
+          fontWeight: "bold", 
+          fontSize: "1rem",
+          fontFamily: "dmsans" 
+        }}
+      >
+        {label}
+      </FormLabel>
 
-      <FormControl fullWidth>
-        <InputLabel id={label}>{label}</InputLabel>
+      <div className="w-full">
         <Controller
           name={name}
           control={control}
           rules={{
-            required: "This field is required", // Add the required rule
+            required: "This field is required", 
           }}
           render={({ field, fieldState }) => (
             <>
               <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
+                {...field}
+                labelId={label}
+                id={name}
                 value={field.value ?? ""}
-                label={label}
-                onChange={(e) => field.onChange(e.target.value)}
+                fullWidth
+                sx={{ 
+                  borderRadius: "12px",
+                  border: "1.5px solid #ccc",
+                  transition: "border-color 0.2s",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    border: "none",
+                  },
+                  "&:hover": {
+                    borderColor: "#999",
+                  },
+                  "&.Mui-focused": {
+                    borderColor: "#ffa41c",
+                    borderWidth: "1.5px",
+                  },
+                }}
               >
                 {data?.map((val, index) => (
                   <MenuItem key={index} value={val}>
@@ -50,14 +71,14 @@ export default function SelectInput({
                 ))}
               </Select>
               {fieldState?.error && (
-                <FormHelperText error>
+                <FormHelperText error sx={{ mt: 0.5 }}>
                   {fieldState.error.message}
                 </FormHelperText>
               )}
             </>
           )}
         />
-      </FormControl>
+      </div>
     </FormControl>
   );
 }

@@ -68,7 +68,7 @@ function PhotoUpload({ images, setImages, title = "Upload Photos (Max 10)" }) {
           const isFile = image instanceof File;
           const imageUrl = isFile
             ? URL.createObjectURL(image)
-            : `${api.defaults.baseURL}/${image}`;
+            : `https://desipathapi.azurewebsites.net/${image}`;
           return (
             <div key={index} className="relative">
               <img

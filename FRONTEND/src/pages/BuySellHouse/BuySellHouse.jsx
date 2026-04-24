@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
@@ -7,9 +8,15 @@ import ServiceHeroSection from "../../components/ServiceHeroSection";
 import BuyHouse from "./BuyHouse";
 import SellHouse from "./SellHouse";
 import PostConfirmation from "../PostConfirmation";
-
+import HouseDetails from "./HouseDetails";
 function BuySellHouse() {
   const { action } = useParams();
+  const location = useLocation();
+  const { user } = useSelector((state) => state.user);
+
+  if ((action === "sellHouse" || action === "edit") && !user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -28,7 +35,7 @@ function BuySellHouse() {
     <div className="flex flex-col min-h-screen overflow-y-auto ">
       <Navbar />
 
-      {action === undefined && (
+      {action === undefined ? (
         <>
           {" "}
           <div className="flex-grow bg-[#f0f8ff]">
@@ -41,15 +48,17 @@ function BuySellHouse() {
             <Footer newsletter={"block"} />
           </div>
         </>
-      )}
-
-      {action === "buyHouse" && <BuyHouse />}
-      {action === "sellHouse" && <SellHouse />}
-      {action === "postConfirmation" && (
+      ) : action === "buyHouse" ? (
+        <BuyHouse />
+      ) : (action === "sellHouse" || action === "edit") ? (
+        <SellHouse />
+      ) : action === "postConfirmation" ? (
         <PostConfirmation 
           redirectTo="/services/houses/buyHouse" 
           message="Thanks for using Desipath. Your house listing is live!" 
         />
+      ) : (
+        <HouseDetails />
       )}
     </div>
   );

@@ -41,7 +41,7 @@ function ImageScroller({ images, autoAdvance = true, intervalMs = 3500 }) {
 
   const src = images[currentIndex].startsWith("data:")
     ? images[currentIndex]
-    : `${api.defaults.baseURL}/${images[currentIndex]}`;
+    : `https://desipathapi.azurewebsites.net/${images[currentIndex]}`;
 
   return (
     <div

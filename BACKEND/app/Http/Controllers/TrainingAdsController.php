@@ -188,4 +188,16 @@ public function dummyInsert()
 
         return response()->json(['message' => 'Training ad deleted successfully']);
     }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = TrainingAd::where('user_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = TrainingAd::where('user_id', $request->user()->id)->get();
+        return response()->json($listings);
+    }
 }

@@ -5,30 +5,72 @@ import PhotoUpload from "../InputTemplate/PhotoUpload";
 import DescriptionInput from "../InputTemplate/DescriptionInput";
 import TextFieldInput from "../InputTemplate/TextFieldInput";
 import ReviewEventPost from "./ReviewEventPost";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import api from "../../utils/api";
 import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
+import dayjs from "dayjs";
 
 function PostEventForm() {
+  const { action, eventId } = useParams();
+  const isEdit = action === "edit";
+
   const {
     handleSubmit,
     control,
     setValue,
+    reset,
     formState: { errors },
   } = useForm();
   const [reviewSession, setReviewSession] = useState(false);
   const [formDetails, setFormDetails] = useState(null);
   const [coverImages, setCoverImages] = useState([]);
   const [posterImages, setPosterImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isEdit && eventId) {
+      setLoading(true);
+      api.get(`/api/events/${eventId}`)
+        .then(res => {
+          const data = res.data;
+          if (data.fromDate) data.fromDate = dayjs(data.fromDate);
+          reset(data);
+          if (data.cover_images) {
+             try {
+               const parsed = typeof data.cover_images === 'string' ? JSON.parse(data.cover_images) : data.cover_images;
+               setCoverImages(Array.isArray(parsed) ? parsed : []);
+             } catch (e) {
+               console.error("Cover image parse error:", e);
+               setCoverImages([]);
+             }
+          } else {
+             setCoverImages([]);
+          }
+          if (data.poster_images) {
+             try {
+               const parsed = typeof data.poster_images === 'string' ? JSON.parse(data.poster_images) : data.poster_images;
+               setPosterImages(Array.isArray(parsed) ? parsed : []);
+             } catch (e) {
+               console.error("Poster image parse error:", e);
+               setPosterImages([]);
+             }
+          } else {
+             setPosterImages([]);
+          }
+        })
+        .catch(err => console.error("Error fetching event for edit:", err))
+        .finally(() => setLoading(false));
+    }
+  }, [isEdit, eventId, reset]);
 
   const onSubmit = (data) => {
     if (Object.keys(errors).length === 0) {
-      // Only show review if no errors
       console.log("Submitting data:", data);
-      const finalData = { ...data, coverImages, posterImages };
+      const finalData = { ...data, coverImages, posterImages, id: eventId };
       console.log("Final data for review:", finalData);
       setFormDetails(finalData);
       setReviewSession(true);
-      console.log("Set review session to true");
     } else {
       console.log("Form contains errors", errors);
     }
@@ -116,8 +158,13 @@ function PostEventForm() {
 
         <DescriptionInput name="description" control={control} />
 
-        <button className="mt-8 w-full px-10 py-4 bg-[#ffa41c] rounded-[10px] text-center text-gray-800 text-lg font-semibold font-dmsans">
-          Review Post
+        {loading && (
+          <div className="absolute inset-0 bg-white/60 z-50 flex items-center justify-center rounded-2xl">
+            <div className="w-10 h-10 border-4 border-[#ffa41c] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
+        <button className="mt-8 w-full px-10 py-4 bg-[#ffa41c] rounded-[10px] text-center text-gray-800 text-lg font-semibold font-dmsans hover:bg-[#e8931a] transition-colors">
+          {isEdit ? 'Review Changes' : 'Review Post'}
         </button>
       </form>
     </div>

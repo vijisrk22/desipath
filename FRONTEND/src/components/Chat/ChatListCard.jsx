@@ -36,7 +36,7 @@ function ChatListCard({ chat, onClick }) {
 
     try {
       navigate(
-        `/chat?adType=${chat.ad_type}&adId=${
+        `/inbox?adType=${chat.ad_type}&adId=${
           chat.ad_id
         }&chatPartnerInfo=${encodeURIComponent(
           JSON.stringify(chatPartnerInfo)

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Auth\GoogleAuthController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\EventsController;
+use App\Http\Controllers\InstructorController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -99,123 +100,119 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cars/{id}', [CarController::class, 'destroy'])->where('id', '[0-9]+');
 });
 
+// --- Public Rental Home Routes ---
+Route::prefix('rentalhomes')->group(function () {
+    Route::get('/', [RentalHomesController::class, 'index']);
+    Route::get('/{id}', [RentalHomesController::class, 'show'])->where('id', '[0-9]+');
+    Route::post('/search', [RentalHomesController::class, 'search']);
+});
+
+// --- Public Roommates Routes ---
+Route::prefix('roommates')->group(function () {
+    Route::get('/', [RoomMatesController::class, 'index']);
+    Route::get('/{id}', [RoomMatesController::class, 'show']);
+    Route::post('/search', [RoomMatesController::class, 'search']);
+});
+
+// --- Public House/Homes Routes ---
+Route::prefix('homes')->group(function () {
+    Route::get('/', [HomesController::class, 'index']);
+    Route::get('/{id}', [HomesController::class, 'show']);
+    Route::post('/search', [HomesController::class, 'search']);
+});
+
+// --- Auth Protected Write Routes ---
 Route::middleware('auth:sanctum')->group(function () {
-// Route::middleware([])->group(function () {
-    Route::get('/homes', [HomesController::class, 'index']);        // Get list of homes
-    Route::post('/homes', [HomesController::class, 'store']);            // Create a new home listing
+    // Rental Homes
+    Route::post('/rentalhomes', [RentalHomesController::class, 'store']);
+    Route::post('/rentalhomes/dummy-insert', [RentalHomesController::class, 'dummyInsert']);
+    Route::put('/rentalhomes/{id}', [RentalHomesController::class, 'update'])->where('id', '[0-9]+');
+    Route::delete('/rentalhomes/{id}', [RentalHomesController::class, 'destroy'])->where('id', '[0-9]+');
+
+    // Roommates
+    Route::post('/roommates', [RoomMatesController::class, 'store']);
+    Route::post('/roommates/dummy-insert', [RoomMatesController::class, 'dummyInsert']);
+    Route::put('/roommates/{id}', [RoomMatesController::class, 'update']);
+    Route::delete('/roommates/{id}', [RoomMatesController::class, 'destroy']);
+
+    // Houses/Homes
+    Route::post('/homes', [HomesController::class, 'store']);
     Route::post('/homes/dummy-insert', [HomesController::class, 'dummyInsert']);
-    Route::get('/homes/{id}', [HomesController::class, 'show']);         // Get details of a specific home
-    Route::put('/homes/{id}', [HomesController::class, 'update']);       // Update an existing home listing
-    Route::delete('/homes/{id}', [HomesController::class, 'destroy']);   // Delete a home listing
-    Route::post('/homes/search', [HomesController::class, 'search']);     // Search the room mate
+    Route::put('/homes/{id}', [HomesController::class, 'update']);
+    Route::delete('/homes/{id}', [HomesController::class, 'destroy']);
 });
 
+// --- Public Training Ads Routes ---
+Route::prefix('trainingads')->group(function () {
+    Route::get('/', [TrainingAdsController::class, 'index']);
+    Route::get('/{id}', [TrainingAdsController::class, 'show']);
+});
+
+// --- Public Astrology Ads Routes ---
+Route::prefix('astrologyads')->group(function () {
+    Route::get('/', [AstrologyAdsController::class, 'index']);
+    Route::get('/{id}', [AstrologyAdsController::class, 'show']);
+});
+
+// --- Public Classes For Kids Ads (Legacy) Routes ---
+Route::prefix('classesforkidsads')->group(function () {
+    Route::get('/', [ClassesforKidsAdsController::class, 'index']);
+    Route::get('{id}', [ClassesforKidsAdsController::class, 'show']);
+});
+
+// --- Public Travel Companion Routes ---
+Route::prefix('travelcompanions')->group(function () {
+    Route::get('/', [TravelCompanionsController::class, 'index']);
+    Route::get('/{id}', [TravelCompanionsController::class, 'show']);
+    Route::post('/findcomplocation', [TravelCompanionsController::class, 'findcomplocation']);
+});
+
+// --- Auth Protected Write Routes (Remaining Modules) ---
 Route::middleware('auth:sanctum')->group(function () {
-// Route::middleware([])->group(function () {
-    Route::prefix('rentalhomes')->group(function () {
-        Route::get('/', [RentalHomesController::class, 'index']);               // GET /api/rentalhomes - List all rental homes
-        Route::post('/', [RentalHomesController::class, 'store']);              // POST /api/rentalhomes - Create a new rental home
-        Route::post('/dummy-insert', [RentalHomesController::class, 'dummyInsert']);    // GET /api/rentalhomes/dummy - Insert a dummy rental home
-        Route::get('/{id}', [RentalHomesController::class, 'show'])->where('id', '[0-9]+');            // GET /api/rentalhomes/{id} - Show a specific rental home
-        Route::put('/{id}', [RentalHomesController::class, 'update'])->where('id', '[0-9]+');          // PUT /api/rentalhomes/{id} - Update a specific rental home
-        Route::delete('/{id}', [RentalHomesController::class, 'destroy'])->where('id', '[0-9]+');      // DELETE /api/rentalhomes/{id} - Delete a specific rental home
-        Route::post('/search', [RentalHomesController::class, 'search']);     // Search the room mate
-    });
+    // Training Ads
+    Route::post('/trainingads', [TrainingAdsController::class, 'store']);
+    Route::put('/trainingads/{id}', [TrainingAdsController::class, 'update']);
+    Route::delete('/trainingads/{id}', [TrainingAdsController::class, 'destroy']);
+    Route::post('/trainingads/dummy-insert', [TrainingAdsController::class, 'dummyInsert']);
+
+    // Astrology Ads
+    Route::post('/astrologyads', [AstrologyAdsController::class, 'store']);
+    Route::put('/astrologyads/{id}', [AstrologyAdsController::class, 'update']);
+    Route::delete('/astrologyads/{id}', [AstrologyAdsController::class, 'destroy']);
+    Route::post('/astrologyads/dummy-insert', [AstrologyAdsController::class, 'dummyInsert']);
+
+    // Classes For Kids Ads (Legacy)
+    Route::post('/classesforkidsads', [ClassesforKidsAdsController::class, 'store']);
+    Route::put('/classesforkidsads/{id}', [ClassesforKidsAdsController::class, 'update']);
+    Route::delete('/classesforkidsads/{id}', [ClassesforKidsAdsController::class, 'destroy']);
+    Route::post('/classesforkidsads/dummy-insert', [ClassesforKidsAdsController::class, 'dummyInsert']);
+
+    // Travel Companions
+    Route::post('/travelcompanions', [TravelCompanionsController::class, 'store']);
+    Route::put('/travelcompanions/{id}', [TravelCompanionsController::class, 'update']);
+    Route::delete('/travelcompanions/{id}', [TravelCompanionsController::class, 'destroy']);
+    Route::post('/travelcompanions/dummy-insert', [TravelCompanionsController::class, 'dummyInsert']);
 });
 
+// --- Auth Protected User-Specific Data Retrieval ---
 Route::middleware('auth:sanctum')->group(function () {
-// Route::middleware([])->group(function () {
-    Route::prefix('roommates')->group(function () {
-        Route::get('/', [RoomMatesController::class, 'index']);             // List all room mates
-        Route::post('/', [RoomMatesController::class, 'store']);            // Create a new room mate
-        Route::post('/search', [RoomMatesController::class, 'search']);     // Search the room mate
-        Route::get('/{id}', [RoomMatesController::class, 'show']);          // Show a specific room mate
-        Route::put('/{id}', [RoomMatesController::class, 'update']);        // Update a specific room mate
-        Route::delete('/{id}', [RoomMatesController::class, 'destroy']);    // Delete a specific room mate
-        Route::post('/dummy-insert', [RoomMatesController::class, 'dummyInsert']); // Insert dummy data for testing
-    });
-});
+    // High-Performance User Listings (only returns the authenticated user's ads)
+    Route::get('/cars/my-listings', [CarController::class, 'getMyListings']);
+    Route::get('/rentalhomes/my-listings', [RentalHomesController::class, 'getMyListings']);
+    Route::get('/roommates/my-listings', [RoomMatesController::class, 'getMyListings']);
+    Route::get('/homes/my-listings', [HomesController::class, 'getMyListings']);
+    Route::get('/trainingads/my-listings', [TrainingAdsController::class, 'getMyListings']);
+    Route::get('/travelcompanions/my-listings', [TravelCompanionsController::class, 'getMyListings']);
+    Route::get('/events/my-listings', [EventsController::class, 'getMyListings']);
 
-Route::middleware('auth:sanctum')->group(function () { 
-// Route::middleware([])->group(function () {
-    Route::prefix('trainingads')->group(function () {
-        // Get all training ads
-        Route::get('/', [TrainingAdsController::class, 'index']);
-
-        // Create a new training ad
-        Route::post('/', [TrainingAdsController::class, 'store']);
-
-        // Get a specific training ad by ID
-        Route::get('/{id}', [TrainingAdsController::class, 'show']);
-
-        // Update a specific training ad by ID
-        Route::put('/{id}', [TrainingAdsController::class, 'update']);
-
-        // Delete a specific training ad by ID
-        Route::delete('/{id}', [TrainingAdsController::class, 'destroy']);
-
-        // Insert dummy data into the training ads table
-        Route::post('/dummy-insert', [TrainingAdsController::class, 'dummyInsert']);
-    });
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-// Route::middleware([])->group(function () {
-    Route::prefix('astrologyads')->group(function () {
-    // Get list of astrology ads
-    Route::get('/', [AstrologyAdsController::class, 'index'])->name('astrologyads.index');
-
-    // Create a new astrology ad
-    Route::post('/', [AstrologyAdsController::class, 'store'])->name('astrologyads.store');
-
-    // Get details of a specific astrology ad
-    Route::get('/{id}', [AstrologyAdsController::class, 'show'])->name('astrologyads.show');
-
-    // Update an existing astrology ad
-    Route::put('/{id}', [AstrologyAdsController::class, 'update'])->name('astrologyads.update');
-
-    // Delete a specific astrology ad
-    Route::delete('/{id}', [AstrologyAdsController::class, 'destroy'])->name('astrologyads.destroy');
-
-    // Insert dummy data into the astrology ads table
-    Route::post('/dummy-insert', [AstrologyAdsController::class, 'dummyInsert']);
-    });
-});
-
-Route::middleware('auth:sanctum')->group(function () { 
-// Route::middleware([])->group(function () {
-    Route::prefix('classesforkidsads')->group(function () {
-        // Get list of all classes for kids ads
-        Route::get('/', [ClassesforKidsAdsController::class, 'index']);
-        
-        // Insert a dummy class for kids ad
-        Route::post('/dummy-insert', [ClassesforKidsAdsController::class, 'dummyInsert']);
-        
-        // Create a new class for kids ad
-        Route::post('/', [ClassesforKidsAdsController::class, 'store']);
-        
-        // Get details of a specific class for kids ad
-        Route::get('{id}', [ClassesforKidsAdsController::class, 'show']);
-        
-        // Update an existing class for kids ad
-        Route::put('{id}', [ClassesforKidsAdsController::class, 'update']);
-        
-        // Delete a class for kids ad
-        Route::delete('{id}', [ClassesforKidsAdsController::class, 'destroy']);
-    });
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-// Route::middleware([])->group(function () {
-    Route::prefix('travelcompanions')->group(function () {
-        Route::get('/', [TravelCompanionsController::class, 'index']);
-        Route::post('/dummy-insert', [TravelCompanionsController::class, 'dummyInsert']);
-        Route::post('/', [TravelCompanionsController::class, 'store']);
-        Route::post('/findcomplocation', [TravelCompanionsController::class, 'findcomplocation']);
-        Route::get('/{id}', [TravelCompanionsController::class, 'show']);
-        Route::put('/{id}', [TravelCompanionsController::class, 'update']);
-        Route::delete('/{id}', [TravelCompanionsController::class, 'destroy']);
-    });
+    // Ad Statistics Endpoints (High Performance — returns only count)
+    Route::get('/cars/my-count', [CarController::class, 'getMyAdCount']);
+    Route::get('/rentalhomes/my-count', [RentalHomesController::class, 'getMyAdCount']);
+    Route::get('/roommates/my-count', [RoomMatesController::class, 'getMyAdCount']);
+    Route::get('/homes/my-count', [HomesController::class, 'getMyAdCount']);
+    Route::get('/trainingads/my-count', [TrainingAdsController::class, 'getMyAdCount']);
+    Route::get('/travelcompanions/my-count', [TravelCompanionsController::class, 'getMyAdCount']);
+    Route::get('/events/my-count', [EventsController::class, 'getMyAdCount']);
 });
 
 // Route::middleware('auth:sanctum')->group(function () {
@@ -227,6 +224,34 @@ Route::middleware([])->group(function () {
         Route::post('/dummy-insert', [EventsController::class, 'dummyInsert']);
         Route::get('/{id}', [EventsController::class, 'show']);
         Route::put('/{id}', [EventsController::class, 'update']);
-        Route::delete('/{id}', [EventsController::class, 'destroy']);
     });
+});
+
+use App\Http\Controllers\KidsClassController;
+Route::middleware([])->group(function () {
+    Route::post('/instructors/upload-photo', [InstructorController::class, 'uploadPhoto']);
+    Route::post('/kids-classes', [KidsClassController::class, 'store']);
+    Route::get('/kids-classes/admin-listings', [KidsClassController::class, 'getAdminListings']);
+    Route::post('/kids-classes/{id}/approve', [KidsClassController::class, 'approve']);
+    Route::post('/kids-classes/{id}/reject', [KidsClassController::class, 'reject']);
+});
+Route::middleware([])->group(function () {
+    Route::get('/kids-classes/public/category/{category}/{subcategory}', [KidsClassController::class, 'getPublicByCategory']);
+    Route::get('/kids-classes/public/details/{id}', [KidsClassController::class, 'getPublicDetails']);
+});
+Route::get('/fix-general', function() {
+    \DB::table('kids_classes')->where('subcategory', 'General')->update(['subcategory' => 'Keyboard']);
+    \DB::table('kids_classes')->where('category', 'Languages')->update(['category' => 'Indian Languages']);
+    \DB::table('kids_classes')->update(['status' => 'active']);
+    return 'Fixed! All classes set to active and categories aligned.';
+});
+Route::middleware([])->group(function () {
+    Route::get('/kids-classes/admin/details/{id}', [KidsClassController::class, 'getAdminDetails']);
+});
+Route::middleware([])->group(function () {
+    Route::put('/kids-classes/{id}', [KidsClassController::class, 'update']);
+});
+
+Route::get('/users', function() {
+    return User::all();
 });

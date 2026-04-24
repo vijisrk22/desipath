@@ -89,17 +89,6 @@ function Profile({ user, viewPortClass = "md:flex hidden" }) {
                 Your Profile
               </MenuItem>
               <MenuItem
-                onClick={handleChat}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  mt: 2,
-                  fontWeight: "bold",
-                }}
-              >
-                Chat
-              </MenuItem>
-              <MenuItem
                 onClick={handleLogout}
                 sx={{
                   display: "flex",

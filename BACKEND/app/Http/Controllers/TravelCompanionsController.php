@@ -214,4 +214,16 @@ class TravelCompanionsController extends Controller
 
         return response()->json(['message' => 'Travel companion deleted successfully']);
     }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = TravelCompanion::where('poster_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = TravelCompanion::where('poster_id', $request->user()->id)->get();
+        return response()->json($listings);
+    }
 }

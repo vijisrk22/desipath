@@ -297,6 +297,7 @@ class RentalHomesController extends Controller
         if (!$rentalHome) {
             return response()->json(['message' => 'Rental home not found'], 404);
         }
+        // Guard: model casts images to array already; only decode if still a string
         if (!empty($rentalHome->images) && is_string($rentalHome->images)) {
             $rentalHome->images = json_decode($rentalHome->images, true);
         }
@@ -505,8 +506,10 @@ class RentalHomesController extends Controller
         $data = $request->except(['images', 'newPhotos', 'existingPhotos']);
         $data['owner_name'] = $receiver->name;
 
+        // Initialize to empty array to prevent array_merge crash when no existing photos sent
+        $existingPhotos = [];
         if ($request->has('existingPhotos') && !empty($request->existingPhotos)) {
-            $existingPhotos = $request->existingPhotos;
+            $existingPhotos = is_array($request->existingPhotos) ? $request->existingPhotos : json_decode($request->existingPhotos, true) ?? [];
         }
 
         $photos = [];
@@ -555,8 +558,8 @@ class RentalHomesController extends Controller
         //     print_r($updated);
         // }
 
-        // Return photos as array in response
-        $rentalHome->images = json_decode($rentalHome->images, true);
+        // Note: $rentalHome->images is already an array due to the 'array' cast in the model
+        // json_decode on an array would throw a TypeError — removed that line
 
         return response()->json(['message' => 'Rental home updated successfully', 'data' => $rentalHome]);
     }
@@ -582,5 +585,17 @@ class RentalHomesController extends Controller
         $rentalHome->delete();
 
         return response()->json(['message' => 'Rental home deleted successfully']);
+    }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = \App\Models\RentalHome::where('owner_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = \App\Models\RentalHome::where('owner_id', $request->user()->id)->get();
+        return response()->json($listings);
     }
 }

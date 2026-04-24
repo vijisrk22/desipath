@@ -47,6 +47,15 @@ export const searchHouse = createAsyncThunk("houses/searchHouse", async ({ searc
     }
 })
 
+export const updateHouse = createAsyncThunk("houses/updateHouse", async({ houseId, houseData }, { rejectWithValue }) => {
+    try {
+        const response = await api.put(`/api/homes/${houseId}`, houseData);
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || "Failed to update house");
+    }
+})
+
 const housesSlice = createSlice({
     name: "houses",
     initialState:{
@@ -156,6 +165,21 @@ const housesSlice = createSlice({
                     per_page: 9
                 };
             })
+            .addCase(updateHouse.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateHouse.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.houses.findIndex(h => h.id === action.payload.id);
+                if (index !== -1) {
+                    state.houses[index] = action.payload;
+                }
+            })
+            .addCase(updateHouse.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to update house";
+            });
     }
 })
 

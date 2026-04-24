@@ -286,12 +286,7 @@ class HomesController extends Controller
 
         if ($request->has('images') && !empty($request->images)) {
             $photos = [];
-            
-            // Ensure the directory exists
-            $directory = storage_path('app/public/buysellhomes');
-            if (!file_exists($directory)) {
-                mkdir($directory, 0775, true);
-            }
+            $disk = env('FILESYSTEM_DISK', 'public');
 
             foreach ($request->images as $base64Image) {
                 // Get the file extension
@@ -303,15 +298,13 @@ class HomesController extends Controller
                 
                 // Generate a unique filename for the image
                 $filename = uniqid() . '.' . $extension;
+                $path = 'buysellhomes/' . $filename;
                 
-                // Store the file in the storage directory
-                $path = $directory . '/' . $filename;
+                // Store using Storage facade
+                \Illuminate\Support\Facades\Storage::disk($disk)->put($path, $imageData);
                 
-                // Write the decoded data to the file
-                file_put_contents($path, $imageData);
-                
-                // Add the file path (relative to public storage) to the array
-                $photos[] = 'storage/buysellhomes/' . $filename;
+                // Add the URL/path to the array
+                $photos[] = $disk === 'public' ? 'storage/' . $path : \Illuminate\Support\Facades\Storage::disk($disk)->url($path);
             }
             
             // Store the photos array as JSON in the database
@@ -555,12 +548,7 @@ class HomesController extends Controller
 
         if ($request->has('images') && !empty($request->images)) {
             $photos = [];
-            
-            // Ensure the directory exists
-            $directory = storage_path('app/public/buysellhomes');
-            if (!file_exists($directory)) {
-                mkdir($directory, 0775, true);
-            }
+            $disk = env('FILESYSTEM_DISK', 'public');
 
             foreach ($request->images as $base64Image) {
                 preg_match('/data:image\/(.*);base64/', $base64Image, $matches);
@@ -569,12 +557,11 @@ class HomesController extends Controller
                 $imageData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $base64Image));
 
                 $filename = uniqid() . '.' . $extension;
+                $path = 'buysellhomes/' . $filename;
 
-                $path = $directory . '/' . $filename;
+                \Illuminate\Support\Facades\Storage::disk($disk)->put($path, $imageData);
 
-                file_put_contents($path, $imageData);
-
-                $photos[] = 'storage/buysellhomes/' . $filename;
+                $photos[] = $disk === 'public' ? 'storage/' . $path : \Illuminate\Support\Facades\Storage::disk($disk)->url($path);
             }
 
             $data['images'] = json_encode($photos);
@@ -639,5 +626,17 @@ class HomesController extends Controller
         } catch (\Exception $e) {
             // Silently fail if filesystem is read-only
         }
+    }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = \App\Models\BuySellHome::where('seller_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = \App\Models\BuySellHome::where('seller_id', $request->user()->id)->get();
+        return response()->json($listings);
     }
 }

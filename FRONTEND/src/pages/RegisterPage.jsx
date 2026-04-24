@@ -41,102 +41,138 @@ function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:grid md:grid-cols-2 p-4 md:py-0 md:px-2">
-      {/* Left Column */}
-      <AuthPageLeft />
-
-      {/* Right Column */}
-      <div className="flex flex-col items-center md:items-start mt-[49px] md:mt-[220px] mx-auto w-full max-w-lg px-2">
-        {/* Sign Up Header */}
-        <div className="text-[#2e61b1] text-4xl md:text-[30px] lg:text-[40px] font-semibold font-dmsans">
-          Sign Up
-        </div>
-        <div className="mt-6 flex flex-col gap-6 w-full">
-          {/* Sign Up Link */}
-          <div className="mt-4 md:mt-[0px] text-center md:text-left">
-            <span className="text-[#6c7174] text-base font-normal font-dmsans">
-              Already have an account yet?{" "}
-            </span>
-            <Link
-              to="/login"
-              className="text-[#38cb89] text-base font-normal font-dmsans"
-            >
-              <span onClick={() => dispatch(clearError())}>Sign In</span>
+    <div className="min-h-screen w-full bg-[#f8fafc] flex items-center justify-center p-4 md:p-8 font-dmsans">
+      <div className="bg-white w-full max-w-[1000px] min-h-[700px] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-gray-100 transform transition-all duration-500 hover:shadow-blue-100/50">
+        
+        {/* Visual/Branding Side (Preserving AuthPageLeft content) */}
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#0857d0] to-[#2e61b1] p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden">
+          {/* Background Decorative Element */}
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white opacity-5 rounded-full"></div>
+          <div className="absolute top-10 -right-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
+          
+          <div className="relative z-10">
+            <Link to="/" className="text-3xl font-normal font-fredoka tracking-tight">
+              Desipath
             </Link>
           </div>
+
+          <div className="relative z-10 mt-12 md:mt-0">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-poppins leading-[1.2] mb-6">
+              New generation classifieds for Desi!
+            </h2>
+            <p className="text-blue-100 text-base md:text-lg font-light leading-relaxed max-w-md">
+              The easiest way to interact with the Desi community. Post ads, find services, and connect with people.
+            </p>
+          </div>
+
+          <div className="relative z-10 hidden md:block">
+            <div className="flex gap-2 items-center text-blue-200 text-sm">
+              <span className="w-8 h-[1px] bg-blue-300"></span>
+              Join thousands of others today
+            </div>
+          </div>
         </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          method="POST"
-          className="mt-6 flex flex-col gap-4 md:gap-[26px] md:max-w-sm lg:max-w-lg w-full"
-        >
-          {/* Input Fields */}
-          <div className="md:flex-row md:justify-between md:items-center flex flex-col gap-4 md:gap-[20px]">
-            <input
-              {...register("firstName", {
-                required: "Required",
-              })}
-              className="p-4 bg-neutral-50 rounded-xl text-gray-800 text-sm font-dmsans outline-none w-full"
-              placeholder="Your First Name"
-              onChange={() => dispatch(clearError())}
-            />
-            {errors.firstName && (
-              <div className="text-red-500 text-xs mt-1">
-                {errors.firstName.message}
-              </div>
-            )}
-            <input
-              {...register("lastName", {
-                required: "Required",
-              })}
-              className="p-4 bg-neutral-50 rounded-xl text-gray-800 text-sm font-dmsans outline-none w-full"
-              placeholder="Your Last Name"
-            />
-            {errors.lastName && (
-              <div className="text-red-500 text-xs mt-1">
-                {errors.lastName.message}
-              </div>
-            )}
-          </div>
-          <EmailInput register={register} errors={errors} />
-          <PasswordInput register={register} errors={errors} />
+        {/* Form Side */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-white overflow-y-auto">
+          <div className="max-w-md mx-auto w-full">
+            <div className="mb-8 text-center md:text-left">
+              <h1 className="text-[#141718] text-3xl md:text-4xl font-bold tracking-tight mb-2">
+                Sign Up
+              </h1>
+              <p className="text-gray-500 text-sm">
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="text-[#38cb89] font-bold hover:underline"
+                  onClick={() => dispatch(clearError())}
+                >
+                  Sign In
+                </Link>
+              </p>
+            </div>
 
-          <TwoRadioInput
-            name="role"
-            text="Role"
-            op1="user"
-            op2="business"
-            control={control}
-          />
-
-          {/* Remember Me + Forgot Password */}
-          <div className="flex flex-row justify-between items-center w-full mt-4 gap-4">
-            <label className="flex items-center">
-              <input type="checkbox" className="mr-2 w-4 h-4" required />
-              <div>
-                <span className="text-[#6c7174] text-base font-semibold font-['DM Sans']">
-                  I agree with{" "}
-                </span>
-                <span className="text-gray-800 text-base font-semibold font-['DM Sans']">
-                  Privacy Policy
-                </span>
-                <span className="text-[#6c7174] text-base font-semibold font-['DM Sans']">
-                  {" "}
-                  and{" "}
-                </span>
-                <span className="text-gray-800 text-base font-semibold font-['DM Sans']">
-                  Terms of Use
-                </span>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Name Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <input
+                    {...register("firstName", { required: "Required" })}
+                    className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-medium transition-all outline-none"
+                    placeholder="First Name"
+                    onChange={() => dispatch(clearError())}
+                  />
+                  {errors.firstName && <p className="text-red-500 text-[10px] ml-1">{errors.firstName.message}</p>}
+                </div>
+                <div className="space-y-1">
+                  <input
+                    {...register("lastName", { required: "Required" })}
+                    className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-medium transition-all outline-none"
+                    placeholder="Last Name"
+                  />
+                  {errors.lastName && <p className="text-red-500 text-[10px] ml-1">{errors.lastName.message}</p>}
+                </div>
               </div>
-            </label>
+
+              <div className="space-y-4">
+                <EmailInput register={register} errors={errors} />
+                <PasswordInput register={register} errors={errors} />
+              </div>
+
+              <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-center justify-between">
+                <TwoRadioInput
+                  name="role"
+                  text="Identify yourself as:"
+                  op1="user"
+                  op2="business"
+                  control={control}
+                />
+              </div>
+
+              <div className="flex items-start">
+                <label className="flex items-start group cursor-pointer">
+                  <div className="relative flex items-center justify-center mt-1">
+                    <input 
+                      type="checkbox" 
+                      required
+                      className="peer appearance-none w-5 h-5 border-2 border-gray-200 rounded-md checked:bg-[#38cb89] checked:border-[#38cb89] transition-all cursor-pointer" 
+                    />
+                    <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="ml-3 text-xs text-gray-600 font-medium leading-relaxed">
+                    I agree with the <span className="text-gray-900 font-bold hover:underline">Privacy Policy</span> and <span className="text-gray-900 font-bold hover:underline">Terms of Use</span>.
+                  </span>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 bg-[#0857d0] hover:bg-[#0746a8] text-white font-bold rounded-xl shadow-lg shadow-blue-200/50 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating account...
+                  </span>
+                ) : (
+                  "Sign Up for Desipath.com"
+                )}
+              </button>
+              
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-xs font-medium animate-shake">
+                   ⚠️ {error}
+                </div>
+              )}
+            </form>
           </div>
-          {/* Sign In Button */}
-          <button className="mt-2 px-10 py-2.5 bg-[#2e61b1] rounded-lg text-white text-base font-medium font-dmsans w-full">
-            {loading ? "Loading..." : "Sign Up for Desipath.com"}
-          </button>
-          {errors && <div className="text-red-500 text-xs mt-1">{error}</div>}
-        </form>
+        </div>
       </div>
     </div>
   );

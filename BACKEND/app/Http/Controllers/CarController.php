@@ -636,5 +636,16 @@ public function testCars() { return BuySellCar::all(); }
     //         'price' => 'required|numeric|min:0',
     //         'description' => 'nullable|string|max:1000'
     //     ]);
-    // }
+    public function getMyAdCount(Request $request)
+    {
+        $count = \App\Models\BuySellCar::where('seller_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = \App\Models\BuySellCar::where('seller_id', $request->user()->id)->get();
+        // Parse pictures if needed
+        return response()->json($listings);
+    }
 }

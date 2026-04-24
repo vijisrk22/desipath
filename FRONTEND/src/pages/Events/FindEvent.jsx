@@ -10,7 +10,7 @@ function FindEvent({ paths }) {
       <EventsHeader paths={paths} />
       
       {/* Content wrapper with sidebar and main body */}
-      <div className="px-[7%] pt-0 pb-16 flex flex-col md:flex-row gap-8 items-start">
+      <div className="px-[7%] pt-4 pb-16 flex flex-col md:flex-row gap-8 items-start">
         {/* Left Sidebar Filters */}
         <EventsSidebarFilter />
 

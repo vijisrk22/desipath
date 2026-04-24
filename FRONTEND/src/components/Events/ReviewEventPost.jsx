@@ -4,14 +4,14 @@ import ReviewPostContent from "./ReviewPostContent";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
-import { postEvent } from "../../store/EventsSlice";
+import { updateEvent, postEvent } from "../../store/EventsSlice";
 import dayjs from "dayjs";
 
 function ReviewEventPost({ open, onClose, formDetails }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.events);
-  console.log("Rendering ReviewEventPost");
+  const isEdit = !!formDetails.id;
 
   const contents = [
     {
@@ -65,28 +65,31 @@ function ReviewEventPost({ open, onClose, formDetails }) {
     };
 
     try {
-      // Convert File objects to base64 strings
-      const coverImagesBase64 = await Promise.all(
-        (formDetails.coverImages || []).map(img =>
-          img instanceof File ? convertToBase64(img) : img
-        )
-      );
-      const posterImagesBase64 = await Promise.all(
-        (formDetails.posterImages || []).map(img =>
-          img instanceof File ? convertToBase64(img) : img
-        )
-      );
+      const coverImagesNew = (formDetails.coverImages || []).filter(img => img instanceof File);
+      const coverImagesExisting = (formDetails.coverImages || []).filter(img => typeof img === 'string');
+      
+      const posterImagesNew = (formDetails.posterImages || []).filter(img => img instanceof File);
+      const posterImagesExisting = (formDetails.posterImages || []).filter(img => typeof img === 'string');
 
-      const allImages = [...coverImagesBase64, ...posterImagesBase64];
+      const coverImagesBase64 = await Promise.all(coverImagesNew.map(convertToBase64));
+      const posterImagesBase64 = await Promise.all(posterImagesNew.map(convertToBase64));
+
+      const newImages = [...coverImagesBase64, ...posterImagesBase64];
+      const existingImages = [...coverImagesExisting, ...posterImagesExisting];
 
       const payload = {
         ticketPrice: formDetails.ticketPrice || "0",
-        imgs: allImages,
+        imgs: newImages,
+        existing_imgs: existingImages,
         details: formattedDetails,
       };
 
-      const result = await dispatch(postEvent(payload)).unwrap();
-      console.log("Post successful:", result);
+      if (isEdit) {
+        await dispatch(updateEvent({ eventId: formDetails.id, eventData: payload })).unwrap();
+      } else {
+        await dispatch(postEvent(payload)).unwrap();
+      }
+      
       navigate("/services/events/postConfirmation");
     } catch (err) {
       console.error("Failed to post event:", err);
@@ -117,7 +120,7 @@ function ReviewEventPost({ open, onClose, formDetails }) {
       >
         <div className="flex justify-between items-center">
           <div className="justify-center text-[#007185] text-[22px] font-bold font-dmsans">
-            Review Event Details And Submit
+            {isEdit ? "Update Your Event" : "Review Event Details And Submit"}
           </div>
           <Button onClick={onClose}>
             <EditIcon color="primary" variant="outline" />
@@ -136,9 +139,9 @@ function ReviewEventPost({ open, onClose, formDetails }) {
         <div className="mx-auto mt-10 max-w-20">
           <button
             onClick={handleSubmit}
-            className="px-5 py-3 bg-[#ffa41c] rounded-xl text-gray-800 text-center text-base font-medium font-dmsans"
+            className="px-8 py-3 bg-[#ffa41c] hover:bg-[#e8931a] rounded-xl text-gray-800 text-center text-base font-bold font-dmsans transition-all shadow-md"
           >
-            Post
+            {isEdit ? "Update" : "Post"}
           </button>
         </div>
       </Box>

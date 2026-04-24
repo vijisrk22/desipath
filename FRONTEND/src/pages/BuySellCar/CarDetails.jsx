@@ -22,7 +22,8 @@ function CarDetails() {
     { text: "Buy/Sell Cars", eP: "/services/cars/buyCar" },
   ];
 
-  const { carId } = useParams();
+  const { action, carId: carIdParam } = useParams();
+  const carId = carIdParam || action;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
@@ -32,7 +33,7 @@ function CarDetails() {
   useEffect(() => {
     dispatch(fetchCarById(carId));
     dispatch(getCarAttributes());
-  }, [dispatch]);
+  }, [dispatch, carId]);
 
   // If loading, show loader
   if (loading) {
@@ -56,6 +57,11 @@ function CarDetails() {
   }
 
   const handleClick = () => {
+    if (!user) {
+      navigate("/login", { state: { from: { pathname: window.location.pathname } } });
+      return;
+    }
+
     const chatPartnerInfo = {
       chatPartnerId: carDetails.seller_id,
       chatPartnerName: carDetails.seller_name,
@@ -64,7 +70,7 @@ function CarDetails() {
 
     try {
       navigate(
-        `/chat?adType=car&adId=${
+        `/inbox?adType=car&adId=${
           carDetails.id
         }&chatPartnerInfo=${encodeURIComponent(
           JSON.stringify(chatPartnerInfo)
@@ -105,7 +111,7 @@ function CarDetails() {
           <div key={indx} className="flex justify-center">
             <img
               className="w-[150px] h-[150px] rounded-md border-[3px] border-[#2e61b1]"
-              src={`${api.defaults.baseURL}/${img}`}
+              src={`https://desipathapi.azurewebsites.net/${img}`}
               alt={`Image ${indx}`}
             />
           </div>
@@ -151,9 +157,9 @@ function CarDetails() {
 
           <button
             onClick={handleClick}
-            disabled={carDetails.seller_id === user.id}
+            disabled={carDetails?.seller_id === user?.id}
             className={`px-5 py-2.5 rounded-[57px] inline-flex justify-center items-center gap-2.5 ${
-              carDetails.seller_id === user.id ? "cursor-not-allowed" : ""
+              carDetails?.seller_id === user?.id ? "cursor-not-allowed" : ""
             }`}
           >
             <SmsOutlinedIcon color="primary" />

@@ -4,8 +4,8 @@ import ServiceTopBar from "../../components/ServiceTopBar";
 function PostRentalHome() {
   const paths = [
     { text: "Home", eP: "/" },
-    { text: "Rental Home", eP: "/services/rentalHomes" },
-    { text: "Post a Rental Home", eP: "/services/rentalHomes/postRentalHome" },
+    { text: "Rental Home", eP: "/services/rentalhomes" },
+    { text: "Post a Rental Home", eP: "/services/rentalhomes/postRentalHome" },
   ];
 
   return (

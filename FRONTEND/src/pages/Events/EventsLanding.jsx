@@ -5,36 +5,31 @@ import FindEvent from "./FindEvent";
 import PostConfirmation from "../PostConfirmation";
 import PostEvent from "./PostEvent";
 import Footer from "../../components/Footer/Footer";
+import EventDetails from "./EventDetails";
 
 function EventsLanding() {
   const { action } = useParams();
-  const pageDetails = {
-    path1: "findEvent",
-    path2: "postEvent",
-    description1: "Search for an event in your area",
-    description2: "Post an event in your area",
-    buttonText1: "Find Event",
-    buttonText2: "Post An Event",
-  };
   return (
     <div className="flex flex-col min-h-screen overflow-y-auto ">
       <Navbar />
-      {action === undefined && (
+      {action === undefined ? (
         <FindEvent
           paths={[
             { text: "Home", eP: "/" },
             { text: "Events", eP: "/services/events" },
           ]}
         />
-      )}
-
-      {action === "findEvent" && <FindEvent />}
-      {action === "postEvent" && <PostEvent />}
-      {action === "postConfirmation" && (
+      ) : action === "findEvent" ? (
+        <FindEvent />
+      ) : (action === "postEvent" || action === "edit") ? (
+        <PostEvent />
+      ) : action === "postConfirmation" ? (
         <PostConfirmation 
           redirectTo="/services/events/findEvent" 
           message="Thanks for using Desipath. Your event is live!" 
         />
+      ) : (
+        <EventDetails />
       )}
     </div>
   );

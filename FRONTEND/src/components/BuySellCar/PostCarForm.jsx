@@ -15,26 +15,62 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
+import { useParams } from "react-router-dom";
+import api from "../../utils/api";
+
 function PostCarForm() {
+  const { action, carId } = useParams();
+  const isEdit = action === "edit";
   const dispatch = useDispatch();
   const { car_attributes } = useSelector((state) => state.cars);
 
   const {
-    handleSubmit, control, watch, setValue,
+    handleSubmit, control, watch, setValue, reset,
     formState: { errors },
   } = useForm({ mode: "onChange" });
 
   const [reviewSession, setReviewSession] = useState(false);
   const [formDetails, setFormDetails] = useState(null);
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     dispatch(getCarAttributes());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (isEdit && carId) {
+      setLoading(true);
+      api.get(`/api/cars/${carId}`)
+        .then(res => {
+          const data = res.data;
+          
+          if (data.location_city || data.location_state || data.location_zipcode) {
+            data.location = `${data.location_city || ""}, ${data.location_state || ""}, ${data.location_zipcode || ""}`.trim().replace(/^,|,$/g, "");
+          }
+
+          reset(data);
+          
+          if (data.pictures) {
+            try {
+              const parsed = typeof data.pictures === 'string' ? JSON.parse(data.pictures) : data.pictures;
+              setImages(Array.isArray(parsed) ? parsed : []);
+            } catch (e) {
+              console.error("Failed to parse images:", e);
+              setImages([]);
+            }
+          } else {
+            setImages([]);
+          }
+        })
+        .catch(err => console.error("Error fetching car for edit:", err))
+        .finally(() => setLoading(false));
+    }
+  }, [isEdit, carId, reset]);
+
   const onSubmit = (data) => {
     console.log("Form Data:", data);
-    setFormDetails(data);
+    setFormDetails({ ...data, id: carId });
     setReviewSession(true);
   };
 
@@ -165,11 +201,16 @@ function PostCarForm() {
           </div>
         )}
 
+        {loading && (
+          <div className="absolute inset-0 bg-white/60 z-50 flex items-center justify-center rounded-2xl">
+            <div className="w-10 h-10 border-4 border-[#ffa41c] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
         <button
           type="submit"
           className="mt-4 w-full px-10 py-5 bg-[#ffa41c] rounded-[28px] text-center text-gray-800 text-base font-semibold font-dmsans hover:bg-[#e8931a] transition-colors"
         >
-          Review Post
+          {isEdit ? 'Review Changes' : 'Review Post'}
         </button>
       </form>
     </div>

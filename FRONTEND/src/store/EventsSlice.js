@@ -58,6 +58,34 @@ export const searchEvents = createAsyncThunk(
   }
 );      
 
+export const updateEvent = createAsyncThunk(
+  "events/updateEvent",
+  async ({ eventId, eventData }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/events/${eventId}`, eventData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to update event"
+      );
+    }
+  }
+);
+
+export const deleteEvent = createAsyncThunk(
+  "events/deleteEvent",
+  async (eventId, { rejectWithValue }) => {
+    try {
+      await api.delete(`/api/events/${eventId}`);
+      return eventId;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to delete event"
+      );
+    }
+  }
+);
+
 const eventsSlice = createSlice({
     name: "events", 
     initialState: {
@@ -127,11 +155,27 @@ const eventsSlice = createSlice({
             .addCase(searchEvents.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Search failed";
+            })
+            .addCase(updateEvent.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateEvent.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.events.findIndex(e => e.id === action.payload.event.id);
+                if (index !== -1) {
+                    state.events[index] = action.payload.event;
+                }
+            })
+            .addCase(updateEvent.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to update event";
+            })
+            .addCase(deleteEvent.fulfilled, (state, action) => {
+                state.events = state.events.filter(e => e.id !== action.payload);
             });
     }
 }); 
 
 export const { setEvents, clearEvents, clearEventDetails } = eventsSlice.actions;
 export default eventsSlice.reducer;
-
-

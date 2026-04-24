@@ -47,7 +47,7 @@ export default function CarCard({ car }) {
         component="img"
         image={
           car?.pictures && car.pictures.length > 0
-            ? `${api.defaults.baseURL}/${car.pictures[0]}`
+            ? `https://desipathapi.azurewebsites.net/${car.pictures[0]}`
             : "/img/cars/backgroundCarImg.png"
         }
         onError={(e) => {

@@ -13,7 +13,6 @@ export default function RoomCard({ room }) {
     <Card
       sx={{ 
         width: "100%", 
-        maxWidth: 400,
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -46,7 +45,7 @@ export default function RoomCard({ room }) {
         component="img"
         image={
           room?.photos && room.photos.length > 0
-            ? `${api.defaults.baseURL}/${room.photos[0]}`
+            ? `https://desipathapi.azurewebsites.net/${room.photos[0]}`
             : "/img/roommates/roommatePlaceholder.png"
         }
         title="room"

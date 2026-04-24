@@ -19,12 +19,13 @@ import ImageScroller from "../../components/ImageScroller";
 function RentalHomeDetails() {
   const paths = [
     { text: "Home", eP: "/" },
-    { text: "Rental Homes", eP: "/services/rentalHomes/findRentalHome" },
+    { text: "Rental Homes", eP: "/services/rentalhomes/findRentalHome" },
   ];
 
   const navigate = useNavigate();
 
-  const { action: rentalHomeId } = useParams();
+  const { action, homeId } = useParams();
+  const rentalHomeId = homeId || action;
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
@@ -32,10 +33,10 @@ function RentalHomeDetails() {
     (state) => state.rentalHomes
   );
 
-  // Fetch room details when the component mounts
+  // Fetch rental home details when the component mounts
   useEffect(() => {
     dispatch(fetchRentalHomeById(rentalHomeId));
-  }, [dispatch]);
+  }, [dispatch, rentalHomeId]);
 
   const [openContact, setOpenContact] = useState(false);
 
@@ -49,6 +50,11 @@ function RentalHomeDetails() {
   };
 
   const handleClick = () => {
+    if (!user) {
+      navigate("/login", { state: { from: { pathname: window.location.pathname } } });
+      return;
+    }
+
     const chatPartnerInfo = {
       chatPartnerId: rentalHomeDetails.owner_id,
       chatPartnerName: rentalHomeDetails.owner_name,
@@ -57,7 +63,7 @@ function RentalHomeDetails() {
 
     try {
       navigate(
-        `/chat?adType=rentalhome&adId=${rentalHomeDetails.id
+        `/inbox?adType=rentalhome&adId=${rentalHomeDetails.id
         }&chatPartnerInfo=${encodeURIComponent(
           JSON.stringify(chatPartnerInfo)
         )}`
@@ -69,7 +75,7 @@ function RentalHomeDetails() {
 
   // If there's an error fetching data
   if (error) {
-    return <div className="text-red-500">Error loading room details.</div>;
+    return <div className="text-red-500">Error loading rental home details.</div>;
   }
 
   // Make sure rentalHomeDetails is available before accessing it
@@ -131,7 +137,7 @@ function RentalHomeDetails() {
           <div key={indx} className="flex justify-center">
             <img
               className="w-[150px] h-[150px] rounded-md border-[3px] border-[#2e61b1]"
-              src={`${api.defaults.baseURL}/${image}`}
+              src={`https://desipathapi.azurewebsites.net/${image}`}
               alt={`Image ${indx}`}
             />
           </div>
@@ -180,8 +186,8 @@ function RentalHomeDetails() {
 
           <button
             onClick={handleClick}
-            disabled={rentalHomeDetails.owner_id === user.id}
-            className={`px-5 py-2.5 rounded-[57px] inline-flex justify-center items-center gap-2.5 ${rentalHomeDetails.owner_id === user.id ? "cursor-not-allowed" : ""
+            disabled={rentalHomeDetails?.owner_id === user?.id}
+            className={`px-5 py-2.5 rounded-[57px] inline-flex justify-center items-center gap-2.5 ${rentalHomeDetails?.owner_id === user?.id ? "cursor-not-allowed" : ""
               }`}
           >
             <SmsOutlinedIcon color="primary" />

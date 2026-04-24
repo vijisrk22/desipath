@@ -46,9 +46,9 @@ function Banner() {
               View Intro
               <img src="/playCircle.png" className="w-4 md:w-6 h-4 md:h-6" />
             </button>
-            <button className="px-5 md:px-7 py-2.5 bg-[#ffa41c] rounded-[57px] text-gray-800 text-sm md:text-base font-medium flex items-center gap-2">
+            <button className="px-5 md:px-7 py-2.5 bg-[#0857d0] rounded-[57px] text-white text-sm md:text-base font-medium flex items-center gap-2 hover:bg-[#0746a8] transition-colors">
               Explore Now
-              <img src="/caretRight.png" className="w-4 md:w-6 h-4 md:h-6" />
+              <img src="/caretRight.png" className="w-4 md:w-6 h-4 md:h-6 brightness-0 invert" />
             </button>
           </div>
           {/* Banner Image */}

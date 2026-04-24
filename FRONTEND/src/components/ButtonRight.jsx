@@ -20,12 +20,12 @@ function ButtonRight({
     <button
       onClick={handleClick}
       disabled={disabled}
-      className={`rounded-[30px] flex justify-center items-center gap-3.5 transition-all ${
+      className={`rounded-[30px] flex justify-center items-center gap-3.5 transition-all shadow-md ${
         paddingClass || "px-6 py-2 md:px-6 md:py-4"
       } ${
         disabled
-          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-          : "bg-[#ffa41c] text-gray-800 hover:brightness-110 cursor-pointer"
+          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+          : "bg-[#0857d0] text-white hover:bg-[#0746a8] cursor-pointer"
       }`}
     >
       <span

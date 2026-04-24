@@ -37,7 +37,16 @@ function ActiveCarSearchFilters() {
                 key="location"
                 label={`Location: ${lastSearchQuery.location}`}
                 onDelete={() => handleRemove("location")}
-                color="primary"
+                sx={{
+                    borderColor: '#0857d0',
+                    color: '#0857d0',
+                    fontWeight: '500',
+                    '& .MuiChip-deleteIcon': {
+                        color: '#0857d0',
+                        opacity: 0.7,
+                        '&:hover': { opacity: 1 }
+                    }
+                }}
                 variant="outlined"
             />
         );
@@ -50,7 +59,16 @@ function ActiveCarSearchFilters() {
                 key="price"
                 label={`Price: $${lastSearchQuery.priceMin || 0} - $${lastSearchQuery.priceMax || 'Any'}`}
                 onDelete={() => handleRemove("price")}
-                color="primary"
+                sx={{
+                    borderColor: '#0857d0',
+                    color: '#0857d0',
+                    fontWeight: '500',
+                    '& .MuiChip-deleteIcon': {
+                        color: '#0857d0',
+                        opacity: 0.7,
+                        '&:hover': { opacity: 1 }
+                    }
+                }}
                 variant="outlined"
             />
         )
@@ -63,7 +81,16 @@ function ActiveCarSearchFilters() {
                 key="make"
                 label={`Make: ${lastSearchQuery.carMake}`}
                 onDelete={() => handleRemove("make")}
-                color="primary"
+                sx={{
+                    borderColor: '#0857d0',
+                    color: '#0857d0',
+                    fontWeight: '500',
+                    '& .MuiChip-deleteIcon': {
+                        color: '#0857d0',
+                        opacity: 0.7,
+                        '&:hover': { opacity: 1 }
+                    }
+                }}
                 variant="outlined"
             />
         );
@@ -76,7 +103,16 @@ function ActiveCarSearchFilters() {
                 key="model"
                 label={`Model: ${lastSearchQuery.carModel}`}
                 onDelete={() => handleRemove("model")}
-                color="primary"
+                sx={{
+                    borderColor: '#0857d0',
+                    color: '#0857d0',
+                    fontWeight: '500',
+                    '& .MuiChip-deleteIcon': {
+                        color: '#0857d0',
+                        opacity: 0.7,
+                        '&:hover': { opacity: 1 }
+                    }
+                }}
                 variant="outlined"
             />
         );

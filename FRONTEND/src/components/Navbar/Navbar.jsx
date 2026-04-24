@@ -5,18 +5,18 @@ import Profile from "./Profile";
 
 function Navbar() {
   const location = useLocation();
-  const navPages = ["Home", "Post Ad", "About Us", "Contact"];
+  const navPages = ["Home", "Post Ad", "About Us", "Inbox", "Contact"];
   const user = JSON.parse(localStorage.getItem("user"));
 
   let currentPath = location.pathname.replace("/", "").toLowerCase();
 
   return (
-    <div className="px-[7%] pt-6 pb-2 flex justify-between items-center">
-      <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal font-fredoka hover:cursor-pointer">
+    <div className="px-[7%] pt-4 pb-2 flex justify-between items-center">
+      <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-xl lg:text-2xl font-normal font-fredoka hover:cursor-pointer">
         Desipath
       </Link>
 
-      <div className="md:flex gap-6 md:gap-12 hidden">
+      <div className="md:flex gap-4 md:gap-8 hidden">
         {navPages.map((item, index) => {
           const path = item.replace(" ", "").toLowerCase();
 
@@ -30,7 +30,7 @@ function Navbar() {
               to={`/${path}`}
               className={`${
                 isActive ? "text-[#0857d0]" : "text-gray-400"
-              } text-base sm:text-lg md:text-base lg:text-xl font-bold font-dmsans`}
+              } text-sm sm:text-base md:text-sm lg:text-base font-bold font-dmsans`}
             >
               {item}
             </Link>

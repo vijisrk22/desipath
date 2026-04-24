@@ -64,12 +64,7 @@ class EventsController extends Controller
         $processImages = function($images) {
             $processed = [];
             if (!is_array($images)) return [];
-            
-            $directory = storage_path('app/public/events');
-            if (!file_exists($directory)) {
-                mkdir($directory, 0755, true);
-            }
-
+            $disk = env('FILESYSTEM_DISK', 'public');
             foreach ($images as $img) {
                 if (is_string($img) && preg_match('/^data:image\/(\w+);base64,/', $img, $type)) {
                     $data = substr($img, strpos($img, ',') + 1);
@@ -79,10 +74,12 @@ class EventsController extends Controller
 
                     $extension = strtolower($type[1]);
                     $filename = Str::random(20) . '.' . $extension;
-                    $path = $directory . '/' . $filename;
+                    $path = 'events/' . $filename;
                     
-                    file_put_contents($path, $data);
-                    $processed[] = 'storage/events/' . $filename;
+                    \Illuminate\Support\Facades\Storage::disk($disk)->put($path, $data);
+                    
+                    // Generate the URL based on the disk
+                    $processed[] = $disk === 'public' ? 'storage/' . $path : \Illuminate\Support\Facades\Storage::disk($disk)->url($path);
                 }
             }
             return $processed;
@@ -269,5 +266,17 @@ class EventsController extends Controller
         }
 
         return response()->json(['message' => 'Dummy events inserted']);
+    }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = Event::where('user_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = Event::where('user_id', $request->user()->id)->get();
+        return response()->json($listings);
     }
 }

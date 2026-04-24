@@ -3,6 +3,18 @@ import api from "../utils/api" ;
 import { set } from "date-fns";
 
 
+export const fetchTrainings = createAsyncThunk(
+    "itTrainings/fetchTrainings",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get("/api/trainingads");
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch trainings");
+        }
+    }
+);
+
 export const fetchLearningPaths = createAsyncThunk(
     "itTrainings/fetchLearningPaths",
     async (_, {rejectWithValue}) => {
@@ -33,6 +45,30 @@ export const fetchCourseDetails = createAsyncThunk("itTrainings/fetchCourseDetai
         return rejectWithValue(error.response?.data || "Failed to fetch course details") ;  
     }
 });
+
+export const updateTraining = createAsyncThunk(
+    "itTrainings/updateTraining",
+    async ({ trainingId, trainingData }, { rejectWithValue }) => {
+        try {
+            const response = await api.put(`/api/trainingads/${trainingId}`, trainingData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update training");
+        }
+    }
+);
+
+export const deleteTraining = createAsyncThunk(
+    "itTrainings/deleteTraining",
+    async (trainingId, { rejectWithValue }) => {
+        try {
+            await api.delete(`/api/trainingads/${trainingId}`);
+            return trainingId;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to delete training");
+        }
+    }
+);
 
 const itTrainingsSlice = createSlice({
     name: "itTrainings",

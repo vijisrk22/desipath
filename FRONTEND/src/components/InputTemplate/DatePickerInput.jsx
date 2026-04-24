@@ -1,5 +1,6 @@
 import { FormControl, FormHelperText, FormLabel } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -21,45 +22,66 @@ function DatePickerInput({
     <div>
       <FormControl
         sx={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
           width: "100%",
-          gap: "1rem",
-          borderBottom: "1px solid ",
-          borderBottomColor: "grey.300",
+          py: "0.75rem",
+          gap: "0.5rem",
         }}
       >
-        <FormLabel>{text}</FormLabel>
+        <FormLabel
+           sx={{ 
+            color: "gray.800", 
+            fontWeight: "bold", 
+            fontSize: "1rem",
+            fontFamily: "dmsans" 
+          }}
+        >
+          {text}
+        </FormLabel>
 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DemoContainer
-            components={
-              toDate ? ["DatePicker1", "DatePicker2"] : ["DatePicker1"]
-            }
-            sx={{ my: "1rem" }}
-          >
+          <div className="w-full">
             <div className="flex flex-col gap-4 w-full">
               <Controller
                 name={dateFieldName1}
                 control={control}
                 rules={{
-                  required: "This field is required", // Add the required rule
+                  required: "This field is required", 
                 }}
                 render={({ field, fieldState }) => (
-                  <>
+                  <div className="w-full">
                     <PickerComponent
                       {...field}
                       label={placeholderLab}
-                      value={field.value || null}
+                      value={field.value ? dayjs(field.value) : null}
                       onChange={(newValue) => field.onChange(newValue)}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          sx: {
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                              border: "1.5px solid #ccc",
+                              transition: "border-color 0.2s",
+                              "& fieldset": { border: "none" },
+                              "&:hover": { borderColor: "#999" },
+                              "&.Mui-focused": {
+                                borderColor: "#ffa41c",
+                                borderWidth: "1.5px",
+                              },
+                            },
+                          },
+                        },
+                      }}
                     />
                     {fieldState?.error && (
-                      <FormHelperText error>
+                      <FormHelperText error sx={{ mt: 0.5 }}>
                         {fieldState.error.message}
                       </FormHelperText>
                     )}
-                  </>
+                  </div>
                 )}
               />
 
@@ -68,27 +90,45 @@ function DatePickerInput({
                   name={dateFieldName2}
                   control={control}
                   rules={{
-                    required: "This field is required", // Add the required rule
+                    required: "This field is required", 
                   }}
                   render={({ field, fieldState }) => (
-                    <>
+                    <div className="w-full">
                       <PickerComponent
                         {...field}
                         label="To"
-                        value={field.value || null}
+                        value={field.value ? dayjs(field.value) : null}
                         onChange={(newValue) => field.onChange(newValue)}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            sx: {
+                                "& .MuiOutlinedInput-root": {
+                                  borderRadius: "12px",
+                                  border: "1.5px solid #ccc",
+                                  transition: "border-color 0.2s",
+                                  "& fieldset": { border: "none" },
+                                  "&:hover": { borderColor: "#999" },
+                                  "&.Mui-focused": {
+                                    borderColor: "#ffa41c",
+                                    borderWidth: "1.5px",
+                                  },
+                                },
+                            },
+                          },
+                        }}
                       />
                       {fieldState?.error && (
-                        <FormHelperText error>
+                        <FormHelperText error sx={{ mt: 0.5 }}>
                           {fieldState.error.message}
                         </FormHelperText>
                       )}
-                    </>
+                    </div>
                   )}
                 />
               )}
             </div>
-          </DemoContainer>
+          </div>
         </LocalizationProvider>
       </FormControl>
     </div>

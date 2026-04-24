@@ -21,12 +21,15 @@ function ReviewPostContent({ contents, type = "reviewPost" }) {
                 <div key={index} className="relative aspect-square w-full">
                   <img
                     src={
-                      type === "reviewPost"
+                      image instanceof File 
                         ? URL.createObjectURL(image)
-                        : `${api.defaults.baseURL}/${image}`
+                        : `https://desipathapi.azurewebsites.net/${image}`
                     }
                     alt="Uploaded"
-                    className="w-full h-full object-cover rounded-lg shadow-md"
+                    className="w-full h-full object-cover rounded-lg shadow-md transition-opacity hover:opacity-90"
+                    onLoad={(e) => {
+                      if (image instanceof File) URL.revokeObjectURL(e.target.src);
+                    }}
                   />
                 </div>
               ))}

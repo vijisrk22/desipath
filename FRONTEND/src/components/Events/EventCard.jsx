@@ -33,7 +33,7 @@ export default function EventCard({ event }) {
       <Link to={`/services/events/findEvent/${event.id}`}>
         <CardMedia
           component="img"
-          image={event?.image}
+          image={event?.image ? event.image.replace(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, "https://desipathapi.azurewebsites.net") : "/eventHero.png"}
           title={event?.title}
           sx={{ 
             height: 240,
@@ -64,7 +64,7 @@ export default function EventCard({ event }) {
         </div>
 
         <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
-          <div className="text-[#007185] text-xl font-bold font-dmsans">
+          <div className="text-[#007185] text-2xl font-bold font-dmsans">
             {event.ticketPrice === 0 ? "Free" : event.ticketPrice}
           </div>
 

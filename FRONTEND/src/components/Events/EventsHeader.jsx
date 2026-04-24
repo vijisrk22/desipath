@@ -10,7 +10,7 @@ function EventsHeader({ paths }) {
   const breadcrumbs = paths || defaultPaths;
 
   return (
-    <div className="px-[7%] pt-2 pb-2 flex justify-between items-end">
+    <div className="px-[7%] pt-2 pb-6 flex justify-between items-end">
       {/*Events Header path */}
       <DisplayPath
         paths={breadcrumbs}
@@ -19,7 +19,7 @@ function EventsHeader({ paths }) {
       />
       <a
         href="/services/events/postEvent"
-        className="px-6 py-2 bg-[#ffa41c] hover:bg-[#ff9900] transition-colors rounded-[57px] text-gray-800 text-sm font-bold font-dmsans whitespace-nowrap shadow-sm"
+        className="px-6 py-2.5 bg-[#ffa41c] hover:bg-[#ff9900] transition-colors rounded-[57px] text-gray-800 text-sm font-bold font-dmsans whitespace-nowrap shadow-sm mb-2"
       >
         Post An Event
       </a>

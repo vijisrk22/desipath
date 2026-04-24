@@ -4,7 +4,7 @@ import ReviewPostContent from "./ReviewPostContent";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
-import { postHouse } from "../../store/HousesSlice";
+import { updateHouse, postHouse } from "../../store/HousesSlice";
 import { convertImagesToBase64 } from "../../utils/helper";
 import { useState } from "react";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -121,11 +121,11 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
     if (formDetails.kitchenGraniteTop) formFields["kitchen_granite_countertop"] = formDetails.kitchenGraniteTop === "Yes";
     if (formDetails.firePlace) formFields["fireplace_count"] = formDetails.firePlace === "Yes" ? 1 : 0;
     
-    if (formDetails.location) {
+    if (formDetails.location && typeof formDetails.location === "string") {
       const locParts = formDetails.location.split(",");
-      formFields["location_city"] = locParts[0]?.trim();
-      formFields["location_state"] = locParts[1]?.trim();
-      formFields["location_zipcode"] = locParts[2]?.trim();
+      formFields["location_city"] = locParts[0]?.trim() || "";
+      formFields["location_state"] = locParts[1]?.trim() || "";
+      formFields["location_zipcode"] = locParts[2]?.trim() || "";
     }
 
     if (formDetails.flooringOptions) {
@@ -148,21 +148,23 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
     }
 
     try {
-      if (images && images.length > 0) {
-           formFields["images"] = await convertImagesToBase64(images);
-      } else {
-           formFields["images"] = [];
-      }
+      const newImages = images.filter(img => typeof img !== 'string');
+      const base64Images = await convertImagesToBase64(newImages);
+      formFields["images"] = base64Images;
+      formFields["existing_images"] = images.filter(img => typeof img === 'string');
 
-      console.log("Submitting house:", formFields);
-      await dispatch(postHouse(formFields)).unwrap(); 
+      if (isEdit) {
+        await dispatch(updateHouse({ houseId: formDetails.id, houseData: formFields })).unwrap();
+      } else {
+        await dispatch(postHouse(formFields)).unwrap(); 
+      }
+      
       setIsSuccess(true);
       setTimeout(() => {
-        navigate("/services/houses");
+        navigate("/services/houses/buyHouse");
       }, 2500);
     } catch (err) {
       console.error("Failed to post house:", err);
-      // Stay on modal if error occurred to let user check or close manually
     }
   };
 
@@ -195,7 +197,7 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
               Success!
             </Typography>
             <Typography variant="body1" sx={{ color: "#555", mb: 3 }}>
-              Your house listing has been posted successfully.
+              Your house listing has been {isEdit ? 'updated' : 'posted'} successfully.
             </Typography>
             <Typography variant="body2" sx={{ color: "#888" }}>
               Redirecting you to the listings...
@@ -205,7 +207,7 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
           <>
             <div className="flex justify-between items-center mb-4">
               <div className="text-[#007185] text-[22px] font-bold font-dmsans">
-                Review Your Listing And Submit
+                {isEdit ? "Update Your Listing" : "Review Your Listing And Submit"}
               </div>
               <Button onClick={onClose}>
                 <EditIcon color="primary" />
@@ -236,7 +238,7 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
                 disabled={loading}
                 className="w-full max-w-xs px-8 py-4 bg-[#ffa41c] rounded-2xl text-gray-800 text-lg font-bold font-dmsans hover:bg-[#ff9400] transition-colors shadow-lg active:scale-95 disabled:opacity-50"
               >
-                Post Now
+                {isEdit ? 'Update Now' : 'Post Now'}
               </button>
             </div>
           </>

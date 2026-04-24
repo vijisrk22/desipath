@@ -23,7 +23,8 @@ function RoomDetails() {
 
   const navigate = useNavigate();
 
-  const { action: roomId } = useParams();
+  const { action, roomId: roomIdParam } = useParams();
+  const roomId = roomIdParam || action;
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
@@ -31,10 +32,9 @@ function RoomDetails() {
     (state) => state.roommates
   );
 
-  // Fetch room details when the component mounts
   useEffect(() => {
-    dispatch(fetchRoomById(roomId)); // Assume room ID 1 for now
-  }, [dispatch]);
+    dispatch(fetchRoomById(roomId));
+  }, [dispatch, roomId]);
 
   // If loading, show loader
   if (loading) {
@@ -42,6 +42,11 @@ function RoomDetails() {
   }
 
   const handleClick = () => {
+    if (!user) {
+      navigate("/login", { state: { from: { pathname: window.location.pathname } } });
+      return;
+    }
+
     const chatPartnerInfo = {
       chatPartnerId: roomDetails.poster_id,
       chatPartnerName: roomDetails.poster_name,
@@ -50,7 +55,7 @@ function RoomDetails() {
     console.log("Chat Partner Info:", chatPartnerInfo);
     try {
       navigate(
-        `/chat?adType=roommate&adId=${
+        `/inbox?adType=roommate&adId=${
           roomDetails.id
         }&chatPartnerInfo=${encodeURIComponent(
           JSON.stringify(chatPartnerInfo)
@@ -138,7 +143,7 @@ function RoomDetails() {
           <div key={indx} className="flex justify-center">
             <img
               className="w-[150px] h-[150px] rounded-md border-[3px] border-[#2e61b1]"
-              src={`${api.defaults.baseURL}/${img}`}
+              src={`https://desipathapi.azurewebsites.net/${img}`}
               alt={`Image ${indx}`}
             />
           </div>
@@ -171,9 +176,9 @@ function RoomDetails() {
 
           <button
             onClick={handleClick}
-            disabled={roomDetails.poster_id === user.id}
+            disabled={roomDetails?.poster_id === user?.id}
             className={`px-5 py-2.5 rounded-[57px] inline-flex justify-center items-center gap-2.5 ${
-              roomDetails.poster_id === user.id ? "cursor-not-allowed" : ""
+              roomDetails?.poster_id === user?.id ? "cursor-not-allowed" : ""
             }`}
           >
             <SmsOutlinedIcon color="primary" />

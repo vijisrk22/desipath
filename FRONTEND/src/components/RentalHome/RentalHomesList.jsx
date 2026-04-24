@@ -49,7 +49,7 @@ function RentalHomesList() {
   return (
     <div className="px-[7%] mt-12 mb-20">
       <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="text-[#007185] text-[32px] md:text-[40px] font-bold font-dmsans">
+        <div className="text-[#007185] text-[16px] md:text-[20px] font-bold font-dmsans uppercase tracking-wide">
           Rental Listings
         </div>
         <SortBy
@@ -61,7 +61,7 @@ function RentalHomesList() {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {rentalHomes.length > 0 ? (
           rentalHomes.map((rentalHome, index) => (
             <RentalHomeCard key={index} rentalHome={rentalHome} />
@@ -91,16 +91,16 @@ function RentalHomesList() {
               mx: "12px", // Adds spacing between page numbers
             },
             "& .MuiPaginationItem-page.Mui-selected": {
-              backgroundColor: "#ffa41c", // Sets the background color for the selected page
+              backgroundColor: "#0857d0", // Sets the background color for the selected page
               color: "white", // Ensures text is visible
             },
             "& .MuiPaginationItem-ellipsis": {
-              color: "#ffa41c", // Sets color for ellipsis (...)
+              color: "#0857d0", // Sets color for ellipsis (...)
               fontWeight: "bold",
             },
             "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
             {
-              color: "#ffa41",
+              color: "#0857d0",
               mx: "16px",
             },
           }}

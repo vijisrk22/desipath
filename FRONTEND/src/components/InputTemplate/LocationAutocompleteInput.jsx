@@ -115,7 +115,7 @@ function LocationAutocompleteInput({
     <div ref={wrapperRef} style={{ position: "relative" }}>
       {type === "search" ? (
         // Custom UI for 'search' input
-        <div className="px-4 py-2 sm:py-3 rounded-[30px] bg-white text-md md:text-sm lg:text-base border border-gray-200 shadow-sm flex w-full items-center">
+        <div className="px-4 py-1 sm:py-1.5 rounded-[30px] bg-white text-md md:text-sm lg:text-base border-[1.5px] border-[#ccc] focus-within:border-[#ffa41c] transition-all shadow-sm flex w-full items-center">
           <input
             name="location"
             autoComplete="off"

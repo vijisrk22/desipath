@@ -55,7 +55,16 @@ function ActiveSearchFilters() {
                 key="location"
                 label={`Location: ${locText}`}
                 onDelete={() => handleRemove("location")}
-                color="primary"
+                sx={{
+                    borderColor: '#0857d0',
+                    color: '#0857d0',
+                    fontWeight: '500',
+                    '& .MuiChip-deleteIcon': {
+                        color: '#0857d0',
+                        opacity: 0.7,
+                        '&:hover': { opacity: 1 }
+                    }
+                }}
                 variant="outlined"
             />
         );
@@ -70,7 +79,16 @@ function ActiveSearchFilters() {
                 key="price"
                 label={`Price: $${lastSearchQuery.priceMin || 0} - $${lastSearchQuery.priceMax || 'Any'}`}
                 onDelete={() => handleRemove("price")}
-                color="primary"
+                sx={{
+                    borderColor: '#0857d0',
+                    color: '#0857d0',
+                    fontWeight: '500',
+                    '& .MuiChip-deleteIcon': {
+                        color: '#0857d0',
+                        opacity: 0.7,
+                        '&:hover': { opacity: 1 }
+                    }
+                }}
                 variant="outlined"
             />
         )
@@ -88,7 +106,16 @@ function ActiveSearchFilters() {
                     key={`type-${type}`}
                     label={`Type: ${type}`}
                     onDelete={() => handleRemove("type", type)}
-                    color="primary"
+                    sx={{
+                        borderColor: '#0857d0',
+                        color: '#0857d0',
+                        fontWeight: '500',
+                        '& .MuiChip-deleteIcon': {
+                            color: '#0857d0',
+                            opacity: 0.7,
+                            '&:hover': { opacity: 1 }
+                        }
+                    }}
                     variant="outlined"
                 />
             );

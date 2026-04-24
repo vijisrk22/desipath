@@ -7,17 +7,21 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchHouses } from "../store/HousesSlice";
 import HouseCard from "./BuySellHouse/HouseCard";
 import { CircularProgress } from "@mui/material";
+import { useRef } from "react";
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 function Homes() {
   const dispatch = useDispatch();
   const { houses: homes, loading } = useSelector((state) => state.houses);
+  const sliderRef = useRef(null);
 
   const settings = {
-    dots: true,
-    arrows: true,
+    dots: false,
+    arrows: false,
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 3,
     slidesToScroll: 1,
     responsive: [
       {
@@ -40,17 +44,34 @@ function Homes() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col justify-start items-center gap-[24px]">
-      <SectionHeadings heading="Homes for Sale" link="/services/houses" />
-      <div className="w-full h-full px-2 mt-4">
+    <div className="flex flex-col justify-start items-center gap-6 w-full">
+      <div className="w-full flex justify-between items-center px-2">
+        <SectionHeadings heading="For Sale" link="/services/houses" />
+        <div className="flex gap-3">
+          <button 
+            onClick={() => sliderRef.current?.slickPrev()}
+            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
+          >
+            <ChevronLeftIcon sx={{ color: '#007185' }} />
+          </button>
+          <button 
+            onClick={() => sliderRef.current?.slickNext()}
+            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
+          >
+            <ChevronRightIcon sx={{ color: '#007185' }} />
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full h-full px-2">
         {loading && homes.length === 0 ? (
           <div className="flex justify-center items-center py-10">
             <CircularProgress />
           </div>
         ) : homes && homes.length > 0 ? (
-          <Slider {...settings}>
+          <Slider ref={sliderRef} {...settings}>
             {homes.slice(0, 8).map((home, index) => (
-              <div key={index} className="px-2 pb-4 pt-1 h-full flex">
+              <div key={index} className="px-3 pb-4 pt-1 h-full flex">
                 <HouseCard house={home} />
               </div>
             ))}

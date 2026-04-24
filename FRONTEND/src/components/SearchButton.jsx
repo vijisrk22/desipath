@@ -7,11 +7,11 @@ function SearchButton({
   return (
     <button
       type="submit"
-      className={`bg-[#ffa41c] rounded-full justify-start items-center gap-2.5 inline-flex ${paddingClass} `}
+      className={`bg-[#0857d0] rounded-full justify-start items-center gap-2.5 inline-flex hover:bg-[#0746a8] transition-colors ${paddingClass} `}
     >
-      <img src="/search.svg" className={imageClass} />
+      <img src="/search.svg" className={`${imageClass} brightness-0 invert`} />
       {textVisible && (
-        <div className="text-center text-gray-800 hidden md:block md:text-[18px] lg:text-[22px] font-semibold font-dmsans">
+        <div className="text-center text-white hidden md:block md:text-[14px] lg:text-[16px] font-semibold font-dmsans">
           Search
         </div>
       )}

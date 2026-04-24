@@ -3,8 +3,8 @@ import { Controller } from "react-hook-form";
 
 function DescriptionInput({ name, control }) {
   return (
-    <div>
-      <div className="self-stretch justify-center text-gray-800 text-2xl font-medium font-dmsans">
+    <div className="py-2">
+      <div className="text-gray-800 text-lg font-bold font-dmsans mb-2">
         Description
       </div>
       <Controller
@@ -14,10 +14,23 @@ function DescriptionInput({ name, control }) {
           <TextField
             {...field}
             variant="outlined"
-            placeholder="Description"
+            placeholder="Property description..."
             multiline
-            rows={7}
+            rows={5}
             fullWidth
+            sx={{ 
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "12px",
+                border: "1.5px solid #ccc",
+                transition: "border-color 0.2s",
+                "& fieldset": { border: "none" },
+                "&:hover": { borderColor: "#999" },
+                "&.Mui-focused": {
+                  borderColor: "#ffa41c",
+                  borderWidth: "1.5px",
+                },
+              },
+            }}
           />
         )}
       />

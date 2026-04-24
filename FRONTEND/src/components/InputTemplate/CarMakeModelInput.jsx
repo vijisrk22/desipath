@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-function CarMakeModelInput({ control, watch, setValue, type = "" }) {
+function CarMakeModelInput({ control, watch, setValue, type = "", onlyMake = false, onlyModel = false }) {
   const make = watch("make");
   const model = watch("model");
 
@@ -19,13 +19,15 @@ function CarMakeModelInput({ control, watch, setValue, type = "" }) {
   }, [dispatch]);
 
   useEffect(() => {
-    setValue("model", "");
-    setValue("model_other", "");
-    dispatch(clearCarModel());
+    if (!onlyModel) {
+       setValue("model", "");
+       setValue("model_other", "");
+       dispatch(clearCarModel());
+    }
     if (make && make !== "Others" && make.trim() !== "") {
       dispatch(getCarModel(make)).unwrap();
     }
-  }, [dispatch, make]);
+  }, [dispatch, make, onlyModel]);
 
   const makeOptions = [...(car_make?.map((m) => (typeof m === 'object' ? m.make : m)) || []), "Others"];
   const modelOptions = [...(car_model?.map((m) => (typeof m === 'object' ? m.model : m)) || []), "Others"];
@@ -34,34 +36,41 @@ function CarMakeModelInput({ control, watch, setValue, type = "" }) {
 
   if (type === "search") {
     return (
-      <div className="flex gap-4">
-        <FormControl fullWidth>
-          <InputLabel id="car-make-label">Make</InputLabel>
-          <Select
-            labelId="car-make-label"
-            value={watch("make") || ""}
-            label="Make"
-            onChange={(e) => setValue("make", e.target.value)}
-          >
-            {makeOptions.map((val, i) => (
-              <MenuItem key={i} value={val}>{val}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl fullWidth>
-          <InputLabel id="car-model-label">Model</InputLabel>
-          <Select
-            labelId="car-model-label"
-            value={watch("model") || ""}
-            label="Model"
-            onChange={(e) => setValue("model", e.target.value)}
-          >
-            {modelOptions.map((val, i) => (
-              <MenuItem key={i} value={val}>{val}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
+      <>
+        {(onlyMake || (!onlyMake && !onlyModel)) && (
+          <FormControl fullWidth size="small">
+            <InputLabel id="car-make-label">Make</InputLabel>
+            <Select
+              labelId="car-make-label"
+              value={watch("make") || ""}
+              label="Make"
+              onChange={(e) => setValue("make", e.target.value)}
+              sx={{ borderRadius: '12px' }}
+            >
+              {makeOptions.map((val, i) => (
+                <MenuItem key={i} value={val}>{val}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+        
+        {(onlyModel || (!onlyMake && !onlyModel)) && (
+          <FormControl fullWidth size="small">
+            <InputLabel id="car-model-label">Model</InputLabel>
+            <Select
+              labelId="car-model-label"
+              value={watch("model") || ""}
+              label="Model"
+              onChange={(e) => setValue("model", e.target.value)}
+              sx={{ borderRadius: '12px' }}
+            >
+              {modelOptions.map((val, i) => (
+                <MenuItem key={i} value={val}>{val}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+      </>
     );
   }
 

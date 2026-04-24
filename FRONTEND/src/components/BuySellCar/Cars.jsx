@@ -6,6 +6,7 @@ import Loader from "../Loader";
 import SortBy from "../SortBy";
 
 import { fetchCars } from "../../store/CarsSlice";
+import ActiveCarSearchFilters from "./ActiveCarSearchFilters";
 
 function Cars() {
   // backend API endpoint /api/rooms
@@ -50,9 +51,7 @@ function Cars() {
   return (
     <div className="px-[7%] mt-12 mb-20">
       <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="text-[#007185] text-[32px] md:text-[40px] font-bold font-dmsans">
-          Featured Vehicles
-        </div>
+        <ActiveCarSearchFilters />
         <SortBy
           sortOption={sortOption}
           setSortOption={(value) => {
@@ -62,7 +61,7 @@ function Cars() {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 justify-items-center">
         {displayedCars.length > 0 ? (
           displayedCars.map((car, index) => (
             <CarCard key={index} car={car} />

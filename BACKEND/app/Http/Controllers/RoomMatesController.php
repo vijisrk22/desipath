@@ -497,4 +497,22 @@ class RoomMatesController extends Controller
 
         return response()->json(['message' => 'Room mate deleted successfully']);
     }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = RoomMate::where('poster_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = RoomMate::where('poster_id', $request->user()->id)->get();
+        $listings->transform(function ($item) {
+            if (is_string($item->photos) && !empty($item->photos)) {
+                $item->photos = json_decode($item->photos, true);
+            }
+            return $item;
+        });
+        return response()->json($listings);
+    }
 }

@@ -125,7 +125,7 @@ function EditRentalHomePostModal({ open, onClose, formDetails, editFunc }) {
       // Handle success after post
       console.log("Edit successful:", result);
       setLoading(false);
-      navigate("/services/rentalHomes/postConfirmation");
+      navigate("/services/rentalhomes/postConfirmation");
     } catch (error) {
       setLoading(false);
       console.error("Failed to post listing:", error);

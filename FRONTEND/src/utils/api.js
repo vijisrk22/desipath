@@ -23,7 +23,13 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       console.warn('Unauthorized, redirecting to login...');
       localStorage.removeItem('access_token');
-      window.location.href = '/login';
+      // Only redirect if not on a guest-friendly page (home, services, or kids-class)
+      const isGuestPage = window.location.pathname === '/' || 
+                          window.location.pathname.startsWith('/services/') || 
+                          window.location.pathname.startsWith('/kids-class');
+      if (!isGuestPage) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

@@ -25,7 +25,8 @@ function SearchFieldInput({ inputs, title }) {
   } = useForm();
 
   const dispatch = useDispatch();
-  const [priceRange, setPriceRange] = useState([1000, 10000]);
+  const [priceRange, setPriceRange] = useState([0, 10000]);
+  const [priceBounds, setPriceBounds] = useState([0, 10000]);
 
   // Sync form with Redux active filters
   const rentalHomesState = useSelector((state) => state.rentalHomes);
@@ -37,14 +38,9 @@ function SearchFieldInput({ inputs, title }) {
 
     // Sync Location
     if (lastSearchQuery.city || lastSearchQuery.state || lastSearchQuery.zipcode) {
-      // Reconstruct location string if possible or just rely on what's there if it matches?
-      // Issue: We don't know the exact string user typed vs parsed. 
-      // But if we clear it, we should clear the input.
       const locParts = [lastSearchQuery.city, lastSearchQuery.state, lastSearchQuery.zipcode].filter(Boolean);
-      // If all empty, clear location
       if (locParts.length === 0) setValue("location", "");
     } else {
-      // If query has NO location data, clear input
       setValue("location", "");
     }
 
@@ -53,31 +49,33 @@ function SearchFieldInput({ inputs, title }) {
       setPriceRange([lastSearchQuery.priceMin, lastSearchQuery.priceMax]);
     }
 
-    // Sync Type
-    // Loop through all known types and set them based on inclusion in lastSearchQuery.rentalHomeType
-    const allTypes = ["Condo", "Single family Home", "Apartment", "Basement Apartment"];
-    allTypes.forEach(type => {
+    // Sync Rental Home Type
+    const rentalTypes = ["Condo", "Single family Home", "Apartment", "Basement Apartment"];
+    rentalTypes.forEach(type => {
       const isChecked = lastSearchQuery.rentalHomeType?.includes(type);
-      setValue(`rentalHomeType.${type}`, isChecked); // CheckBoxInput uses "rentalHomeType.Condo" etc.
+      setValue(`rentalHomeType.${type}`, isChecked); 
+    });
+
+    // Sync Home Type (Buy House)
+    const homeTypes = ["Condominium", "Single Family", "Apartment"];
+    homeTypes.forEach(type => {
+      const isChecked = lastSearchQuery.homeType?.includes(type);
+      setValue(`homeType.${type}`, isChecked);
     });
 
   }, [lastSearchQuery, title, setValue]);
 
   useEffect(() => {
-    setPriceRange([
-      0,
-      title === "Find a Room"
-        ? 5000
-        : title === "Buy a Car"
-          ? 100000
-          : title === "Rent a Home"
-            ? 15000
-            : title === "Buy a home"
-              ? 5000000
-              : title === "Find an Event"
-                ? 1000
-                : 10000,
-    ]);
+    const maxPrice =
+      title === "Find a Room" ? 5000
+      : title === "Buy a Car" ? 100000
+      : title === "Rent a Home" ? 15000
+      : title === "Buy a home" ? 5000000
+      : title === "Find an Event" ? 1000
+      : 10000;
+    // Set absolute bounds and reset selected range to full range
+    setPriceBounds([0, maxPrice]);
+    setPriceRange([0, maxPrice]);
   }, [title]);
 
   async function onSubmit(data) {
@@ -168,6 +166,11 @@ function SearchFieldInput({ inputs, title }) {
         zipcode,
         priceMin: priceRange[0],
         priceMax: priceRange[1],
+        homeType: data?.homeType
+          ? Object.entries(data.homeType)
+            .filter(([_, value]) => value)
+            .map(([key]) => key)
+          : [],
       };
       try {
         console.log("Sending searchQuery:", searchQuery);
@@ -209,78 +212,110 @@ function SearchFieldInput({ inputs, title }) {
     <form
       method="POST"
       onSubmit={handleSubmit(onSubmit)}
-      className="px-6 py-4 md:py-8 w-full relative rounded-tr-2xl rounded-b-2xl bg-white flex flex-col gap-y-4 md:flex-row md:gap-8 lg:gap-12 md:items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.05)]"
+      className="px-6 py-5 w-full relative rounded-tr-2xl rounded-b-2xl bg-white flex flex-col gap-4 shadow-[0_4px_24px_rgba(0,0,0,0.08)]"
     >
-      <div className="lg:min-w-[400px] xl:min-w-[600px] flex items-center justify-between gap-12 flex-1 flex-wrap">
-        {inputs.map((input, index) => (
-          <div key={index} className="flex-1">
-            {input === "location" ? (
-              <LocationAutocompleteInput
-                key={index}
-                control={control}
-                setValue={setValue}
-                type="search"
-                onSelect={handleLocationSelect}
-              />
-            ) : input === "makeAndModel" ? (
-              <CarMakeModelInput
-                key={index}
-                control={control}
-                watch={watch}
-                setValue={setValue}
-                type="search"
-              />
-            ) : input === "type" ? (
-              <CheckBoxInput
-                text="Type"
-                options={[
-                  { name: "rentalHomeType.Condo", label: "Condominium" },
-                  {
-                    name: "rentalHomeType.Single family Home",
-                    label: "Single Family ",
-                  },
-                  { name: "rentalHomeType.Apartment", label: "Apartment" },
-                  {
-                    name: "rentalHomeType.Basement Apartment",
-                    label: "Basement Apartment",
-                  },
-                ]}
-                register={register}
-                type="search"
-              />
-            ) : input === "eventType" ? (
-              <CheckBoxInput
-                text="Event Type"
-                options={[
-                  { name: "eventType.Music", label: "Music" },
-                  { name: "eventType.Comedy", label: "Comedy" },
-                  { name: "eventType.Workshop", label: "Workshop" },
-                  { name: "eventType.Bollywood", label: "Bollywood" },
-                  { name: "eventType.Cultural", label: "Cultural" },
-                ]}
-                register={register}
-                type="search"
-              />
-            ) : null}
-          </div>
-        ))}
-      </div>
-      <div className="flex gap-4 md:gap-6">
-        <div className="w-full lg:min-w-[300px] xl:w-[400px]">
+      {/* Top Row / Main Area */}
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8 justify-between">
+        
+        {/* Left Section: Inputs (Location, Make/Model) */}
+        <div className="w-full md:flex-1 max-w-xl flex flex-col gap-2">
+          {inputs.includes("location") && (
+            <LocationAutocompleteInput
+              control={control}
+              setValue={setValue}
+              type="search"
+              onSelect={handleLocationSelect}
+            />
+          )}
+          
+          {inputs.includes("makeAndModel") && (
+            <div className="flex gap-3">
+               <div className="flex-1">
+                 <CarMakeModelInput
+                    control={control}
+                    watch={watch}
+                    setValue={setValue}
+                    type="search"
+                    onlyMake={true}
+                  />
+               </div>
+               <div className="flex-1">
+                 <CarMakeModelInput
+                    control={control}
+                    watch={watch}
+                    setValue={setValue}
+                    type="search"
+                    onlyModel={true}
+                  />
+               </div>
+            </div>
+          )}
+        </div>
+
+        {/* Price Slider Section */}
+        <div className="w-full md:w-[350px] lg:w-[400px]">
           <MinimumDistanceSlider
             value={priceRange}
             onChange={setPriceRange}
-            minRange={priceRange[0]}
-            maxRange={priceRange[1]}
+            minRange={priceBounds[0]}
+            maxRange={priceBounds[1]}
           />
         </div>
 
-        <SearchButton
-          textVisible={false}
-          paddingClass={"rounded-full px-4 py-2 md:px-7 md:py-3"}
-          imageClass={"w-6 h-6 md:w-8 md:h-8"}
-        />
+        {/* Search Button */}
+        <div className="w-full md:w-auto">
+          <SearchButton
+            textVisible={true}
+            paddingClass={"rounded-xl px-10 py-3 w-full md:w-auto flex justify-center"}
+            imageClass={"hidden"}
+          />
+        </div>
       </div>
+
+      {/* Bottom Row: Checkboxes (if any) */}
+      {(inputs.includes("type") || inputs.includes("eventType") || inputs.includes("homeType")) && (
+        <div className="pt-2 border-t border-gray-50">
+          {inputs.includes("type") && (
+            <CheckBoxInput
+              text="Type"
+              options={[
+                { name: "rentalHomeType.Condo", label: "Condominium" },
+                { name: "rentalHomeType.Single family Home", label: "Single Family" },
+                { name: "rentalHomeType.Apartment", label: "Apartment" },
+                { name: "rentalHomeType.Basement Apartment", label: "Basement" },
+              ]}
+              register={register}
+              type="search"
+            />
+          )}
+          {inputs.includes("homeType") && (
+            <CheckBoxInput
+              text="Home Type"
+              options={[
+                { name: "homeType.Condominium", label: "Condominium" },
+                { name: "homeType.Single Family", label: "Single Family" },
+                { name: "homeType.Apartment", label: "Apartment" },
+              ]}
+              register={register}
+              type="search"
+            />
+          )}
+          {inputs.includes("eventType") && (
+            <CheckBoxInput
+              text="Event Type"
+              options={[
+                { name: "eventType.Music", label: "Music" },
+                { name: "eventType.Comedy", label: "Comedy" },
+                { name: "eventType.Workshop", label: "Workshop" },
+                { name: "eventType.Bollywood", label: "Bollywood" },
+                { name: "eventType.Cultural", label: "Cultural" },
+              ]}
+              register={register}
+              type="search"
+            />
+          )}
+        </div>
+      )}
     </form>
   );
 }

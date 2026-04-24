@@ -6,15 +6,22 @@ import PhotoUpload from "../InputTemplate/PhotoUpload";
 import DescriptionInput from "../InputTemplate/DescriptionInput";
 import TextFieldInput from "../InputTemplate/TextFieldInput";
 import ReviewHousePost from "./ReviewHousePost";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import api from "../../utils/api";
 import CheckBoxInput from "../InputTemplate/CheckBoxInput";
 import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
+
 function PostHouseForm() {
+  const { action, houseId } = useParams();
+  const isEdit = action === "edit";
+
   const {
     handleSubmit,
     control,
     register,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -28,12 +35,77 @@ function PostHouseForm() {
   const [reviewSession, setReviewSession] = useState(false);
   const [formDetails, setFormDetails] = useState(null);
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isEdit && houseId) {
+      setLoading(true);
+      api.get(`/api/homes/${houseId}`)
+        .then(res => {
+          const data = res.data;
+          
+          // Map backend fields to form fields
+          const mappedData = {
+            ...data,
+            role: data.user_type,
+            builtArea: data.built_area,
+            lotSize: data.lot_size,
+            hoaFees: data.hoa_fees,
+            yearBuilt: data.year_built,
+            numBedrooms: data.bedroom_total,
+            halfBathrooms: data.half_bathroom_total,
+            basementSize: data.basement_size,
+            basement: data.basement_status === "Semi finished" ? "Semi Finished" : data.basement_status,
+            laundryInHouse: data.laundry_in_house ? "Yes" : "No",
+            numOfLevels: data.home_level,
+            kitchenGraniteTop: data.kitchen_granite_countertop ? "Yes" : "No",
+            firePlace: data.fireplace_count > 0 ? "Yes" : "No",
+          };
+
+          // Handle location string for Autocomplete
+          if (data.location_city || data.location_state || data.location_zipcode) {
+            mappedData.location = `${data.location_city || ""}, ${data.location_state || ""}, ${data.location_zipcode || ""}`.trim().replace(/^,|,$/g, "");
+          }
+
+          // Handle home type mapping
+          if (data.home_type === "Condominum") mappedData.type = "Condominium";
+          else if (data.home_type === "Single family") mappedData.type = "Single Family";
+          else if (data.home_type === "Town home") mappedData.type = "Town House";
+          else mappedData.type = data.home_type;
+
+          // Handle flooring options (Array to Object)
+          if (Array.isArray(data.flooring)) {
+            const floorOpts = {};
+            const revLabels = { "Wood": "wood", "Vinyl": "vinyl", "Carpet": "carpet", "Ceramic Tile": "ceramicTile" };
+            data.flooring.forEach(f => {
+              if (revLabels[f]) floorOpts[revLabels[f]] = true;
+            });
+            mappedData.flooringOptions = floorOpts;
+          }
+
+          reset(mappedData);
+          
+          if (data.images) {
+            try {
+              const parsed = typeof data.images === 'string' ? JSON.parse(data.images) : data.images;
+              setImages(Array.isArray(parsed) ? parsed : []);
+            } catch (e) {
+              console.error("Failed to parse images:", e);
+              setImages([]);
+            }
+          } else {
+            setImages([]);
+          }
+        })
+        .catch(err => console.error("Error fetching house for edit:", err))
+        .finally(() => setLoading(false));
+    }
+  }, [isEdit, houseId, reset]);
 
   const onSubmit = (data) => {
     if (Object.keys(errors).length === 0) {
-      // Only show review if no errors
       console.log(data);
-      setFormDetails(data);
+      setFormDetails({ ...data, id: houseId });
       setReviewSession(true);
     } else {
       console.log("Form contains errors", errors);
@@ -184,8 +256,13 @@ function PostHouseForm() {
             </ul>
           </div>
         )}
+        {loading && (
+          <div className="absolute inset-0 bg-white/60 z-50 flex items-center justify-center rounded-2xl">
+            <div className="w-10 h-10 border-4 border-[#ffa41c] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
         <button type="submit" className="mt-4 w-full px-10 py-5 bg-[#ffa41c] rounded-[28px] text-center  text-gray-800 text-base font-semibold font-dmsans hover:bg-[#e8931a] transition-colors">
-          Review Post
+          {isEdit ? 'Review Changes' : 'Review Post'}
         </button>
       </form>
     </div>

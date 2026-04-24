@@ -11,7 +11,7 @@ import { searchHouse, fetchHouses } from "../../store/HousesSlice";
 function Houses() {
   const dispatch = useDispatch();
   const { loading, error, houses, pagination, lastSearchQuery } = useSelector((state) => state.houses);
-  
+
   const [page, setPage] = useState(1);
   const [sortOption, setSortOption] = useState("created_at-desc");
   useEffect(() => {
@@ -45,7 +45,7 @@ function Houses() {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {houses.length > 0 ? (
           houses.map((house, index) => (
             <HouseCard key={index} house={house} />
@@ -83,10 +83,10 @@ function Houses() {
               fontWeight: "bold",
             },
             "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
-              {
-                color: "#ffa41",
-                mx: "16px",
-              },
+            {
+              color: "#ffa41",
+              mx: "16px",
+            },
           }}
         />
       </div>

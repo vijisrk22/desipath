@@ -53,7 +53,7 @@ function EventDetails() {
 
   // Helper to get full image paths
   const displayImages = (eventDetails.cover_images && Array.isArray(eventDetails.cover_images) && eventDetails.cover_images.length > 0)
-    ? eventDetails.cover_images.map(img => `${api.defaults.baseURL}/${img}`)
+    ? eventDetails.cover_images.map(img => `https://desipathapi.azurewebsites.net/${img}`)
     : ["/img/events/eventDetailsThumbnail.png"];
 
   return (

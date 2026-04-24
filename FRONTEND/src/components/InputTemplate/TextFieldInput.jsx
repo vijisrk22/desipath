@@ -16,17 +16,25 @@ function TextFieldInput({
     <div>
       <FormControl
         sx={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
           width: "100%",
-          py: "1rem",
-          gap: "1rem",
-          borderBottom: "1px solid ",
-          borderBottomColor: "grey.300",
+          py: "0.75rem",
+          gap: "0.5rem",
         }}
       >
-        <FormLabel htmlFor={name}>{text}</FormLabel>
+        <FormLabel 
+          htmlFor={name}
+          sx={{ 
+            color: "gray.800", 
+            fontWeight: "bold", 
+            fontSize: "1rem",
+            fontFamily: "dmsans" 
+          }}
+        >
+          {text}
+        </FormLabel>
         <Controller
           name={name}
           control={control}
@@ -36,23 +44,40 @@ function TextFieldInput({
             ...rules,
           }}
           render={({ field, fieldState }) => (
-            <>
+            <div className="w-full">
               <TextField
                 {...field}
                 id={name}
                 type={type}
                 variant="outlined"
-                size="small"
+                size="medium"
                 placeholder={defaultValue}
-                sx={{ width: "100%" }}
+                sx={{ 
+                  width: "100%",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "12px",
+                    border: "1.5px solid #ccc",
+                    transition: "border-color 0.2s",
+                    "& fieldset": {
+                      border: "none",
+                    },
+                    "&:hover": {
+                      borderColor: "#999",
+                    },
+                    "&.Mui-focused": {
+                      borderColor: "#ffa41c",
+                      borderWidth: "1.5px",
+                    },
+                  },
+                }}
                 {...customProps}
               />
               {fieldState?.error && (
-                <FormHelperText error>
+                <FormHelperText error sx={{ mt: 0.5 }}>
                   {fieldState.error.message}
                 </FormHelperText>
               )}
-            </>
+            </div>
           )}
         />
       </FormControl>

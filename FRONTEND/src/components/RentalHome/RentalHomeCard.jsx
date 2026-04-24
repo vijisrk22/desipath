@@ -14,7 +14,6 @@ export default function RentalHomeCard({ rentalHome }) {
     <Card
       sx={{ 
         width: "100%", 
-        maxWidth: 400,
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -44,30 +43,33 @@ export default function RentalHomeCard({ rentalHome }) {
         )}
       </button>
 
-      <CardMedia
-        component="img"
-        image={
-          rentalHome?.images && rentalHome.images.length > 0
-            ? `${api.defaults.baseURL}/${rentalHome.images[0]}`
-            : "/rentalHomeHero.png"
-        }
-        onError={(e) => {
-          e.currentTarget.onerror = null;
-          e.currentTarget.src = "/rentalHomeHero.png";
-        }}
-        title="rental home"
-        sx={{
-          height: 220,
-          objectFit: "cover",
-          p: 0,
-        }}
-      />
+      <Link 
+        to={`/services/rentalhomes/${rentalHome.id}`}
+        className="flex flex-col h-full"
+      >
+        <CardMedia
+          component="img"
+          image={
+            rentalHome?.images && rentalHome.images.length > 0
+              ? `https://desipathapi.azurewebsites.net/${rentalHome.images[0]}`
+              : "/rentalHomeHero.png"
+          }
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "/rentalHomeHero.png";
+          }}
+          title="rental home"
+          sx={{
+            height: 220,
+            objectFit: "cover",
+            p: 0,
+          }}
+        />
 
-      <Link to={`/services/rentalHomes/${rentalHome.id}`}>
         <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
           <div className="flex justify-between items-baseline mb-3 gap-2 overflow-hidden">
             <div className="flex items-baseline gap-1 flex-shrink-0">
-              <span className="text-[#007185] text-xl md:text-2xl font-bold font-dmsans whitespace-nowrap">
+              <span className="text-[#007185] text-2xl md:text-3xl font-bold font-dmsans whitespace-nowrap">
                 {rentalHome.deposit_rent 
                   ? `$${Number(rentalHome.deposit_rent).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` 
                   : "N/A"}
@@ -94,16 +96,10 @@ export default function RentalHomeCard({ rentalHome }) {
             </div>
           </div>
 
-          <div className="flex items-start gap-2 mb-4">
+          <div className="flex items-start gap-2">
              <img src="/location.svg" className="w-4 h-4 mt-1 opacity-60" />
              <div className="text-gray-500 text-sm font-medium leading-normal line-clamp-2">
                {rentalHome?.address || "Address not available"}
-             </div>
-          </div>
-
-          <div className="mt-auto pt-4 border-t border-gray-50">
-             <div className="px-5 py-2.5 bg-[#ffa41c] hover:bg-[#ff9900] rounded-full text-gray-800 text-sm font-bold transition-colors w-full text-center">
-               View Details
              </div>
           </div>
         </CardContent>

@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
@@ -7,9 +8,16 @@ import ServiceHeroSection from "../../components/ServiceHeroSection";
 import BuyCar from "./BuyCar";
 import SellCar from "./SellCar";
 import PostConfirmation from "../PostConfirmation";
+import CarDetails from "./CarDetails";
 
 function BuySellCar() {
   const { action } = useParams();
+  const location = useLocation();
+  const { user } = useSelector((state) => state.user);
+
+  if ((action === "sellCar" || action === "edit") && !user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -24,11 +32,17 @@ function BuySellCar() {
     buttonText2: "Sell My Car",
   };
 
+  const showNavbar =
+    action === undefined ||
+    action === "buyCar" ||
+    action === "sellCar" ||
+    action === "postConfirmation";
+
   return (
     <div className="flex flex-col min-h-screen overflow-y-auto ">
-      <Navbar />
+      {showNavbar && <Navbar />}
 
-      {action === undefined && (
+      {action === undefined ? (
         <>
           {" "}
           <div className="flex-grow bg-[#f0f8ff]">
@@ -41,15 +55,17 @@ function BuySellCar() {
             <Footer newsletter={"block"} />
           </div>
         </>
-      )}
-
-      {action === "buyCar" && <BuyCar />}
-      {action === "sellCar" && <SellCar />}
-      {action === "postConfirmation" && (
+      ) : action === "buyCar" ? (
+        <BuyCar />
+      ) : (action === "sellCar" || action === "edit") ? (
+        <SellCar />
+      ) : action === "postConfirmation" ? (
         <PostConfirmation
           redirectTo="/services/cars/buyCar"
           message="Thanks for using Desipath. Your car listing is live!"
         />
+      ) : (
+        <CarDetails />
       )}
     </div>
   );

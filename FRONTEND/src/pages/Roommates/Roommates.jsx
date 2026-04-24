@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
@@ -11,6 +12,12 @@ import RoomDetails from "./RoomDetails";
 
 function Roommates() {
   const { action } = useParams();
+  const location = useLocation();
+  const { user } = useSelector((state) => state.user);
+
+  if ((action === "postRoom" || action === "edit") && !user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,7 +54,7 @@ function Roommates() {
         </>
       ) : action === "findRoom" ? (
         <FindRoom />
-      ) : action === "postRoom" ? (
+      ) : (action === "postRoom" || action === "edit") ? (
         <PostRoom />
       ) : action === "postConfirmation" ? (
         <PostConfirmation 

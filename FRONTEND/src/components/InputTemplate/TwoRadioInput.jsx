@@ -12,59 +12,52 @@ function TwoRadioInput({ name, text, op1 = "Yes", op2 = "No", control }) {
   return (
     <FormControl
       sx={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "1rem",
-        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
         width: "100%",
-        borderBottom: "1px solid ",
-        borderBottomColor: "grey.300",
-        py: "1rem",
+        py: "0.75rem",
+        gap: "0.5rem",
       }}
     >
-      <FormLabel id={name}>{text}</FormLabel>
+      <FormLabel 
+        id={name}
+        sx={{ 
+          color: "gray.800", 
+          fontWeight: "bold", 
+          fontSize: "1rem",
+          fontFamily: "dmsans" 
+        }}
+      >
+        {text}
+      </FormLabel>
       <Controller
         name={name}
         control={control}
-        defaultValue={op1} // Set default value to the first option
+        defaultValue={op1} 
         rules={{
-          required: "This field is required", // Add the required rule
+          required: "This field is required", 
         }}
         render={({ field, fieldState }) => (
-          <>
+          <div className="w-full">
             <RadioGroup row {...field}>
-              {op1 == "Yes" && op2 == "No" ? (
-                <>
-                  <FormControlLabel
-                    value={op1}
-                    control={<Radio />}
-                    label={op1}
-                  />
-                  <FormControlLabel
-                    value={op2}
-                    control={<Radio />}
-                    label={op2}
-                  />
-                </>
-              ) : (
-                <>
-                  <FormControlLabel
-                    value={op1}
-                    control={<Radio />}
-                    label={op1}
-                  />
-                  <FormControlLabel
-                    value={op2}
-                    control={<Radio />}
-                    label={op2}
-                  />
-                </>
-              )}
+              <FormControlLabel
+                value={op1}
+                control={<Radio />}
+                label={op1}
+              />
+              <FormControlLabel
+                value={op2}
+                control={<Radio />}
+                label={op2}
+              />
             </RadioGroup>
             {fieldState?.error && (
-              <FormHelperText error>{fieldState.error.message}</FormHelperText>
+              <FormHelperText error sx={{ mt: 0.5 }}>
+                {fieldState.error.message}
+              </FormHelperText>
             )}
-          </>
+          </div>
         )}
       />
     </FormControl>

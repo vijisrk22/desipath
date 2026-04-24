@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
 import ServiceHeroSection from "../../components/ServiceHeroSection";
@@ -11,6 +12,14 @@ import { useEffect } from "react";
 
 function RentalHome() {
   const { action } = useParams();
+  const location = useLocation();
+  const { user } = useSelector((state) => state.user);
+
+  console.log("RentalHome action:", action);
+
+  if ((action === "postRentalHome" || action === "edit") && !user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -19,8 +28,8 @@ function RentalHome() {
   const pageDetails = {
     path1: "findRentalHome",
     path2: "postRentalHome",
-    description1: "Find a home for Rent",
-    description2: "Want To Rent Out Your Home, Post An Ad Today - Free Listing",
+    description1: "Find a home for rent",
+    description2: "Want to rent out your home, post an ad today - free listing",
     buttonText1: "Search for Rental Home",
     buttonText2: "Post an Ad to Rent My Home",
   };
@@ -29,6 +38,7 @@ function RentalHome() {
     action === undefined ||
     action === "findRentalHome" ||
     action === "postRentalHome" ||
+    action === "edit" ||
     action === "postConfirmation";
 
   return (
@@ -47,11 +57,11 @@ function RentalHome() {
         </>
       ) : action === "findRentalHome" ? (
         <FindRentalHome />
-      ) : action === "postRentalHome" ? (
+      ) : (action === "postRentalHome" || action === "edit") ? (
         <PostRentalHome />
       ) : action === "postConfirmation" ? (
         <PostConfirmation 
-          redirectTo="/services/rentalHomes/findRentalHome" 
+          redirectTo="/services/rentalhomes/findRentalHome" 
           message="Thanks for using Desipath. Your rental home listing is live!" 
         />
       ) : (
