@@ -251,7 +251,7 @@ class HomesController extends Controller
             'images' => 'nullable|array',
             'images.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64-encoded image
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
                 // Validate the decoded image size
@@ -513,7 +513,7 @@ class HomesController extends Controller
             'images' => 'nullable|array',
             'images.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64-encoded image
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
                 // Validate the decoded image size

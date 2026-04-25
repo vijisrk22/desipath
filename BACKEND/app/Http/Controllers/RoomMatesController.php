@@ -179,7 +179,7 @@ class RoomMatesController extends Controller
             'utilities_included' => 'nullable|boolean',
             'photos.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64 data URL for an image
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
 
@@ -410,7 +410,7 @@ class RoomMatesController extends Controller
             'rent_frequency' => 'nullable|in:Monthly,Daily,Weekly',
             'utilities_included' => 'nullable|boolean',
             'newPhotos.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
 

@@ -208,7 +208,7 @@ public function testCars() { return BuySellCar::all(); }
             'transmission_id' => 'nullable|exists:car_transmissions,id',
             'condition_id'    => 'nullable|exists:car_conditions,id',
             'pictures.*'      => ['nullable', 'string', function ($attribute, $value, $fail) {
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
                 $imageData = substr($value, strpos($value, ',') + 1);
@@ -428,7 +428,7 @@ public function testCars() { return BuySellCar::all(); }
             'variant' => 'nullable|string|max:255',
             'newPhotos.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64-encoded image
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
                 // Validate the decoded image size
