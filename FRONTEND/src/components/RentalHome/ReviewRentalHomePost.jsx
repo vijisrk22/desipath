@@ -69,14 +69,14 @@ export default function ReviewRentalHomePost({ open, onClose, formDetails, image
       const base64Images = await convertImagesToBase64(newFiles);
       const existingUrls = (images || []).filter(img => typeof img === 'string');
       
-      // CRITICAL: Backend reads $request->newPhotos and $request->existingPhotos
-      // Line 513 in RentalHomesController.php: if ($request->has('newPhotos') ...)
-      formFields["newPhotos"] = base64Images;       // new File objects converted to base64
-      formFields["existingPhotos"] = existingUrls;  // already-stored URL strings
-
       if (isEdit) {
+        // CRITICAL: Backend reads $request->newPhotos and $request->existingPhotos for update
+        formFields["newPhotos"] = base64Images;       // new File objects converted to base64
+        formFields["existingPhotos"] = existingUrls;  // already-stored URL strings
         await dispatch(updateRentalHome({ rentalHomeId: formDetails.id, rentalHomeData: formFields })).unwrap();
       } else {
+        // CRITICAL: Backend reads $request->images for store
+        formFields["images"] = base64Images;
         await dispatch(postRentalHome(formFields)).unwrap();
       }
 
