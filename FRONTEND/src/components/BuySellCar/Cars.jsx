@@ -14,11 +14,11 @@ function Cars() {
   const dispatch = useDispatch();
   const { loading, error, cars } = useSelector((state) => state.cars);
 
-  const carsPerPage = 9;
+  const carsPerPage = 15;
   const [page, setPage] = useState(1);
   const startIndex = (page - 1) * carsPerPage;
 
-  const [sortOption, setSortOption] = useState("");
+  const [sortOption, setSortOption] = useState("created_at-desc");
   const getSortedCars = () => {
     const carsCopy = [...cars];
 
@@ -27,12 +27,10 @@ function Cars() {
         return carsCopy.sort((a, b) => a.price - b.price);
       case "price-desc":
         return carsCopy.sort((a, b) => b.price - a.price);
-      case "name-asc":
-        return carsCopy.sort((a, b) => a.make.localeCompare(b.make));
-      case "name-desc":
-        return carsCopy.sort((a, b) => b.make.localeCompare(a.make));
+      case "created_at-desc":
+        return carsCopy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       default:
-        return carsCopy;
+        return carsCopy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     }
   };
 
@@ -54,6 +52,7 @@ function Cars() {
         <ActiveCarSearchFilters />
         <SortBy
           sortOption={sortOption}
+          type="cars"
           setSortOption={(value) => {
             setSortOption(value);
             setPage(1);

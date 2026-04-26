@@ -11,9 +11,9 @@ function Rooms() {
   // State for events
   const dispatch = useDispatch();
   const { loading, error, rooms } = useSelector((state) => state.roommates);
-  const roomsPerPage = 9;
+  const roomsPerPage = 15;
   const [page, setPage] = useState(1);
-  const [sortOption, setSortOption] = useState("");
+  const [sortOption, setSortOption] = useState("created_at-desc");
   // Set rooms on mount
   useEffect(() => {
     dispatch(fetchRooms());
@@ -28,16 +28,10 @@ function Rooms() {
         return roomsCopy.sort((a, b) => a.rent - b.rent);
       case "price-desc":
         return roomsCopy.sort((a, b) => b.rent - a.rent);
-      case "name-asc":
-        return roomsCopy.sort((a, b) =>
-          a.location_city.localeCompare(b.location_city)
-        );
-      case "name-desc":
-        return roomsCopy.sort((a, b) =>
-          b.location_city.localeCompare(a.location_city)
-        );
+      case "created_at-desc":
+        return roomsCopy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       default:
-        return roomsCopy;
+        return roomsCopy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     }
   };
 
@@ -61,6 +55,7 @@ function Rooms() {
         </div>
         <SortBy
           sortOption={sortOption}
+          type="rooms"
           setSortOption={(value) => {
             setSortOption(value);
             setPage(1);

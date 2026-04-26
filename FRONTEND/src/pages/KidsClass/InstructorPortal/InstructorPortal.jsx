@@ -16,8 +16,8 @@ export default function InstructorPortal() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState(null);
   const [isLoadingDraft, setIsLoadingDraft] = useState(isEditMode);
+  const [validationErrors, setValidationErrors] = useState({});
   
   // Master state for the massive form
   const [formData, setFormData] = useState({
@@ -133,8 +133,31 @@ export default function InstructorPortal() {
     setFormData(prev => ({ ...prev, ...data }));
   };
 
+  const validateStep = () => {
+    const errors = {};
+    if (currentStep === 1) {
+      const info = formData.instructorInfo;
+      if (!info.name?.trim()) errors.name = 'Full Name is required';
+      if (!info.photoUrl) errors.photoUrl = 'Profile Photo is required';
+      if (!info.bio?.trim()) errors.bio = 'Bio is required';
+      if (!info.yearsExperience) errors.yearsExperience = 'Experience is required';
+      if (!info.email?.trim()) errors.email = 'Email is required';
+      else if (!/\S+@\S+\.\S+/.test(info.email)) errors.email = 'Invalid email format';
+      if (!info.phone?.trim()) errors.phone = 'Phone Number is required';
+    }
+    // Step 2... 5 could be added here later
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const nextStep = () => {
+    if (!validateStep()) {
+       // Scroll to top or show alert if needed
+       window.scrollTo({ top: 0, behavior: 'smooth' });
+       return;
+    }
     console.log("Navigating to next step:", currentStep + 1);
+    setValidationErrors({}); // Clear errors on success
     setCurrentStep(prev => Math.min(prev + 1, 6));
   };
   const prevStep = () => {
@@ -151,6 +174,7 @@ export default function InstructorPortal() {
           instructorId={formData.instructorId}
           update={(d) => updateFormData('instructorInfo', d)} 
           setInstructorId={(id) => setTopLevelData({ instructorId: id })}
+          errors={validationErrors}
         />;
         case 2: return <Step2ClassBasic data={formData.classBasic || {}} update={(d) => updateFormData('classBasic', d)} />;
         case 3: return <Step3Schedule data={formData.schedule || {}} update={(d) => updateFormData('schedule', d)} />;

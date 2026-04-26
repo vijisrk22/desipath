@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { getFullImageUrl } from '../../../utils/imageHelper';
 import ProfilePhotoCropModal from '../../../components/ProfilePhotoCropModal';
 
-export default function Step1Profile({ data, update, instructorId, setInstructorId }) {
+export default function Step1Profile({ data, update, instructorId, setInstructorId, errors = {} }) {
   const [isCropOpen, setIsCropOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageError, setImageError] = useState(false);
@@ -80,12 +81,7 @@ export default function Step1Profile({ data, update, instructorId, setInstructor
           <div className="w-32 h-32 rounded-full border-4 border-dashed border-gray-300 overflow-hidden bg-gray-50 flex items-center justify-center">
             {(localBlobUrl || data.photoUrl) && !imageError ? (
               <img 
-                src={
-                  localBlobUrl || 
-                  ((data.photoUrl?.startsWith('http') || data.photoUrl?.startsWith('blob:')) 
-                    ? data.photoUrl 
-                    : `http://localhost:8000${data.photoUrl}`)
-                } 
+                src={localBlobUrl || getFullImageUrl(data.photoUrl)} 
                 alt="Profile" 
                 className="w-full h-full object-cover"
                 onError={() => setImageError(true)}
@@ -110,54 +106,59 @@ export default function Step1Profile({ data, update, instructorId, setInstructor
       {/* Form Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="font-semibold text-gray-700">Full Name</label>
+          <label className="font-semibold text-gray-700">Full Name <span className="text-red-500">*</span></label>
           <input 
             type="text" 
             placeholder="John Doe"
             value={data.name}
             onChange={(e) => update({ name: e.target.value })}
-            className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
           />
+          {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name}</p>}
         </div>
         <div className="space-y-2">
-          <label className="font-semibold text-gray-700">Experience (Years)</label>
+          <label className="font-semibold text-gray-700">Experience (Years) <span className="text-red-500">*</span></label>
           <input 
             type="number" 
             placeholder="5"
             value={data.yearsExperience}
             onChange={(e) => update({ yearsExperience: e.target.value })}
-            className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.yearsExperience ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
           />
+          {errors.yearsExperience && <p className="text-xs text-red-500 font-medium">{errors.yearsExperience}</p>}
         </div>
         <div className="space-y-2">
-          <label className="font-semibold text-gray-700">Email Address</label>
+          <label className="font-semibold text-gray-700">Email Address <span className="text-red-500">*</span></label>
           <input 
             type="email" 
             placeholder="john@example.com"
             value={data.email}
             onChange={(e) => update({ email: e.target.value })}
-            className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
           />
+          {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email}</p>}
         </div>
         <div className="space-y-2">
-          <label className="font-semibold text-gray-700">Phone Number</label>
+          <label className="font-semibold text-gray-700">Phone Number <span className="text-red-500">*</span></label>
           <input 
             type="text" 
             placeholder="+91 ..."
             value={data.phone}
             onChange={(e) => update({ phone: e.target.value })}
-            className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.phone ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
           />
+          {errors.phone && <p className="text-xs text-red-500 font-medium">{errors.phone}</p>}
         </div>
         <div className="col-span-1 md:col-span-2 space-y-2">
-          <label className="font-semibold text-gray-700">Bio / About</label>
+          <label className="font-semibold text-gray-700">Bio / About <span className="text-red-500">*</span></label>
           <textarea 
             rows="4"
             placeholder="Tell parents about your teaching style and background..."
             value={data.bio}
             onChange={(e) => update({ bio: e.target.value })}
-            className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.bio ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
           ></textarea>
+          {errors.bio && <p className="text-xs text-red-500 font-medium">{errors.bio}</p>}
         </div>
       </div>
 

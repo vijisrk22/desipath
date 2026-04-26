@@ -123,8 +123,10 @@ function BeCompanionForm() {
           op3="I would like to be a volunteer"
           control={control}
         />
-
-        <button className="mt-4 w-full px-10 py-5 bg-[#ffa41c] rounded-[28px] text-center  text-gray-800 text-base font-semibold font-dmsans">
+        <button
+          onClick={handleSubmit(onSubmit)}
+          className="px-5 py-3 bg-[#2563eb] rounded-xl text-white text-center text-base font-medium font-poppins"
+        >
           Review Post
         </button>
       </form>

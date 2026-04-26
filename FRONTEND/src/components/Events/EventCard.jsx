@@ -9,6 +9,7 @@ import ShareButton from "../ShareButton";
 import ShareIcon from "@mui/icons-material/Share";
 
 import { Link } from "react-router-dom";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function EventCard({ event }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -33,12 +34,20 @@ export default function EventCard({ event }) {
       <Link to={`/services/events/findEvent/${event.id}`}>
         <CardMedia
           component="img"
-          image={event?.image ? event.image.replace(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, "https://desipathapi.azurewebsites.net") : "/eventHero.png"}
-          title={event?.title}
+          image={event?.image ? getFullImageUrl(event.image) : "/eventHero.png"}
+          onError={(e) => {
+            e.currentTarget.setAttribute('data-broken', 'true');
+            const url = e.currentTarget.src;
+            e.currentTarget.title = `Broken Image URL: ${url}`;
+          }}
+          title={event?.title || "event"}
           sx={{ 
             height: 240,
             objectFit: "cover",
             p: 0,
+            "&[data-broken='true']": {
+              backgroundColor: "#f8f9fa",
+            }
           }}
         />
       </Link>

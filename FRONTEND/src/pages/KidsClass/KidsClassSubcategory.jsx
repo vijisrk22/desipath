@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function KidsClassSubcategory() {
   const { categorySlug, subcategorySlug } = useParams();
@@ -66,25 +67,15 @@ export default function KidsClassSubcategory() {
             {classes.map(cls => (
               <div key={cls.id} className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all border border-gray-100 overflow-hidden flex flex-col group">
                 <div className="p-6 pb-0 flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-200 shrink-0">
+                  <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center relative shrink-0">
                     {cls.photoUrl ? (
                       <img 
-                        src={
-                          (cls.photoUrl?.startsWith('http') || cls.photoUrl?.startsWith('blob:')) 
-                            ? cls.photoUrl 
-                            : `http://localhost:8000${cls.photoUrl}`
-                        } 
+                        src={getFullImageUrl(cls.photoUrl)} 
                         alt={cls.instructorName} 
                         className="w-full h-full object-cover" 
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.parentElement.innerHTML = `<div class="w-full h-full bg-blue-600 text-white flex items-center justify-center font-extrabold text-2xl uppercase">${cls.instructorName?.charAt(0)}</div>`;
-                        }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xl">
-                        {cls.instructorName?.charAt(0)}
-                      </div>
+                      <span className="text-2xl">📸</span>
                     )}
                   </div>
                   <div>

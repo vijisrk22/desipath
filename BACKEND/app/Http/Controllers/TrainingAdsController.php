@@ -32,9 +32,21 @@ class TrainingAdsController extends Controller
      *     @OA\Response(response=200, description="List of training ads")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return TrainingAd::all();
+        $query = TrainingAd::query();
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('course_title', 'like', "%{$search}%")
+                  ->orWhere('agenda', 'like', "%{$search}%")
+                  ->orWhere('contact_form', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->orderBy('timestamp', 'desc')->paginate(15);
     }
 
     /**

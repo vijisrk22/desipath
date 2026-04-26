@@ -83,14 +83,6 @@ function SearchFieldInput({ inputs, title }) {
     const parseLocation = (loc) => {
       if (!loc) return { city: "", state: "", zipcode: "" };
       const parts = loc.split(",").map((s) => s.trim());
-      // Logic: 
-      // 1 part: Likely City or Zip (we'll try city first, or search across all)
-      // 2 parts: City, State
-      // 3 parts: City, State, Zip
-      // For now, let's map loosely. 
-      // Ideally backend search should handle single string. 
-      // But looking at Redux actions, they send structured object. 
-      // Let's do best effort mapping.
 
       let city = "", state = "", zipcode = "";
 
@@ -102,9 +94,23 @@ function SearchFieldInput({ inputs, title }) {
         city = parts[0];
         state = parts[1];
       } else {
-        city = parts[0];
-        state = parts[0];
-        zipcode = parts[0];
+        // Single part: "San Diego 92101" or "92101" or "San Diego"
+        const singlePart = parts[0];
+        const subParts = singlePart.split(" ");
+        const lastPart = subParts[subParts.length - 1];
+        
+        // If last part is numeric (Zip Code), extract it
+        if (/^\d{5}(-\d{4})?$/.test(lastPart)) {
+          zipcode = lastPart;
+          city = subParts.slice(0, -1).join(" ").trim();
+        } else {
+          // Check if the whole thing is a zip code
+          if (/^\d{5}(-\d{4})?$/.test(singlePart)) {
+            zipcode = singlePart;
+          } else {
+            city = singlePart;
+          }
+        }
       }
       return { city, state, zipcode };
     };

@@ -121,7 +121,7 @@ function ReviewCompanionPost({ open, onClose, formDetails }) {
         <div className="mx-auto mt-10 max-w-20">
           <button
             onClick={handleSubmit}
-            className="px-5 py-3 bg-[#ffa41c] rounded-xl text-gray-800 text-center text-base font-medium font-dmsans"
+            className="px-5 py-3 bg-[#2563eb] rounded-xl text-white text-center text-base font-medium font-poppins"
           >
             Post
           </button>

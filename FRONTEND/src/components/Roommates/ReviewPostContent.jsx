@@ -1,4 +1,4 @@
-import api from "../../utils/api";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 function ReviewPostContent({ contents, type = "reviewPost" }) {
   return (
@@ -23,7 +23,7 @@ function ReviewPostContent({ contents, type = "reviewPost" }) {
                     src={
                       image instanceof File 
                         ? URL.createObjectURL(image)
-                        : `https://desipathapi.azurewebsites.net/${image}`
+                        : getFullImageUrl(image)
                     }
                     alt="Uploaded"
                     className="w-full h-full object-cover rounded-lg shadow-md transition-opacity hover:opacity-90"

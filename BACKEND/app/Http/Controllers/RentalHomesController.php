@@ -49,8 +49,21 @@ class RentalHomesController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage = 9;
+        $perPage = 15;
         $query = RentalHome::query();
+        
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('address', 'like', "%{$search}%")
+                  ->orWhere('community_name', 'like', "%{$search}%")
+                  ->orWhere('location_city', 'like', "%{$search}%")
+                  ->orWhere('location_state', 'like', "%{$search}%")
+                  ->orWhere('location_zipcode', 'like', "%{$search}%")
+                  ->orWhere('property_type', 'like', "%{$search}%");
+            });
+        }
 
         // Sorting
         if ($request->has('sort')) {
@@ -61,11 +74,11 @@ class RentalHomesController extends Controller
                 case 'price-desc':
                     $query->orderBy('deposit_rent', 'desc');
                     break;
-                case 'name-asc':
-                    $query->orderBy('address', 'asc'); // Treating address as name for sorting
+                case 'created_at-desc':
+                    $query->orderBy('created_at', 'desc');
                     break;
-                case 'name-desc':
-                    $query->orderBy('address', 'desc');
+                case 'area-desc':
+                    $query->orderBy('area', 'desc');
                     break;
                 default:
                     $query->orderBy('created_at', 'desc');
@@ -105,63 +118,80 @@ class RentalHomesController extends Controller
     public function dummyInsert()
     {
         $faker = Faker::create();
+        $insertedHomes = [];
 
-        $photos = [];
-        $directory = storage_path('app/public/rentalhomes');
-
-        if (!file_exists($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        for ($i = 0; $i < 3; $i++) {
-            $filename = Str::random(10) . '.jpg';
-            $fullPath = $directory . '/' . $filename;
-
-            // Create a blank white image
-            $image = imagecreatetruecolor(640, 480);
-            $white = imagecolorallocate($image, 255, 255, 255);
-            imagefilledrectangle($image, 0, 0, 640, 480, $white);
-
-            imagejpeg($image, $fullPath);
-            imagedestroy($image);
-
-            $photos[] = 'storage/rentalhomes/' . $filename;
-        }
-
-        $posterId = $faker->numberBetween(2, 4);
-
-        // Fetch the user name from the database using poster_id
-        $receiver = User::find($posterId);
-
-        $posterName = $receiver ? $receiver->name : 'Unknown User';
-
-        $dummyData = [
-            'property_type' => $faker->randomElement(['Single family Home', 'Apartment', 'Condo', 'Basement Apartment']),
-            'available_from' => $faker->date,
-            'area' => $faker->randomFloat(2, 500, 5000),
-            'deposit_rent' => $faker->randomFloat(2, 1000, 10000),
-            'bhk' => $faker->randomElement(['1 Bed 1 Bath', '2 Bed 2 Bath', '2 Bed 1 Bath', '3 Bed 3 Bath', '3 Bed 2 Bath', '4 Bed 4 Bath', '4 Bed 3 Bath', '4 Bed 2 Bath']),
-            'address' => $faker->address,
-            'community_name' => $faker->word,
-            'amenities' => $faker->randomElements(['Gym', 'Swimming Pool', 'Club House'], $faker->numberBetween(1, 3)), // Now an array
-            'pets' => $faker->boolean,
-            'location' => $faker->city . ', ' . $faker->stateAbbr,
-            'images' => $photos,
-            'accommodates' => $faker->numberBetween(1, 10),
-            'location_state' => $faker->state,
-            'location_city' => $faker->city,
-            'location_zipcode' => $faker->postcode,
-            'smoking' => $faker->randomElement(['Ok', 'Not okay']),
-            'owner_id' => $posterId,
-            'owner_name' => $posterName,
-            'description' => $faker->text(2000),
+        $realCities = [
+            ['city' => 'New York', 'state' => 'New York', 'zip' => '10001'],
+            ['city' => 'Los Angeles', 'state' => 'California', 'zip' => '90001'],
+            ['city' => 'Chicago', 'state' => 'Illinois', 'zip' => '60601'],
+            ['city' => 'Houston', 'state' => 'Texas', 'zip' => '77001'],
+            ['city' => 'Phoenix', 'state' => 'Arizona', 'zip' => '85001'],
+            ['city' => 'Philadelphia', 'state' => 'Pennsylvania', 'zip' => '19101'],
+            ['city' => 'San Antonio', 'state' => 'Texas', 'zip' => '78201'],
+            ['city' => 'San Diego', 'state' => 'California', 'zip' => '92101'],
+            ['city' => 'Dallas', 'state' => 'Texas', 'zip' => '75201'],
+            ['city' => 'San Jose', 'state' => 'California', 'zip' => '95101']
         ];
 
-        $rentalHome = RentalHome::create($dummyData);
+        for ($j = 0; $j < 10; $j++) {
+            $photos = [];
+            $directory = storage_path('app/public/rentalhomes');
+
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            for ($i = 0; $i < 3; $i++) {
+                $photos[] = "https://picsum.photos/1280/720?random=" . rand(1, 1000);
+            }
+
+            $user = User::first();
+            if (!$user) {
+                $user = User::create([
+                    'name' => 'Test User',
+                    'email' => 'test@example.com',
+                    'password' => Hash::make('password'),
+                ]);
+            }
+            $posterId = $user->id;
+            $posterName = $user->name;
+
+            $locationData = $realCities[$j % count($realCities)];
+
+            $dummyData = [
+                'property_type' => $faker->randomElement(['Single family Home', 'Apartment', 'Condo', 'Basement Apartment']),
+                'available_from' => $faker->date,
+                'area' => $faker->randomFloat(2, 500, 5000),
+                'deposit_rent' => $faker->randomFloat(2, 1000, 10000),
+                'bhk' => $faker->randomElement(['1 Bed 1 Bath', '2 Bed 2 Bath', '2 Bed 1 Bath', '3 Bed 3 Bath', '3 Bed 2 Bath', '4 Bed 4 Bath', '4 Bed 3 Bath', '4 Bed 2 Bath']),
+                'address' => $faker->streetAddress . ', ' . $locationData['city'],
+                'community_name' => $faker->company . ' Residences',
+                'amenities' => $faker->randomElements(['Gym', 'Swimming Pool', 'Club House'], $faker->numberBetween(1, 3)),
+                'pets' => $faker->boolean,
+                'images' => $photos,
+                'accommodates' => $faker->numberBetween(1, 10),
+                'location_state' => $locationData['state'],
+                'location_city' => $locationData['city'],
+                'location_zipcode' => $locationData['zip'],
+                'smoking' => $faker->randomElement(['Ok', 'Not okay']),
+                'owner_id' => $posterId,
+                'owner_name' => $posterName,
+                'description' => $faker->paragraphs(2, true),
+            ];
+
+            // Sync coordinates for dummy data
+            $coords = \DB::table('usa_zipcodes')->where('zip', $locationData['zip'])->first();
+            if ($coords) {
+                $dummyData['latitude'] = $coords->lat;
+                $dummyData['longitude'] = $coords->lng;
+            }
+
+            $insertedHomes[] = RentalHome::create($dummyData);
+        }
 
         return response()->json([
-            'message' => 'Dummy rental home added successfully',
-            'data' => $rentalHome
+            'message' => '10 dummy rental homes with real cities added successfully',
+            'data' => $insertedHomes
         ], 201);
     }
 
@@ -211,7 +241,7 @@ class RentalHomesController extends Controller
             'address' => 'required|string|max:255',
             'community_name' => 'nullable|string|max:255',
             'amenities' => 'nullable|array',
-            'amenities.*' => 'in:Gym,Swimming Pool,Club House',
+            'amenities.*' => 'nullable|string',
             'pets' => 'nullable|boolean',
             'location_state' => 'nullable|string|max:100',
             'location_city' => 'nullable|string|max:100',
@@ -241,6 +271,15 @@ class RentalHomesController extends Controller
         }
         $data = $request->except('images'); // get all fields except images
         $data['owner_name'] = $receiver->name;
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
 
         if ($request->has('images') && !empty($request->images)) {
             $photos = [];
@@ -372,25 +411,50 @@ class RentalHomesController extends Controller
 
 
         $query = RentalHome::query();
+        // return response()->json(['debug_request' => $request->all()]);
 
         $city = trim($request->city);
         $state = trim($request->state);
         $zipcode = trim($request->zipcode);
-        $priceMin = $request->priceMin;
-        $priceMax = $request->priceMax;
+        $radius = 50; // Miles
 
-        if ($request->filled('city') || $request->filled('state') || $request->filled('zipcode')) {
-            $query->where(function ($q) use ($request) {
-                if ($request->filled('city')) {
-                    $q->orWhere('location_city', 'like', '%' . $request->city . '%');
-                }
-                if ($request->filled('state')) {
-                    $q->orWhere('location_state', 'like', '%' . $request->state . '%');
-                }
-                if ($request->filled('zipcode')) {
-                    $q->orWhere('location_zipcode', 'like', '%' . $request->zipcode . '%');
-                }
-            });
+        $centerPoint = null;
+
+        // Try to get coordinates for the search center
+        if ($zipcode) {
+            $centerPoint = \DB::table('usa_zipcodes')->where('zip', $zipcode)->first();
+        } elseif ($city) {
+            $centerPoint = \DB::table('usa_zipcodes')
+                ->where('city', 'like', '%' . $city . '%')
+                ->when($state, function ($q) use ($state) {
+                    return $q->where('state_id', $state)->orWhere('state_name', $state);
+                })
+                ->first();
+        }
+
+        if ($centerPoint && $centerPoint->lat && $centerPoint->lng) {
+            $lat = $centerPoint->lat;
+            $lng = $centerPoint->lng;
+            $searchZip = $centerPoint->zip;
+
+            $query->select('*')
+                ->selectRaw("(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
+                ->having('distance', '<=', $radius);
+            
+            // Priority ordering: exact zip first, then by distance
+            $query->orderByRaw("CASE WHEN location_zipcode = ? THEN 0 ELSE 1 END ASC", [$searchZip])
+                  ->orderBy('distance', 'asc');
+        } else {
+            // Fallback to basic keyword matching if no coordinates found
+            if ($request->filled('city')) {
+                $query->where('location_city', 'like', '%' . $request->city . '%');
+            }
+            if ($request->filled('state')) {
+                $query->where('location_state', 'like', '%' . $request->state . '%');
+            }
+            if ($request->filled('zipcode')) {
+                $query->where('location_zipcode', 'like', '%' . $request->zipcode . '%');
+            }
         }
 
         if ($request->filled('priceMin')) {
@@ -413,11 +477,11 @@ class RentalHomesController extends Controller
                 case 'price-desc':
                     $query->orderBy('deposit_rent', 'desc');
                     break;
-                case 'name-asc':
-                    $query->orderBy('address', 'asc');
+                case 'created_at-desc':
+                    $query->orderBy('created_at', 'desc');
                     break;
-                case 'name-desc':
-                    $query->orderBy('address', 'desc');
+                case 'area-desc':
+                    $query->orderBy('area', 'desc');
                     break;
                 default:
                     $query->orderBy('created_at', 'desc');
@@ -429,7 +493,7 @@ class RentalHomesController extends Controller
 
 
 
-        $perPage = 9;
+        $perPage = 15;
         $rentalhomes = $query->paginate($perPage);
 
         // Automatically decode JSON-encoded 'photos' field to an array
@@ -474,7 +538,7 @@ class RentalHomesController extends Controller
             'address' => 'sometimes|string|max:255',
             'community_name' => 'nullable|string|max:255',
             'amenities' => 'nullable|array',
-            'amenities.*' => 'in:Gym,Swimming Pool,Club House',
+            'amenities.*' => 'nullable|string',
             'pets' => 'nullable|boolean',
             'newPhotos.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64-encoded image
@@ -505,6 +569,15 @@ class RentalHomesController extends Controller
         // $data = $request->except('images');
         $data = $request->except(['images', 'newPhotos', 'existingPhotos']);
         $data['owner_name'] = $receiver->name;
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
 
         // Initialize to empty array to prevent array_merge crash when no existing photos sent
         $existingPhotos = [];

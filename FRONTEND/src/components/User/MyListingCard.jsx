@@ -3,6 +3,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from 'react-router-dom';
+import { getFullImageUrl } from '../../utils/imageHelper';
 
 const MyListingCard = ({ item, category, onEdit, onDelete }) => {
     const formatDate = (dateString) => {
@@ -25,7 +26,7 @@ const MyListingCard = ({ item, category, onEdit, onDelete }) => {
             <div className="w-full sm:w-32 h-32 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0">
                 {image ? (
                     <img 
-                        src={`https://desipathapi.azurewebsites.net/${image}`.replace('storage/storage', 'storage')} 
+                        src={getFullImageUrl(image)} 
                         alt="thumbnail" 
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         onError={(e) => e.target.src = "/homesSmpl.png"}

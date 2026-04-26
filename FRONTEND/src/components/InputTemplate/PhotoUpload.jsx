@@ -1,6 +1,6 @@
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CloseIcon from "@mui/icons-material/Close"; // Import CloseIcon
-import api from "../../utils/api";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 function PhotoUpload({ images, setImages, title = "Upload Photos (Max 10)" }) {
   const handleFileChange = (event) => {
@@ -68,7 +68,7 @@ function PhotoUpload({ images, setImages, title = "Upload Photos (Max 10)" }) {
           const isFile = image instanceof File;
           const imageUrl = isFile
             ? URL.createObjectURL(image)
-            : `https://desipathapi.azurewebsites.net/${image}`;
+            : getFullImageUrl(image);
           return (
             <div key={index} className="relative">
               <img

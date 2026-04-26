@@ -21,9 +21,22 @@ class TravelCompanionsController extends Controller
      *     @OA\Response(response=200, description="List of travel companions")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return TravelCompanion::all();
+        $query = TravelCompanion::query();
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('travellers', 'like', "%{$search}%")
+                  ->orWhere('from_location', 'like', "%{$search}%")
+                  ->orWhere('to_location', 'like', "%{$search}%")
+                  ->orWhere('language_spoken', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 
     /**

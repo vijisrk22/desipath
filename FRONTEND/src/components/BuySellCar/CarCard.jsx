@@ -1,11 +1,10 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-
-import api from "../../utils/api";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function CarCard({ car }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -47,18 +46,22 @@ export default function CarCard({ car }) {
         component="img"
         image={
           car?.pictures && car.pictures.length > 0
-            ? `https://desipathapi.azurewebsites.net/${car.pictures[0]}`
+            ? getFullImageUrl(car.pictures[0])
             : "/img/cars/backgroundCarImg.png"
         }
         onError={(e) => {
-          e.currentTarget.onerror = null;
-          e.currentTarget.src = "/img/cars/backgroundCarImg.png";
+          e.currentTarget.setAttribute('data-broken', 'true');
+          const url = e.currentTarget.src;
+          e.currentTarget.title = `Broken Image URL: ${url}`;
         }}
-        title="car"
+        title={`${car.make} ${car.model}`}
         sx={{
           height: 220,
           objectFit: "cover",
-          p: 0
+          p: 0,
+          "&[data-broken='true']": {
+            backgroundColor: "#f8f9fa",
+          }
         }}
       />
       <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>

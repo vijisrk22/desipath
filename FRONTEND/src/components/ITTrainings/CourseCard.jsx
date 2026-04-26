@@ -19,6 +19,15 @@ function CourseCard({ result }) {
         <img
           src={result.image}
           className="w-full h-[200px] object-cover"
+          onError={(e) => {
+            e.currentTarget.setAttribute('data-broken', 'true');
+            const url = e.currentTarget.src;
+            e.currentTarget.title = `Broken Image URL: ${url}`;
+          }}
+          title={result?.course || "course"}
+          style={{
+            backgroundColor: "#f8f9fa",
+          }}
         />
         <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
           <div className="text-amber-500 text-sm font-bold font-dmsans">

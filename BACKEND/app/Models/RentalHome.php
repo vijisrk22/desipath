@@ -25,16 +25,10 @@ class RentalHome extends Model
         'images' => 'array',
     ];
 
-    // Convert language array to a comma-separated string for SET type compatibility
+    // Convert language array to a comma-separated string for compatibility
     public function setAmenitiesAttribute($value)
     {
-        // $this->attributes['amenities'] = is_array($value) ? implode(',', $value) : $value;
-        // List of allowed values as per DB SET column
-        $allowed = ['Gym', 'Swimming Pool', 'Club House'];
-
         if (is_array($value)) {
-            // Keep only allowed values with exact match
-            $value = array_intersect($value, $allowed);
             $this->attributes['amenities'] = implode(',', $value);
         } else {
             $this->attributes['amenities'] = $value;

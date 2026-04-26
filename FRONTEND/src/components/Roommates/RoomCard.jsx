@@ -1,11 +1,11 @@
+import { useState } from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import ButtonRight from "../ButtonRight";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import api from "../../utils/api";
-import { useState } from "react";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function RoomCard({ room }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -45,18 +45,22 @@ export default function RoomCard({ room }) {
         component="img"
         image={
           room?.photos && room.photos.length > 0
-            ? `https://desipathapi.azurewebsites.net/${room.photos[0]}`
+            ? getFullImageUrl(room.photos[0])
             : "/img/roommates/roommatePlaceholder.png"
         }
-        title="room"
+        title={room.type || "room"}
         onError={(e) => {
-          e.currentTarget.onerror = null;
-          e.currentTarget.src = "/img/roommates/roommatePlaceholder.png";
+          e.currentTarget.setAttribute('data-broken', 'true');
+          const url = e.currentTarget.src;
+          e.currentTarget.title = `Broken Image URL: ${url}`;
         }}
         sx={{
           height: 220,
           objectFit: "cover",
-          p: 0
+          p: 0,
+          "&[data-broken='true']": {
+            backgroundColor: "#f8f9fa",
+          }
         }}
       />
 

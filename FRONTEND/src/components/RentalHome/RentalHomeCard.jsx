@@ -1,11 +1,11 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-
-import api from "../../utils/api";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { getFullImageUrl } from "../../utils/imageHelper";
+import { getStateCode } from "../../utils/locationHelper";
 
 export default function RentalHomeCard({ rentalHome }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -51,18 +51,28 @@ export default function RentalHomeCard({ rentalHome }) {
           component="img"
           image={
             rentalHome?.images && rentalHome.images.length > 0
-              ? `https://desipathapi.azurewebsites.net/${rentalHome.images[0]}`
+              ? getFullImageUrl(rentalHome.images[0])
               : "/rentalHomeHero.png"
           }
           onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = "/rentalHomeHero.png";
+            // Do not replace with alternative image as per user request
+            // Instead, we can mark it as broken to show the URL in title
+            e.currentTarget.setAttribute('data-broken', 'true');
+            const url = e.currentTarget.src;
+            e.currentTarget.title = `Broken Image URL: ${url}`;
           }}
-          title="rental home"
+          title={rentalHome?.address || "rental home"}
           sx={{
             height: 220,
             objectFit: "cover",
             p: 0,
+            // Visual feedback for broken images if needed
+            "&[data-broken='true']": {
+              backgroundColor: "#f8f9fa",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }
           }}
         />
 
@@ -92,14 +102,21 @@ export default function RentalHomeCard({ rentalHome }) {
             </div>
             <div className="flex items-center gap-1.5 flex-1 justify-end">
               <img src="/img/rentalHomes/squareMetersIcon.svg" className="w-4 h-4 opacity-70" />
-              <span className="text-xs font-semibold">{Math.floor(rentalHome?.area)} m²</span>
+              <span className="text-xs font-semibold">{Math.floor(rentalHome?.area || 0)} sqft</span>
             </div>
           </div>
 
           <div className="flex items-start gap-2">
              <img src="/location.svg" className="w-4 h-4 mt-1 opacity-60" />
              <div className="text-gray-500 text-sm font-medium leading-normal line-clamp-2">
-               {rentalHome?.address || "Address not available"}
+               {(() => {
+                  const addr = rentalHome?.address || "";
+                  const city = rentalHome?.location_city || "";
+                  const state = getStateCode(rentalHome?.location_state || "");
+                  const zip = rentalHome?.location_zipcode || "";
+                  const truncatedZip = zip.substring(0, 5);
+                  return `${addr}${city ? `, ${city}` : ""}${state ? `, ${state}` : ""}${truncatedZip ? ` ${truncatedZip}` : ""}` || "Location not available";
+               })()}
              </div>
           </div>
         </CardContent>

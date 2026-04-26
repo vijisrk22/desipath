@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const CATEGORIES = {
   'Indian Languages': ['Hindi', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Gujarati', 'Punjabi'],
-  'Classical Arts': ['Bharatanatyam', 'Kathak'],
+  'Classical Arts-Dance': ['Bharatanatyam', 'Kathak', 'Bollywood Dance'],
   'Music': ['Carnatic Vocal', 'Hindustani Vocal', 'Veena', 'Keyboard', 'Mridangam', 'Tabla'],
   'Academic Classes': ['Online Chess', 'Online English', 'Maths Class', 'Computer Programming'],
   'Spiritual & Cultural': ['Sloka Chanting', 'Vedic Math', 'Shlokas w/ Meaning'],

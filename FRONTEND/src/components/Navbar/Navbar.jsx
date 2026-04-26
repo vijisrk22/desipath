@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import DrawerComp from "./DrawerComp";
 import SignInUp from "./SignInUp";
 import Profile from "./Profile";
+import Breadcrumbs from "../Common/Breadcrumbs";
 
 function Navbar() {
   const location = useLocation();
@@ -11,38 +12,40 @@ function Navbar() {
   let currentPath = location.pathname.replace("/", "").toLowerCase();
 
   return (
-    <div className="px-[7%] pt-4 pb-2 flex justify-between items-center">
-      <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-xl lg:text-2xl font-normal font-fredoka hover:cursor-pointer">
-        Desipath
-      </Link>
+    <div className="flex flex-col">
+      <div className="px-[7%] pt-4 pb-2 flex justify-between items-center">
+        <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-xl lg:text-2xl font-normal font-fredoka hover:cursor-pointer">
+          Desipath
+        </Link>
 
-      <div className="md:flex gap-4 md:gap-8 hidden">
-        {navPages.map((item, index) => {
-          const path = item.replace(" ", "").toLowerCase();
+        <div className="md:flex gap-4 md:gap-8 hidden">
+          {navPages.map((item, index) => {
+            const path = item.replace(" ", "").toLowerCase();
 
-          if (currentPath == "") {
-            currentPath = "home";
-          }
-          const isActive = path === currentPath;
-          return (
-            <Link
-              key={index}
-              to={`/${path}`}
-              className={`${
-                isActive ? "text-[#0857d0]" : "text-gray-400"
-              } text-sm sm:text-base md:text-sm lg:text-base font-bold font-dmsans`}
-            >
-              {item}
-            </Link>
-          );
-        })}
-      </div>
+            if (currentPath == "") {
+              currentPath = "home";
+            }
+            const isActive = path === currentPath;
+            return (
+              <Link
+                key={index}
+                to={`/${path}`}
+                className={`${
+                  isActive ? "text-[#0857d0]" : "text-gray-400"
+                } text-sm sm:text-base md:text-sm lg:text-base font-bold font-dmsans`}
+              >
+                {item}
+              </Link>
+            );
+          })}
+        </div>
 
-      {user ? <Profile user={user} /> : <SignInUp />}
+        {user ? <Profile user={user} /> : <SignInUp />}
 
-      {/* Hamburger Navbar on smaller screens*/}
-      <div className="md:hidden flex">
-        <DrawerComp navPages={navPages} />
+        {/* Hamburger Navbar on smaller screens*/}
+        <div className="md:hidden flex">
+          <DrawerComp navPages={navPages} />
+        </div>
       </div>
     </div>
   );

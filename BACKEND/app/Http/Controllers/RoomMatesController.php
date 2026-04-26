@@ -56,11 +56,25 @@ class RoomMatesController extends Controller
         return view('rooms.rooms'); // The path corresponds to resources/views/room-share/index.blade.php
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $roommates = RoomMate::all();
+        $query = RoomMate::query();
 
-        $roommates->transform(function ($roommate) {
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('location_city', 'like', "%{$search}%")
+                  ->orWhere('location_state', 'like', "%{$search}%")
+                  ->orWhere('location_zipcode', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('poster_name', 'like', "%{$search}%");
+            });
+        }
+
+        $roommates = $query->paginate(15);
+
+        $roommates->getCollection()->transform(function ($roommate) {
             if (is_string($roommate->photos) && !empty($roommate->photos)) {
                 $roommate->photos = json_decode($roommate->photos, true);
             }

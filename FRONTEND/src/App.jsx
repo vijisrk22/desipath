@@ -12,7 +12,9 @@ import RentalHome from "./pages/RentalHome/RentalHome";
 import RentalHomeDetails from "./pages/RentalHome/RentalHomeDetails";
 import BuySellCar from "./pages/BuySellCar/BuySellCar";
 import CarDetails from "./pages/BuySellCar/CarDetails";
-import TravelCompanion from "./pages/TravelCompanion/TravelCompanion";
+import TravelCompanionLanding from "./pages/TravelCompanion/TravelCompanionLanding";
+import TravelCompanionWizard from "./pages/TravelCompanion/TravelCompanionWizard";
+import PostSuccess from "./pages/TravelCompanion/PostSuccess";
 import ITTrainings from "./pages/ITTrainings/ITTrainings";
 import CourseDetailsPage from "./pages/ITTrainings/CourseDetailsPage";
 import EventsLanding from "./pages/Events/EventsLanding";
@@ -36,6 +38,7 @@ import PostAdPage from "./pages/PostAdPage";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import UsersAdmin from "./pages/AdminDashboard/UsersAdmin";
+import ZipcodesAdmin from "./pages/AdminDashboard/ZipcodesAdmin";
 
 
 function App() {
@@ -91,10 +94,6 @@ function App() {
           <Route path="events/:action?" element={<EventsLanding />} />
           <Route path="events/:action/:eventId" element={<EventsLanding />} />
 
-          <Route
-            path="travelCompanion/:action?"
-            element={<TravelCompanion />}
-          />
           <Route path="itTrainings/:action?" element={<ITTrainings />} />
           <Route
             path="itTrainings/:action/:courseId"
@@ -103,6 +102,16 @@ function App() {
           <Route path="astrologyAds/:action?" element={<AstrologyAds />} />
           <Route path="classesForKids/:action?" element={<ClassesForKids />} />
         </Route>
+
+        {/* Travel Companion V2 Routes */}
+        <Route path="/travel-companion" element={<TravelCompanionLanding />} />
+        <Route path="/travel-companion/post-request" element={<PrivateRoute><TravelCompanionWizard type="seeker" /></PrivateRoute>} />
+        <Route path="/travel-companion/post-volunteer" element={<PrivateRoute><TravelCompanionWizard type="volunteer" /></PrivateRoute>} />
+        <Route path="/travel-companion/browse-volunteers" element={<TravelCompanionWizard type="browse-volunteers" />} />
+        <Route path="/travel-companion/browse-requests" element={<TravelCompanionWizard type="browse-requests" />} />
+        <Route path="/travel-companion/my-posts" element={<PrivateRoute><TravelCompanionWizard type="my-posts" /></PrivateRoute>} />
+        <Route path="/travel-companion/post-success" element={<PrivateRoute><PostSuccess /></PrivateRoute>} />
+        <Route path="/travel-companion/guidelines" element={<TravelCompanionWizard type="guidelines" />} />
 
         <Route path="/kids-class" element={<KidsClassLanding />} />
         
@@ -121,6 +130,7 @@ function App() {
           <Route path="events" element={<ListingAdmin endpoint="/api/events" title="Events" categoryIcon="🎟️" />} />
           <Route path="travel" element={<ListingAdmin endpoint="/api/travelcompanions" title="Travel Companion" categoryIcon="✈️" customBasePath="travelCompanion" />} />
           <Route path="trainings" element={<ListingAdmin endpoint="/api/trainingads" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
+          <Route path="zipcodes" element={<ZipcodesAdmin />} />
           <Route path="*" element={<div className="p-10 font-bold text-gray-500">Module coming soon...</div>} />
         </Route>
 

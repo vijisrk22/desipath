@@ -24,8 +24,8 @@ const services = [
   },
   {
     name: "Travel Companion",
-    image: "/img/travelCompanion/companionCardThumbnail.png",
-    path: "/services/travelCompanion",
+    image: "/img/travelCompanion/travelCompanionIcon.jpg",
+    path: "/travel-companion",
   },
   {
     name: "Events",
@@ -50,6 +50,31 @@ const services = [
   {
     name: "Doctors",
     image: "/img/doctors/doctors.png",
+    path: "",
+  },
+  {
+    name: "Astrology",
+    image: "/img/astrology/icon.png",
+    path: "/services/astrologyAds",
+  },
+  {
+    name: "Local Ads",
+    image: "/img/localAds/icon.png",
+    path: "",
+  },
+  {
+    name: "Photography",
+    image: "/img/photography/icon.png",
+    path: "",
+  },
+  {
+    name: "Immigration",
+    image: "/img/immigration/icon.png",
+    path: "",
+  },
+  {
+    name: "Jobs",
+    image: "/img/jobs/icon.png",
     path: "",
   },
 ];

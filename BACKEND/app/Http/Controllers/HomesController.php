@@ -63,8 +63,21 @@ class HomesController extends Controller
     {
         // Removed repairServerPaths as it causes the API to hang on Azure Production
 
-        $perPage = 9;
+        $perPage = 15;
         $query = BuySellHome::query();
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('location_city', 'like', "%{$search}%")
+                  ->orWhere('location_state', 'like', "%{$search}%")
+                  ->orWhere('location_zipcode', 'like', "%{$search}%")
+                  ->orWhere('home_type', 'like', "%{$search}%")
+                  ->orWhere('seller_name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
 
         if ($request->has('sort')) {
             switch ($request->sort) {
@@ -74,11 +87,11 @@ class HomesController extends Controller
                 case 'price-desc':
                     $query->orderBy('price', 'desc');
                     break;
-                case 'name-asc':
-                    $query->orderBy('home_type', 'asc');
+                case 'created_at-desc':
+                    $query->orderBy('created_at', 'desc');
                     break;
-                case 'name-desc':
-                    $query->orderBy('home_type', 'desc');
+                case 'area-desc':
+                    $query->orderBy('built_area', 'desc');
                     break;
                 default:
                     $query->orderBy('created_at', 'desc');
@@ -414,11 +427,11 @@ class HomesController extends Controller
                 case 'price-desc':
                     $query->orderBy('price', 'desc');
                     break;
-                case 'name-asc':
-                    $query->orderBy('home_type', 'asc');
+                case 'created_at-desc':
+                    $query->orderBy('created_at', 'desc');
                     break;
-                case 'name-desc':
-                    $query->orderBy('home_type', 'desc');
+                case 'area-desc':
+                    $query->orderBy('built_area', 'desc');
                     break;
                 default:
                     $query->orderBy('created_at', 'desc');
@@ -428,7 +441,7 @@ class HomesController extends Controller
              $query->orderBy('created_at', 'desc');
         }
 
-        $perPage = 9;
+        $perPage = 15;
         $buysellhomes = $query->paginate($perPage);
 
         // Automatically decode JSON-encoded 'photos' field to an array

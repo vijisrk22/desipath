@@ -3,6 +3,7 @@ import { IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import api from "../utils/api";
+import { getFullImageUrl } from "../utils/imageHelper";
 
 function ImageScroller({ images, autoAdvance = true, intervalMs = 3500 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,19 +40,27 @@ function ImageScroller({ images, autoAdvance = true, intervalMs = 3500 }) {
 
   if (!images || images.length === 0) return null;
 
-  const src = images[currentIndex].startsWith("data:")
-    ? images[currentIndex]
-    : `https://desipathapi.azurewebsites.net/${images[currentIndex]}`;
+  const src = getFullImageUrl(images[currentIndex]);
 
   return (
     <div
-      className="relative flex items-center justify-center h-[476px] overflow-hidden rounded-xl"
+      className="relative flex items-center justify-center h-[476px] overflow-hidden rounded-xl bg-black"
       onMouseEnter={pause}
       onMouseLeave={resume}
     >
+      {/* Blurred Background Layer */}
+      <div 
+        className="absolute inset-0 z-0 opacity-40 blur-2xl scale-110 pointer-events-none"
+        style={{
+          backgroundImage: `url(${src})`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover'
+        }}
+      />
+
       {/* Slide */}
       <div
-        className="w-full h-full transition-all"
+        className="w-full h-full transition-all relative z-10"
         style={{
           transform: animating
             ? direction === "next" ? "translateX(-8%)" : "translateX(8%)"
@@ -63,7 +72,7 @@ function ImageScroller({ images, autoAdvance = true, intervalMs = 3500 }) {
         <img
           src={src}
           alt={`Slide ${currentIndex + 1}`}
-          className="object-cover w-full h-full rounded-xl"
+          className="object-contain w-full h-full"
         />
       </div>
 

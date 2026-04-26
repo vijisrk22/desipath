@@ -19,10 +19,14 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\AirportController;
+use App\Http\Controllers\TravelCompanionController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 
 
 
@@ -89,12 +93,12 @@ Route::get('/cars', [CarController::class, 'index']);
 Route::get('/cars/make', [CarController::class, 'getcarmakes']);
 Route::get('/cars/models', [CarController::class, 'getcarmodels']);
 Route::get('/cars/attributes', [CarController::class, 'getCarAttributes']);
+Route::get('/cars/dummy-insert', [CarController::class, 'dummyInsert']);
 Route::get('/cars/{id}', [CarController::class, 'show'])->where('id', '[0-9]+');
 Route::post('/cars/search', [CarController::class, 'search']);
 
 // Auth-protected car write routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/cars/dummy-insert', [CarController::class, 'dummyInsert']);
     Route::post('/cars', [CarController::class, 'store']);
     Route::put('/cars/{id}', [CarController::class, 'update'])->where('id', '[0-9]+');
     Route::delete('/cars/{id}', [CarController::class, 'destroy'])->where('id', '[0-9]+');
@@ -103,9 +107,12 @@ Route::middleware('auth:sanctum')->group(function () {
 // --- Public Rental Home Routes ---
 Route::prefix('rentalhomes')->group(function () {
     Route::get('/', [RentalHomesController::class, 'index']);
+    Route::get('/dummy-insert', [RentalHomesController::class, 'dummyInsert']);
     Route::get('/{id}', [RentalHomesController::class, 'show'])->where('id', '[0-9]+');
     Route::post('/search', [RentalHomesController::class, 'search']);
 });
+
+Route::get('/kidsclass/dummy-insert', [KidsClassController::class, 'dummyInsert']);
 
 // --- Public Roommates Routes ---
 Route::prefix('roommates')->group(function () {
@@ -129,6 +136,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/rentalhomes/{id}', [RentalHomesController::class, 'update'])->where('id', '[0-9]+');
     Route::delete('/rentalhomes/{id}', [RentalHomesController::class, 'destroy'])->where('id', '[0-9]+');
 
+    // Admin Zipcodes
+    Route::get('/admin/zipcodes', [LocationController::class, 'getAdminZipcodes']);
+    
     // Roommates
     Route::post('/roommates', [RoomMatesController::class, 'store']);
     Route::post('/roommates/dummy-insert', [RoomMatesController::class, 'dummyInsert']);
@@ -245,6 +255,10 @@ Route::get('/fix-general', function() {
     \DB::table('kids_classes')->update(['status' => 'active']);
     return 'Fixed! All classes set to active and categories aligned.';
 });
+Route::get('/run-airport-seeder', function() {
+    \Artisan::call('db:seed', ['--class' => 'AirportSeeder']);
+    return 'Airport database seeded successfully with 487 entries!';
+});
 Route::middleware([])->group(function () {
     Route::get('/kids-classes/admin/details/{id}', [KidsClassController::class, 'getAdminDetails']);
 });
@@ -254,4 +268,19 @@ Route::middleware([])->group(function () {
 
 Route::get('/users', function() {
     return User::all();
+});
+
+// Travel Companion V2 Routes
+Route::get('/airports/search', [AirportController::class, 'search']);
+Route::prefix('travel-companion')->group(function () {
+    Route::get('/volunteers', [TravelCompanionController::class, 'browseVolunteers']);
+    Route::get('/requests', [TravelCompanionController::class, 'browseRequests']);
+});
+Route::middleware('auth:sanctum')->prefix('travel-companion')->group(function () {
+    Route::post('/requests', [TravelCompanionController::class, 'storeRequest']);
+    Route::patch('/requests/{id}', [TravelCompanionController::class, 'storeRequest']);
+    Route::post('/volunteer-posts', [TravelCompanionController::class, 'storeVolunteerPost']);
+    Route::patch('/volunteer-posts/{id}', [TravelCompanionController::class, 'storeVolunteerPost']);
+    Route::get('/my-posts', [TravelCompanionController::class, 'myPosts']);
+    Route::post('/reports', [TravelCompanionController::class, 'report']);
 });

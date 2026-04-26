@@ -46,7 +46,8 @@ function LocationAutocompleteInput({
       if (searchTerm.length < 2) return [];
 
       const res = await api.get(`/api/location/locations?filter=${searchTerm}`);
-      return res.data.map(
+      const data = res.data?.value || (Array.isArray(res.data) ? res.data : []);
+      return data.map(
         (loc) => `${loc.city}, ${loc.state_name}, ${loc.zip}`
       );
     },

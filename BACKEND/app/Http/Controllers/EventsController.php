@@ -14,12 +14,26 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::orderBy('created_at', 'desc')->get();
+        $query = Event::query();
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('event_name', 'like', "%{$search}%")
+                  ->orWhere('address', 'like', "%{$search}%")
+                  ->orWhere('state_city_zipcode', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('user_name', 'like', "%{$search}%");
+            });
+        }
+
+        $events = $query->orderBy('created_at', 'desc')->paginate(15);
         
         // Transform to match frontend expectations
-        $transformedEvents = $events->map(function($event) {
+        $events->getCollection()->transform(function($event) {
             // Parse datetime to extract time
             $dateTime = new \DateTime($event->from_date);
             
@@ -29,13 +43,16 @@ class EventsController extends Controller
                 'location' => $event->state_city_zipcode,
                 'date' => $dateTime->format('Y-m-d\TH:i:s'), // ISO format with time
                 'image' => !empty($event->cover_images) && is_array($event->cover_images) && count($event->cover_images) > 0 
-                    ? url($event->cover_images[0])
+                    ? $event->cover_images[0] 
                     : '/img/events/eventSmpl1.png',
                 'ticketPrice' => '$' . number_format($event->ticket_price, 0),
+                // Pass raw data for admin editing if needed
+                'address' => $event->address,
+                'event_type' => $event->event_type,
             ];
         });
         
-        return response()->json(['events' => $transformedEvents]);
+        return response()->json($events);
     }
 
     /**

@@ -173,11 +173,23 @@ class KidsClassController extends Controller
     /**
      * Admin Dashboard: Fetch all classes (pending, active, rejected, etc)
      */
-    public function getAdminListings()
+    public function getAdminListings(Request $request)
     {
-        $classes = DB::table('kids_classes')
-            ->join('instructors', 'kids_classes.instructor_id', '=', 'instructors.id')
-            ->select(
+        $query = DB::table('kids_classes')
+            ->join('instructors', 'kids_classes.instructor_id', '=', 'instructors.id');
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('kids_classes.title', 'like', "%{$search}%")
+                  ->orWhere('instructors.name', 'like', "%{$search}%")
+                  ->orWhere('kids_classes.category', 'like', "%{$search}%")
+                  ->orWhere('kids_classes.subcategory', 'like', "%{$search}%");
+            });
+        }
+
+        $classes = $query->select(
                 'kids_classes.id',
                 'kids_classes.title',
                 'kids_classes.category',
@@ -194,7 +206,7 @@ class KidsClassController extends Controller
         // Format for frontend
         $mapped = $classes->map(function ($c) {
             if ($c->photoUrl && !str_starts_with($c->photoUrl, 'http')) {
-                $c->photoUrl = url($c->photoUrl);
+                $c->photoUrl = $c->photoUrl; // Keep as relative path
             }
             return [
                 'id' => $c->id,
@@ -277,7 +289,7 @@ class KidsClassController extends Controller
             $c->format = json_decode($c->format) ?? [];
             $c->days_of_week = json_decode($c->days_of_week) ?? [];
             if ($c->photoUrl && !str_starts_with($c->photoUrl, 'http')) {
-                $c->photoUrl = url($c->photoUrl);
+                $c->photoUrl = $c->photoUrl; // Keep as relative
             }
             return $c;
         })->values();
@@ -307,7 +319,7 @@ class KidsClassController extends Controller
         if($reqs) { $reqs->prerequisites = json_decode($reqs->prerequisites)?:[]; $reqs->materials_needed = json_decode($reqs->materials_needed)?:[]; $reqs->tech_requirements = json_decode($reqs->tech_requirements)?:[]; }
 
         if($instructor && $instructor->profile_photo_url && !str_starts_with($instructor->profile_photo_url, 'http')) {
-            $instructor->profile_photo_url = url($instructor->profile_photo_url);
+            $instructor->profile_photo_url = $instructor->profile_photo_url; // Keep as relative
         }
 
         return response()->json([
@@ -336,8 +348,8 @@ class KidsClassController extends Controller
         if($schedule) { $schedule->days_of_week = json_decode($schedule->days_of_week)?:[]; }
         if($about) { $about->who_is_it_for = json_decode($about->who_is_it_for)?:[]; $about->what_will_kids_learn = json_decode($about->what_will_kids_learn)?:[]; $about->highlights = json_decode($about->highlights)?:[]; }
         if($reqs) { $reqs->prerequisites = json_decode($reqs->prerequisites)?:[]; $reqs->materials_needed = json_decode($reqs->materials_needed)?:[]; $reqs->tech_requirements = json_decode($reqs->tech_requirements)?:[]; }
-        if($instructor && $instructor->profile_photo_url && !str_starts_with($instructor->profile_photo_url, 'http')) {
-            $instructor->profile_photo_url = url($instructor->profile_photo_url);
+        if ($instructor && $instructor->profile_photo_url && !str_starts_with($instructor->profile_photo_url, 'http')) {
+            $instructor->profile_photo_url = $instructor->profile_photo_url; // Keep as relative
         }
 
         return response()->json([
@@ -464,5 +476,68 @@ class KidsClassController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Update failed: ' . $e->getMessage()]);
         }
+    }
+
+    public function dummyInsert()
+    {
+        $now = Carbon::now();
+        $inserted = [];
+        $categories = [
+            'Art' => ['Painting', 'Sketching', 'Pottery'],
+            'Music' => ['Keyboard', 'Vocal', 'Guitar'],
+            'Education' => ['Math', 'English', 'Science'],
+            'Sports' => ['Yoga', 'Karate', 'Dance']
+        ];
+
+        $cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'];
+
+        for ($i = 0; $i < 10; $i++) {
+            $instructorId = Str::orderedUuid()->toString();
+            $classId = Str::orderedUuid()->toString();
+            $cat = array_rand($categories);
+            $subcat = $categories[$cat][array_rand($categories[$cat])];
+
+            // 1. Instructor
+            DB::table('instructors')->insert([
+                'id' => $instructorId,
+                'name' => "Instructor " . ($i + 1),
+                'email' => "instructor{$i}@example.com",
+                'account_type' => 'individual',
+                'created_at' => $now, 'updated_at' => $now
+            ]);
+
+            // 2. Class
+            DB::table('kids_classes')->insert([
+                'id' => $classId,
+                'instructor_id' => $instructorId,
+                'title' => "{$subcat} for Beginners",
+                'category' => $cat,
+                'subcategory' => $subcat,
+                'status' => 'active',
+                'created_at' => $now, 'updated_at' => $now
+            ]);
+
+            // 3. Schedule
+            DB::table('class_schedules')->insert([
+                'id' => Str::orderedUuid()->toString(),
+                'class_id' => $classId,
+                'location_address' => $cities[$i % 5],
+                'days_of_week' => json_encode(['Mon', 'Wed']),
+                'created_at' => $now, 'updated_at' => $now
+            ]);
+
+            // 4. Pricing
+            DB::table('class_pricing')->insert([
+                'id' => Str::orderedUuid()->toString(),
+                'class_id' => $classId,
+                'fee_amount' => rand(500, 2000),
+                'fee_type' => 'per_month',
+                'created_at' => $now, 'updated_at' => $now
+            ]);
+
+            $inserted[] = $classId;
+        }
+
+        return response()->json(['success' => true, 'message' => '10 Kids Classes added', 'data' => $inserted]);
     }
 }

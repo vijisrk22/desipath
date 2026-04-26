@@ -108,6 +108,16 @@ function PostRentalHomeForm() {
     { name: "amenities.Gym", label: "Gym" },
     { name: "amenities.Club House", label: "Club House" },
     { name: "amenities.Swimming Pool", label: "Swimming Pool" },
+    { name: "amenities.Walk-In Closets", label: "Walk-In Closets" },
+    { name: "amenities.Window Coverings", label: "Window Coverings" },
+    { name: "amenities.Balcony", label: "Balcony" },
+    { name: "amenities.Patio", label: "Patio" },
+    { name: "amenities.Hardwood Floors", label: "Hardwood Floors" },
+    { name: "amenities.Microwave", label: "Microwave" },
+    { name: "amenities.Granite Counter", label: "Granite Counter" },
+    { name: "amenities.Washer Dryer", label: "Washer Dryer" },
+    { name: "amenities.Air conditioning", label: "Air conditioning" },
+    { name: "amenities.Heating", label: "Heating" },
   ];
 
   return (
@@ -141,18 +151,31 @@ function PostRentalHomeForm() {
           dateFieldName1="available_from"
           control={control}
           toDate={false}
+          placeholderLab=""
         />
         <TextFieldInput
           name="area"
           defaultValue=""
           control={control}
           text="Area (sqft)"
+          rules={{
+            pattern: {
+              value: /^\d*\.?\d*$/,
+              message: "Invalid area. Use numbers only (decimals allowed)",
+            },
+          }}
         />
         <TextFieldInput
           name="deposit_rent"
           defaultValue=""
           control={control}
           text="Monthly Rent ($)"
+          rules={{
+            pattern: {
+              value: /^\d+$/,
+              message: "Monthly Rent must be a whole number (no decimals)",
+            },
+          }}
         />
         <TextFieldInput
           name="accommodates"

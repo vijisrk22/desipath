@@ -38,6 +38,7 @@ function Houses() {
         </div>
         <SortBy
           sortOption={sortOption}
+          type="house"
           setSortOption={(value) => {
             setSortOption(value);
             setPage(1); // Reset to page 1 on sort change

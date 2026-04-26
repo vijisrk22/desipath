@@ -32,11 +32,7 @@ function Roommates() {
     buttonText2: "Post An Add/Share My Room",
   };
 
-  const showNavbar =
-    action === undefined ||
-    action === "findRoom" ||
-    action === "postRoom" ||
-    action === "postConfirmation";
+  const showNavbar = true;
 
   return (
     <div className="flex flex-col min-h-screen overflow-y-auto ">

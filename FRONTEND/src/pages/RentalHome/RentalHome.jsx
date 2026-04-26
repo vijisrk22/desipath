@@ -34,12 +34,7 @@ function RentalHome() {
     buttonText2: "Post an Ad to Rent My Home",
   };
 
-  const showNavbar =
-    action === undefined ||
-    action === "findRentalHome" ||
-    action === "postRentalHome" ||
-    action === "edit" ||
-    action === "postConfirmation";
+  const showNavbar = true;
 
   return (
     <div className="flex flex-col min-h-screen overflow-y-auto" style={{ cursor: 'default' }}>

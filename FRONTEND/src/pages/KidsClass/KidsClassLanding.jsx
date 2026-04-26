@@ -21,14 +21,15 @@ const CATEGORIES = [
     ],
   },
   {
-    name: "Classical Arts",
+    name: "Classical Arts-Dance",
     color: "bg-pink-50 border-pink-200 text-pink-900 border",
     accent: "bg-pink-100 text-pink-600",
-    slug: "classical-arts",
-    icon: "🎭",
+    slug: "classical-arts-dance",
+    icon: "💃",
     subcategories: [
       { name: "Bharatanatyam", slug: "bharatanatyam", icon: "💃" },
       { name: "Kathak", slug: "kathak", icon: "💃" },
+      { name: "Bollywood Dance", slug: "bollywood-dance", icon: "👯" },
     ],
   },
   {

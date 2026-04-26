@@ -11,14 +11,19 @@ export default function KidsClassAdmin() {
   const [modalData, setModalData] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetchListings();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchListings();
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
 
   const fetchListings = () => {
     setLoading(true);
-    fetch('http://localhost:8000/api/kids-classes/admin-listings')
+    fetch(`http://localhost:8000/api/kids-classes/admin-listings?search=${searchTerm}`)
       .then(res => res.json())
       .then(result => {
         if (result.success) setListings(result.data);
@@ -139,10 +144,21 @@ export default function KidsClassAdmin() {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900">Kids Classes Hub</h1>
           <p className="text-gray-500 font-medium mt-1">Unified view of all marketplace class applications.</p>
+        </div>
+
+        <div className="relative group w-full md:w-96">
+          <input 
+            type="text" 
+            placeholder="Search classes or instructors..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400 font-medium pl-12"
+          />
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl grayscale opacity-50 group-focus-within:opacity-100 transition-all">🔍</span>
         </div>
       </div>
 

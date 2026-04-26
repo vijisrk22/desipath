@@ -136,10 +136,29 @@ class LocationController extends Controller
     public function runSeeders()
     {
         try {
+            set_time_limit(0);
+            ini_set('memory_limit', '1024M');
+            
+            // Try to seed from manual data first to ensure something is there
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'Database\Seeders\UsaZipcodeManualSeeder', '--force' => true]);
+            
+            // Then try the full seeder
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'Database\Seeders\UsaZipcodeSeeder', '--force' => true]);
+
+            // Sync coordinates for all listings
+            $listings = \App\Models\RentalHome::all();
+            foreach ($listings as $listing) {
+                $coords = \DB::table('usa_zipcodes')->where('zip', $listing->location_zipcode)->first();
+                if ($coords) {
+                    $listing->latitude = $coords->lat;
+                    $listing->longitude = $coords->lng;
+                    $listing->save();
+                }
+            }
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Seeding executed successfully',
+                'message' => 'Seeding + Auto-Sync executed',
                 'output' => \Illuminate\Support\Facades\Artisan::output()
             ]);
         } catch (\Throwable $e) {
@@ -305,6 +324,23 @@ class LocationController extends Controller
 
         $zipcodes = UsaZipcode::where('city', $city)->select('zip')->distinct()->orderBy('zip')->get();
 
+        return response()->json($zipcodes);
+    }
+
+    public function getAdminZipcodes(Request $request)
+    {
+        $perPage = $request->query('perPage', 100);
+        $search = $request->query('search');
+
+        $query = UsaZipcode::query();
+
+        if ($search) {
+            $query->where('zip', 'like', "%$search%")
+                  ->orWhere('city', 'like', "%$search%")
+                  ->orWhere('state_name', 'like', "%$search%");
+        }
+
+        $zipcodes = $query->orderBy('state_name')->orderBy('city')->paginate($perPage);
         return response()->json($zipcodes);
     }
 }

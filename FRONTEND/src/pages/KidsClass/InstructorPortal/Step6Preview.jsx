@@ -1,4 +1,5 @@
 import React from 'react';
+import { getFullImageUrl } from '../../../utils/imageHelper';
 
 export default function Step6Preview({ data, onEditStep }) {
   const { instructorInfo, classBasic, schedule, about, pricing } = data;
@@ -40,23 +41,14 @@ export default function Step6Preview({ data, onEditStep }) {
           <button onClick={() => onEditStep(1)} className="absolute top-4 right-4 text-blue-600 opacity-0 group-hover:opacity-100 text-sm font-bold underline transition">Edit Profile</button>
           <h3 className="text-lg font-bold text-gray-800 uppercase tracking-widest border-b pb-2 mb-4">Step 1: Instructor Identity</h3>
           <div className="flex items-start gap-4">
-            <div className="w-16 h-16 rounded-full border border-gray-300 overflow-hidden bg-gray-100">
+            <div className="w-16 h-16 rounded-full border border-gray-300 overflow-hidden bg-gray-100 flex items-center justify-center relative shrink-0">
               {instructorInfo?.photoUrl ? (
                  <img 
-                   src={
-                     (instructorInfo.photoUrl?.startsWith('http') || instructorInfo.photoUrl?.startsWith('blob:')) 
-                       ? instructorInfo.photoUrl 
-                       : `http://localhost:8000${instructorInfo.photoUrl}`
-                   } 
+                   src={getFullImageUrl(instructorInfo.photoUrl)} 
                    alt="Avatar" 
                    className="w-full h-full object-cover" 
-                   onError={(e) => {
-                     e.target.style.display = 'none';
-                     const initial = instructorInfo.name?.charAt(0) || '?';
-                     e.target.parentElement.innerHTML = `<div class="w-full h-full bg-blue-600 text-white flex items-center justify-center font-extrabold text-2xl uppercase">${initial}</div>`;
-                   }}
                  />
-              ) : <div className="w-full h-full flex items-center justify-center font-bold text-gray-400 text-xl">📸</div>}
+              ) : <span className="text-2xl">📸</span>}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 w-full">
               <p><strong>Name:</strong> {instructorInfo?.name || 'N/A'}</p>

@@ -1,6 +1,7 @@
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function HouseCard({ house }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -16,7 +17,7 @@ export default function HouseCard({ house }) {
       <div className="relative h-56 lg:h-64 overflow-hidden">
         <img
           src={house.images && house.images.length > 0
-            ? `https://desipathapi.azurewebsites.net/${house.images[0]}`
+            ? getFullImageUrl(house.images[0])
             : "/homesSmpl.png"}
           alt={house.home_type}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -77,7 +78,7 @@ export default function HouseCard({ house }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          {house.location_city ? `${house.location_city}, ${house.location_state}` : "Address not available"}
+          {house.location_city ? `${house.location_city}, ${getStateCode(house.location_state)} ${house.location_zipcode}` : "Address not available"}
         </div>
       </div>
     </Link>

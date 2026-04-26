@@ -41,10 +41,25 @@ class CarController extends Controller
      *     @OA\Response(response=200, description="List of cars")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $buysellcars = BuySellCar::with(['fuelType','transmission','condition'])->get();
-        $buysellcars->transform(function ($c) {
+        $query = BuySellCar::with(['fuelType','transmission','condition']);
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('make', 'like', "%{$search}%")
+                  ->orWhere('model', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%")
+                  ->orWhere('seller_name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $buysellcars = $query->paginate(15);
+
+        $buysellcars->getCollection()->transform(function ($c) {
             if (is_string($c->pictures) && !empty($c->pictures)) {
                 $c->pictures = json_decode($c->pictures, true);
             }
@@ -53,6 +68,7 @@ class CarController extends Controller
             $c->condition_name = $c->condition?->name;
             return $c;
         });
+
         return response()->json($buysellcars);
     }
 
@@ -109,53 +125,80 @@ public function testCars() { return BuySellCar::all(); }
     public function dummyInsert(Request $request)
     {
         $faker = Faker::create();
+        $insertedCars = [];
 
-        $photos = [];
-        $directory = storage_path('app/public/cars');
-
-        if (!file_exists($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        for ($i = 0; $i < 3; $i++) {
-            $filename = Str::random(10) . '.jpg';
-            $fullPath = $directory . '/' . $filename;
-
-            // Create a blank white image
-            $image = imagecreatetruecolor(640, 480);
-            $white = imagecolorallocate($image, 255, 255, 255);
-            imagefilledrectangle($image, 0, 0, 640, 480, $white);
-
-            imagejpeg($image, $fullPath);
-            imagedestroy($image);
-
-            $photos[] = 'storage/cars/' . $filename;
-        }
-
-        $posterId = $faker->numberBetween(1, 4);
-        // Fetch the user name from the database using poster_id
-        $receiver = User::find($posterId);
-        $posterName = $receiver ? $receiver->name : 'Unknown User';
-
-        $dummyData = [
-            'make' => $faker->company,
-            'model' => $faker->word,
-            'year' => $faker->year,
-            'miles' => $faker->numberBetween(1000, 200000),
-            'variant' => $faker->word,
-            'pictures' => json_encode($photos),
-            'location' => $faker->city . ', ' . $faker->stateAbbr,
-            'seller_id' => $posterId,
-            'price' => $faker->randomFloat(2, 5000, 50000),
-            'description' => $faker->sentence,
-            'seller_name' => $posterName,
+        $realCities = [
+            ['city' => 'New York', 'state' => 'NY', 'zip' => '10001'],
+            ['city' => 'Los Angeles', 'state' => 'CA', 'zip' => '90001'],
+            ['city' => 'Chicago', 'state' => 'IL', 'zip' => '60601'],
+            ['city' => 'Houston', 'state' => 'TX', 'zip' => '77001'],
+            ['city' => 'Phoenix', 'state' => 'AZ', 'zip' => '85001'],
+            ['city' => 'Philadelphia', 'state' => 'PA', 'zip' => '19101'],
+            ['city' => 'San Antonio', 'state' => 'TX', 'zip' => '78201'],
+            ['city' => 'San Diego', 'state' => 'CA', 'zip' => '92101'],
+            ['city' => 'Dallas', 'state' => 'TX', 'zip' => '75201'],
+            ['city' => 'San Jose', 'state' => 'CA', 'zip' => '95101']
         ];
 
-        $car = BuySellCar::create($dummyData);
+        $carDetails = [
+            ['make' => 'Toyota', 'model' => 'Camry'],
+            ['make' => 'Honda', 'model' => 'Civic'],
+            ['make' => 'Ford', 'model' => 'F-150'],
+            ['make' => 'Tesla', 'model' => 'Model 3'],
+            ['make' => 'BMW', 'model' => 'X5'],
+            ['make' => 'Chevrolet', 'model' => 'Silverado'],
+            ['make' => 'Nissan', 'model' => 'Altima'],
+            ['make' => 'Hyundai', 'model' => 'Elantra'],
+            ['make' => 'Lexus', 'model' => 'RX 350'],
+            ['make' => 'Audi', 'model' => 'A4']
+        ];
+
+        for ($j = 0; $j < 10; $j++) {
+            $photos = [];
+            $directory = storage_path('app/public/cars');
+
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            for ($i = 0; $i < 3; $i++) {
+                $photos[] = "https://placehold.co/640x480?text=Car+" . ($j + 1);
+            }
+
+            $user = User::first();
+            if (!$user) {
+                $user = User::create([
+                    'name' => 'Auto Seller',
+                    'email' => 'seller@example.com',
+                    'password' => Hash::make('password'),
+                ]);
+            }
+            $posterId = $user->id;
+            $posterName = $user->name;
+
+            $location = $realCities[$j % count($realCities)];
+            $car = $carDetails[$j % count($carDetails)];
+
+            $dummyData = [
+                'make' => $car['make'],
+                'model' => $car['model'],
+                'year' => $faker->numberBetween(2015, 2024),
+                'miles' => $faker->numberBetween(1000, 100000),
+                'variant' => $faker->randomElement(['Standard', 'Luxury', 'Sport', 'Electric']),
+                'pictures' => $photos, // Model cast handles JSON
+                'location' => $location['city'] . ', ' . $location['state'],
+                'seller_id' => $posterId,
+                'price' => $faker->randomFloat(2, 15000, 60000),
+                'description' => $faker->sentence(15),
+                'seller_name' => $posterName,
+            ];
+
+            $insertedCars[] = BuySellCar::create($dummyData);
+        }
 
         return response()->json([
-            'message' => 'Dummy car added successfully',
-            'data' => $car
+            'message' => '10 dummy cars with real cities added successfully',
+            'data' => $insertedCars
         ], 201);
     }
 

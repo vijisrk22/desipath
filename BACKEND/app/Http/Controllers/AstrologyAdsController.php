@@ -34,9 +34,22 @@ class AstrologyAdsController extends Controller
      *     @OA\Response(response=200, description="List of astrology ads")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return AstrologyAd::all();
+        $query = AstrologyAd::query();
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('astrologer_type', 'like', "%{$search}%")
+                  ->orWhere('city', 'like', "%{$search}%")
+                  ->orWhere('state', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 
     /**

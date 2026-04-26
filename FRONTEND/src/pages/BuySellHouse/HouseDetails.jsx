@@ -93,20 +93,11 @@ function HouseDetails() {
   });
 
   return (
-    <div className=" mx-20 my-10">
-      <div className="flex justify-between items-center text-sm">
-        <div className="text-[#0857d0] text-3xl font-normal font-fredoka">
-          Desipath
-        </div>
-        <div className="flex gap-4">
-          <RiShareForwardLine size={30} className="text-[#0857d0]" />
-          <RiHeart3Line size={30} className="text-[#0857d0]" />
-        </div>
-      </div>
+    <div className="mx-20 my-10">
       <DisplayPath
         paths={paths}
         color="[#667479]"
-        additionalStyles={"leading-tight"}
+        additionalStyles={"leading-tight mb-4"}
       />
       <div className="h-[476px] my-5 flex justify-center items-center overflow-hidden rounded-[10px]">
         <img

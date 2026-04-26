@@ -135,8 +135,9 @@ export default function ReviewRentalHomePost({ open, onClose, formDetails, image
             ? parseFloat(formDetails.deposit_rent).toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
+              maximumFractionDigits: 0,
             })
-            : "$0.00"}
+            : "$0"}
         </div>
         <div className=" text-gray-800 text-[26px] font-bold font-dmsans">
           {formDetails?.property_type}

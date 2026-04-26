@@ -15,6 +15,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/
 import api from "../../utils/api";
 import { getRentalHomeContents } from "./DisplayRentalHomeDetail";
 import ImageScroller from "../../components/ImageScroller";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 function RentalHomeDetails() {
   const paths = [
@@ -110,75 +111,72 @@ function RentalHomeDetails() {
   );
 
   return (
-    <div className=" mx-20 my-10">
-      <div className="flex justify-between items-center">
-        <div className="text-[#0857d0] text-3xl font-normal font-fredoka">
-          Desipath
-        </div>
-        <div className="flex gap-4">
-          <RiShareForwardLine size={30} className="text-[#0857d0]" />
-          <RiHeart3Line size={30} className="text-[#0857d0]" />
-        </div>
-      </div>
+    <div className="px-4 md:mx-20 my-10">
       <DisplayPath
         paths={paths}
         color="[#667479]"
-        additionalStyles={"leading-tight"}
+        additionalStyles={"leading-tight mb-4"}
       />
       {rentalHomeDetails.images?.length > 0 && (
-        <div className="h-[476px] my-5 flex justify-center items-center ">
-          <div className="my-4">
-            <ImageScroller images={rentalHomeDetails.images} />
+        <div className="h-[300px] md:h-[476px] my-5 flex justify-center items-center shadow-sm rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
+          <div className="w-full h-full">
+            <ImageScroller images={rentalHomeDetails.images.map(img => getFullImageUrl(img))} />
           </div>
         </div>
       )}
-      <div className="flex flex-wrap justify-center gap-4">
+      <div className="flex flex-wrap justify-center gap-3 md:gap-4">
         {rentalHomeDetails.images?.map((image, indx) => (
           <div key={indx} className="flex justify-center">
             <img
-              className="w-[150px] h-[150px] rounded-md border-[3px] border-[#2e61b1]"
-              src={`https://desipathapi.azurewebsites.net/${image}`}
-              alt={`Image ${indx}`}
+              className="w-[100px] h-[100px] md:w-[150px] md:h-[150px] rounded-xl border-[2px] md:border-[3px] border-[#0857d0] object-cover shadow-sm transition-transform hover:scale-105"
+              src={getFullImageUrl(image)}
+              alt={`Property Image ${indx + 1}`}
             />
           </div>
         ))}
       </div>
 
-      <div className="flex items-start justify-between gap-3 mt-5">
-        <div>
-          <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
+      <div className="flex flex-col md:flex-row items-start justify-between gap-6 mt-8">
+        <div className="w-full md:flex-1">
+          <div className="text-[#0857d0] text-[32px] md:text-[38px] font-bold font-dmsans leading-tight mb-2">
             {rentalHomeDetails?.deposit_rent
               ? `$${Number(rentalHomeDetails.deposit_rent).toLocaleString(
-                "en-US"
+                "en-US",
+                { maximumFractionDigits: 0 }
               )}`
               : "Loading..."}
           </div>
-          <div className="text-gray-800 text-[26px] font-bold font-dmsans">
+          <div className="text-gray-800 text-[22px] md:text-[26px] font-bold font-dmsans">
             {rentalHomeDetails?.property_type || "Loading..."}
           </div>
-          <div className="text-gray-400 text-[26px] font-bold font-dmsans">
+          <div className="text-gray-400 text-[18px] md:text-[22px] font-bold font-dmsans mb-6">
             Owner - {rentalHomeDetails?.owner_name}
           </div>
-          <ReviewPostContent contents={contents} type="display" />
+          <div className="overflow-x-auto w-full">
+            <ReviewPostContent contents={contents} type="display" />
+          </div>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div onClick={handleContactClick} className="cursor-pointer mt-3 px-7 py-3 bg-[#ffa41c] rounded-[57px] inline-flex justify-center items-center gap-2.5">
+        <div className="flex flex-col gap-4 w-full md:w-auto min-w-[240px]">
+          <div onClick={handleContactClick} className="cursor-pointer w-full px-7 py-4 bg-[#ffa41c] rounded-[57px] inline-flex justify-center items-center gap-2.5 shadow-md hover:bg-[#e8931a] transition-all">
             <PhoneOutlinedIcon />
             <div className=" text-gray-800 text-base font-bold font-dmsans">
               Contact
             </div>
           </div>
 
-          <Dialog open={openContact} onClose={() => setOpenContact(false)}>
-            <DialogTitle>Contact Owner</DialogTitle>
-            <DialogContent>
-              <div className="text-lg">
-                Phone Number: <strong>{rentalHomeDetails?.contact_no || "Not Available"}</strong>
+          <Dialog open={openContact} onClose={() => setOpenContact(false)} fullWidth maxWidth="xs">
+            <DialogTitle className="font-bold">Contact Owner</DialogTitle>
+            <DialogContent dividers>
+              <div className="py-4 text-center">
+                <p className="text-gray-500 mb-2">Phone Number</p>
+                <div className="text-2xl font-bold text-[#0857d0]">
+                  {rentalHomeDetails?.contact_no || "Not Available"}
+                </div>
               </div>
             </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setOpenContact(false)} color="primary">
+            <DialogActions className="p-4">
+              <Button onClick={() => setOpenContact(false)} variant="contained" className="bg-[#0857d0] w-full py-2 rounded-xl">
                 Close
               </Button>
             </DialogActions>
@@ -187,12 +185,12 @@ function RentalHomeDetails() {
           <button
             onClick={handleClick}
             disabled={rentalHomeDetails?.owner_id === user?.id}
-            className={`px-5 py-2.5 rounded-[57px] inline-flex justify-center items-center gap-2.5 ${rentalHomeDetails?.owner_id === user?.id ? "cursor-not-allowed" : ""
+            className={`w-full px-7 py-4 rounded-[57px] inline-flex justify-center items-center gap-2.5 border-2 border-[#0857d0] bg-white text-[#0857d0] hover:bg-blue-50 transition-all shadow-sm ${rentalHomeDetails?.owner_id === user?.id ? "opacity-50 cursor-not-allowed border-gray-300 text-gray-400" : ""
               }`}
           >
-            <SmsOutlinedIcon color="primary" />
-            <div className="justify-end text-[#ffa41c] text-base font-bold font-dmsans">
-              Chat with Owner
+            <SmsOutlinedIcon color={rentalHomeDetails?.owner_id === user?.id ? "disabled" : "primary"} />
+            <div className="text-base font-bold font-dmsans">
+              Message Owner
             </div>
           </button>
         </div>

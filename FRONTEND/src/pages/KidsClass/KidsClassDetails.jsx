@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+import api from "../../utils/api";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function KidsClassDetails() {
   const { id } = useParams();
@@ -11,11 +13,12 @@ export default function KidsClassDetails() {
   const [enquirySent, setEnquirySent] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/kids-classes/public/details/${id}`)
-      .then(res => res.json())
-      .then(result => {
+    api.get(`/api/kids-classes/public/details/${id}`)
+      .then(res => {
+        const result = res.data;
         if (result.success) setData(result.data);
       })
+      .catch(err => console.error("Error fetching class details:", err))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -89,24 +92,19 @@ export default function KidsClassDetails() {
         
         {/* Top Banner section */}
         <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-7 mb-7">
-          <div className="w-28 h-28 md:w-40 md:h-40 rounded-full shadow-lg border-4 border-white shrink-0 overflow-hidden bg-gray-100 flex items-center justify-center mx-auto md:mx-0">
+          <div className="w-28 h-28 md:w-40 md:h-40 rounded-full shadow-lg border-4 border-white shrink-0 overflow-hidden bg-gray-100 flex items-center justify-center mx-auto md:mx-0 relative">
             {instructor.profile_photo_url ? (
                <img 
-                 src={
-                   (instructor.profile_photo_url?.startsWith('http') || instructor.profile_photo_url?.startsWith('blob:')) 
-                     ? instructor.profile_photo_url 
-                     : `http://localhost:8000${instructor.profile_photo_url}`
-                 } 
+                 src={getFullImageUrl(instructor.profile_photo_url)} 
                  alt={instructor.name} 
                  className="w-full h-full object-cover" 
                  onError={(e) => {
                    e.target.style.display = 'none';
-                   e.target.parentElement.classList.add('bg-blue-600', 'flex', 'items-center', 'justify-center');
-                   e.target.parentElement.innerHTML = `<span class="text-6xl text-white font-extrabold uppercase">${instructor.name.charAt(0)}</span>`;
+                   e.target.parentElement.innerHTML = `<span class="text-6xl text-gray-400">📸</span>`;
                  }}
                />
             ) : (
-               <span className="text-6xl text-gray-300 font-bold">{instructor.name.charAt(0)}</span>
+               <span className="text-6xl text-gray-400">📸</span>
             )}
           </div>
           <div className="flex-grow text-center md:text-left">

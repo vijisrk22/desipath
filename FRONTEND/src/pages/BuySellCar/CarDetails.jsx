@@ -86,33 +86,26 @@ function CarDetails() {
   console.log("Car Details: ", carDetails);
 
   return (
-    <div className=" mx-20 my-10">
-      <div className="flex justify-between items-center">
-        <div className="text-[#0857d0] text-3xl font-normal font-fredoka">
-          Desipath
-        </div>
-        <div className="flex gap-4">
-          <RiShareForwardLine size={30} className="text-[#0857d0]" />
-          <RiHeart3Line size={30} className="text-[#0857d0]" />
-        </div>
-      </div>
+    <div className="mx-20 my-10">
       <DisplayPath
         paths={paths}
         color="[#667479]"
-        additionalStyles={"leading-tight"}
+        additionalStyles={"leading-tight mb-4"}
       />
       {carDetails.pictures?.length > 0 && (
-        <div className="my-4">
-          <ImageScroller images={carDetails.pictures} />
+        <div className="h-[476px] my-5 flex justify-center items-center shadow-sm rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
+          <div className="w-full h-full">
+            <ImageScroller images={carDetails.pictures.map(img => (img.startsWith('http') ? img : `https://desipathapi.azurewebsites.net/${img}`))} />
+          </div>
         </div>
       )}
       <div className="flex flex-wrap justify-center gap-4">
         {carDetails.pictures?.map((img, indx) => (
           <div key={indx} className="flex justify-center">
             <img
-              className="w-[150px] h-[150px] rounded-md border-[3px] border-[#2e61b1]"
-              src={`https://desipathapi.azurewebsites.net/${img}`}
-              alt={`Image ${indx}`}
+              className="w-[150px] h-[150px] rounded-xl border-[3px] border-[#0857d0] object-cover shadow-sm transition-transform hover:scale-105"
+              src={img.startsWith('http') ? img : `https://desipathapi.azurewebsites.net/${img}`}
+              alt={`Car Image ${indx + 1}`}
             />
           </div>
         ))}

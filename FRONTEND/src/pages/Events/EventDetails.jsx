@@ -53,19 +53,15 @@ function EventDetails() {
 
   // Helper to get full image paths
   const displayImages = (eventDetails.cover_images && Array.isArray(eventDetails.cover_images) && eventDetails.cover_images.length > 0)
-    ? eventDetails.cover_images.map(img => `https://desipathapi.azurewebsites.net/${img}`)
+    ? eventDetails.cover_images.map(img => (img.startsWith('http') ? img : `https://desipathapi.azurewebsites.net/${img}`))
     : ["/img/events/eventDetailsThumbnail.png"];
 
   return (
-    <div className=" mx-20 my-10">
-      <div className="text-[#0857d0] text-3xl font-normal font-fredoka">
-        Desipath
-      </div>
-
+    <div className="mx-20 my-10">
       <DisplayPath
         paths={paths}
         color="[#667479]"
-        additionalStyles={"leading-tight"}
+        additionalStyles={"leading-tight mb-4"}
       />
       <div className="my-4">
         <ImageScroller images={displayImages} />

@@ -32,11 +32,7 @@ function BuySellCar() {
     buttonText2: "Sell My Car",
   };
 
-  const showNavbar =
-    action === undefined ||
-    action === "buyCar" ||
-    action === "sellCar" ||
-    action === "postConfirmation";
+  const showNavbar = true;
 
   return (
     <div className="flex flex-col min-h-screen overflow-y-auto ">

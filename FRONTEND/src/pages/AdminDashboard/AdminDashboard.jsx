@@ -17,6 +17,7 @@ export default function AdminDashboard() {
     { name: 'Events', path: '/admindashboard/events', icon: '🎟️' },
     { name: 'Travel Companion', path: '/admindashboard/travel', icon: '✈️' },
     { name: 'IT Trainings', path: '/admindashboard/trainings', icon: '💻' },
+    { name: 'Zipcodes', path: '/admindashboard/zipcodes', icon: '📍' },
   ];
 
   return (
