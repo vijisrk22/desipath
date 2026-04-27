@@ -9,6 +9,8 @@ import Step4AboutTabbed from './Step4AboutTabbed';
 import Step5Pricing from './Step5Pricing';
 import Step6Preview from './Step6Preview';
 
+import api from '../../../utils/api';
+
 export default function InstructorPortal() {
   const navigate = useNavigate();
   const { id: editClassId } = useParams();
@@ -44,6 +46,8 @@ export default function InstructorPortal() {
     pricing: {}
   });
 
+  const [lastSaved, setLastSaved] = useState(null);
+
   // Debounced Auto-save (MOCK API CALL for now)
   const autoSave = useCallback((data) => {
     setIsSaving(true);
@@ -56,12 +60,9 @@ export default function InstructorPortal() {
   useEffect(() => {
     if (isEditMode && editClassId) {
       // Fetch existing class data to hydrate the form
-      fetch(`http://localhost:8000/api/kids-classes/admin/details/${editClassId}`)
+      api.get(`/api/kids-classes/admin/details/${editClassId}`)
         .then(res => {
-          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-          return res.json();
-        })
-        .then(result => {
+          const result = res.data;
           if (result.success && result.data) {
             const { classBasic, instructor, schedule, about, pricing, reqs, modules } = result.data;
             setFormData({
@@ -203,17 +204,13 @@ export default function InstructorPortal() {
   const handleSubmit = async () => {
     setIsSaving(true);
     try {
-      const url = isEditMode ? `http://localhost:8000/api/kids-classes/${editClassId}` : 'http://localhost:8000/api/kids-classes';
-      const response = await fetch(url, {
-        method: isEditMode ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      const result = await response.json();
-      if (result.success) {
+      const endpoint = isEditMode ? `/api/kids-classes/${editClassId}` : '/api/kids-classes';
+      const result = await (isEditMode ? api.put(endpoint, formData) : api.post(endpoint, formData));
+      
+      if (result.data.success) {
         navigate('/kids-class/instructor-portal/success');
       } else {
-        alert('Submission failed: ' + result.message);
+        alert('Submission failed: ' + result.data.message);
       }
     } catch (err) {
       alert('Network error during submission.');

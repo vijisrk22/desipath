@@ -1,3 +1,5 @@
+import { BASE_URL } from "./api";
+
 /**
  * Utility to resolve image URLs for the Desipath marketplace.
  * Handles:
@@ -23,11 +25,7 @@ export const getFullImageUrl = (path) => {
     return cleanPath;
   }
   
-  const baseUrl = window.location.hostname === 'localhost'
-    ? "http://localhost:8000"
-    : "https://desipathapi.azurewebsites.net";
-    
   const finalPath = cleanPath.startsWith("/") ? cleanPath.slice(1) : cleanPath;
   
-  return `${baseUrl}/${finalPath}`;
+  return `${BASE_URL}/${finalPath}`;
 };

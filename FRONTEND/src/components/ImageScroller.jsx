@@ -44,7 +44,7 @@ function ImageScroller({ images, autoAdvance = true, intervalMs = 3500 }) {
 
   return (
     <div
-      className="relative flex items-center justify-center h-[476px] overflow-hidden rounded-xl bg-black"
+      className="relative flex items-center justify-center h-full w-full overflow-hidden rounded-xl bg-black"
       onMouseEnter={pause}
       onMouseLeave={resume}
     >

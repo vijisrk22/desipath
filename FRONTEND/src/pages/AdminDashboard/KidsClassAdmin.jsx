@@ -3,6 +3,8 @@ import Step6Preview from '../KidsClass/InstructorPortal/Step6Preview';
 
 // Removed MOCK_MASSIVE_DATA
 
+import api from '../../utils/api';
+
 export default function KidsClassAdmin() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,10 +25,9 @@ export default function KidsClassAdmin() {
 
   const fetchListings = () => {
     setLoading(true);
-    fetch(`http://localhost:8000/api/kids-classes/admin-listings?search=${searchTerm}`)
-      .then(res => res.json())
-      .then(result => {
-        if (result.success) setListings(result.data);
+    api.get(`/api/kids-classes/admin-listings?search=${searchTerm}`)
+      .then(res => {
+        if (res.data.success) setListings(res.data.data);
       })
       .finally(() => setLoading(false));
   };
@@ -38,7 +39,7 @@ export default function KidsClassAdmin() {
 
   const handleApprove = async (id) => {
     try {
-      await fetch(`http://localhost:8000/api/kids-classes/${id}/approve`, { method: 'POST' });
+      await api.post(`/api/kids-classes/${id}/approve`);
       setListings(listings.map(l => l.id === id ? { ...l, status: 'active' } : l));
       showToast(`Listing ${id} Approved!`, 'success');
     } catch (err) {
@@ -50,11 +51,7 @@ export default function KidsClassAdmin() {
     const reason = prompt("Enter rejection reason to email the instructor:");
     if (reason !== null && reason.trim() !== '') {
       try {
-        await fetch(`http://localhost:8000/api/kids-classes/${id}/reject`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reason })
-        });
+        await api.post(`/api/kids-classes/${id}/reject`, { reason });
         setListings(listings.map(l => l.id === id ? { ...l, status: 'rejected' } : l));
         showToast(`Listing Rejected!`, 'error');
       } catch (err) {
@@ -66,9 +63,9 @@ export default function KidsClassAdmin() {
   const openDetails = (listing) => {
     setSelectedListing(listing);
     setModalLoading(true);
-    fetch(`http://localhost:8000/api/kids-classes/admin/details/${listing.id}`)
-      .then(res => res.json())
-      .then(result => {
+    api.get(`/api/kids-classes/admin/details/${listing.id}`)
+      .then(res => {
+        const result = res.data;
         if (result.success) {
           const { classBasic, instructor, schedule, about, pricing, reqs, modules } = result.data;
           

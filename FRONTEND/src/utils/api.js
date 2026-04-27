@@ -1,10 +1,13 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: window.location.hostname === 'localhost'
+export const BASE_URL = window.location.hostname === 'localhost'
     ? "http://localhost:8000"
-    : "https://desipathapi.azurewebsites.net", // Corrected app name
+    : "https://desipathapi.azurewebsites.net"; // Corrected app name
+
+const api = axios.create({
+  baseURL: BASE_URL,
 });
+
 
 api.interceptors.request.use(
   config => {

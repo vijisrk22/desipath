@@ -15,16 +15,17 @@ const MOCK_MASSIVE_DATA = {
   pricing: { feeAmount: '4000', feeType: 'per_month', certificateProvided: true }
 };
 
+import api from '../../../utils/api';
+
 export default function AdminReview() {
   const [pendingListings, setPendingListings] = useState([]);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    fetch('http://localhost:8000/api/kids-classes/pending')
-      .then(res => res.json())
-      .then(result => {
-        if (result.success) {
-          setPendingListings(result.data);
+    api.get('/api/kids-classes/pending')
+      .then(res => {
+        if (res.data.success) {
+          setPendingListings(res.data.data);
         }
       })
       .finally(() => setLoading(false));
@@ -40,7 +41,7 @@ export default function AdminReview() {
 
   const handleApprove = async (id) => {
     try {
-      await fetch(`http://localhost:8000/api/kids-classes/${id}/approve`, { method: 'POST' });
+      await api.post(`/api/kids-classes/${id}/approve`);
       setPendingListings(pendingListings.filter(listing => listing.id !== id));
       showToast(`Listing ${id} Approved and Live!`, 'success');
     } catch (err) {
@@ -52,11 +53,7 @@ export default function AdminReview() {
     const reason = prompt("Enter rejection reason to email the instructor:");
     if (reason !== null && reason.trim() !== '') {
       try {
-        await fetch(`http://localhost:8000/api/kids-classes/${id}/reject`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reason })
-        });
+        await api.post(`/api/kids-classes/${id}/reject`, { reason });
         setPendingListings(pendingListings.filter(listing => listing.id !== id));
         showToast(`Listing Rejected! Instructor automatically emailed.`, 'error');
       } catch (err) {

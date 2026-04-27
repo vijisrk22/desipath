@@ -4,6 +4,8 @@ import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import { getFullImageUrl } from "../../utils/imageHelper";
 
+import api from "../../utils/api";
+
 export default function KidsClassSubcategory() {
   const { categorySlug, subcategorySlug } = useParams();
   const [classes, setClasses] = useState([]);
@@ -19,11 +21,12 @@ export default function KidsClassSubcategory() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:8000/api/kids-classes/public/category/${categorySlug}/${subcategorySlug}`)
-      .then(res => res.json())
-      .then(result => {
+    api.get(`/api/kids-classes/public/category/${categorySlug}/${subcategorySlug}`)
+      .then(res => {
+        const result = res.data;
         if (result.success) setClasses(result.data);
       })
+      .catch(err => console.error("Error fetching classes:", err))
       .finally(() => setLoading(false));
   }, [categorySlug, subcategorySlug]);
 

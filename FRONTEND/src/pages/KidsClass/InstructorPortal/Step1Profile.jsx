@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { getFullImageUrl } from '../../../utils/imageHelper';
 import ProfilePhotoCropModal from '../../../components/ProfilePhotoCropModal';
+import api from '../../../utils/api';
 
 export default function Step1Profile({ data, update, instructorId, setInstructorId, errors = {} }) {
   const [isCropOpen, setIsCropOpen] = useState(false);
@@ -37,15 +38,13 @@ export default function Step1Profile({ data, update, instructorId, setInstructor
     formData.append('is_cropped', 1);
 
     try {
-      const response = await fetch('http://localhost:8000/api/instructors/upload-photo', {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: formData
+      const result = await api.post('/api/instructors/upload-photo', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      const result = await response.json();
-      if (result.success) {
-        update({ photoUrl: result.url }); // Update with real URL for DB persistence
-        if(result.instructor_id) setInstructorId(result.instructor_id); 
+      
+      if (result.data.success) {
+        update({ photoUrl: result.data.url }); // Update with real URL for DB persistence
+        if(result.data.instructor_id) setInstructorId(result.data.instructor_id); 
       }
     } catch (err) {
       console.error("Failed to upload photo", err);

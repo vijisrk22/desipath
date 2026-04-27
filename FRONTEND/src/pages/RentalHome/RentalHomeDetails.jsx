@@ -111,24 +111,24 @@ function RentalHomeDetails() {
   );
 
   return (
-    <div className="px-4 md:mx-20 my-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-6 md:my-10 font-dmsans">
       <DisplayPath
         paths={paths}
         color="[#667479]"
         additionalStyles={"leading-tight mb-4"}
       />
       {rentalHomeDetails.images?.length > 0 && (
-        <div className="h-[300px] md:h-[476px] my-5 flex justify-center items-center shadow-sm rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
+        <div className="aspect-[4/3] md:aspect-[16/9] max-h-[300px] md:max-h-[550px] my-5 flex justify-center items-center shadow-sm rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
           <div className="w-full h-full">
             <ImageScroller images={rentalHomeDetails.images.map(img => getFullImageUrl(img))} />
           </div>
         </div>
       )}
-      <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+      <div className="flex flex-wrap justify-start gap-2 md:gap-4 overflow-x-auto pb-2">
         {rentalHomeDetails.images?.map((image, indx) => (
-          <div key={indx} className="flex justify-center">
+          <div key={indx} className="shrink-0">
             <img
-              className="w-[100px] h-[100px] md:w-[150px] md:h-[150px] rounded-xl border-[2px] md:border-[3px] border-[#0857d0] object-cover shadow-sm transition-transform hover:scale-105"
+              className="w-20 h-20 md:w-32 md:h-32 rounded-xl border-2 border-[#0857d0] object-cover shadow-sm transition-transform hover:scale-105"
               src={getFullImageUrl(image)}
               alt={`Property Image ${indx + 1}`}
             />
@@ -136,8 +136,8 @@ function RentalHomeDetails() {
         ))}
       </div>
 
-      <div className="flex flex-col md:flex-row items-start justify-between gap-6 mt-8">
-        <div className="w-full md:flex-1">
+      <div className="flex flex-col lg:flex-row items-start justify-between gap-8 mt-10">
+        <div className="w-full lg:flex-1">
           <div className="text-[#0857d0] text-[32px] md:text-[38px] font-bold font-dmsans leading-tight mb-2">
             {rentalHomeDetails?.deposit_rent
               ? `$${Number(rentalHomeDetails.deposit_rent).toLocaleString(
