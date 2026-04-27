@@ -20,23 +20,29 @@ use Illuminate\Support\Facades\Storage;
 *     @OA\Property(property="user_type", type="string", enum={"Agent", "Owner"}, example="Agent", description="Type of user listing the home"),
 *     @OA\Property(property="home_type", type="string", enum={"Condominum", "Single family", "Town home"}, example="Single family", description="Type of home"),
 *     @OA\Property(property="price", type="number", format="decimal", example=250000.00, description="Price of the home"),
+*     @OA\Property(property="price_per_sqft", type="number", format="decimal", nullable=true, example=200.00, description="Price per square foot (optional)"),
 *     @OA\Property(property="built_area", type="number", format="decimal", nullable=true, example=1200.50, description="Built area in square feet (optional)"),
 *     @OA\Property(property="lot_size", type="number", format="decimal", nullable=true, example=5000.75, description="Lot size in square feet (optional)"),
+*     @OA\Property(property="total_parking_spaces", type="integer", nullable=true, example=2, description="Total number of parking spaces (optional)"),
+*     @OA\Property(property="attached_garage", type="boolean", nullable=true, example=true, description="Indicates if there is an attached garage (optional)"),
 *     @OA\Property(property="hoa_fees", type="number", format="decimal", nullable=true, example=150.00, description="Homeowner Association fees (optional)"),
 *     @OA\Property(property="year_built", type="integer", nullable=true, example=2005, description="Year the home was built (optional)"),
 *     @OA\Property(property="under_construction", type="boolean", nullable=true, example=false, description="Indicates if the home is under construction (optional)"),
 *     @OA\Property(property="bedroom_total", type="integer", nullable=true, example=4, description="Total number of bedrooms (optional)"),
 *     @OA\Property(property="half_bathroom_total", type="integer", nullable=true, example=1, description="Total number of half bathrooms (optional)"),
 *     @OA\Property(property="full_bathroom_total", type="integer", nullable=true, example=2, description="Total number of full bathrooms (optional)"),
+*     @OA\Property(property="total_bathroom_total", type="integer", nullable=true, example=3, description="Total number of bathrooms (optional)"),
 *     @OA\Property(property="basement_size", type="number", format="decimal", nullable=true, example=800.00, description="Size of the basement in square feet (optional)"),
 *     @OA\Property(property="basement_status", type="string", enum={"Finished", "Unfinished", "Semi finished"}, nullable=true, example="Finished", description="Status of the basement (optional)"),
 *     @OA\Property(property="laundry_in_house", type="boolean", nullable=true, example=true, description="Indicates if laundry is in the house (optional)"),
 *     @OA\Property(property="home_level", type="integer", nullable=true, example=2, description="Number of levels in the home (optional)"),
 *     @OA\Property(property="pool", type="boolean", nullable=true, example=false, description="Indicates if the home has a pool (optional)"),
+*     @OA\Property(property="community_pool", type="boolean", nullable=true, example=false, description="Indicates if the community has a pool (optional)"),
 *     @OA\Property(property="annual_tax_amount", type="number", format="decimal", nullable=true, example=2500.00, description="Annual property tax amount (optional)"),
 *     @OA\Property(property="images", type="array", @OA\Items(type="string"), example={"house1.jpg", "house2.jpg"}),
 *     @OA\Property(property="description", type="string", nullable=true, example="Beautiful family home with modern amenities.", description="Detailed description of the home (optional)"),
 *     @OA\Property(property="kitchen_granite_countertop", type="boolean", nullable=true, example=true, description="Indicates if the kitchen has granite countertops (optional)"),
+*     @OA\Property(property="solar_setup", type="boolean", nullable=true, example=true, description="Indicates if the home has a solar setup (optional)"),
 *     @OA\Property(property="fireplace_count", type="integer", nullable=true, example=1, description="Number of fireplaces in the home (optional)"),
 *     @OA\Property(property="flooring", type="array", items=@OA\Items(type="string", enum={"Wood", "Vinyl", "Carpet", "Ceramic Tile"}), nullable=true, example={"Wood", "Ceramic Tile"}, description="Flooring types available in the home (optional)"),
 *     @OA\Property(property="location_state", type="string", example="California"),
@@ -164,23 +170,29 @@ class HomesController extends Controller
             'user_type' => $faker->randomElement(['Agent', 'Owner']),
             'home_type' => $faker->randomElement(['Condominum', 'Single family', 'Town home']),
             'price' => $faker->randomFloat(2, 50000, 500000),
+            'price_per_sqft' => $faker->randomFloat(2, 100, 500),
             'built_area' => $faker->randomFloat(2, 500, 4000),
             'lot_size' => $faker->randomFloat(2, 1000, 10000),
+            'total_parking_spaces' => $faker->numberBetween(1, 5),
+            'attached_garage' => $faker->boolean,
             'hoa_fees' => $faker->randomFloat(2, 0, 500),
             'year_built' => $faker->numberBetween(1900, 2023),
             'under_construction' => $faker->boolean,
             'bedroom_total' => $faker->numberBetween(1, 10),
             'half_bathroom_total' => $faker->numberBetween(0, 2),
             'full_bathroom_total' => $faker->numberBetween(1, 5),
+            'total_bathroom_total' => $faker->numberBetween(1, 7),
             'basement_size' => $faker->randomFloat(2, 0, 2000),
             'basement_status' => $faker->randomElement(['Finished', 'Unfinished', 'Semi finished']),
             'laundry_in_house' => $faker->boolean,
             'home_level' => $faker->numberBetween(1, 3),
             'pool' => $faker->boolean,
+            'community_pool' => $faker->boolean,
             'annual_tax_amount' => $faker->randomFloat(2, 1000, 10000),
             'images' => json_encode($photos),
             'description' => $faker->paragraph,
             'kitchen_granite_countertop' => $faker->boolean,
+            'solar_setup' => $faker->boolean,
             'fireplace_count' => $faker->numberBetween(0, 3),
             'flooring' => implode(',', $faker->randomElements(['Wood', 'Vinyl', 'Carpet', 'Ceramic Tile'], $faker->numberBetween(1, 4))),
             //'seller_id' => Auth::id(),
@@ -247,20 +259,25 @@ class HomesController extends Controller
             'user_type' => 'required|in:Agent,Owner',
             'home_type' => 'required|in:Condominum,Single family,Town home',
             'price' => 'required|numeric',
+            'price_per_sqft' => 'nullable|numeric',
             'built_area' => 'nullable|numeric',
             'lot_size' => 'nullable|numeric',
+            'total_parking_spaces' => 'nullable|integer',
+            'attached_garage' => 'nullable|boolean',
             'hoa_fees' => 'nullable|numeric',
-            'year_built' => 'nullable|integer',
+            'year_built' => 'nullable|integer', 
             'under_construction' => 'nullable|boolean',
             'bedroom_total' => 'nullable|integer',
             'half_bathroom_total' => 'nullable|integer',
             'full_bathroom_total' => 'nullable|integer',
+            'total_bathroom_total' => 'nullable|integer',
             'basement_size' => 'nullable|numeric',
             'basement_status' => 'nullable|in:Finished,Unfinished,Semi finished',
             'laundry_in_house' => 'nullable|boolean',
             'home_level' => 'nullable|integer',
             'pool' => 'nullable|boolean',
-            'annual_tax_amount' => 'nullable|numeric',
+            'community_pool' => 'nullable|boolean',
+            'annual_tax_amount' => 'nullable|numeric', 
             'images' => 'nullable|array',
             'images.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64-encoded image
@@ -279,11 +296,14 @@ class HomesController extends Controller
             'location_zipcode' => 'nullable|string|max:20',
             'description' => 'nullable|string|max:1000',
             'kitchen_granite_countertop' => 'nullable|boolean',
+            'solar_setup' => 'nullable|boolean',
             'fireplace_count' => 'nullable|integer',
             'flooring' => 'nullable|array',
             'flooring.*' => 'in:Wood,Vinyl,Carpet,Ceramic Tile',
             'seller_id' => 'nullable|exists:users,id',
-            'seller_name' => 'nullable|string|max:255'
+            'seller_name' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'company_name' => 'nullable|string|max:255'
         ]);
 
         $receiver = User::find($request->seller_id);
@@ -292,6 +312,15 @@ class HomesController extends Controller
         }
         $data = $request->except('images'); // get all fields except photos
         $data['seller_name'] = $receiver->name;
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
 
         if (isset($data['flooring']) && is_array($data['flooring'])) {
             $data['flooring'] = implode(',', $data['flooring']);
@@ -407,17 +436,48 @@ class HomesController extends Controller
 
         $query = BuySellHome::query();
 
-        $query->where(function ($q) use ($request) {
-            if ($request->filled('city')) {
-                $q->orWhere('location_city', 'like', '%' . $request->city . '%');
-            }
-            if ($request->filled('zipcode')) {
-                $q->orWhere('location_zipcode', 'like', '%' . $request->zipcode . '%');
-            }
-            if ($request->filled('houseType')) {
-                $q->orWhere('home_type', 'like', '%' . $request->houseType . '%');
-            }
-        });
+        $city = trim($request->city);
+        $zipcode = trim($request->zipcode);
+        $radius = 50; // Miles
+
+        $centerPoint = null;
+
+        // Try to get coordinates for the search center
+        if ($zipcode) {
+            $centerPoint = \DB::table('usa_zipcodes')->where('zip', $zipcode)->first();
+        } elseif ($city) {
+            $centerPoint = \DB::table('usa_zipcodes')
+                ->where('city', 'like', '%' . $city . '%')
+                ->first();
+        }
+
+        if ($centerPoint && $centerPoint->lat && $centerPoint->lng) {
+            $lat = $centerPoint->lat;
+            $lng = $centerPoint->lng;
+            $searchZip = $centerPoint->zip;
+
+            $query->select('*')
+                ->selectRaw("(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
+                ->having('distance', '<=', $radius);
+            
+            // Priority ordering: exact zip first, then by distance
+            $query->orderByRaw("CASE WHEN location_zipcode = ? THEN 0 ELSE 1 END ASC", [$searchZip])
+                  ->orderBy('distance', 'asc');
+        } else {
+            // Fallback to basic keyword matching if no coordinates found
+            $query->where(function ($q) use ($request) {
+                if ($request->filled('city')) {
+                    $q->orWhere('location_city', 'like', '%' . $request->city . '%');
+                }
+                if ($request->filled('zipcode')) {
+                    $q->orWhere('location_zipcode', 'like', '%' . $request->zipcode . '%');
+                }
+            });
+        }
+
+        if ($request->filled('houseType')) {
+            $query->where('home_type', 'like', '%' . $request->houseType . '%');
+        }
 
         if ($request->has('sort')) {
             switch ($request->sort) {
@@ -509,21 +569,26 @@ class HomesController extends Controller
             'user_type' => 'required|in:Agent,Owner',
             'home_type' => 'required|in:Condominum,Single family,Town home',
             'price' => 'required|numeric',
+            'price_per_sqft' => 'nullable|numeric',
             'built_area' => 'nullable|numeric',
             'lot_size' => 'nullable|numeric',
+            'total_parking_spaces' => 'nullable|integer',
+            'attached_garage' => 'nullable|boolean',
             'hoa_fees' => 'nullable|numeric',
             'year_built' => 'nullable|integer',
             'under_construction' => 'nullable|boolean',
             'bedroom_total' => 'nullable|integer',
-            'half_bathroom_total' => 'nullable|integer',
+            'half_bathroom_total' => 'nullable|integer', 
             'full_bathroom_total' => 'nullable|integer',
+            'total_bathroom_total' => 'nullable|integer',
             'basement_size' => 'nullable|numeric',
             'basement_status' => 'nullable|in:Finished,Unfinished,Semi finished',
             'laundry_in_house' => 'nullable|boolean',
             'home_level' => 'nullable|integer',
             'pool' => 'nullable|boolean',
+            'community_pool' => 'nullable|boolean',
             'annual_tax_amount' => 'nullable|numeric',
-            'images' => 'nullable|array',
+            'images' => 'nullable|array', 
             'images.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64-encoded image
                 if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
@@ -541,11 +606,14 @@ class HomesController extends Controller
             'location_zipcode' => 'nullable|string|max:20',
             'description' => 'nullable|string|max:1000',
             'kitchen_granite_countertop' => 'nullable|boolean',
+            'solar_setup' => 'nullable|boolean',
             'fireplace_count' => 'nullable|integer',
             'flooring' => 'nullable|array',
             'flooring.*' => 'in:Wood,Vinyl,Carpet,Ceramic Tile',
             'seller_id' => 'nullable|exists:users,id',
-            'seller_name' => 'nullable|string|max:255'
+            'seller_name' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'company_name' => 'nullable|string|max:255'
         ]);
 
         $receiver = User::find($request->seller_id);
@@ -554,6 +622,15 @@ class HomesController extends Controller
         }
         $data = $request->except('images');
         $data['seller_name'] = $receiver->name;
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
 
         if (isset($data['flooring']) && is_array($data['flooring'])) {
             $data['flooring'] = implode(',', $data['flooring']);

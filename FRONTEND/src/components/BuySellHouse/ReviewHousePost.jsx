@@ -9,7 +9,7 @@ import { convertImagesToBase64 } from "../../utils/helper";
 import { useState } from "react";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
-function ReviewHousePost({ open, onClose, formDetails, images }) {
+function ReviewHousePost({ open, onClose, formDetails, images, isEdit }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.houses);
@@ -17,76 +17,40 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const contents = [
-    {
-      text: "You Are an",
-      value: formDetails.role,
-    },
-    {
-      text: "Type",
-      value: formDetails.type,
-    },
-    {
-      text: "Built Area",
-      value: formDetails.builtArea,
-    },
-    {
-      text: "Lot Size",
-      value: formDetails.lotSize,
-    },
-    {
-      text: "Hoa Fees If Any",
-      value: formDetails.hoaFees,
-    },
-    {
-      text: "Year Built",
-      value: formDetails.yearBuilt,
-    },
-    {
-      text: "Bedroom Total",
-      value: formDetails.numBedrooms,
-    },
-    {
-      text: "Half Bathroom Total",
-      value: formDetails.halfBathrooms,
-    },
-    {
-      text: "Basement Size",
-      value: formDetails.basementSize,
-    },
-    {
-      text: "Basement",
-      value: formDetails.basement,
-    },
-    {
-      text: "Laundry In House",
-      value: formDetails.laundryInHouse,
-    },
-    {
-      text: "Level",
-      value: formDetails.numOfLevels,
-    },
-    {
-      text: "Kitchen Granite Top",
-      value: formDetails.kitchenGraniteTop,
-    },
-    {
-      text: "Fireplace",
-      value: formDetails.firePlace,
-    },
+    { text: "You Are an", value: formDetails.role },
+    ...(formDetails.role === "Agent" ? [{ text: "Company Name", value: formDetails.company_name }] : []),
+    { text: "Type", value: formDetails.type },
+    { text: "Price per Sq.ft", value: formDetails.pricePerSqft },
+    { text: "Built Area", value: formDetails.builtArea },
+    { text: "Lot Size", value: formDetails.lotSize },
+    { text: "Total Parking Spaces", value: formDetails.totalParking },
+    { text: "Attached Garage", value: formDetails.attachedGarage },
+    { text: "HOA Fees If Any", value: formDetails.hoaFees },
+    { text: "Year Built", value: formDetails.yearBuilt },
+    { text: "Total Number Of Bed Rooms", value: formDetails.numBedrooms },
+    { text: "Total Bathrooms", value: formDetails.totalBathrooms },
+    { text: "Full Bathrooms", value: formDetails.fullBathrooms },
+    { text: "Total Number Of Half Bathrooms", value: formDetails.halfBathrooms },
+    { text: "Basement Size", value: formDetails.basementSize },
+    { text: "Basement", value: formDetails.basement },
+    { text: "Laundry In House", value: formDetails.laundryInHouse },
+    { text: "Pool", value: formDetails.pool },
+    { text: "Community Pool", value: formDetails.communityPool },
+    { text: "Solar Setup", value: formDetails.solarSetup },
+    { text: "Total Number Of Levels", value: formDetails.numOfLevels },
+    { text: "Kitchen Granite Top", value: formDetails.kitchenGraniteTop },
+    { text: "Fireplace", value: formDetails.firePlace },
+    { text: "Annual Tax Amount", value: formDetails.annualTax },
+    { text: "Address", value: formDetails.address },
+    { text: "Location", value: formDetails.location },
     {
       text: "Flooring",
-      value: Object.keys(formDetails.flooringOptions || {}) // Get the keys
-        .filter((option) => formDetails.flooringOptions[option] === true) // Keep only those with value true
-        .join(" "), // Join the keys with a space
+      value: Object.keys(formDetails.flooringOptions || {})
+        .filter((option) => formDetails.flooringOptions[option] === true)
+        .join(" "),
     },
-    {
-      text: "Additional Information",
-      value: formDetails.description,
-    },
-    {
-      text: "Photos",
-      value: "",
-    },
+    { text: "Additional Information", value: formDetails.description },
+    { text: "Photos", value: "" },
   ];
 
   const handleSubmit = async () => {
@@ -101,13 +65,19 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
     formFields["home_type"] = homeTypeMapped;
 
     if (formDetails.price) formFields["price"] = parseFloat(formDetails.price);
+    if (formDetails.pricePerSqft) formFields["price_per_sqft"] = parseFloat(formDetails.pricePerSqft);
+    if (formDetails.annualTax) formFields["annual_tax_amount"] = parseFloat(formDetails.annualTax);
     
     if (formDetails.builtArea) formFields["built_area"] = parseFloat(formDetails.builtArea);
     if (formDetails.lotSize) formFields["lot_size"] = parseFloat(formDetails.lotSize);
+    if (formDetails.totalParking) formFields["total_parking_spaces"] = parseInt(formDetails.totalParking, 10);
+    if (formDetails.attachedGarage) formFields["attached_garage"] = formDetails.attachedGarage === "Yes";
     if (formDetails.hoaFees) formFields["hoa_fees"] = parseFloat(formDetails.hoaFees);
     if (formDetails.yearBuilt) formFields["year_built"] = parseInt(formDetails.yearBuilt, 10);
     if (formDetails.numBedrooms) formFields["bedroom_total"] = parseInt(formDetails.numBedrooms, 10);
+    if (formDetails.fullBathrooms) formFields["full_bathroom_total"] = parseInt(formDetails.fullBathrooms, 10);
     if (formDetails.halfBathrooms) formFields["half_bathroom_total"] = parseInt(formDetails.halfBathrooms, 10);
+    if (formDetails.totalBathrooms) formFields["total_bathroom_total"] = parseInt(formDetails.totalBathrooms, 10);
     if (formDetails.basementSize) formFields["basement_size"] = parseFloat(formDetails.basementSize);
     
     if (formDetails.basement) {
@@ -117,9 +87,15 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
     }
     
     if (formDetails.laundryInHouse) formFields["laundry_in_house"] = formDetails.laundryInHouse === "Yes";
+    if (formDetails.pool) formFields["pool"] = formDetails.pool === "Yes";
+    if (formDetails.communityPool) formFields["community_pool"] = formDetails.communityPool === "Yes";
+    if (formDetails.solarSetup) formFields["solar_setup"] = formDetails.solarSetup === "Yes";
     if (formDetails.numOfLevels) formFields["home_level"] = parseInt(formDetails.numOfLevels, 10);
     if (formDetails.kitchenGraniteTop) formFields["kitchen_granite_countertop"] = formDetails.kitchenGraniteTop === "Yes";
     if (formDetails.firePlace) formFields["fireplace_count"] = formDetails.firePlace === "Yes" ? 1 : 0;
+    
+    if (formDetails.address) formFields["address"] = formDetails.address;
+    if (formDetails.role === "Agent" && formDetails.company_name) formFields["company_name"] = formDetails.company_name;
     
     if (formDetails.location && typeof formDetails.location === "string") {
       const locParts = formDetails.location.split(",");
@@ -223,6 +199,8 @@ function ReviewHousePost({ open, onClose, formDetails, images }) {
                 ? parseFloat(formDetails.price).toLocaleString("en-US", {
                     style: "currency",
                     currency: "USD",
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
                   })
                 : "$0.00"}
             </div>

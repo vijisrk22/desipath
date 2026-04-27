@@ -1,7 +1,7 @@
 import TwoRadioInput from "../InputTemplate/TwoRadioInput";
 import ThreeRadioInput from "../InputTemplate/ThreeRadioInput";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import PhotoUpload from "../InputTemplate/PhotoUpload";
 import DescriptionInput from "../InputTemplate/DescriptionInput";
 import TextFieldInput from "../InputTemplate/TextFieldInput";
@@ -33,6 +33,7 @@ function PostHouseForm() {
     mode: "onChange",
   });
   const [reviewSession, setReviewSession] = useState(false);
+  const selectedRole = useWatch({ control, name: "role" });
   const [formDetails, setFormDetails] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,9 +55,18 @@ function PostHouseForm() {
             yearBuilt: data.year_built,
             numBedrooms: data.bedroom_total,
             halfBathrooms: data.half_bathroom_total,
+            fullBathrooms: data.full_bathroom_total,
+            totalBathrooms: data.total_bathroom_total,
             basementSize: data.basement_size,
             basement: data.basement_status === "Semi finished" ? "Semi Finished" : data.basement_status,
             laundryInHouse: data.laundry_in_house ? "Yes" : "No",
+            pool: data.pool ? "Yes" : "No",
+            communityPool: data.community_pool ? "Yes" : "No",
+            attachedGarage: data.attached_garage ? "Yes" : "No",
+            solarSetup: data.solar_setup ? "Yes" : "No",
+            pricePerSqft: data.price_per_sqft,
+            annualTax: data.annual_tax_amount,
+            totalParking: data.total_parking_spaces,
             numOfLevels: data.home_level,
             kitchenGraniteTop: data.kitchen_granite_countertop ? "Yes" : "No",
             firePlace: data.fireplace_count > 0 ? "Yes" : "No",
@@ -127,6 +137,7 @@ function PostHouseForm() {
           onClose={() => setReviewSession(false)}
           formDetails={formDetails}
           images={images}
+          isEdit={isEdit}
         />
       )}
       <form
@@ -140,6 +151,14 @@ function PostHouseForm() {
           op2="Owner"
           control={control}
         />
+        {selectedRole === "Agent" && (
+          <TextFieldInput
+            name="company_name"
+            defaultValue=""
+            control={control}
+            text="Company Name"
+          />
+        )}
         <ThreeRadioInput
           text="Type"
           name="type"
@@ -150,51 +169,102 @@ function PostHouseForm() {
         />
         <TextFieldInput
           name="price"
-          defaultValue="22000"
+          defaultValue=""
           control={control}
           text="Price"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
+        />
+        <TextFieldInput
+          name="annualTax"
+          defaultValue=""
+          control={control}
+          text="Annual Tax Amount"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
+        />
+        <TextFieldInput
+          name="pricePerSqft"
+          defaultValue=""
+          control={control}
+          text="Price per Sq.ft"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
         />
         <TextFieldInput
           name="builtArea"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
           text="Built Area"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
         />
         <TextFieldInput
           name="lotSize"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
           text="Lot Size"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
+        />
+        <TextFieldInput
+          name="totalParking"
+          defaultValue=""
+          control={control}
+          text="Total Parking Spaces"
+          requiredAssertion={false}
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
+        />
+        <TwoRadioInput
+          name="attachedGarage"
+          text="Attached Garage"
+          control={control}
         />
         <TextFieldInput
           name="hoaFees"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
           text="HOA Fees If Any"
+          requiredAssertion={false}
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
         />
         <TextFieldInput
           name="yearBuilt"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
           text="Year Built"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
         />
         <TextFieldInput
           name="numBedrooms"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
-          text="Total Num. Of Bed Rooms"
+          text="Total Number Of Bed Rooms"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
+        />
+        <TextFieldInput
+          name="totalBathrooms"
+          defaultValue=""
+          control={control}
+          text="Total Bathrooms"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
+        />
+        <TextFieldInput
+          name="fullBathrooms"
+          defaultValue=""
+          control={control}
+          text="Full Bathrooms"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
         />
         <TextFieldInput
           name="halfBathrooms"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
-          text="Total Num. Of Half Bathrooms"
+          text="Total Number Of Half Bathrooms"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
         />
         <TextFieldInput
           name="basementSize"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
           text="Basement Size"
+          requiredAssertion={false}
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
         />
         <ThreeRadioInput
           text="Basement"
@@ -209,11 +279,27 @@ function PostHouseForm() {
           text="Laundry In House"
           control={control}
         />
+        <TwoRadioInput
+          name="pool"
+          text="Pool"
+          control={control}
+        />
+        <TwoRadioInput
+          name="communityPool"
+          text="Community Pool"
+          control={control}
+        />
+        <TwoRadioInput
+          name="solarSetup"
+          text="Solar Setup"
+          control={control}
+        />
         <TextFieldInput
           name="numOfLevels"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
           text="Total Number Of Levels"
+          rules={{ pattern: { value: /^[0-9]+$/, message: "Please enter a whole number" } }}
         />
         <TwoRadioInput
           name="kitchenGraniteTop"
@@ -222,11 +308,18 @@ function PostHouseForm() {
         />
         <TwoRadioInput name="firePlace" text="Fireplace" control={control} />
         
+        <TextFieldInput
+          name="address"
+          defaultValue=""
+          control={control}
+          text="Address"
+        />
+        
         <LocationAutocompleteInput control={control} setValue={setValue} />
         
         <TextFieldInput
           name="contact_no"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
           text="Contact Number"
           rules={{

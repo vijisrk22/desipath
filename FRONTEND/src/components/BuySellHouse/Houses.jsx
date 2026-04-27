@@ -85,7 +85,7 @@ function Houses() {
             },
             "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
             {
-              color: "#ffa41",
+              color: "#ffa41c",
               mx: "16px",
             },
           }}

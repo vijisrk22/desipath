@@ -20,8 +20,15 @@ export const getFullImageUrl = (path) => {
     cleanPath = cleanPath.replace(/^["'\\\[\]]+|["'\\\[\]]+$/g, '');
   }
   
-  // Final check for protocol
-  if (cleanPath.startsWith("http://") || cleanPath.startsWith("https://") || cleanPath.startsWith("data:") || cleanPath.startsWith("blob:")) {
+  // Final check for protocol or local public paths
+  // If it starts with /storage, it's a backend asset even if it has a leading slash
+  if (
+    cleanPath.startsWith("http://") || 
+    cleanPath.startsWith("https://") || 
+    (cleanPath.startsWith("/") && !cleanPath.startsWith("/storage")) || 
+    cleanPath.startsWith("data:") || 
+    cleanPath.startsWith("blob:")
+  ) {
     return cleanPath;
   }
   

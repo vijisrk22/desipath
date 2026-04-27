@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { getFullImageUrl } from "../../utils/imageHelper";
+import { getStateCode } from "../../utils/locationHelper";
 
 export default function HouseCard({ house }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -10,7 +11,7 @@ export default function HouseCard({ house }) {
   const totalBaths = (house.full_bathroom_total || 0) + (house.half_bathroom_total || 0);
   return (
     <Link
-      to={`/services/houses/buyHouse/${house.id}`}
+      to={`/services/houses/${house.id}`}
       className="group block bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 overflow-hidden h-full flex flex-col w-full"
     >
       {/* Image Section */}
