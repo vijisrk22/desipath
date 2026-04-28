@@ -27,7 +27,23 @@ class BuySellCar extends Model
         'fuel_type_id',
         'transmission_id',
         'condition_id',
-        'owner_contact',
+        'is_dealer',
+        'dealer_name',
+        'dealer_zipcode',
+        'dealer_contact_person',
+        'dealer_contact_number',
+        'dealer_email',
+        'owner_name',
+        'owner_contact_number',
+        'drive_type',
+        'mpg',
+        'vin',
+        'features',
+        'location_city',
+        'location_state',
+        'location_zipcode',
+        'latitude',
+        'longitude',
     ];
 
     protected $casts = [
@@ -43,6 +59,8 @@ class BuySellCar extends Model
         'condition_id' => 'integer',
         'price' => 'decimal:2',
         'description' => 'string',
+        'is_dealer' => 'boolean',
+        'features' => 'array',
     ];
 
     public function fuelType() { return $this->belongsTo(CarFuelType::class, 'fuel_type_id'); }

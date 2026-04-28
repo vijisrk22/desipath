@@ -10,14 +10,14 @@ import { CircularProgress } from "@mui/material";
 
 function Events({ title = "Events in your Location" }) {
   const dispatch = useDispatch();
-  const { events, loading } = useSelector((state) => state.events);
+  const { events, loadingList } = useSelector((state) => state.events);
 
   const settings = {
     dots: true,
     arrows: true,
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 3,
     slidesToScroll: 1,
     responsive: [
       {
@@ -43,15 +43,15 @@ function Events({ title = "Events in your Location" }) {
     <div className="flex flex-col justify-start items-center gap-[24px]">
       <SectionHeadings heading={title} link="/services/events" />
 
-      <div className="w-full h-full px-2 mt-4">
-        {loading && events.length === 0 ? (
+      <div className="w-full h-full mt-4">
+        {loadingList && events.length === 0 ? (
           <div className="flex justify-center items-center py-10">
             <CircularProgress />
           </div>
         ) : events && events.length > 0 ? (
           <Slider {...settings}>
             {events.slice(0, 8).map((event, index) => (
-              <div key={index} className="px-2 pb-4 pt-1 h-full flex">
+              <div key={index} className="px-4 pb-4 pt-1 h-full flex">
                 <EventCard event={event} />
               </div>
             ))}

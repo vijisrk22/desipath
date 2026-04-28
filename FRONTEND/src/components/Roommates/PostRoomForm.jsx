@@ -96,22 +96,33 @@ function PostRoomForm() {
       >
         <TwoRadioInput
           name="owner"
-          text="Are you the owner"
-          control={control}
-        />
-        <TwoRadioInput
-          name="agent"
-          text="Are you the agent"
+          text="Are you Owner or Agent?"
+          op1="Owner"
+          op2="Agent"
           control={control}
         />
 
-        <LocationAutocompleteInput control={control} setValue={setValue} />
+        <TextFieldInput
+          name="address"
+          control={control}
+          text="Address"
+        />
+
+        <LocationAutocompleteInput control={control} setValue={setValue} text="Location(Zipcode)" />
 
         <TwoRadioInput
           name="sharing_type"
           text="Sharing Type"
           op1="Separate Room"
           op2="Share the room with other person"
+          control={control}
+        />
+
+        <TwoButtonInput
+          text="Room Furnished or Unfurnished"
+          name="is_furnished"
+          op1="Furnished"
+          op2="Unfurnished"
           control={control}
         />
 
@@ -131,7 +142,6 @@ function PostRoomForm() {
           name="utilities_included"
           control={control}
         />
-        {/* <Test /> */}
         <DatePickerInput
           text="Available Date"
           control={control}
@@ -139,12 +149,26 @@ function PostRoomForm() {
           dateFieldName2="available_to"
         />
 
-        <TextFieldInput
-          name="rent"
-          defaultValue="1500"
-          control={control}
-          text="Expected Rent"
-        />
+        <div className="flex gap-4 items-end">
+          <div className="flex-1">
+            <TextFieldInput
+              name="rent"
+              defaultValue="1500"
+              control={control}
+              text="Expected Rent"
+            />
+          </div>
+          <div className="flex-1">
+            <ThreeRadioInput
+              text="Payment Frequency"
+              name="rent_frequency"
+              op1="Monthly"
+              op2="Weekly"
+              op3="Daily"
+              control={control}
+            />
+          </div>
+        </div>
 
         <ThreeRadioInput
           text="Gender Preference"

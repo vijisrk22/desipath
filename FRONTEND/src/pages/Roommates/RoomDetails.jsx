@@ -149,7 +149,7 @@ function RoomDetails() {
             {roomDetails?.roomType || "Single Room"}
           </div>
           <div className="text-gray-400 text-[26px] font-bold font-dmsans">
-            Owner - {roomDetails?.poster_name}
+            {roomDetails?.owner ? "Owner" : (roomDetails?.agent ? "Agent" : "Owner")} - {roomDetails?.poster_name}
           </div>
           <ReviewPostContent contents={contents} type="displayDetails" />
         </div>

@@ -19,7 +19,7 @@ const services = [
   },
   {
     name: "Buy sell house",
-    image: "/img/houses/house1.png",
+    image: "/img/houses/buy_sell_house_icon.png",
     path: "/services/houses",
   },
   {
@@ -29,52 +29,52 @@ const services = [
   },
   {
     name: "Events",
-    image: "/img/events/eventSmpl1.png",
+    image: "/img/events/Desipath_Events.png",
     path: "/services/events",
   },
   {
     name: "Roommates",
-    image: "/img/roommates/roomThumb.png",
+    image: "/img/roommates/Desipath_Roommates.png",
     path: "/services/roommates",
   },
   {
     name: "IT Trainings",
-    image: "/img/itTrainings/coursesThumbnail.png",
+    image: "/img/itTrainings/Desipath_ITTraining.png",
     path: "/services/itTrainings",
   },
   {
     name: "Lawyers",
-    image: "/img/lawyers/lawyers.png",
+    image: "/img/lawyers/Attorney.png",
     path: "",
   },
   {
     name: "Doctors",
-    image: "/img/doctors/doctors.png",
+    image: "/img/doctors/Desipath_Doctors.png",
     path: "",
   },
   {
     name: "Astrology",
-    image: "/img/astrology/icon.png",
+    image: "/img/astrology/Desipath_Astrologers.png",
     path: "/services/astrologyAds",
   },
   {
     name: "Local Ads",
-    image: "/img/localAds/icon.png",
+    image: "/img/localAds/Desipath_Local_Ads.png",
     path: "",
   },
   {
     name: "Photography",
-    image: "/img/photography/icon.png",
+    image: "/img/photography/Desipath_Photography.png",
     path: "",
   },
   {
     name: "Immigration",
-    image: "/img/immigration/icon.png",
+    image: "/img/immigration/Desipath_Immigration.png",
     path: "",
   },
   {
     name: "Jobs",
-    image: "/img/jobs/icon.png",
+    image: "/img/jobs/Desipath_jobs.png",
     path: "",
   },
 ];

@@ -416,7 +416,7 @@ class RentalHomesController extends Controller
         $city = trim($request->city);
         $state = trim($request->state);
         $zipcode = trim($request->zipcode);
-        $radius = 50; // Miles
+        $radius = 70; // Miles
 
         $centerPoint = null;
 

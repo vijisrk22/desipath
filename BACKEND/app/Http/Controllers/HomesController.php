@@ -69,7 +69,7 @@ class HomesController extends Controller
     {
         // Removed repairServerPaths as it causes the API to hang on Azure Production
 
-        $perPage = 15;
+        $perPage = 12;
         $query = BuySellHome::query();
 
         // Admin search
@@ -438,7 +438,7 @@ class HomesController extends Controller
 
         $city = trim($request->city);
         $zipcode = trim($request->zipcode);
-        $radius = 50; // Miles
+        $radius = 70; // Miles
 
         $centerPoint = null;
 
@@ -501,7 +501,7 @@ class HomesController extends Controller
              $query->orderBy('created_at', 'desc');
         }
 
-        $perPage = 15;
+        $perPage = 12;
         $buysellhomes = $query->paginate($perPage);
 
         // Automatically decode JSON-encoded 'photos' field to an array

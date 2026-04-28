@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import BackWithHeader from "./BackWithHeader";
 import MyListingCard from "./MyListingCard";
@@ -38,7 +39,7 @@ const MyListings = () => {
         { id: 'Rental', label: 'Rental Homes', icon: '🏠', listPath: '/api/rentalhomes/my-listings', del: deleteRentalHome, upd: updateRentalHome, modal: EditRentalHomePostModal },
         { id: 'Travel', label: 'Travel', icon: '✈️', listPath: '/api/travelcompanions/my-listings', del: deleteRentalHome, upd: updateRentalHome, modal: EditRentalHomePostModal },
         { id: 'Trainings', label: 'Trainings', icon: '💻', listPath: '/api/trainingads/my-listings', del: deleteTraining, upd: updateTraining, modal: EditTrainingPostModal },
-        { id: 'Events', label: 'Events', icon: '🎟️', listPath: '/api/events/my-listings', del: deleteEvent, upd: updateEvent, modal: EditEventPostModal },
+        { id: 'Events', label: 'Events', icon: '🎟️', listPath: '/api/events/my-listings', del: deleteEvent, upd: updateEvent, redirect: '/services/events/edit' },
     ];
 
     const fetchCategoryData = async (catId) => {
@@ -74,7 +75,12 @@ const MyListings = () => {
         }
     };
 
+    const navigate = useNavigate();
     const handleEdit = (item) => {
+        if (item._config.redirect) {
+            navigate(`${item._config.redirect}/${item.id}`);
+            return;
+        }
         setFormDetails(item);
         setCurrentEditConfig(item._config);
         setReviewSession(true);

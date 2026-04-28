@@ -211,6 +211,8 @@ class RoomMatesController extends Controller
             'food_preference' => 'nullable|in:Veg,Non Veg,Any',
             'washer_dryer' => 'nullable|boolean',
             'description' => 'nullable|string|max:1000',
+            'address' => 'nullable|string|max:255',
+            'is_furnished' => 'nullable|boolean',
             'poster_id' => 'nullable|exists:users,id'
         ]);
 
@@ -441,6 +443,8 @@ class RoomMatesController extends Controller
             'food_preference' => 'nullable|in:Veg,Non Veg,Any',
             'washer_dryer' => 'nullable|boolean',
             'description' => 'nullable|string|max:1000',
+            'address' => 'nullable|string|max:255',
+            'is_furnished' => 'nullable|boolean',
             'poster_id' => 'nullable|exists:users,id'
         ]);
 

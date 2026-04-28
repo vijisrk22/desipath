@@ -1,4 +1,4 @@
-import { Pagination } from "@mui/material";
+import { Pagination, LinearProgress } from "@mui/material";
 import CarCard from "./CarCard";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -47,17 +47,24 @@ function Cars() {
   //   return <Loader />;
   // }
   return (
-    <div className="px-[7%] mt-12 mb-20">
-      <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div className="px-[7%] mt-20 mb-20 relative">
+      {loading && (
+        <div className="absolute top-[-20px] left-0 right-0 z-50">
+          <LinearProgress sx={{ backgroundColor: '#f3f5f7', '& .MuiLinearProgress-bar': { backgroundColor: '#ffa41c' } }} />
+        </div>
+      )}
+      <div className="mb-6 pt-10 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100/50">
         <ActiveCarSearchFilters />
-        <SortBy
-          sortOption={sortOption}
-          type="cars"
-          setSortOption={(value) => {
-            setSortOption(value);
-            setPage(1);
-          }}
-        />
+        <div className="ml-auto">
+          <SortBy
+            sortOption={sortOption}
+            type="cars"
+            setSortOption={(value) => {
+              setSortOption(value);
+              setPage(1);
+            }}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 justify-items-center">

@@ -24,13 +24,31 @@ class Event extends Model
         'cover_images',
         'poster_images',
         'user_id',
-        'user_name'
+        'user_name',
+        'location_city',
+        'location_state',
+        'location_zipcode',
+        'latitude',
+        'longitude',
+        'duration_hours',
+        'min_age_limit',
+        'organizer_name',
+        'organizer_contact',
+        'timezone',
+        'country',
+        'rules_regulations',
+        'tags',
+        'event_category',
+        'is_sold'
     ];
 
     protected $casts = [
         'from_date' => 'datetime',
         'cover_images' => 'array',
         'poster_images' => 'array',
+        'tags' => 'array',
+        'event_category' => 'array',
+        'is_sold' => 'boolean',
     ];
 
     public function user()

@@ -146,8 +146,8 @@ const BrowseListings = ({ type = 'volunteer' }) => {
               </TextField>
             </Box>
 
-            {/* 2. Date Range */}
-            <Box className="col-span-12 md:col-span-3">
+            {/* 2. Date Range (Increased width) */}
+            <Box className="col-span-12 md:col-span-4">
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Travel Dates</label>
               <div className="grid grid-cols-2 gap-2">
                 <TextField 
@@ -157,7 +157,7 @@ const BrowseListings = ({ type = 'volunteer' }) => {
                   value={localFilters.fromDate}
                   onChange={(e) => setLocalFilters({ ...localFilters, fromDate: e.target.value })}
                   InputProps={{ sx: { borderRadius: '16px', bgcolor: 'gray.50/30', '& fieldset': { borderColor: '#f3f4f6' } } }}
-                  sx={{ '& input': { py: 1.5, fontSize: '0.85rem' } }}
+                  sx={{ '& input': { py: 1.5, fontSize: '0.75rem', fontWeight: 600 } }}
                 />
                 <TextField 
                   fullWidth
@@ -166,13 +166,13 @@ const BrowseListings = ({ type = 'volunteer' }) => {
                   value={localFilters.toDate}
                   onChange={(e) => setLocalFilters({ ...localFilters, toDate: e.target.value })}
                   InputProps={{ sx: { borderRadius: '16px', bgcolor: 'gray.50/30', '& fieldset': { borderColor: '#f3f4f6' } } }}
-                  sx={{ '& input': { py: 1.5, fontSize: '0.85rem' } }}
+                  sx={{ '& input': { py: 1.5, fontSize: '0.75rem', fontWeight: 600 } }}
                 />
               </div>
             </Box>
 
-            {/* 3. Airport Autocomplete */}
-            <Box className="col-span-12 md:col-span-5">
+            {/* 3. Airport Autocomplete (Slightly reduced width) */}
+            <Box className="col-span-12 md:col-span-4">
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Route (From & To Airport)</label>
               <div className="grid grid-cols-2 gap-3 items-center">
                 <AirportAutocomplete 

@@ -7,6 +7,7 @@ function ButtonRight({
   paddingClass = "",
   arrowVisible = true,
   disabled = false,
+  orangeArrow = false,
 }) {
   const navigate = useNavigate();
 
@@ -15,6 +16,10 @@ function ButtonRight({
       navigate(path);
     }
   };
+
+  const arrowFilter = orangeArrow 
+    ? "brightness(0) saturate(100%) invert(67%) sepia(91%) saturate(1450%) hue-rotate(3deg) brightness(103%) contrast(105%)" 
+    : "";
 
   return (
     <button
@@ -36,10 +41,11 @@ function ButtonRight({
         {text}
       </span>
       {arrowVisible && (
-        <div className="w-8 h-8 relative overflow-hidden">
+        <div className="w-8 h-8 relative overflow-hidden flex items-center justify-center">
           <img
             src="/caretRight.png"
-            className={`w-6 h-6 left-[4px] top-[4px] absolute ${
+            style={{ filter: arrowFilter }}
+            className={`w-6 h-6 absolute ${
               disabled ? "opacity-50" : ""
             }`}
           />

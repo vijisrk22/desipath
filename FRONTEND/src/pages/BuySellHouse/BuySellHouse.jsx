@@ -41,7 +41,8 @@ function BuySellHouse() {
           <div className="flex-grow bg-[#f0f8ff]">
             <ServiceHeroSection 
               pageDetails={pageDetails} 
-              bgImg="/img/houses/house1.png" 
+              bgImg="/img/houses/buy_sell_house_icon.png" 
+              orangeArrow={true}
             />
           </div>
           <div className="bg-[#f0f8ff]">

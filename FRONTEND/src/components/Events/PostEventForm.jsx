@@ -1,4 +1,5 @@
 import NRadioInput from "../InputTemplate/NRadioInput";
+import TwoRadioInput from "../InputTemplate/TwoRadioInput";
 import DatePickerInput from "../InputTemplate/DatePickerInput";
 import { useForm } from "react-hook-form";
 import PhotoUpload from "../InputTemplate/PhotoUpload";
@@ -10,6 +11,12 @@ import { useParams } from "react-router-dom";
 import api from "../../utils/api";
 import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
 import dayjs from "dayjs";
+
+import NCheckboxInput from "../InputTemplate/NCheckboxInput";
+import AgeLimitInput from "../InputTemplate/AgeLimitInput";
+import SelectInput from "../InputTemplate/SelectInput";
+import TagsInput from "../InputTemplate/TagsInput";
+import RichTextInput from "../InputTemplate/RichTextInput";
 
 function PostEventForm() {
   const { action, eventId } = useParams();
@@ -34,8 +41,24 @@ function PostEventForm() {
       api.get(`/api/events/${eventId}`)
         .then(res => {
           const data = res.data;
-          if (data.fromDate) data.fromDate = dayjs(data.fromDate);
-          reset(data);
+          // Map backend snake_case to frontend camelCase
+          const mappedData = {
+            ...data,
+            eventName: data.event_name,
+            organizerName: data.organizer_name,
+            organizerContact: data.organizer_contact,
+            ticketPrice: data.ticket_price,
+            durationHours: data.duration_hours,
+            minAgeLimit: data.min_age_limit,
+            rulesRegulations: data.rules_regulations,
+            location: data.state_city_zipcode,
+            eventType: data.event_type,
+            eventCategory: data.event_category || [],
+            isSold: data.is_sold ? "YES" : "NO",
+            fromDate: data.from_date ? dayjs(data.from_date) : null,
+          };
+          
+          reset(mappedData);
           if (data.cover_images) {
              try {
                const parsed = typeof data.cover_images === 'string' ? JSON.parse(data.cover_images) : data.cover_images;
@@ -84,6 +107,10 @@ function PostEventForm() {
     { label: "Hindi", value: "hindi" },
     { label: "Kannada", value: "kannada" },
     { label: "Punjabi", value: "punjabi" },
+    { label: "Marathi", value: "marathi" },
+    { label: "Bengali", value: "bengali" },
+    { label: "Urudu", value: "urdu" },
+    { label: "Gujarathi", value: "gujarati" },
   ];
 
   const eventTypeOptions = [
@@ -93,6 +120,22 @@ function PostEventForm() {
     { label: "Bollywood", value: "bollywood" },
     { label: "Cultural", value: "cultural" },
     { label: "Standup Comedy", value: "standup" },
+  ];
+
+  const eventCategoryOptions = [
+    { label: "Sports", value: "sports" },
+    { label: "Parties", value: "parties" },
+    { label: "Arts & Crafts", value: "arts_crafts" },
+    { label: "Workshops", value: "workshops" },
+    { label: "Comedy Shows", value: "comedy" },
+    { label: "Music Shows", value: "music_shows" },
+    { label: "Kids", value: "kids" },
+    { label: "Meetups", value: "meetups" },
+    { label: "Performances", value: "performances" },
+    { label: "Conferences", value: "conferences" },
+    { label: "Exhibitions", value: "exhibitions" },
+    { label: "Screening", value: "screening" },
+    { label: "Talks", value: "talks" },
   ];
 
   return (
@@ -108,7 +151,45 @@ function PostEventForm() {
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-screen-md mx-auto w-full"
       >
+        {isEdit && (
+          <TwoRadioInput 
+            name="isSold" 
+            text="Mark as Sold" 
+            op1="YES" 
+            op2="NO" 
+            control={control} 
+            defaultValue="NO"
+          />
+        )}
         <TextFieldInput name="eventName" control={control} text="Event Name" />
+
+        <div className="flex flex-col md:flex-row gap-6">
+          <TextFieldInput 
+            name="organizerName" 
+            control={control} 
+            text="Event Organizer Name/Company" 
+          />
+          <TextFieldInput 
+            name="organizerContact" 
+            control={control} 
+            text="Event Organizer Contact Number" 
+          />
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-6">
+          <SelectInput 
+            name="country" 
+            control={control} 
+            label="Event Country" 
+            data={["USA", "Canada"]} 
+          />
+          <SelectInput 
+            name="timezone" 
+            control={control} 
+            label="Timezone" 
+            data={["PST", "EST", "CST", "MST"]} 
+          />
+        </div>
 
         <TextFieldInput name="address" control={control} text="Address" />
 
@@ -125,7 +206,27 @@ function PostEventForm() {
           includeTime={true}
         />
 
-        <NRadioInput
+        <TextFieldInput 
+          name="durationHours" 
+          control={control} 
+          text="Total event duration in hours" 
+          placeholder="e.g. 2.5"
+        />
+
+        <AgeLimitInput 
+          name="minAgeLimit" 
+          control={control} 
+          text="Age Limit"
+        />
+
+        <NCheckboxInput
+          name="eventCategory"
+          text="Event Category"
+          control={control}
+          options={eventCategoryOptions}
+        />
+
+        <NCheckboxInput
           name="language"
           text="Language specific"
           control={control}
@@ -156,7 +257,25 @@ function PostEventForm() {
           </div>
         </div>
 
-        <DescriptionInput name="description" control={control} />
+        <DescriptionInput 
+          name="description" 
+          control={control} 
+          text="Description"
+          placeholder="Enter event description..."
+        />
+
+        <RichTextInput 
+          name="rulesRegulations" 
+          control={control} 
+          text="Terms and Conditions (Optional)" 
+          placeholder="Enter any specific terms or conditions for the event..."
+        />
+
+        <TagsInput 
+          name="tags" 
+          text="Event Tags" 
+          control={control} 
+        />
 
         {loading && (
           <div className="absolute inset-0 bg-white/60 z-50 flex items-center justify-center rounded-2xl">

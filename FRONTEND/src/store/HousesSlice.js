@@ -64,7 +64,9 @@ const housesSlice = createSlice({
             current_page: 1,
             last_page: 1,
             total: 0,
-            per_page: 9
+            per_page: 12,
+            from: 0,
+            to: 0
         },
         houseDetails: null,
         error: null,
@@ -87,7 +89,9 @@ const housesSlice = createSlice({
                 current_page: 1,
                 last_page: 1,
                 total: 0,
-                per_page: 9
+                per_page: 12,
+                from: 0,
+                to: 0
             };
             state.lastSearchQuery = null;
             state.error = null;
@@ -108,6 +112,8 @@ const housesSlice = createSlice({
                     last_page: action.payload.last_page,
                     total: action.payload.total,
                     per_page: action.payload.per_page,
+                    from: action.payload.from,
+                    to: action.payload.to,
                 };
             })
             .addCase(fetchHouses.rejected, (state,action)=>{
@@ -151,6 +157,8 @@ const housesSlice = createSlice({
                     last_page: action.payload.last_page,
                     total: action.payload.total,
                     per_page: action.payload.per_page,
+                    from: action.payload.from,
+                    to: action.payload.to,
                 };
                 state.lastSearchQuery = action.meta.arg.searchQuery;
             })

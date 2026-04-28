@@ -260,11 +260,22 @@ public function testCars() { return BuySellCar::all(); }
                     $fail('The ' . $attribute . ' must be less than 2MB.');
                 }
             }],
-            'location'        => 'required|string|max:255',
-            'price'           => 'required|numeric',
-            'description'     => 'nullable|string|max:1000',
-            'owner_contact'   => 'nullable|string|max:20',
-            'seller_id'       => 'nullable|exists:users,id',
+            'location'              => 'required|string|max:255',
+            'price'                 => 'required|numeric',
+            'description'           => 'nullable|string|max:1000',
+            'seller_id'             => 'nullable|exists:users,id',
+            'is_dealer'             => 'required|boolean',
+            'dealer_name'           => 'required_if:is_dealer,true|nullable|string|max:255',
+            'dealer_zipcode'        => 'required_if:is_dealer,true|nullable|string|max:10',
+            'dealer_contact_person' => 'required_if:is_dealer,true|nullable|string|max:255',
+            'dealer_contact_number' => 'required_if:is_dealer,true|nullable|string|max:20',
+            'dealer_email'          => 'required_if:is_dealer,true|nullable|email|max:255',
+            'owner_name'            => 'required_if:is_dealer,false|nullable|string|max:255',
+            'owner_contact_number'  => 'required_if:is_dealer,false|nullable|string|max:20',
+            'drive_type'            => 'nullable|string|max:255',
+            'mpg'                   => 'nullable|string|max:255',
+            'vin'                   => 'nullable|string|max:255',
+            'features'              => 'nullable|array',
         ]);
 
         $receiver = User::find($request->seller_id);
@@ -273,6 +284,15 @@ public function testCars() { return BuySellCar::all(); }
         }
         $data = $request->except('pictures');
         $data['seller_name'] = $receiver->name;
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
 
         if ($request->has('pictures') && !empty($request->pictures)) {
             $photos = [];
@@ -359,11 +379,22 @@ public function testCars() { return BuySellCar::all(); }
      */
     public function search(Request $request)
     {
+        // Debug logging to workspace
+        $logFile = storage_path('logs/car_search_debug.log');
+        $logData = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'ip' => $request->ip(),
+            'params' => $request->all()
+        ];
+        file_put_contents($logFile, json_encode($logData) . "\n", FILE_APPEND);
+
         // Validation
         $validator = Validator::make($request->all(), [
             'carMake' => 'nullable|string|max:100',
             'carModel' => 'nullable|string|max:100',
-            'location' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'zipcode' => 'nullable|string|max:20',
             'priceMin' => 'nullable|numeric|min:0',
             'priceMax' => 'nullable|numeric|gte:priceMin',
         ]);
@@ -374,14 +405,59 @@ public function testCars() { return BuySellCar::all(); }
 
         $query = BuySellCar::with(['fuelType','transmission','condition']);
 
+        $city = trim($request->city);
+        $state = trim($request->state);
+        $zipcode = trim($request->zipcode);
+        $radius = 70; // Miles
+
+        $centerPoint = null;
+
+        // Try to get coordinates for the search center
+        if ($zipcode) {
+            $centerPoint = \DB::table('usa_zipcodes')->where('zip', $zipcode)->first();
+        } elseif ($city) {
+            $centerPoint = \DB::table('usa_zipcodes')
+                ->where('city', 'like', '%' . $city . '%')
+                ->when($state, function ($q) use ($state) {
+                    return $q->where('state_id', $state)->orWhere('state_name', $state);
+                })
+                ->first();
+        }
+
+        if ($centerPoint && $centerPoint->lat && $centerPoint->lng) {
+            $lat = $centerPoint->lat;
+            $lng = $centerPoint->lng;
+            $searchZip = $centerPoint->zip;
+
+            $query->select('*')
+                ->selectRaw("(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
+                ->having('distance', '<=', $radius);
+            
+            // Priority ordering: exact zip first, then by distance
+            $query->orderByRaw("CASE WHEN location_zipcode = ? THEN 0 ELSE 1 END ASC", [$searchZip])
+                  ->orderBy('distance', 'asc');
+        } else {
+            // Fallback to basic keyword matching if no coordinates found
+            if ($request->filled('city')) {
+                $query->where('location_city', 'like', '%' . $request->city . '%');
+            }
+            if ($request->filled('state')) {
+                $query->where('location_state', 'like', '%' . $request->state . '%');
+            }
+            if ($request->filled('zipcode')) {
+                $query->where('location_zipcode', 'like', '%' . $request->zipcode . '%');
+            }
+            // Compatibility for old location field search
+            if ($request->filled('location')) {
+                $query->where('location', 'like', '%' . $request->location . '%');
+            }
+        }
+
         if ($request->filled('carMake')) {
             $query->where('make', 'like', '%' . $request->input('carMake') . '%');
         }
         if ($request->filled('carModel')) {
             $query->where('model', 'like', '%' . $request->input('carModel') . '%');
-        }
-        if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->input('location') . '%');
         }
         if ($request->filled('priceMin')) {
             $query->where('price', '>=', $request->input('priceMin'));
@@ -493,17 +569,23 @@ public function testCars() { return BuySellCar::all(); }
             return response()->json(['error' => 'User not found'], 404);
         }
         // $data = $request->except('pictures');
-        $data = $request->except(['pictures', 'newPhotos', 'existingPhotos']);
+        $data = $request->except(['pictures', 'newPhotos', 'existingPhotos', 'new_pictures', 'existing_pictures']);
         $data['seller_name'] = $receiver->name;
 
-        if ($request->has('existingPhotos') && !empty($request->existingPhotos)) {
-            $existingPhotos = $request->existingPhotos;
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
         }
-        $photos = [];
-        if ($request->has('newPhotos') && !empty($request->newPhotos)) {
-            // $photos = [];
 
-            foreach ($request->newPhotos as $base64Image) {
+        $existingPhotos = $request->input('existingPhotos', $request->input('existing_pictures', []));
+        $photos = [];
+        $newPhotosData = $request->input('newPhotos', $request->input('pictures', []));
+        if (!empty($newPhotosData)) {
+            foreach ($newPhotosData as $base64Image) {
                 preg_match('/data:image\/(.*);base64/', $base64Image, $matches);
                 $extension = $matches[1];
 
@@ -531,7 +613,9 @@ public function testCars() { return BuySellCar::all(); }
         $car->update($data);
 
         // Return photos as array in response
-        $car->pictures = json_decode($car->pictures, true);
+        if (is_string($car->pictures)) {
+            $car->pictures = json_decode($car->pictures, true);
+        }
 
         return response()->json([
             'message' => 'Car updated successfully',

@@ -119,12 +119,22 @@ function ActiveCarSearchFilters() {
     }
 
     if (chips.length === 0) return null;
+    
+    const handleClearAll = () => {
+        dispatch(searchCar({}));
+    };
 
     return (
-        <div className="py-2">
+        <div className="py-2 flex items-center flex-wrap gap-2">
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 {chips}
             </Stack>
+            <button 
+                onClick={handleClearAll}
+                className="text-[#0857d0] text-sm font-semibold hover:underline bg-transparent border-none p-0 cursor-pointer whitespace-nowrap ml-2 transition-all"
+            >
+                Clear All
+            </button>
         </div>
     );
 }

@@ -14,22 +14,21 @@ function ThreeRadioInput({ name, text, op1, op2, op3, control }) {
     <>
       {/* Owner Field */}
       <FormControl
+        fullWidth
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          width: "100%",
-          py: "0.75rem",
-          gap: "0.5rem",
+          py: "0.5rem",
+          borderBottom: "1px solid",
+          borderBottomColor: "grey.100",
+          mb: 2,
         }}
       >
         <FormLabel 
-          id={name}
           sx={{ 
-            color: "gray.800", 
-            fontWeight: "bold", 
-            fontSize: "1rem",
-            fontFamily: "dmsans" 
+            fontSize: "0.875rem", 
+            fontWeight: 600, 
+            color: "grey.800",
+            mb: 1.5,
+            fontFamily: "DM Sans, sans-serif"
           }}
         >
           {text}
@@ -42,18 +41,18 @@ function ThreeRadioInput({ name, text, op1, op2, op3, control }) {
             required: "This field is required",
           }}
           render={({ field, fieldState }) => (
-            <div className="w-full">
+            <>
               <RadioGroup row {...field}>
-                <FormControlLabel value={op1} control={<Radio />} label={op1} />
-                <FormControlLabel value={op2} control={<Radio />} label={op2} />
-                <FormControlLabel value={op3} control={<Radio />} label={op3} />
+                <FormControlLabel value={op1} control={<Radio size="small" sx={{ color: "#ffa41c", "&.Mui-checked": { color: "#ffa41c" } }} />} label={<span className="text-sm font-dmsans text-gray-700">{op1}</span>} />
+                <FormControlLabel value={op2} control={<Radio size="small" sx={{ color: "#ffa41c", "&.Mui-checked": { color: "#ffa41c" } }} />} label={<span className="text-sm font-dmsans text-gray-700">{op2}</span>} />
+                <FormControlLabel value={op3} control={<Radio size="small" sx={{ color: "#ffa41c", "&.Mui-checked": { color: "#ffa41c" } }} />} label={<span className="text-sm font-dmsans text-gray-700">{op3}</span>} />
               </RadioGroup>
               {fieldState?.error && (
-                <FormHelperText error sx={{ mt: 0.5 }}>
+                <FormHelperText error>
                   {fieldState.error.message}
                 </FormHelperText>
               )}
-            </div>
+            </>
           )}
         />
       </FormControl>

@@ -24,10 +24,11 @@ export default function SelectInput({
     >
       <FormLabel 
         sx={{ 
-          color: "gray.800", 
-          fontWeight: "bold", 
-          fontSize: "1rem",
-          fontFamily: "dmsans" 
+          color: "#374151", 
+          fontWeight: 600, 
+          fontSize: "0.875rem",
+          mb: 0.5,
+          fontFamily: "DM Sans, sans-serif" 
         }}
       >
         {label}
@@ -50,13 +51,16 @@ export default function SelectInput({
                 fullWidth
                 sx={{ 
                   borderRadius: "12px",
-                  border: "1.5px solid #ccc",
+                  border: "1.5px solid #e5e7eb",
+                  backgroundColor: "#f9fafb",
+                  fontSize: "0.875rem",
+                  fontFamily: "DM Sans, sans-serif",
                   transition: "border-color 0.2s",
                   "& .MuiOutlinedInput-notchedOutline": {
                     border: "none",
                   },
                   "&:hover": {
-                    borderColor: "#999",
+                    borderColor: "#ffa41c",
                   },
                   "&.Mui-focused": {
                     borderColor: "#ffa41c",
@@ -65,7 +69,7 @@ export default function SelectInput({
                 }}
               >
                 {data?.map((val, index) => (
-                  <MenuItem key={index} value={val}>
+                  <MenuItem key={index} value={val} sx={{ fontSize: "0.875rem", fontFamily: "DM Sans, sans-serif" }}>
                     {val}
                   </MenuItem>
                 ))}

@@ -48,7 +48,7 @@ function RentalHomesList() {
   }
   return (
     <div className="px-[7%] mt-12 mb-20">
-      <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="mb-8 pt-10 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100/50">
         <div className="text-[#007185] text-[16px] md:text-[20px] font-bold font-dmsans uppercase tracking-wide">
           Rental Listings
         </div>

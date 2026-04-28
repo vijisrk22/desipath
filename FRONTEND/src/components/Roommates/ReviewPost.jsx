@@ -25,29 +25,40 @@ function ReviewPost({ open, onClose, formDetails, images }) {
       property_type: formDetails.property_type,
       type: formDetails.type,
       rent: typeof formDetails.rent === 'string' ? parseInt(formDetails.rent.replace(/[^0-9]/g, ""), 10) : formDetails.rent,
-      rent_frequency: "Monthly",
+      rent_frequency: formDetails.rent_frequency || "Monthly",
       available_from: formDetails.available_from ? dayjs(formDetails.available_from).format("YYYY-MM-DD") : null,
       available_to: formDetails.available_to ? dayjs(formDetails.available_to).format("YYYY-MM-DD") : null,
       description: formDetails.description || "",
       contact_no: formDetails.contact_no || "",
+      address: formDetails.address || "",
+      location_zipcode: formDetails.location_zipcode || "",
       poster_id: user?.id,
       poster_name: user?.name,
     };
+
+    // Poster Role
+    formFields["owner"] = formDetails.owner === "Owner";
+    formFields["agent"] = formDetails.owner === "Agent";
+    
+    // Furnished
+    formFields["is_furnished"] = formDetails.is_furnished === "Furnished";
 
     // Location
     if (formDetails.location && typeof formDetails.location === "string") {
       const splitLocation = formDetails.location.split(",");
       formFields["location_city"] = splitLocation[0]?.trim() || "";
       formFields["location_state"] = splitLocation[1]?.trim() || "";
-      formFields["location_zipcode"] = splitLocation[2]?.trim() || "";
+      if (!formFields["location_zipcode"]) {
+        formFields["location_zipcode"] = splitLocation[2]?.trim() || "";
+      }
     } else {
       formFields["location_city"] = formDetails.location_city || "";
       formFields["location_state"] = formDetails.location_state || "";
-      formFields["location_zipcode"] = formDetails.location_zipcode || "";
+      formFields["location_zipcode"] = formDetails.location_zipcode || formFields["location_zipcode"];
     }
 
     // Booleans
-    const booleanFields = ["furnished", "util_included", "parking_included", "pet_allowed"];
+    const booleanFields = ["kitchen_available", "shared_bathroom", "utilities_included", "car_parking_available", "washer_dryer"];
     booleanFields.forEach(field => {
       if (formDetails[field] !== undefined) {
         formFields[field] = formDetails[field] === "Yes" || formDetails[field] === true;

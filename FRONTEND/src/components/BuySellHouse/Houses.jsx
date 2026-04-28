@@ -58,13 +58,13 @@ function Houses() {
         )}
       </div>
 
-      <div className="mx-auto flex flex-col md:flex-row justify-between gap-6 items-center mt-16 px-8 py-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-        <div className="text-[#323232] text-sm font-medium font-dmsans">
+      <div className="flex flex-row justify-between gap-8 items-center mt-16 px-8 py-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div className="text-[#323232] text-sm font-medium font-dmsans whitespace-nowrap">
           Showing {pagination?.from || 0}-{pagination?.to || 0} of {pagination?.total || 0} properties
         </div>
         <Pagination
           count={numsOfPage}
-          size="large"
+          size="medium"
           variant="outlined"
           shape="rounded"
           page={page}
@@ -72,21 +72,25 @@ function Houses() {
           showFirstButton
           showLastButton
           sx={{
-            "& .MuiPaginationItem-page": {
-              mx: "12px", // Adds spacing between page numbers
+            "& .MuiPaginationItem-root": {
+              borderColor: "#e5e7eb",
+              borderRadius: "8px",
+              fontWeight: "600",
+              fontFamily: "DM Sans, sans-serif",
             },
             "& .MuiPaginationItem-page.Mui-selected": {
-              backgroundColor: "#ffa41c", // Sets the background color for the selected page
-              color: "white", // Ensures text is visible
+              backgroundColor: "#ffa41c",
+              color: "white",
+              borderColor: "#ffa41c",
+              "&:hover": {
+                backgroundColor: "#e69419",
+              },
             },
-            "& .MuiPaginationItem-ellipsis": {
-              color: "#ffa41c", // Sets color for ellipsis (...)
-              fontWeight: "bold",
-            },
-            "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
-            {
-              color: "#ffa41c",
-              mx: "16px",
+            "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast": {
+              backgroundColor: "#f9fafb",
+              "&:hover": {
+                backgroundColor: "#f3f4f6",
+              },
             },
           }}
         />

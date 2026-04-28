@@ -29,6 +29,7 @@ function ClassesForKids() {
             <ServiceHeroSection
               pageDetails={pageDetails}
               bgImg={"/img/cars/backgroundCarImg.png"} /* Fallback image */
+              orangeArrow={true}
             />
           </div>
           <div className="bg-[#f0f8ff]">

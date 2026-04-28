@@ -6,16 +6,31 @@ function SortBy({ sortOption, setSortOption, type = "property" }) {
       variant="outlined"
       size="small"
       sx={{
-        minWidth: 180,
-        backgroundColor: "white",
+        minWidth: 160,
+        backgroundColor: "#0857d008",
+        borderRadius: "8px",
         "& .MuiOutlinedInput-root": {
-          borderRadius: "12px",
+          borderRadius: "8px",
+          backgroundColor: "transparent",
+          "& fieldset": {
+            borderColor: "#0857d040",
+          },
+          "&:hover fieldset": {
+            borderColor: "#0857d0",
+          },
           "&.Mui-focused fieldset": {
-             borderColor: "#007185",
+             borderColor: "#0857d0",
+             borderWidth: "1.5px",
           }
         },
+        "& .MuiInputLabel-root": {
+          fontSize: "0.9rem",
+          fontWeight: "600",
+          fontFamily: "DM Sans, sans-serif",
+          color: "#0857d0",
+        },
         "& .MuiInputLabel-root.Mui-focused": {
-          color: "#007185",
+          color: "#0857d0",
         }
       }}
     >
@@ -27,7 +42,19 @@ function SortBy({ sortOption, setSortOption, type = "property" }) {
         onChange={(e) => {
           setSortOption(e.target.value);
         }}
-        sx={{ borderRadius: "12px" }}
+        sx={{ 
+          borderRadius: "8px",
+          color: "#0857d0",
+          "& .MuiSelect-select": {
+            fontSize: "0.9rem",
+            fontWeight: "600",
+            fontFamily: "DM Sans, sans-serif",
+            py: "8.5px",
+          },
+          "& .MuiSelect-icon": {
+            color: "#0857d0",
+          }
+        }}
       >
         <MenuItem value="created_at-desc">Newest Listing</MenuItem>
         <MenuItem value="price-asc">Price (Low to High)</MenuItem>

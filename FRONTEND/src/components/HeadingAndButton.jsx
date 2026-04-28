@@ -1,6 +1,6 @@
 import ButtonRight from "./ButtonRight";
 
-function HeadingAndButton({ description, buttonText, path, disable = false }) {
+function HeadingAndButton({ description, buttonText, path, disable = false, orangeArrow = false }) {
   return (
     <div className="flex-grow">
       <div className="py-2 flex flex-col justify-center items-start gap-3">
@@ -14,6 +14,7 @@ function HeadingAndButton({ description, buttonText, path, disable = false }) {
             disabled={disable} 
             paddingClass="px-5 py-2"
             textClass="text-sm md:text-base font-bold"
+            orangeArrow={orangeArrow}
           />
         </div>
       </div>

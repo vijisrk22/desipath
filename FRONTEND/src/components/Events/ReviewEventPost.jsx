@@ -15,6 +15,10 @@ function ReviewEventPost({ open, onClose, formDetails }) {
 
   const contents = [
     {
+      text: "Mark as Sold",
+      value: formDetails.isSold || "NO",
+    },
+    {
       text: "Event Name",
       value: formDetails.eventName,
     },
@@ -26,16 +30,63 @@ function ReviewEventPost({ open, onClose, formDetails }) {
       text: "State, City, Zipcode",
       value: formDetails.location,
     },
-
-    //**************** */
+    {
+      text: "Organizer Name",
+      value: formDetails.organizerName,
+    },
+    {
+      text: "Organizer Contact",
+      value: formDetails.organizerContact,
+    },
+    {
+      text: "Country",
+      value: formDetails.country,
+    },
     {
       text: "Event Date and Time",
       value: dayjs(formDetails.fromDate).format("DD-MM-YYYY [at] h:mm A"),
     },
-
+    {
+      text: "Timezone",
+      value: formDetails.timezone || 'PST',
+    },
+    {
+      text: "Duration",
+      value: formDetails.durationHours 
+        ? (formDetails.durationHours.toString().toLowerCase().includes('hour') 
+            ? formDetails.durationHours 
+            : `${formDetails.durationHours} Hours`)
+        : "Not specified",
+    },
+    {
+      text: "Age Limit",
+      value:
+        formDetails.minAgeLimit === "0"
+          ? "All Ages"
+          : ["13", "18", "21"].includes(formDetails.minAgeLimit)
+          ? `${formDetails.minAgeLimit}+`
+          : formDetails.minAgeLimit,
+    },
     {
       text: "Language Specific",
-      value: formDetails.language,
+      value: (() => {
+        const lang = formDetails.language;
+        if (!lang) return "";
+        const langArray = Array.isArray(lang) 
+          ? lang 
+          : (typeof lang === 'string' ? lang.split(',').map(s => s.trim()) : []);
+        
+        return langArray
+          .filter(l => l && l.length > 1) // Filter out single characters or empty strings
+          .map(l => l.charAt(0).toUpperCase() + l.slice(1))
+          .join(", ");
+      })(),
+    },
+    {
+      text: "Event Category",
+      value: Array.isArray(formDetails.eventCategory) 
+        ? formDetails.eventCategory.map(cat => cat.charAt(0).toUpperCase() + cat.slice(1).replace('_', ' ')).join(", ") 
+        : "",
     },
     {
       text: "Event Type",
@@ -44,6 +95,14 @@ function ReviewEventPost({ open, onClose, formDetails }) {
     {
       text: "Description",
       value: formDetails.description,
+    },
+    {
+      text: "Terms and Conditions",
+      value: formDetails.rulesRegulations,
+    },
+    {
+      text: "Tags",
+      value: Array.isArray(formDetails.tags) ? formDetails.tags.join(", ") : "",
     },
   ];
 
@@ -127,12 +186,12 @@ function ReviewEventPost({ open, onClose, formDetails }) {
           </Button>
         </div>
         <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
-          {formDetails.ticketPrice
+          {formDetails.ticketPrice && !isNaN(parseFloat(formDetails.ticketPrice))
             ? parseFloat(formDetails.ticketPrice).toLocaleString("en-US", {
-              style: "currency",
-              currency: "USD",
-            })
-            : "$0.00"}
+                style: "currency",
+                currency: "USD",
+              })
+            : formDetails.ticketPrice || "$0.00"}
         </div>
 
         <ReviewPostContent contents={contents} />

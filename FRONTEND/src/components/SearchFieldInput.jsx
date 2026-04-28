@@ -131,8 +131,12 @@ function SearchFieldInput({ inputs, title }) {
         console.error("Search failed:", err);
       }
     } else if (title === "Buy a Car") {
+      const { city, state, zipcode } = parseLocation(data?.location);
       const searchQuery = {
-        location: data?.location ? data?.location : "",
+        city,
+        state,
+        zipcode,
+        location: data?.location || "",
         carMake: data?.make ? data?.make : "",
         carModel: data?.model ? data?.model : "",
         priceMin: priceRange[0],

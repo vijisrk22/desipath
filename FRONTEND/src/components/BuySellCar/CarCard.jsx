@@ -27,7 +27,7 @@ export default function CarCard({ car }) {
     >
       <button
         onClick={() => setIsFavorited(!isFavorited)}
-        className="absolute top-3 right-4  flex items-center justify-center bg-white/40 p-2 rounded-full shadow-md"
+        className="absolute top-3 right-4  flex items-center justify-center bg-white/40 p-2 rounded-full shadow-md z-20"
       >
         {isFavorited ? (
           <FavoriteIcon
@@ -41,6 +41,12 @@ export default function CarCard({ car }) {
           />
         )}
       </button>
+
+      {(String(car.is_dealer) === "1" || car.is_dealer === true) && (
+        <div className="absolute top-3 left-3 bg-red-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg z-10 border border-red-700">
+          Dealer listing
+        </div>
+      )}
 
       <CardMedia
         component="img"
@@ -81,7 +87,9 @@ export default function CarCard({ car }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             <div className="text-gray-500 text-sm font-normal font-dmsans line-clamp-2">
-              {car.location ? car.location : "Location not provided"}
+              {car.location_city 
+                ? `${car.location_city}, ${car.location_zipcode}, ${car.location_state}`
+                : car.location || "Location not provided"}
             </div>
           </div>
         </div>

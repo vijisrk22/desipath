@@ -39,6 +39,14 @@ function ServiceTopBar({ inputs = [], title, paths, form, plainBg = false }) {
         {/* Top Right Action Button */}
         {form === undefined && inputs.length > 0 && (
            <div className="hidden md:block">
+              {title === "Find a Room" && (
+                <a
+                  href="/services/roommates/postRoom"
+                  className="px-4 py-1.5 bg-[#ffa41c] hover:bg-[#ff9900] transition-colors rounded-[57px] text-gray-800 text-sm font-bold font-dmsans shadow-md"
+                >
+                  Post a Room
+                </a>
+              )}
               {title === "Rent a Home" && (
                 <a
                   href="/services/rentalhomes/postRentalHome"

@@ -225,16 +225,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/events/my-count', [EventsController::class, 'getMyAdCount']);
 });
 
-// Route::middleware('auth:sanctum')->group(function () {
-Route::middleware([])->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('events')->group(function () {
-        Route::get('/', [EventsController::class, 'index']);
         Route::post('/', [EventsController::class, 'store']);
-        Route::post('/search', [EventsController::class, 'search']);
-        Route::post('/dummy-insert', [EventsController::class, 'dummyInsert']);
-        Route::get('/{id}', [EventsController::class, 'show']);
         Route::put('/{id}', [EventsController::class, 'update']);
+        Route::delete('/{id}', [EventsController::class, 'destroy']);
     });
+});
+
+Route::prefix('events')->group(function () {
+    Route::get('/', [EventsController::class, 'index']);
+    Route::post('/search', [EventsController::class, 'search']);
+    Route::post('/dummy-insert', [EventsController::class, 'dummyInsert']);
+    Route::get('/{id}', [EventsController::class, 'show']);
 });
 
 use App\Http\Controllers\KidsClassController;

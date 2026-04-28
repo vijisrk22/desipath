@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import HeadingAndButton from "./HeadingAndButton";
 
-function ServiceHeroSection({ pageDetails, bgImg }) {
+function ServiceHeroSection({ pageDetails, bgImg, orangeArrow = false }) {
   return (
     <div
       className={`flex flex-wrap-reverse justify-between items-center py-8 px-[7%] w-full`}
@@ -11,15 +11,17 @@ function ServiceHeroSection({ pageDetails, bgImg }) {
           }`}
       >
         <HeadingAndButton
-          description={pageDetails.description1}
-          buttonText={pageDetails.buttonText1}
-          path={pageDetails.path1}
+          description={pageDetails?.description1}
+          buttonText={pageDetails?.buttonText1}
+          path={pageDetails?.path1}
+          orangeArrow={orangeArrow}
         />
 
         <HeadingAndButton
-          description={pageDetails.description2}
-          buttonText={pageDetails.buttonText2}
-          path={pageDetails.path2}
+          description={pageDetails?.description2}
+          buttonText={pageDetails?.buttonText2}
+          path={pageDetails?.path2}
+          orangeArrow={orangeArrow}
         />
       </div>
 

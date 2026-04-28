@@ -11,6 +11,7 @@ function LocationAutocompleteInput({
   setValue,
   defaultLocation,
   type = "",
+  text = "Location",
   onSelect,
 }) {
   const wrapperRef = useRef();
@@ -137,7 +138,7 @@ function LocationAutocompleteInput({
           name="location"
           control={control}
           defaultValue="City, State, Zip"
-          text="Location"
+          text={text}
           customProps={{
             autoComplete: "off",
             InputProps: {
@@ -194,10 +195,8 @@ function LocationAutocompleteInput({
                 if (onSelect) onSelect(s);
               }}
               sx={{
-                fontSize: {
-                  md: "0.7rem", // medium
-                  lg: "1.125rem", // large
-                },
+                fontSize: "0.875rem",
+                fontFamily: "DM Sans, sans-serif"
               }}
             >
               {s}

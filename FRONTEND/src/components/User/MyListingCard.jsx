@@ -18,7 +18,7 @@ const MyListingCard = ({ item, category, onEdit, onDelete }) => {
     const title = item.course_title || item.event_name || item.type || item.make || item.home_type || "Listing";
     const subTitle = item.location || item.address || `${item.location_city || ''} ${item.location_state || ''}`.trim() || "Local Listing";
     const price = item.price || item.rent || item.deposit_rent || item.course_fee || item.ticket_price;
-    const image = item.images?.[0] || item.photos?.[0] || (item.image_1) || null;
+    const image = item.images?.[0] || item.photos?.[0] || (item.image_1) || (Array.isArray(item.cover_images) ? item.cover_images[0] : null) || null;
 
     return (
         <div className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-6 hover:shadow-md transition-all duration-300 group">
@@ -56,7 +56,7 @@ const MyListingCard = ({ item, category, onEdit, onDelete }) => {
                 </div>
                 {price && (
                     <div className="mt-2 text-[#0857d0] font-bold text-lg">
-                        ${Number(price).toLocaleString()}
+                        {isNaN(parseFloat(price)) ? price : `$${Number(price).toLocaleString()}`}
                         {item.rent_frequency && <span className="text-xs font-medium text-gray-400">/{item.rent_frequency}</span>}
                     </div>
                 )}

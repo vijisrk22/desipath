@@ -92,7 +92,9 @@ const eventsSlice = createSlice({
         events: [],
         eventDetails: null,
         error: null,
-        loading: false,
+        loading: false, // Legacy fallback
+        loadingList: false,
+        loadingDetails: false,
     },
     reducers: {
         setEvents: (state, action) => {
@@ -108,26 +110,32 @@ const eventsSlice = createSlice({
     extraReducers: (builder) => {       
         builder
             .addCase(fetchEvents.pending, (state) => {
-                state.loading = true;
+                state.loadingList = true;
+                state.loading = true; // Sync for legacy components
                 state.error = null;
             })
             .addCase(fetchEvents.fulfilled, (state, action) => {
+                state.loadingList = false;
                 state.loading = false;
-                state.events = action.payload.events || [];
+                state.events = action.payload.data || [];
             })
             .addCase(fetchEvents.rejected, (state, action) => {
+                state.loadingList = false;
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch events";
             })
             .addCase(fetchEventById.pending, (state) => {
+                state.loadingDetails = true;
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchEventById.fulfilled, (state, action) => {
+                state.loadingDetails = false;
                 state.loading = false;
                 state.eventDetails = action.payload || null;
             })
             .addCase(fetchEventById.rejected, (state, action) => {
+                state.loadingDetails = false;
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch event details";
             })
@@ -145,14 +153,17 @@ const eventsSlice = createSlice({
                 state.error = action.payload || "Failed to post event";
             })
             .addCase(searchEvents.pending, (state) => {
+                state.loadingList = true;
                 state.loading = true;
                 state.error = null;
             })
             .addCase(searchEvents.fulfilled, (state, action) => {
+                state.loadingList = false;
                 state.loading = false;
                 state.events = action.payload.data || [];
             })
             .addCase(searchEvents.rejected, (state, action) => {
+                state.loadingList = false;
                 state.loading = false;
                 state.error = action.payload || "Search failed";
             })

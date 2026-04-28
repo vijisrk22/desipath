@@ -26,19 +26,27 @@ function ReviewCarPost({ open, onClose, formDetails, images, carAttributes }) {
       year: parseInt(formDetails.year, 10),
       price: parseFloat(formDetails.price) || 0,
       miles: parseInt(formDetails.miles, 10) || 0,
-      condition: formDetails.condition,
+      location: formDetails.location || "",
       fuel_type_id: formDetails.fuel_type_id,
       transmission_id: formDetails.transmission_id,
-      drive_train_id: formDetails.drive_train_id,
-      exterior_color_id: formDetails.exterior_color_id,
-      interior_color_id: formDetails.interior_color_id,
-      body_style_id: formDetails.body_style_id,
-      title_status_id: formDetails.title_status_id,
+      condition_id: formDetails.condition_id,
       description: formDetails.description || "",
       seller_id: user?.id,
+      is_dealer: formDetails.is_dealer === "true" || formDetails.is_dealer === true,
+      dealer_name: formDetails.dealer_name || null,
+      dealer_zipcode: formDetails.dealer_zipcode || null,
+      dealer_contact_person: formDetails.dealer_contact_person || null,
+      dealer_contact_number: formDetails.dealer_contact_number || null,
+      dealer_email: formDetails.dealer_email || null,
+      owner_name: formDetails.owner_name || null,
+      owner_contact_number: formDetails.owner_contact_number || null,
+      drive_type: formDetails.drive_type || null,
+      mpg: formDetails.mpg || null,
+      vin: formDetails.vin || null,
+      features: formDetails.features || [],
     };
 
-    // Location
+    // Location components for additional DB processing if needed
     if (formDetails.location && typeof formDetails.location === "string") {
       const loc = formDetails.location.split(",");
       formFields["location_city"] = loc[0]?.trim() || "";
@@ -92,8 +100,8 @@ function ReviewCarPost({ open, onClose, formDetails, images, carAttributes }) {
         </div>
         <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
           {formDetails.price
-            ? parseFloat(formDetails.price).toLocaleString("en-US", { style: "currency", currency: "USD" })
-            : "$0.00"}
+            ? `$${Number(formDetails.price).toLocaleString("en-US", { maximumFractionDigits: 0 })}`
+            : "$0"}
         </div>
         <ReviewPostContent contents={contents} />
         <div className="mx-auto mt-10 max-w-20">

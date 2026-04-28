@@ -14,7 +14,7 @@ storage/framework/sessions/*
 storage/framework/testing/*
 storage/framework/views/*
 storage/logs/*.log
-public/storage
+# public/storage (Tracking images as requested)
 
 # IDEs and Editors
 .vscode/

@@ -34,13 +34,16 @@ class RoomMate extends Model
         'food_preference',
         'washer_dryer',
         'poster_id',
-        'poster_name'
+        'poster_name',
+        'address',
+        'is_furnished'
     ];
 
     // Cast properties to specific types
     protected $casts = [
         'owner' => 'boolean',
         'agent' => 'boolean',
+        'is_furnished' => 'boolean',
         'kitchen_available' => 'boolean',
         'shared_bathroom' => 'boolean',
         'utilities_included' => 'boolean',
