@@ -11,9 +11,9 @@ import {
 } from '@mui/material';
 import { Close, MyLocation, Explore } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
-import LocationAutocompleteInput from '../InputTemplate/LocationAutocompleteInput';
+import LocationAutocompleteInput from './InputTemplate/LocationAutocompleteInput';
 
-const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll }) => {
+const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, buttonLabel }) => {
   const { control, setValue, handleSubmit } = useForm();
   const [detecting, setDetecting] = useState(false);
 
@@ -157,12 +157,31 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll }) =
               fontWeight: 800,
               bgcolor: '#ffa41c',
               color: 'white',
+              mb: 1.5,
               '&:hover': {
                 bgcolor: '#e69419'
               }
             }}
           >
-            Show All Events
+            {buttonLabel || 'Continue to Site'}
+          </Button>
+
+          <Button
+            fullWidth
+            variant="text"
+            onClick={onClose}
+            sx={{
+              textTransform: 'none',
+              fontWeight: 700,
+              color: '#666',
+              '&:hover': {
+                color: '#333',
+                bgcolor: 'transparent',
+                textDecoration: 'underline'
+              }
+            }}
+          >
+            Choose Later
           </Button>
         </form>
       </DialogContent>

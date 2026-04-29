@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
 import SortBy from "../SortBy";
 
-import LocationSelectorModal from "./LocationSelectorModal";
+import LocationSelectorModal from "../LocationSelectorModal";
 
 function EventsBody() {
   const dispatch = useDispatch();
@@ -22,7 +22,13 @@ function EventsBody() {
   
   // Check for location on mount
   useEffect(() => {
-    setShowLocationModal(true);
+    const savedLocation = localStorage.getItem('user_location');
+    if (!savedLocation) {
+      setShowLocationModal(true);
+    } else {
+      // Auto-filter by saved location
+      handleModalLocationSelect(savedLocation);
+    }
     dispatch(fetchEvents());
   }, [dispatch]);
 
@@ -120,6 +126,7 @@ function EventsBody() {
         onClose={() => setShowLocationModal(false)}
         onSelectLocation={handleModalLocationSelect}
         onShowAll={handleShowAll}
+        buttonLabel="Show All Events"
       />
       <div className="mb-10 pt-10 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-gray-100/50">
         <form

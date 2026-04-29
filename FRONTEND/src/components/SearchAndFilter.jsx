@@ -1,68 +1,166 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchButton from "./SearchButton";
+import { Autocomplete, TextField, Box, IconButton } from "@mui/material";
+import { Edit as EditIcon } from "@mui/icons-material";
 
-function SearchAndFilter() {
-  const [location, setLocation] = useState("");
-  const [category, setCategory] = useState("");
+const categories = [
+  { label: "Rental home", path: "/services/rentalhomes" },
+  { label: "Buy/Sell Cars", path: "/services/cars" },
+  { label: "Kids class", path: "/kids-class" },
+  { label: "Buy Sell Home", path: "/services/houses" },
+  { label: "Travel Companion", path: "/travel-companion" },
+  { label: "Events", path: "/services/events" },
+  { label: "Roommates", path: "/services/roommates" },
+  { label: "IT Trainings", path: "/services/itTrainings" },
+  { label: "Lawyers", path: "/services/lawyers" },
+  { label: "Doctors", path: "/services/doctors" },
+  { label: "Astrology", path: "/services/astrologyAds" },
+  { label: "Local Ads", path: "/services/localAds" },
+  { label: "Photography", path: "/services/photography" },
+  { label: "Immigration", path: "/services/immigration" },
+  { label: "Jobs", path: "/services/jobs" },
+];
+
+const phrases = [
+  <>Connecting desi hearts across <span className="mx-2 border-b-4 border-[#ffa41c]">every</span> zip code</>,
+  <>Built <span className="mx-2 border-b-4 border-[#0857d0]">by</span> desis, <span className="mx-2 border-b-4 border-[#0857d0]">for</span> desis</>
+];
+
+function SearchAndFilter({ initialLocation = "", onEditLocation }) {
+  const [location, setLocation] = useState(initialLocation);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [fade, setFade] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setPhraseIndex((prev) => (prev + 1) % phrases.length);
+        setFade(true);
+      }, 1000); // Wait for fade out before switching
+    }, 6000); // Cycle every 6 seconds for a slow feel
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (initialLocation) {
+      setLocation(initialLocation);
+    }
+  }, [initialLocation]);
 
   const handleSearch = (e) => {
     if (e) e.preventDefault();
-    const query = category.toLowerCase().trim();
-
-    // Smart routing for kids classes
-    if (query.includes("keyboard")) {
-      navigate("/kids-class/music/keyboard");
-    } else if (query.includes("hindi")) {
-      navigate("/kids-class/indian-languages/hindi");
-    } else if (query.includes("math")) {
-      navigate("/kids-class/academic-classes/maths");
-    } else if (query.includes("veena")) {
-      navigate("/kids-class/music/veena");
-    } else if (query.includes("vocal")) {
-      navigate("/kids-class/music/carnatic-vocal");
-    } else if (query.includes("kids") || query.includes("class")) {
-      navigate("/kids-class");
+    
+    if (selectedCategory && selectedCategory.path) {
+      navigate(selectedCategory.path);
     } else {
-      // Fallback or general search (could go to a general results page later)
-      navigate("/kids-class");
+      // Fallback if no category selected
+      navigate("/services/rentalhomes");
     }
   };
 
   return (
     <div className=" py-4 max-w-2xl flex-col justify-start items-center gap-6 flex w-full mx-auto">
-      <div className="text-center text-gray-800 text-[14px] xs:text-[18px] sm:text-[22px] md:text-[26px] lg:text-[30px] font-medium font-dmsans md:leading-[36px]">
-        New generation classifieds for <br />
-        Desi people living abroad
+      <div className={`text-center text-gray-800 text-[14px] xs:text-[18px] sm:text-[20px] md:text-[24px] lg:text-[26px] font-medium md:leading-[38px] min-h-[80px] flex items-center justify-center transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "'Poppins', sans-serif" }}>
+        {phrases[phraseIndex]}
       </div>
 
       <form 
         onSubmit={handleSearch}
-        className=" h-[50px] flex justify-between bg-white border rounded-full border-gray-200 w-full px-[6px] py-[6px] shadow-sm hover:shadow-md transition-shadow"
+        className="flex flex-col md:flex-row bg-white border rounded-[20px] md:rounded-full border-gray-200 w-full p-[6px] shadow-sm hover:shadow-md transition-shadow items-center gap-2 md:gap-0"
       >
-        <div className="flex-1 flex justify-start items-center gap-2">
-          {/* Location Input */}
-          <div className="flex items-center px-4 border-r border-gray-200 w-[30%] sm:w-[35%]">
+        <div className="flex-1 flex flex-col md:flex-row justify-start items-center w-full md:h-full">
+          {/* Location Input with Edit Button */}
+          <div className="flex items-center px-4 border-b md:border-b-0 md:border-r border-gray-200 w-full md:w-[45%] h-[50px] md:h-[34px]">
             <input
               type="text"
               placeholder="Zipcode/City"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full text-gray-800 text-xs sm:text-sm font-semibold font-dmsans outline-none placeholder:text-gray-400"
+              className="w-full text-gray-800 text-sm font-semibold font-dmsans outline-none placeholder:text-gray-400 truncate"
             />
+            <IconButton 
+              size="small" 
+              onClick={onEditLocation}
+              sx={{ 
+                ml: 0.5, 
+                color: '#999',
+                '&:hover': { color: '#ffa41c' }
+              }}
+            >
+              <EditIcon sx={{ fontSize: '16px' }} />
+            </IconButton>
           </div>
 
-          {/* Category Input */}
-          <input
-            type="text"
-            placeholder="Search classes, cars, homes..."
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="text-gray-500 flex-1 text-xs sm:text-sm font-medium font-dmsans outline-none px-2 placeholder:text-gray-400"
-          />
+          {/* Category Autocomplete */}
+          <Box className="flex-1 w-full h-[50px] md:h-full flex items-center px-4">
+            <Autocomplete
+              fullWidth
+              options={categories}
+              getOptionLabel={(option) => option.label}
+              value={selectedCategory}
+              disableClearable
+              onChange={(event, newValue) => {
+                setSelectedCategory(newValue);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="Search classes, cars, homes..."
+                  variant="standard"
+                  InputProps={{
+                    ...params.InputProps,
+                    disableUnderline: true,
+                    sx: {
+                      fontSize: { xs: '14px', sm: '14px' },
+                      fontWeight: 600,
+                      fontFamily: 'DM Sans, sans-serif',
+                      color: '#4b5563',
+                      '& input': {
+                        padding: '0 !important',
+                        height: '100%'
+                      }
+                    }
+                  }}
+                />
+              )}
+              sx={{
+                '& .MuiAutocomplete-inputRoot': {
+                  padding: '0px !important',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center'
+                },
+                '& .MuiAutocomplete-endAdornment': {
+                  right: '0px'
+                }
+              }}
+              ListboxProps={{
+                sx: {
+                  fontFamily: 'DM Sans, sans-serif',
+                  '& .MuiAutocomplete-option': {
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    fontFamily: 'DM Sans, sans-serif',
+                    py: 1.5
+                  }
+                }
+              }}
+            />
+          </Box>
         </div>
-        <SearchButton handleClick={handleSearch} />
+        <div className="w-full md:w-auto mt-2 md:mt-0">
+          <button
+            type="submit"
+            className="w-full md:w-auto bg-[#0857d0] hover:bg-[#0746a8] text-white font-bold py-3 md:py-3 px-8 rounded-[15px] md:rounded-full transition-all flex items-center justify-center gap-2"
+          >
+            <img src="/search.svg" className="size-5 brightness-0 invert" />
+            <span className="text-sm md:text-base">Go</span>
+          </button>
+        </div>
       </form>
     </div>
   );

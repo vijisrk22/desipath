@@ -86,8 +86,24 @@ const CATEGORIES = [
   },
 ];
 
+import LocationSelectorModal from "../../components/LocationSelectorModal";
+import { useEffect } from "react";
+
 export default function KidsClassLanding() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [showLocationModal, setShowLocationModal] = useState(false);
+
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('user_location');
+    if (!savedLocation) {
+      setShowLocationModal(true);
+    }
+  }, []);
+
+  const handleLocationSelect = (locationString) => {
+    localStorage.setItem('user_location', locationString);
+    setShowLocationModal(false);
+  };
 
   // Real-time filtering logic
   const filteredCategories = CATEGORIES.map((category) => {
@@ -105,6 +121,12 @@ export default function KidsClassLanding() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       <Navbar />
+      <LocationSelectorModal 
+        open={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelectLocation={handleLocationSelect}
+        onShowAll={() => setShowLocationModal(false)}
+      />
 
       {/* Hero / Banner Section */}
       <div className="bg-gradient-to-r from-blue-100 via-[#e0f2fe] to-pink-100 py-5 px-[7%] relative overflow-hidden">

@@ -9,11 +9,26 @@ import BuyCar from "./BuyCar";
 import SellCar from "./SellCar";
 import PostConfirmation from "../PostConfirmation";
 import CarDetails from "./CarDetails";
+import { useState } from "react";
+import LocationSelectorModal from "../../components/LocationSelectorModal";
 
 function BuySellCar() {
   const { action, carId } = useParams();
   const location = useLocation();
   const { user } = useSelector((state) => state.user);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('user_location');
+    if (!savedLocation) {
+      setShowLocationModal(true);
+    }
+  }, []);
+
+  const handleLocationSelect = (locationString) => {
+    localStorage.setItem('user_location', locationString);
+    setShowLocationModal(false);
+  };
 
   if ((action === "sellCar" || action === "edit") && !user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
@@ -83,6 +98,12 @@ function BuySellCar() {
   return (
     <div className="flex flex-col min-h-screen overflow-y-auto ">
       {showNavbar && <Navbar />}
+      <LocationSelectorModal 
+        open={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelectLocation={handleLocationSelect}
+        onShowAll={() => setShowLocationModal(false)}
+      />
       {renderContent()}
     </div>
   );

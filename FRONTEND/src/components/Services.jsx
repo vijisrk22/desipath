@@ -18,7 +18,7 @@ const services = [
     path: "/kids-class",
   },
   {
-    name: "Buy sell house",
+    name: "Buy Sell Home",
     image: "/img/houses/buy_sell_house_icon.png",
     path: "/services/houses",
   },
@@ -101,8 +101,8 @@ function makePlaceholder(text, size = 167) {
 export default function ServicesSection() {
   return (
     <div className="flex flex-col justify-start items-center gap-[24px]">
-      <SectionHeadings heading="Services" />
-      <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-12 xl:gap-16">
+      {/* Services heading removed as per user request */}
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8 lg:gap-12 xl:gap-16">
         {services.map((service, index) => (
           <div key={index} className="flex flex-col items-center gap-3">
             <Link
@@ -121,7 +121,7 @@ export default function ServicesSection() {
                 }}
               />
             </Link>
-            <div className="text-center text-gray-800 text-sm md:text-base font-semibold font-dmsans">
+            <div className="text-center text-gray-800 text-sm md:text-base font-normal font-dmsans">
               {service.name}
             </div>
           </div>

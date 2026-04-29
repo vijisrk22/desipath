@@ -32,38 +32,46 @@ function SearchFieldInput({ inputs, title }) {
   const rentalHomesState = useSelector((state) => state.rentalHomes);
   const lastSearchQuery = rentalHomesState?.lastSearchQuery;
 
+  const [hasAutoSearched, setHasAutoSearched] = useState(false);
+
   useEffect(() => {
-    if (!lastSearchQuery) return;
-    if (title !== "Rent a Home") return;
-
-    // Sync Location
-    if (lastSearchQuery.city || lastSearchQuery.state || lastSearchQuery.zipcode) {
-      const locParts = [lastSearchQuery.city, lastSearchQuery.state, lastSearchQuery.zipcode].filter(Boolean);
-      if (locParts.length === 0) setValue("location", "");
-    } else {
-      setValue("location", "");
+    // 1. Sync from Redux (lastSearchQuery)
+    if (lastSearchQuery) {
+      if (title === "Rent a Home") {
+        if (lastSearchQuery.city || lastSearchQuery.state || lastSearchQuery.zipcode) {
+          const locParts = [lastSearchQuery.city, lastSearchQuery.state, lastSearchQuery.zipcode].filter(Boolean);
+          const newLoc = locParts.join(", ");
+          if (watch("location") !== newLoc) {
+            setValue("location", newLoc);
+          }
+        }
+        // Sync Price
+        if (lastSearchQuery.priceMin !== undefined && lastSearchQuery.priceMax !== undefined) {
+          if (priceRange[0] !== lastSearchQuery.priceMin || priceRange[1] !== lastSearchQuery.priceMax) {
+            setPriceRange([lastSearchQuery.priceMin, lastSearchQuery.priceMax]);
+          }
+        }
+        // Sync Types
+        const rentalTypes = ["Condo", "Single family Home", "Apartment", "Basement Apartment"];
+        rentalTypes.forEach(type => {
+          const isChecked = lastSearchQuery.rentalHomeType?.includes(type);
+          if (watch(`rentalHomeType.${type}`) !== isChecked) {
+            setValue(`rentalHomeType.${type}`, isChecked); 
+          }
+        });
+      }
+      return;
     }
 
-    // Sync Price - Update local state
-    if (lastSearchQuery.priceMin !== undefined && lastSearchQuery.priceMax !== undefined) {
-      setPriceRange([lastSearchQuery.priceMin, lastSearchQuery.priceMax]);
+    // 2. If no Redux query, check localStorage for session location
+    const savedLocation = localStorage.getItem('user_location');
+    if (savedLocation && !hasAutoSearched) {
+      setValue("location", savedLocation);
+      // Automatically trigger search ONCE
+      setHasAutoSearched(true);
+      handleSubmit(onSubmit)();
     }
-
-    // Sync Rental Home Type
-    const rentalTypes = ["Condo", "Single family Home", "Apartment", "Basement Apartment"];
-    rentalTypes.forEach(type => {
-      const isChecked = lastSearchQuery.rentalHomeType?.includes(type);
-      setValue(`rentalHomeType.${type}`, isChecked); 
-    });
-
-    // Sync Home Type (Buy House)
-    const homeTypes = ["Condominium", "Single Family", "Apartment"];
-    homeTypes.forEach(type => {
-      const isChecked = lastSearchQuery.homeType?.includes(type);
-      setValue(`homeType.${type}`, isChecked);
-    });
-
-  }, [lastSearchQuery, title, setValue]);
+  }, [lastSearchQuery, title, setValue, handleSubmit, hasAutoSearched]);
 
   useEffect(() => {
     const maxPrice =

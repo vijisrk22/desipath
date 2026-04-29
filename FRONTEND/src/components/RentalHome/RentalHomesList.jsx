@@ -39,7 +39,9 @@ function RentalHomesList() {
     } else {
       dispatch(fetchRentalHomes({ page, sortOption }));
     }
-  }, [dispatch, page, sortOption, lastSearchQuery]);
+    // We only want to trigger this when page or sort change, 
+    // or on initial mount. lastSearchQuery changes are handled by SearchFieldInput.
+  }, [dispatch, page, sortOption]);
 
   const numsOfPage = pagination?.last_page || 1;
 
