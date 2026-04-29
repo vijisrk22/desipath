@@ -20,7 +20,7 @@ const services = [
   {
     name: "Buy Sell Home",
     image: "/img/houses/buy_sell_house_icon.png",
-    path: "/services/houses",
+    path: "/services/BuyHome",
   },
   {
     name: "Travel Companion",

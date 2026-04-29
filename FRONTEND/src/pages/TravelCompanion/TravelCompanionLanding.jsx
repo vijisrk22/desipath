@@ -18,7 +18,6 @@ const TravelCompanionLanding = () => {
   const handleLinkClick = (e, link) => {
     if (!user) {
       e.preventDefault();
-      alert("Please login to continue.");
       // If user is not logged in, redirect to login
       navigate('/login', { state: { from: link } });
     }

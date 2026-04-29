@@ -34,7 +34,7 @@ class TrainingAdsController extends Controller
      */
     public function index(Request $request)
     {
-        $query = TrainingAd::query();
+        $query = TrainingAd::query()->where('status', 'active');
 
         // Admin search
         if ($request->has('search')) {
@@ -114,7 +114,9 @@ public function dummyInsert()
             'contact_form' => 'nullable|string'
         ]);
 
-        $trainingAd = TrainingAd::create($request->all());
+        $data = $request->all();
+        $data['status'] = 'active';
+        $trainingAd = TrainingAd::create($data);
 
         return response()->json(['message' => 'Training ad added successfully', 'data' => $trainingAd], 201);
     }
@@ -163,8 +165,9 @@ public function dummyInsert()
         }
 
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'course_title' => 'required|string|max:255',
+            'user_id' => 'sometimes|exists:users,id',
+            'course_title' => 'sometimes|string|max:255',
+            'status' => 'nullable|in:active,inactive',
             'course_fee' => 'nullable|numeric',
             'agenda' => 'nullable|string',
             'image_1' => 'nullable|string',

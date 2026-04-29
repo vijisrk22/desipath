@@ -20,7 +20,7 @@ function Houses() {
     } else {
       dispatch(fetchHouses({ page, sortOption }));
     }
-  }, [dispatch, page, sortOption, lastSearchQuery]);
+  }, [dispatch, page, sortOption]);
 
   const numsOfPage = pagination?.last_page || 1;
 

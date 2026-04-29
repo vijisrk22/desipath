@@ -17,7 +17,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/
 function HouseDetails() {
   const paths = [
     { text: "Home", eP: "/" },
-    { text: "Houses", eP: "/services/houses/buyHouse" },
+    { text: "Houses", eP: "/services/BuyHome/find" },
   ];
 
   const navigate = useNavigate();
@@ -82,7 +82,11 @@ function HouseDetails() {
 
   // If there's an error fetching data
   if (error) {
-    return <div className="text-red-500 p-10">Error loading house details: {error}</div>;
+    return (
+      <div className="text-red-500 p-10 font-bold">
+        Error loading house details: {typeof error === 'object' ? error.message || 'Unknown error' : error}
+      </div>
+    );
   }
 
   // Make sure houseDetails is available before accessing it

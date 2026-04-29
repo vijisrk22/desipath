@@ -50,7 +50,7 @@ class RentalHomesController extends Controller
     public function index(Request $request)
     {
         $perPage = 15;
-        $query = RentalHome::query();
+        $query = RentalHome::query()->where('status', 'active');
         
         // Admin search
         if ($request->has('search')) {
@@ -271,6 +271,7 @@ class RentalHomesController extends Controller
         }
         $data = $request->except('images'); // get all fields except images
         $data['owner_name'] = $receiver->name;
+        $data['status'] = 'active';
 
         // Sync coordinates
         if ($request->filled('location_zipcode')) {
@@ -410,7 +411,7 @@ class RentalHomesController extends Controller
 
 
 
-        $query = RentalHome::query();
+        $query = RentalHome::query()->where('status', 'active');
         // return response()->json(['debug_request' => $request->all()]);
 
         $city = trim($request->city);
@@ -536,6 +537,7 @@ class RentalHomesController extends Controller
             'deposit_rent' => 'nullable|numeric',
             'bhk' => 'sometimes|in:1 Bed 1 Bath,2 Bed 2 Bath,2 Bed 1 Bath,3 Bed 3 Bath,3 Bed 2 Bath,4 Bed 4 Bath,4 Bed 3 Bath,4 Bed 2 Bath',
             'address' => 'sometimes|string|max:255',
+            'status' => 'nullable|in:active,inactive',
             'community_name' => 'nullable|string|max:255',
             'amenities' => 'nullable|array',
             'amenities.*' => 'nullable|string',
@@ -562,13 +564,15 @@ class RentalHomesController extends Controller
             'contact_no' => ['nullable', 'string', 'max:20', 'regex:/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/'],
         ]);
         
-        $receiver = User::find($request->owner_id);
-        if (!$receiver) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-        // $data = $request->except('images');
         $data = $request->except(['images', 'newPhotos', 'existingPhotos']);
-        $data['owner_name'] = $receiver->name;
+        
+        if ($request->has('owner_id')) {
+            $receiver = User::find($request->owner_id);
+            if (!$receiver) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+            $data['owner_name'] = $receiver->name;
+        }
 
         // Sync coordinates
         if ($request->filled('location_zipcode')) {

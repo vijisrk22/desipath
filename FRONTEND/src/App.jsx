@@ -79,8 +79,8 @@ function App() {
           <Route path="roommates/:action/:roomId" element={<Roommates />} />
 
           {/* Buy/Sell House */}
-          <Route path="houses/:action?" element={<BuySellHouse />} />
-          <Route path="houses/:action/:houseId" element={<BuySellHouse />} />
+          <Route path="BuyHome/:action?" element={<BuySellHouse />} />
+          <Route path="BuyHome/:action/:houseId" element={<BuySellHouse />} />
 
           {/* Rental Home */}
           <Route path="rentalhomes/:action?" element={<RentalHome />} />
@@ -126,7 +126,7 @@ function App() {
           <Route path="rental-homes" element={<ListingAdmin endpoint="/api/rentalhomes" title="Rental Homes" categoryIcon="🏘️" />} />
           <Route path="roommates" element={<ListingAdmin endpoint="/api/roommates" title="Roommates" categoryIcon="👥" />} />
           <Route path="cars" element={<ListingAdmin endpoint="/api/cars" title="Buy/Sell Cars" categoryIcon="🚗" />} />
-          <Route path="houses" element={<ListingAdmin endpoint="/api/homes" title="Buy/Sell House" categoryIcon="🏡" customBasePath="houses" />} />
+          <Route path="houses" element={<ListingAdmin endpoint="/api/homes" title="Buy/Sell House" categoryIcon="🏡" customBasePath="BuyHome" />} />
           <Route path="events" element={<ListingAdmin endpoint="/api/events" title="Events" categoryIcon="🎟️" />} />
           <Route path="travel" element={<ListingAdmin endpoint="/api/travelcompanions" title="Travel Companion" categoryIcon="✈️" customBasePath="travelCompanion" />} />
           <Route path="trainings" element={<ListingAdmin endpoint="/api/trainingads" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />

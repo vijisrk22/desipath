@@ -88,6 +88,27 @@ Route::middleware('auth:sanctum')->group(function () { // Need to uncomment if t
     Route::post('/messages', [MessageController::class, 'store']);
 });
 
+// --- Auth Protected User-Specific Data Retrieval ---
+Route::middleware('auth:sanctum')->group(function () {
+    // High-Performance User Listings (only returns the authenticated user's ads)
+    Route::get('/cars/my-listings', [CarController::class, 'getMyListings']);
+    Route::get('/rentalhomes/my-listings', [RentalHomesController::class, 'getMyListings']);
+    Route::get('/roommates/my-listings', [RoomMatesController::class, 'getMyListings']);
+    Route::get('/homes/my-listings', [HomesController::class, 'getMyListings']);
+    Route::get('/trainingads/my-listings', [TrainingAdsController::class, 'getMyListings']);
+    Route::get('/travelcompanions/my-listings', [TravelCompanionsController::class, 'getMyListings']);
+    Route::get('/events/my-listings', [EventsController::class, 'getMyListings']);
+
+    // Ad Statistics Endpoints (High Performance — returns only count)
+    Route::get('/cars/my-count', [CarController::class, 'getMyAdCount']);
+    Route::get('/rentalhomes/my-count', [RentalHomesController::class, 'getMyAdCount']);
+    Route::get('/roommates/my-count', [RoomMatesController::class, 'getMyAdCount']);
+    Route::get('/homes/my-count', [HomesController::class, 'getMyAdCount']);
+    Route::get('/trainingads/my-count', [TrainingAdsController::class, 'getMyAdCount']);
+    Route::get('/travelcompanions/my-count', [TravelCompanionsController::class, 'getMyAdCount']);
+    Route::get('/events/my-count', [EventsController::class, 'getMyAdCount']);
+});
+
 // Public car read routes (no auth required — anyone can browse listings)
 Route::get('/cars', [CarController::class, 'index']);
 Route::get('/cars/make', [CarController::class, 'getcarmakes']);
@@ -204,27 +225,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/travelcompanions/dummy-insert', [TravelCompanionsController::class, 'dummyInsert']);
 });
 
-// --- Auth Protected User-Specific Data Retrieval ---
-Route::middleware('auth:sanctum')->group(function () {
-    // High-Performance User Listings (only returns the authenticated user's ads)
-    Route::get('/cars/my-listings', [CarController::class, 'getMyListings']);
-    Route::get('/rentalhomes/my-listings', [RentalHomesController::class, 'getMyListings']);
-    Route::get('/roommates/my-listings', [RoomMatesController::class, 'getMyListings']);
-    Route::get('/homes/my-listings', [HomesController::class, 'getMyListings']);
-    Route::get('/trainingads/my-listings', [TrainingAdsController::class, 'getMyListings']);
-    Route::get('/travelcompanions/my-listings', [TravelCompanionsController::class, 'getMyListings']);
-    Route::get('/events/my-listings', [EventsController::class, 'getMyListings']);
-
-    // Ad Statistics Endpoints (High Performance — returns only count)
-    Route::get('/cars/my-count', [CarController::class, 'getMyAdCount']);
-    Route::get('/rentalhomes/my-count', [RentalHomesController::class, 'getMyAdCount']);
-    Route::get('/roommates/my-count', [RoomMatesController::class, 'getMyAdCount']);
-    Route::get('/homes/my-count', [HomesController::class, 'getMyAdCount']);
-    Route::get('/trainingads/my-count', [TrainingAdsController::class, 'getMyAdCount']);
-    Route::get('/travelcompanions/my-count', [TravelCompanionsController::class, 'getMyAdCount']);
-    Route::get('/events/my-count', [EventsController::class, 'getMyAdCount']);
-});
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('events')->group(function () {
         Route::post('/', [EventsController::class, 'store']);
@@ -267,6 +267,33 @@ Route::middleware([])->group(function () {
 });
 Route::middleware([])->group(function () {
     Route::put('/kids-classes/{id}', [KidsClassController::class, 'update']);
+});
+
+Route::get('/fix-status-columns', function() {
+    $tables = [
+        'BuySellHomes',
+        'RentalHomes',
+        'BuySellCars',
+        'RoomMates',
+        'TrainingAds',
+        'TravelCompanions',
+        'events'
+    ];
+    
+    foreach ($tables as $table) {
+        if (!Schema::hasColumn($table, 'status')) {
+            Schema::table($table, function (Blueprint $tableObj) {
+                $tableObj->string('status')->default('active');
+            });
+        }
+    }
+    
+    // Also update existing to active if they were null or empty
+    foreach ($tables as $table) {
+        \DB::table($table)->whereNull('status')->orWhere('status', '')->update(['status' => 'active']);
+    }
+    
+    return 'Status columns added and initialized to active for all marketplace tables.';
 });
 
 Route::get('/users', function() {

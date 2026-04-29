@@ -4,16 +4,16 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchHouses } from "../store/HousesSlice";
-import HouseCard from "./BuySellHouse/HouseCard";
+import { fetchRentalHomes } from "../store/RentalHomesSlice";
+import RentalHomeCard from "./RentalHome/RentalHomeCard";
 import { CircularProgress } from "@mui/material";
 import { useRef } from "react";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
-function Homes() {
+function RentalHomesCarousel() {
   const dispatch = useDispatch();
-  const { houses: homes, loading } = useSelector((state) => state.houses);
+  const { rentalHomes, loading } = useSelector((state) => state.rentalHomes);
   const sliderRef = useRef(null);
 
   const settings = {
@@ -40,13 +40,13 @@ function Homes() {
   };
 
   useEffect(() => {
-    dispatch(fetchHouses());
+    dispatch(fetchRentalHomes());
   }, [dispatch]);
 
   return (
     <div className="flex flex-col justify-start items-center gap-6 w-full">
       <div className="w-full flex justify-between items-center px-2">
-        <SectionHeadings heading="For Sale" link="/services/BuyHome" />
+        <SectionHeadings heading="For Rent" link="/services/rentalhomes" />
         <div className="flex gap-3">
           <button 
             onClick={() => sliderRef.current?.slickPrev()}
@@ -64,24 +64,24 @@ function Homes() {
       </div>
 
       <div className="w-full h-full px-2">
-        {loading && homes.length === 0 ? (
+        {loading && rentalHomes.length === 0 ? (
           <div className="flex justify-center items-center py-10">
             <CircularProgress />
           </div>
-        ) : homes && homes.length > 0 ? (
+        ) : rentalHomes && rentalHomes.length > 0 ? (
           <Slider ref={sliderRef} {...settings}>
-            {homes.slice(0, 8).map((home, index) => (
+            {rentalHomes.slice(0, 8).map((home, index) => (
               <div key={index} className="px-3 pb-4 pt-1 h-full flex">
-                <HouseCard house={home} />
+                <RentalHomeCard rentalHome={home} />
               </div>
             ))}
           </Slider>
         ) : (
-          <div className="text-gray-500 text-center py-10">No homes available.</div>
+          <div className="text-gray-500 text-center py-10">No rental homes available.</div>
         )}
       </div>
     </div>
   );
 }
 
-export default Homes;
+export default RentalHomesCarousel;

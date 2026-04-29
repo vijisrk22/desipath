@@ -58,7 +58,7 @@ class RoomMatesController extends Controller
 
     public function index(Request $request)
     {
-        $query = RoomMate::query();
+        $query = RoomMate::query()->where('status', 'active');
 
         // Admin search
         if ($request->has('search')) {
@@ -222,6 +222,7 @@ class RoomMatesController extends Controller
         }
         $data = $request->except('photos'); // get all fields except photos
         $data['poster_name'] = $receiver->name;
+        $data['status'] = 'active';
 
         if ($request->has('photos') && !empty($request->photos)) {
             $photos = [];
@@ -337,7 +338,7 @@ class RoomMatesController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $query = RoomMate::query();
+        $query = RoomMate::query()->where('status', 'active');
 
         $city = trim($request->city);
         $state = trim($request->state);
@@ -416,10 +417,11 @@ class RoomMatesController extends Controller
         $validatedData = $request->validate([
             'owner' => 'nullable|boolean',
             'agent' => 'nullable|boolean',
+            'status' => 'nullable|in:active,inactive',
             'location_state' => 'nullable|string|max:100',
             'location_city' => 'nullable|string|max:100',
             'location_zipcode' => 'nullable|string|max:20',
-            'sharing_type' => 'required|in:Separate Room,Share the room with other person',
+            'sharing_type' => 'sometimes|in:Separate Room,Share the room with other person',
             'kitchen_available' => 'nullable|boolean',
             'shared_bathroom' => 'nullable|boolean',
             'rent' => 'nullable|numeric',
@@ -448,12 +450,15 @@ class RoomMatesController extends Controller
             'poster_id' => 'nullable|exists:users,id'
         ]);
 
-        $receiver = User::find($request->poster_id);
-        if (!$receiver) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
         $data = $request->except(['photos', 'newPhotos', 'existingPhotos']);
-        $data['poster_name'] = $receiver->name;
+        
+        if ($request->has('poster_id')) {
+            $receiver = User::find($request->poster_id);
+            if (!$receiver) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+            $data['poster_name'] = $receiver->name;
+        }
 
         if ($request->has('existingPhotos') && !empty($request->existingPhotos)) {
             $existingPhotos = $request->existingPhotos;
@@ -485,7 +490,9 @@ class RoomMatesController extends Controller
         $roomMate->update($data);
 
         // Return photos as array in response
-        $roomMate->photos = json_decode($roomMate->photos, true);
+        if (is_string($roomMate->photos)) {
+            $roomMate->photos = json_decode($roomMate->photos, true);
+        }
 
         return response()->json([
             'message' => 'Room mate updated successfully',

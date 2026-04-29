@@ -16,7 +16,7 @@ class EventsController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Event::query();
+        $query = Event::query()->where('status', 'active');
 
         // Admin search
         if ($request->has('search')) {
@@ -168,7 +168,9 @@ class EventsController extends Controller
                 'poster_images' => [],
                 'user_type' => 'Owner',
                 'user_id' => $request->user()->id,
-                'user_name' => $request->user()->name ?? $request->user()->email,            ]);
+                'user_name' => $request->user()->name ?? $request->user()->email,
+                'status' => 'active',
+            ]);
 
             return response()->json(['message' => 'Event created successfully', 'event' => $event], 201);
         } catch (\Exception $e) {
@@ -197,6 +199,12 @@ class EventsController extends Controller
         $event = Event::find($id);
         if (!$event) {
             return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        if ($request->has('status') && count($request->all()) == 1) {
+            $event->status = $request->status;
+            $event->save();
+            return response()->json(['message' => 'Event status updated', 'event' => $event]);
         }
 
         $details = $request->input('details', []);
@@ -288,6 +296,7 @@ class EventsController extends Controller
             'description' => $details['Description'] ?? $event->description,
             'ticket_price' => $ticketPrice ?? $event->ticket_price,
             'cover_images' => $allImages,
+            'status' => $request->input('status', $event->status),
         ]);
 
         return response()->json(['message' => 'Event updated successfully', 'event' => $event]);
@@ -325,7 +334,7 @@ class EventsController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $query = Event::query();
+        $query = Event::query()->where('status', 'active');
         $city = trim($request->city);
         $state = trim($request->state);
         $zipcode = trim($request->zipcode);

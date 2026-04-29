@@ -44,6 +44,7 @@ class BuySellCar extends Model
         'location_zipcode',
         'latitude',
         'longitude',
+        'status',
     ];
 
     protected $casts = [

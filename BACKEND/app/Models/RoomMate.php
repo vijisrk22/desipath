@@ -36,7 +36,8 @@ class RoomMate extends Model
         'poster_id',
         'poster_name',
         'address',
-        'is_furnished'
+        'is_furnished',
+        'status'
     ];
 
     // Cast properties to specific types

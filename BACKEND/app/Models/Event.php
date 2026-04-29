@@ -39,7 +39,8 @@ class Event extends Model
         'rules_regulations',
         'tags',
         'event_category',
-        'is_sold'
+        'is_sold',
+        'status'
     ];
 
     protected $casts = [

@@ -137,7 +137,7 @@ function ReviewHousePost({ open, onClose, formDetails, images, isEdit }) {
       
       setIsSuccess(true);
       setTimeout(() => {
-        navigate("/services/houses/buyHouse");
+        navigate("/services/BuyHome/find");
       }, 2500);
     } catch (err) {
       console.error("Failed to post house:", err);

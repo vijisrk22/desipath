@@ -23,7 +23,7 @@ class TravelCompanionsController extends Controller
      */
     public function index(Request $request)
     {
-        $query = TravelCompanion::query();
+        $query = TravelCompanion::query()->where('status', 'active');
 
         // Admin search
         if ($request->has('search')) {
@@ -134,6 +134,7 @@ class TravelCompanionsController extends Controller
         $data['flexible_language'] = ($data['flexible_language'] ?? null) === 'Yes';
         $data['travel_finalized'] = ($data['travel_finalized'] ?? null) === 'Yes';
 
+        $data['status'] = 'active';
         $travelCompanion = TravelCompanion::create($data);
 
         return response()->json(['message' => 'Travel companion created successfully', 'data' => $travelCompanion], 201);
@@ -197,6 +198,7 @@ class TravelCompanionsController extends Controller
             'amazon_gift_card_value' => 'nullable|string|in:50$,100$',
             'willing_gift' => 'nullable|boolean',
             'gift_card_value' => 'nullable|string|in:50$,100$',
+            'status' => 'nullable|in:active,inactive',
             'poster_id' => 'nullable|exists:users,id'
         ]);
 

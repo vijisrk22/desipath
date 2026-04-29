@@ -16,7 +16,7 @@ class BuySellHome extends Model
         'under_construction', 'bedroom_total', 'half_bathroom_total', 'full_bathroom_total', 'total_bathroom_total',
         'basement_size', 'basement_status', 'laundry_in_house', 'home_level', 'pool', 'community_pool',
         'annual_tax_amount', 'images', 'description', 'kitchen_granite_countertop', 'solar_setup',
-        'fireplace_count', 'flooring', 'seller_id', 'location_state', 'location_city', 'location_zipcode', 'latitude', 'longitude', 'seller_name', 'address', 'company_name'
+        'fireplace_count', 'flooring', 'seller_id', 'location_state', 'location_city', 'location_zipcode', 'latitude', 'longitude', 'seller_name', 'address', 'company_name', 'status'
     ];
 
     protected $casts = [

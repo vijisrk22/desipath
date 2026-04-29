@@ -3,6 +3,7 @@ import Chat from "../components/Chat/Chat";
 import Events from "../components/Events";
 import Footer from "../components/Footer/Footer";
 import Homes from "../components/Homes";
+import RentalHomesCarousel from "../components/RentalHomesCarousel";
 import Navbar from "../components/Navbar/Navbar";
 import SearchAndFilter from "../components/SearchAndFilter";
 import Services from "../components/Services";
@@ -54,6 +55,9 @@ function LandingPage() {
         </div>
         <div className="mt-[50px] pb-[30px]">
           <Homes />
+        </div>
+        <div className="mt-[50px] pb-[30px]">
+          <RentalHomesCarousel />
         </div>
       </div>
 

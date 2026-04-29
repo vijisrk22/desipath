@@ -8,7 +8,7 @@ const categories = [
   { label: "Rental home", path: "/services/rentalhomes" },
   { label: "Buy/Sell Cars", path: "/services/cars" },
   { label: "Kids class", path: "/kids-class" },
-  { label: "Buy Sell Home", path: "/services/houses" },
+  { label: "Buy Sell Home", path: "/services/BuyHome" },
   { label: "Travel Companion", path: "/travel-companion" },
   { label: "Events", path: "/services/events" },
   { label: "Roommates", path: "/services/roommates" },
@@ -23,8 +23,8 @@ const categories = [
 ];
 
 const phrases = [
-  <>Connecting desi hearts across <span className="mx-2 border-b-4 border-[#ffa41c]">every</span> zip code</>,
-  <>Built <span className="mx-2 border-b-4 border-[#0857d0]">by</span> desis, <span className="mx-2 border-b-4 border-[#0857d0]">for</span> desis</>
+  <>Connecting desi hearts across <span className="mx-3 border-b-4 border-[#ffa41c]">every</span> zip code</>,
+  <>Built <span className="mx-3 border-b-4 border-[#0857d0]">by</span> desis, <span className="mx-3 border-b-4 border-[#0857d0]">for</span> desis</>
 ];
 
 function SearchAndFilter({ initialLocation = "", onEditLocation }) {
@@ -63,18 +63,18 @@ function SearchAndFilter({ initialLocation = "", onEditLocation }) {
   };
 
   return (
-    <div className=" py-4 max-w-2xl flex-col justify-start items-center gap-6 flex w-full mx-auto">
-      <div className={`text-center text-gray-800 text-[14px] xs:text-[18px] sm:text-[20px] md:text-[24px] lg:text-[26px] font-medium md:leading-[38px] min-h-[80px] flex items-center justify-center transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className=" py-4 max-w-4xl flex-col justify-start items-center gap-6 flex w-full mx-auto px-4 sm:px-0">
+      <div className={`text-center text-gray-800 text-[16px] xs:text-[18px] sm:text-[20px] md:text-[24px] lg:text-[26px] font-medium md:leading-[38px] tracking-wide min-h-[60px] flex items-center justify-center transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "'Poppins', sans-serif" }}>
         {phrases[phraseIndex]}
       </div>
 
       <form 
         onSubmit={handleSearch}
-        className="flex flex-col md:flex-row bg-white border rounded-[20px] md:rounded-full border-gray-200 w-full p-[6px] shadow-sm hover:shadow-md transition-shadow items-center gap-2 md:gap-0"
+        className="flex flex-col md:flex-row bg-white border rounded-[20px] md:rounded-full border-gray-200 w-full max-w-md md:max-w-2xl p-[6px] shadow-sm hover:shadow-md transition-shadow items-center gap-2 md:gap-0"
       >
         <div className="flex-1 flex flex-col md:flex-row justify-start items-center w-full md:h-full">
           {/* Location Input with Edit Button */}
-          <div className="flex items-center px-4 border-b md:border-b-0 md:border-r border-gray-200 w-full md:w-[45%] h-[50px] md:h-[34px]">
+          <div className="flex items-center px-4 border-b md:border-b-0 md:border-r border-gray-200 w-full md:w-[60%] h-[50px] md:h-[34px]">
             <input
               type="text"
               placeholder="Zipcode/City"
@@ -96,7 +96,7 @@ function SearchAndFilter({ initialLocation = "", onEditLocation }) {
           </div>
 
           {/* Category Autocomplete */}
-          <Box className="flex-1 w-full h-[50px] md:h-full flex items-center px-4">
+          <Box className="flex-1 w-full h-[50px] md:h-full flex items-center">
             <Autocomplete
               fullWidth
               options={categories}
@@ -129,13 +129,16 @@ function SearchAndFilter({ initialLocation = "", onEditLocation }) {
               )}
               sx={{
                 '& .MuiAutocomplete-inputRoot': {
-                  padding: '0px !important',
-                  height: '100%',
+                  padding: '4px 16px 0 !important', // Added top padding to shift text down to the middle
+                  minHeight: '50px',
                   display: 'flex',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 },
                 '& .MuiAutocomplete-endAdornment': {
-                  right: '0px'
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)' // Perfectly center the arrow vertically
                 }
               }}
               ListboxProps={{

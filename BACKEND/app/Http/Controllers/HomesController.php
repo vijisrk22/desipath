@@ -70,7 +70,7 @@ class HomesController extends Controller
         // Removed repairServerPaths as it causes the API to hang on Azure Production
 
         $perPage = 12;
-        $query = BuySellHome::query();
+        $query = BuySellHome::query()->where('status', 'active');
 
         // Admin search
         if ($request->has('search')) {
@@ -312,6 +312,7 @@ class HomesController extends Controller
         }
         $data = $request->except('images'); // get all fields except photos
         $data['seller_name'] = $receiver->name;
+        $data['status'] = 'active';
 
         // Sync coordinates
         if ($request->filled('location_zipcode')) {
@@ -434,7 +435,7 @@ class HomesController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $query = BuySellHome::query();
+        $query = BuySellHome::query()->where('status', 'active');
 
         $city = trim($request->city);
         $zipcode = trim($request->zipcode);
@@ -566,9 +567,10 @@ class HomesController extends Controller
         }
 
         $request->validate([
-            'user_type' => 'required|in:Agent,Owner',
-            'home_type' => 'required|in:Condominum,Single family,Town home',
-            'price' => 'required|numeric',
+            'user_type' => 'sometimes|in:Agent,Owner',
+            'home_type' => 'sometimes|in:Condominum,Single family,Town home',
+            'price' => 'sometimes|numeric',
+            'status' => 'nullable|in:active,inactive',
             'price_per_sqft' => 'nullable|numeric',
             'built_area' => 'nullable|numeric',
             'lot_size' => 'nullable|numeric',
@@ -616,12 +618,15 @@ class HomesController extends Controller
             'company_name' => 'nullable|string|max:255'
         ]);
 
-        $receiver = User::find($request->seller_id);
-        if (!$receiver) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
         $data = $request->except('images');
-        $data['seller_name'] = $receiver->name;
+        
+        if ($request->has('seller_id')) {
+            $receiver = User::find($request->seller_id);
+            if (!$receiver) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+            $data['seller_name'] = $receiver->name;
+        }
 
         // Sync coordinates
         if ($request->filled('location_zipcode')) {
@@ -660,7 +665,9 @@ class HomesController extends Controller
         $home->update($data);
 
         // Return photos as array in response
-        $home->images = json_decode($home->images, true);
+        if (is_string($home->images)) {
+            $home->images = json_decode($home->images, true);
+        }
 
         return response()->json(['message' => 'Home updated successfully', 'data' => $home]);
     }

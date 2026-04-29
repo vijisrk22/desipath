@@ -56,6 +56,15 @@ export const updateHouse = createAsyncThunk("houses/updateHouse", async({ houseI
     }
 })
 
+export const deleteHouse = createAsyncThunk("houses/deleteHouse", async (houseId, { rejectWithValue }) => {
+    try {
+        const response = await api.delete(`/api/homes/${houseId}`);
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || "Failed to delete house");
+    }
+})
+
 const housesSlice = createSlice({
     name: "houses",
     initialState:{

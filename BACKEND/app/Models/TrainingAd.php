@@ -14,7 +14,7 @@ class TrainingAd extends Model
     protected $fillable = [
         'user_id', 'course_title', 'course_fee', 'agenda',
         'image_1', 'image_2', 'image_3', 'contact_form',
-        'timestamp'
+        'timestamp', 'status'
     ];
 
     public function user()

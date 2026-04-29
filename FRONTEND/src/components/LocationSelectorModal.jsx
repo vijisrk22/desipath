@@ -139,32 +139,8 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
             {detecting ? 'Detecting...' : 'Detect My Location'}
           </Button>
 
-          <Box sx={{ my: 3, display: 'flex', alignItems: 'center' }}>
-            <Divider sx={{ flex: 1 }} />
-            <Typography variant="caption" sx={{ px: 2, color: '#999', fontWeight: 700 }}>OR</Typography>
-            <Divider sx={{ flex: 1 }} />
+          <Box sx={{ mt: 3 }}>
           </Box>
-
-          <Button
-            fullWidth
-            variant="contained"
-            startIcon={<Explore sx={{ color: 'white' }} />}
-            onClick={onShowAll}
-            sx={{
-              borderRadius: '12px',
-              py: 1.5,
-              textTransform: 'none',
-              fontWeight: 800,
-              bgcolor: '#ffa41c',
-              color: 'white',
-              mb: 1.5,
-              '&:hover': {
-                bgcolor: '#e69419'
-              }
-            }}
-          >
-            {buttonLabel || 'Continue to Site'}
-          </Button>
 
           <Button
             fullWidth

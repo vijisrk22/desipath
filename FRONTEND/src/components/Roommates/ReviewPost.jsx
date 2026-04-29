@@ -34,6 +34,9 @@ function ReviewPost({ open, onClose, formDetails, images }) {
       location_zipcode: formDetails.location_zipcode || "",
       poster_id: user?.id,
       poster_name: user?.name,
+      sharing_type: formDetails.sharing_type,
+      gender_preference: formDetails.gender_preference,
+      food_preference: formDetails.food_preference,
     };
 
     // Poster Role
@@ -136,11 +139,13 @@ function ReviewPost({ open, onClose, formDetails, images }) {
         </div>
         <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
           {formDetails.rent
-            ? formDetails.rent.toLocaleString("en-US", {
+            ? Number(formDetails.rent.toString().replace(/[^0-9.]/g, '')).toLocaleString("en-US", {
                 style: "currency",
                 currency: "USD",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
               })
-            : "$0.00"}
+            : "$0"}
         </div>
         <div className=" text-gray-800 text-[26px] font-bold font-dmsans">
           Single Room

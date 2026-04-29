@@ -22,8 +22,12 @@ function BuySellHouse() {
     window.scrollTo(0, 0);
   }, [action]);
 
+  if (action === "buyHouse" || action === "buyHome") {
+    return <Navigate to="/services/BuyHome/find" replace />;
+  }
+
   const pageDetails = {
-    path1: "buyHouse",
+    path1: "find",
     path2: "sellHouse",
     description1: "Search for a house to buy in your area",
     description2: "Post an ad to sell your house",
@@ -49,13 +53,13 @@ function BuySellHouse() {
             <Footer newsletter={"block"} />
           </div>
         </>
-      ) : action === "buyHouse" ? (
+      ) : action === "find" ? (
         <BuyHouse />
       ) : (action === "sellHouse" || action === "edit") ? (
         <SellHouse />
       ) : action === "postConfirmation" ? (
         <PostConfirmation 
-          redirectTo="/services/houses/buyHouse" 
+          redirectTo="/services/BuyHome/find" 
           message="Thanks for using Desipath. Your house listing is live!" 
         />
       ) : (

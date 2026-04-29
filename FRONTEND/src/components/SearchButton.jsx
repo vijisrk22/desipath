@@ -11,7 +11,7 @@ function SearchButton({
     >
       <img src="/search.svg" className={`${imageClass} brightness-0 invert`} />
       {textVisible && (
-        <div className="text-center text-white hidden md:block md:text-[14px] lg:text-[16px] font-semibold font-dmsans">
+        <div className="text-center text-white text-[14px] lg:text-[16px] font-semibold font-dmsans">
           Go
         </div>
       )}

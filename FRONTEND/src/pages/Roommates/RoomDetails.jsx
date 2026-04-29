@@ -6,6 +6,7 @@ import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
 import { getRoomContents } from "./DisplayRoomDetail";
 import api from "../../utils/api";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 import { useEffect } from "react";
 import { fetchRoomById } from "../../store/RoommatesSlice";
@@ -122,7 +123,7 @@ function RoomDetails() {
       {roomDetails.photos?.length > 0 && (
         <div className="h-[476px] my-5 flex justify-center items-center shadow-sm rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
           <div className="w-full h-full">
-            <ImageScroller images={roomDetails.photos.map(img => (img.startsWith('http') ? img : `https://desipathapi.azurewebsites.net/${img}`))} />
+            <ImageScroller images={roomDetails.photos.map(img => getFullImageUrl(img))} />
           </div>
         </div>
       )}
@@ -131,7 +132,7 @@ function RoomDetails() {
           <div key={indx} className="flex justify-center">
             <img
               className="w-[150px] h-[150px] rounded-xl border-[3px] border-[#0857d0] object-cover shadow-sm transition-transform hover:scale-105"
-              src={img.startsWith('http') ? img : `https://desipathapi.azurewebsites.net/${img}`}
+              src={getFullImageUrl(img)}
               alt={`Property Photo ${indx + 1}`}
             />
           </div>

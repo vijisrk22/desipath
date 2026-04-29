@@ -7,10 +7,11 @@ import MyListingCard from "./MyListingCard";
 // Imports for Redux Actions
 import { fetchRooms, deleteRoom, updateRoom } from "../../store/RoommatesSlice";
 import { fetchCars, deleteCar, updateCar } from "../../store/CarsSlice";
-import { fetchTravelCompanions, fetchTravelers } from "../../store/TravelCompanionSlice";
+import { fetchTravelCompanions, fetchTravelers, deleteTravelCompanion, updateTravelCompanion } from "../../store/TravelCompanionSlice";
 import { fetchRentalHomes, deleteRentalHome, updateRentalHome } from "../../store/RentalHomesSlice";
 import { fetchEvents, deleteEvent, updateEvent } from "../../store/EventsSlice";
 import { fetchTrainings, deleteTraining, updateTraining } from "../../store/ITTrainingsSlice";
+import { deleteHouse, updateHouse } from "../../store/HousesSlice";
 
 // Imports for Edit Modals
 import EditRoomPostModal from "../Roommates/EditRoomPostModal";
@@ -32,12 +33,19 @@ const MyListings = () => {
     const [reviewSession, setReviewSession] = useState(false);
     const [formDetails, setFormDetails] = useState(null);
     const [currentEditConfig, setCurrentEditConfig] = useState(null);
+    const [toast, setToast] = useState(null);
+
+    const showToast = (message, type = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+    };
 
     const categories = [
+        { id: 'Houses', label: 'Sell home', icon: '🏡', listPath: '/api/homes/my-listings', del: deleteHouse, upd: updateHouse, redirect: '/services/BuyHome/edit' },
         { id: 'Rooms', label: 'Roommates', icon: '👥', listPath: '/api/roommates/my-listings', del: deleteRoom, upd: updateRoom, modal: EditRoomPostModal },
         { id: 'Cars', label: 'Cars', icon: '🚗', listPath: '/api/cars/my-listings', del: deleteCar, upd: updateCar, modal: EditCarPostModal },
         { id: 'Rental', label: 'Rental Homes', icon: '🏠', listPath: '/api/rentalhomes/my-listings', del: deleteRentalHome, upd: updateRentalHome, modal: EditRentalHomePostModal },
-        { id: 'Travel', label: 'Travel', icon: '✈️', listPath: '/api/travelcompanions/my-listings', del: deleteRentalHome, upd: updateRentalHome, modal: EditRentalHomePostModal },
+        { id: 'Travel', label: 'Travel', icon: '✈️', listPath: '/api/travelcompanions/my-listings', del: deleteTravelCompanion, upd: updateTravelCompanion },
         { id: 'Trainings', label: 'Trainings', icon: '💻', listPath: '/api/trainingads/my-listings', del: deleteTraining, upd: updateTraining, modal: EditTrainingPostModal },
         { id: 'Events', label: 'Events', icon: '🎟️', listPath: '/api/events/my-listings', del: deleteEvent, upd: updateEvent, redirect: '/services/events/edit' },
     ];
@@ -93,6 +101,47 @@ const MyListings = () => {
         }
     };
 
+    const handleToggleStatus = async (item) => {
+        const newStatus = item.status === 'active' ? 'inactive' : 'active';
+        
+        // Optimistic UI Update: Instantly change status in local state for smoothness
+        const previousData = tabData[activeTab];
+        const updatedData = previousData.map(listing => 
+            listing.id === item.id ? { ...listing, status: newStatus } : listing
+        );
+        setTabData(prev => ({ ...prev, [activeTab]: updatedData }));
+
+        try {
+            const idKey = item._catId.toLowerCase() === 'houses' ? 'houseId' : 
+                         item._catId.toLowerCase() === 'cars' ? 'carId' :
+                         item._catId.toLowerCase() === 'rooms' ? 'roomId' :
+                         item._catId.toLowerCase() === 'rental' ? 'rentalHomeId' :
+                         item._catId.toLowerCase() === 'travel' ? 'companionId' :
+                         item._catId.toLowerCase() === 'events' ? 'eventId' :
+                         item._catId.toLowerCase() === 'trainings' ? 'trainingId' : 'id';
+            
+            const dataKey = item._catId.toLowerCase() === 'houses' ? 'houseData' :
+                           item._catId.toLowerCase() === 'cars' ? 'carData' :
+                           item._catId.toLowerCase() === 'rooms' ? 'roomData' :
+                           item._catId.toLowerCase() === 'rental' ? 'rentalHomeData' :
+                           item._catId.toLowerCase() === 'travel' ? 'companionData' :
+                           item._catId.toLowerCase() === 'events' ? 'eventData' :
+                           item._catId.toLowerCase() === 'trainings' ? 'trainingData' : 'data';
+
+            await dispatch(item._config.upd({ 
+                [idKey]: item.id, 
+                [dataKey]: { status: newStatus } 
+            }));
+            showToast('Listing updated', 'success');
+            // We don't call fetchCategoryData here to keep the experience smooth and flicker-free
+        } catch (error) {
+            // Revert on failure
+            setTabData(prev => ({ ...prev, [activeTab]: previousData }));
+            console.error("Failed to toggle status:", error);
+            showToast('Failed to update listing', 'error');
+        }
+    };
+
     const currentListings = activeTab ? (tabData[activeTab] || []) : [];
 
     return (
@@ -139,6 +188,7 @@ const MyListings = () => {
                                     category={item._categoryType}
                                     onEdit={() => handleEdit(item)}
                                     onDelete={() => handleDelete(item)}
+                                    onToggleStatus={() => handleToggleStatus(item)}
                                 />
                             ))
                         ) : (
@@ -170,6 +220,18 @@ const MyListings = () => {
                     formDetails={formDetails}
                     editFunc={currentEditConfig.upd}
                 />
+            )}
+
+            {/* Custom Toast Notification */}
+            {toast && (
+                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] animate-in fade-in slide-in-from-bottom-10 duration-300">
+                    <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl border ${toast.type === 'success' ? 'bg-white border-green-500 shadow-green-100' : 'bg-white border-red-500 shadow-red-100'}`}>
+                        <span className={`text-2xl ${toast.type === 'success' ? 'text-green-500' : 'text-red-500'}`}>
+                            {toast.type === 'success' ? '✅' : '🚨'}
+                        </span>
+                        <p className="font-bold text-gray-800 font-dmsans">{toast.message}</p>
+                    </div>
+                </div>
             )}
         </div>
     );

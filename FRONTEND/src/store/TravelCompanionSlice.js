@@ -53,6 +53,30 @@ export const fetchFindCompanionLocation = createAsyncThunk("travelCompanions/fin
 });
 
 
+export const updateTravelCompanion = createAsyncThunk(
+    "travelCompanions/updateTravelCompanion",
+    async ({ companionId, companionData }, { rejectWithValue }) => {
+        try {
+            const response = await api.put(`/api/travelcompanions/${companionId}`, companionData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update travel companion");
+        }
+    }
+);
+
+export const deleteTravelCompanion = createAsyncThunk(
+    "travelCompanions/deleteTravelCompanion",
+    async (companionId, { rejectWithValue }) => {
+        try {
+            await api.delete(`/api/travelcompanions/${companionId}`);
+            return companionId;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to delete travel companion");
+        }
+    }
+);
+
 const travelCompanionsSlice = createSlice({ 
     name: "travelCompanion",
     initialState: {

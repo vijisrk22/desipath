@@ -5,7 +5,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from 'react-router-dom';
 import { getFullImageUrl } from '../../utils/imageHelper';
 
-const MyListingCard = ({ item, category, onEdit, onDelete }) => {
+const MyListingCard = ({ item, category, onEdit, onDelete, onToggleStatus }) => {
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             month: 'short',
@@ -63,21 +63,40 @@ const MyListingCard = ({ item, category, onEdit, onDelete }) => {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2 sm:flex-col lg:flex-row">
-                <button 
-                    onClick={() => onEdit(item.id)}
-                    className="p-2.5 rounded-xl bg-blue-50 text-[#0857d0] hover:bg-[#0857d0] hover:text-white transition-all transform hover:scale-105"
-                    title="Edit Listing"
-                >
-                    <EditIcon fontSize="small" />
-                </button>
-                <button 
-                    onClick={() => onDelete(item.id)}
-                    className="p-2.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all transform hover:scale-105"
-                    title="Delete Listing"
-                >
-                    <DeleteIcon fontSize="small" />
-                </button>
+            <div className="flex flex-col items-center sm:items-end gap-3 min-w-[120px]">
+                {/* Status Toggle */}
+                <div className="flex items-center gap-2 mb-1">
+                    <span className={`text-[10px] font-bold uppercase ${item.status === 'active' ? 'text-green-500' : 'text-gray-400'}`}>
+                        {item.status === 'active' ? 'Active' : 'Inactive'}
+                    </span>
+                    <button
+                        onClick={() => onToggleStatus && onToggleStatus(item)}
+                        className={`w-10 h-5 rounded-full relative transition-colors duration-200 focus:outline-none ${
+                            item.status === 'active' ? 'bg-green-500' : 'bg-gray-300'
+                        }`}
+                    >
+                        <div className={`absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full transition-transform duration-200 ${
+                            item.status === 'active' ? 'translate-x-5' : 'translate-x-0'
+                        }`} />
+                    </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <button 
+                        onClick={() => onEdit(item.id)}
+                        className="p-2.5 rounded-xl bg-blue-50 text-[#0857d0] hover:bg-[#0857d0] hover:text-white transition-all transform hover:scale-105"
+                        title="Edit Listing"
+                    >
+                        <EditIcon fontSize="small" />
+                    </button>
+                    <button 
+                        onClick={() => onDelete(item.id)}
+                        className="p-2.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all transform hover:scale-105"
+                        title="Delete Listing"
+                    >
+                        <DeleteIcon fontSize="small" />
+                    </button>
+                </div>
             </div>
         </div>
     );

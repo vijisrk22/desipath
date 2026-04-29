@@ -9,8 +9,8 @@ function BuyHouse() {
   const inputs = ["location", "homeType"];
   const paths = [
     { text: "Home", eP: "/" },
-    { text: "Buy/Sell House", eP: "/services/houses" },
-    { text: "Buy a House", eP: "/services/houses/buyHouse" },
+    { text: "Buy/Sell House", eP: "/services/BuyHome" },
+    { text: "Buy a House", eP: "/services/BuyHome/find" },
   ];
   return (
     <div className="bg-[#f3f5f7]">

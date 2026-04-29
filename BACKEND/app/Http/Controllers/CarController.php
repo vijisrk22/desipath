@@ -43,7 +43,7 @@ class CarController extends Controller
      */
     public function index(Request $request)
     {
-        $query = BuySellCar::with(['fuelType','transmission','condition']);
+        $query = BuySellCar::with(['fuelType','transmission','condition'])->where('status', 'active');
 
         // Admin search
         if ($request->has('search')) {
@@ -284,6 +284,7 @@ public function testCars() { return BuySellCar::all(); }
         }
         $data = $request->except('pictures');
         $data['seller_name'] = $receiver->name;
+        $data['status'] = 'active';
 
         // Sync coordinates
         if ($request->filled('location_zipcode')) {
@@ -403,7 +404,7 @@ public function testCars() { return BuySellCar::all(); }
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $query = BuySellCar::with(['fuelType','transmission','condition']);
+        $query = BuySellCar::with(['fuelType','transmission','condition'])->where('status', 'active');
 
         $city = trim($request->city);
         $state = trim($request->state);
@@ -540,9 +541,10 @@ public function testCars() { return BuySellCar::all(); }
         }
 
         $validatedData = $request->validate([
-            'make' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'year' => 'required|integer',
+            'make' => 'sometimes|string|max:255',
+            'model' => 'sometimes|string|max:255',
+            'year' => 'sometimes|integer',
+            'status' => 'nullable|in:active,inactive',
             'miles' => 'nullable|integer',
             'variant' => 'nullable|string|max:255',
             'newPhotos.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
@@ -557,20 +559,22 @@ public function testCars() { return BuySellCar::all(); }
                     $fail('The ' . $attribute . ' must be less than 2MB.');
                 }
             }],
-            'location' => 'required|string|max:255',
-            'price' => 'required|numeric',
+            'location' => 'sometimes|string|max:255',
+            'price' => 'sometimes|numeric',
             'description' => 'nullable|string|max:1000',
             'seller_id' => 'nullable|exists:users,id',
             'seller_name' => 'nullable|string|max:255',
         ]);
 
-        $receiver = User::find($request->seller_id);
-        if (!$receiver) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-        // $data = $request->except('pictures');
         $data = $request->except(['pictures', 'newPhotos', 'existingPhotos', 'new_pictures', 'existing_pictures']);
-        $data['seller_name'] = $receiver->name;
+        
+        if ($request->has('seller_id')) {
+            $receiver = User::find($request->seller_id);
+            if (!$receiver) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+            $data['seller_name'] = $receiver->name;
+        }
 
         // Sync coordinates
         if ($request->filled('location_zipcode')) {
