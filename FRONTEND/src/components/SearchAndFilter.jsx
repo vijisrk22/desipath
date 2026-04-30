@@ -23,8 +23,8 @@ const categories = [
 ];
 
 const phrases = [
-  <>Connecting desi hearts across <span className="mx-3 border-b-4 border-[#ffa41c]">every</span> zip code</>,
-  <>Built <span className="mx-3 border-b-4 border-[#0857d0]">by</span> desis, <span className="mx-3 border-b-4 border-[#0857d0]">for</span> desis</>
+  <>Connecting desi hearts across{" "}<span className="mx-1.5 border-b-4 border-[#ffa41c]">every</span>{" "}zip code</>,
+  <>Built{" "}<span className="mx-1.5 border-b-4 border-[#0857d0]">by</span>{" "}desis,{" "}<span className="mx-1.5 border-b-4 border-[#0857d0]">for</span>{" "}desis</>
 ];
 
 function SearchAndFilter({ initialLocation = "", onEditLocation }) {
@@ -64,7 +64,10 @@ function SearchAndFilter({ initialLocation = "", onEditLocation }) {
 
   return (
     <div className=" py-4 max-w-4xl flex-col justify-start items-center gap-6 flex w-full mx-auto px-4 sm:px-0">
-      <div className={`text-center text-gray-800 text-[16px] xs:text-[18px] sm:text-[20px] md:text-[24px] lg:text-[26px] font-medium md:leading-[38px] tracking-wide min-h-[60px] flex items-center justify-center transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <div
+        className={`text-center text-gray-800 text-[15px] sm:text-[18px] md:text-[22px] lg:text-[26px] font-medium leading-snug tracking-wide min-h-[52px] flex items-center justify-center flex-wrap gap-x-0 transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-0'}`}
+        style={{ fontFamily: "'Poppins', sans-serif" }}
+      >
         {phrases[phraseIndex]}
       </div>
 
@@ -80,6 +83,7 @@ function SearchAndFilter({ initialLocation = "", onEditLocation }) {
               placeholder="Zipcode/City"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
+              autoComplete="off"
               className="w-full text-gray-800 text-sm font-semibold font-dmsans outline-none placeholder:text-gray-400 truncate"
             />
             <IconButton 

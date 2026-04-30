@@ -13,7 +13,7 @@ const PostSuccess = () => {
     <div className="flex flex-col min-h-screen font-poppins">
       <Navbar />
       <div className="bg-gray-50 pt-6 px-4">
-        <div className="max-w-sm mx-auto">
+        <div className="hidden md:block max-w-sm mx-auto">
           <Link to="/" className="text-gray-500 hover:text-[#2563eb] text-sm font-medium font-dmsans">Home</Link>
           <span className="text-gray-400 mx-2 text-sm font-medium font-dmsans">{">"}</span>
           <Link to="/travel-companion" className="text-gray-500 hover:text-[#2563eb] text-sm font-medium font-dmsans">Travel Companion</Link>
@@ -60,25 +60,27 @@ const PostSuccess = () => {
                 </Button>
               </Link>
               
-              <Link to="/travel-companion">
-                <Button 
-                  variant="outlined" 
-                  fullWidth
-                  startIcon={<ArrowBack />}
-                  sx={{ 
-                    borderColor: '#e5e7eb', 
-                    color: '#6b7280',
-                    '&:hover': { borderColor: '#2563eb', color: '#2563eb', bgcolor: 'blue.50' }, 
-                    borderRadius: '20px', 
-                    py: 2, 
-                    fontWeight: 800, 
-                    textTransform: 'none',
-                    fontSize: '1rem'
-                  }}
-                >
-                  Back to Network
-                </Button>
-              </Link>
+              <div className="hidden md:block">
+                <Link to="/travel-companion">
+                  <Button 
+                    variant="outlined" 
+                    fullWidth
+                    startIcon={<ArrowBack />}
+                    sx={{ 
+                      borderColor: '#e5e7eb', 
+                      color: '#6b7280',
+                      '&:hover': { borderColor: '#2563eb', color: '#2563eb', bgcolor: 'blue.50' }, 
+                      borderRadius: '20px', 
+                      py: 2, 
+                      fontWeight: 800, 
+                      textTransform: 'none',
+                      fontSize: '1rem'
+                    }}
+                  >
+                    Back to Network
+                  </Button>
+                </Link>
+              </div>
             </div>
           </Paper>
         </Container>

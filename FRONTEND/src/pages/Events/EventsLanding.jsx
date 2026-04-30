@@ -30,7 +30,7 @@ function EventsLanding() {
               orangeArrow={true}
             />
           </div>
-          <Footer bgColor="bg-white" />
+          <Footer bgColor="bg-white" hideOnMobile />
         </>
       ) : (action === "findEvent" && !eventId) ? (
         <FindEvent />

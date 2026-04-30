@@ -64,7 +64,7 @@ function LandingPage() {
 
 
       <div className="mt-[81px]">
-        <Footer newsletter={"block"} />
+        <Footer newsletter={"block"} hideOnMobile />
       </div>
     </div>
   );

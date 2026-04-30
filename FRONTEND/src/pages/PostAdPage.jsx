@@ -153,7 +153,7 @@ const PostAdPage = () => {
                 </div>
             </div>
 
-            <Footer newsletter={"block"} />
+            <Footer newsletter={"block"} hideOnMobile />
         </div>
     );
 };

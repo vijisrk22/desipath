@@ -21,6 +21,14 @@ function LocationAutocompleteInput({
 
   const input = useWatch({ control, name: "location" }) || "";
 
+  // Sync selectedLocation when the field is pre-filled from outside (localStorage / Redux)
+  // so the dropdown doesn't falsely open on page load
+  useEffect(() => {
+    if (input && input === localStorage.getItem("user_location")) {
+      setSelectedLocation(input);
+    }
+  }, [input]);
+
   // Debounce the input to avoid api calls on every keystroke
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -61,6 +69,12 @@ function LocationAutocompleteInput({
   );
 
   useEffect(() => {
+    // Don't open the dropdown if the current input exactly matches what was already selected
+    // (handles pre-fill from localStorage / Redux restoring the saved location)
+    if (input === selectedLocation) {
+      setIsDropdownOpen(false);
+      return;
+    }
     if (debouncedSearch.length >= 2 && debouncedSearch !== selectedLocation && !isDropdownOpen) {
       // Open dropdown when we have a valid search term
       setIsDropdownOpen(true);

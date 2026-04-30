@@ -11,10 +11,13 @@ function ChatList() {
   const chatList = [];
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return; // Don't fetch if user is not logged in
+
     dispatch(fetchChatList());
     const interval = setInterval(() => {
       dispatch(fetchChatList());
-    }, 1000);
+    }, 30000); // Poll every 30s instead of every 1s
     return () => clearInterval(interval);
   }, [dispatch]);
 

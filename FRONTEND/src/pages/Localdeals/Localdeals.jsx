@@ -67,29 +67,27 @@ const AdCard = ({ ad, onOpenInfo }) => {
         </Slider>
       </div>
 
-      {/* Footer Info */}
-      <div className="px-4 mt-4">
-        <div className="flex justify-between items-start">
-          <div className="flex-1 pr-4">
-            <h4 className="text-[14px] font-semibold text-gray-800 leading-snug">{ad.title}</h4>
-          </div>
-          <div className="flex items-center gap-3 shrink-0 mt-1">
-            <button 
-              onClick={() => window.location.href = `/messages/ad/${ad.id}/type/local_ads/user/${ad.business_account?.owner_user_id}`}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-700"
-              title="Message Business"
-            >
-              <IoMailOutline size={24} />
-            </button>
-            <button 
-              onClick={() => onOpenInfo(ad)}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-700"
-              title="View Details"
-            >
-              <IoInformationCircleOutline size={26} />
-            </button>
-          </div>
-        </div>
+      {/* Action Row */}
+      <div className="px-4 py-3 flex items-center gap-4">
+        <button 
+          onClick={() => window.location.href = `/messages/ad/${ad.id}/type/local_ads/user/${ad.business_account?.owner_user_id}`}
+          className="p-1 rounded-full hover:bg-gray-100 transition-colors text-gray-800"
+          title="Message Business"
+        >
+          <IoMailOutline size={28} />
+        </button>
+        <button 
+          onClick={() => onOpenInfo(ad)}
+          className="p-1 rounded-full hover:bg-gray-100 transition-colors text-gray-800"
+          title="View Details"
+        >
+          <IoInformationCircleOutline size={30} />
+        </button>
+      </div>
+
+      {/* Content Info */}
+      <div className="px-4 pb-2">
+        <h4 className="text-[15px] font-bold text-gray-900 leading-tight">{ad.title}</h4>
       </div>
     </div>
   );
@@ -250,6 +248,65 @@ const AdDetailsPopup = ({ ad, onClose }) => {
   );
 };
 
+const SearchModal = ({ isOpen, onClose, searchQuery, setSearchQuery, handleSearch }) => {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[1002] flex items-start justify-center pt-20 px-4">
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+          <motion.div 
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -50, opacity: 0 }}
+            className="relative bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Search Deals</h3>
+              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <IoClose size={20} />
+              </button>
+            </div>
+            <div className="relative">
+              <IoSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <input 
+                autoFocus
+                type="text"
+                placeholder="Search deals, businesses..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch(e);
+                    onClose();
+                  }
+                }}
+                className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              />
+            </div>
+            <div className="mt-4 flex gap-3">
+              <button 
+                onClick={(e) => {
+                  handleSearch({ key: 'Enter' });
+                  onClose();
+                }}
+                className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-200"
+              >
+                Search
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 export default function Localdeals() {
   const [ads, setAds] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -259,6 +316,7 @@ export default function Localdeals() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   
   const observer = useRef();
   const lastAdElementRef = (node) => {
@@ -331,7 +389,18 @@ export default function Localdeals() {
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div className="max-w-[600px] mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Local Deals</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Local Deals</h1>
+              {/* Mobile Search Button */}
+              <button 
+                onClick={() => setIsSearchModalOpen(true)}
+                className="md:hidden p-2 bg-gray-50 text-gray-600 rounded-full border border-gray-100 hover:bg-gray-100 transition-colors"
+                aria-label="Open search"
+              >
+                <IoSearch size={18} />
+              </button>
+            </div>
+            
             {location && (
               <button 
                 onClick={() => setLocation(null)}
@@ -343,8 +412,8 @@ export default function Localdeals() {
             )}
           </div>
 
-          {/* Search Bar */}
-          <div className="relative mb-4">
+          {/* Desktop Search Bar (Hidden on mobile) */}
+          <div className="relative mb-4 hidden md:block">
             <IoSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
             <input 
               type="text"
@@ -409,7 +478,7 @@ export default function Localdeals() {
         )}
       </main>
 
-      <Footer newsletter={"block"} />
+      <Footer newsletter={"block"} hideOnMobile />
 
       {/* Ad Details Modal */}
       <AnimatePresence>
@@ -420,6 +489,15 @@ export default function Localdeals() {
           />
         )}
       </AnimatePresence>
+
+      {/* Search Modal (Mobile only) */}
+      <SearchModal 
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        handleSearch={handleSearch}
+      />
 
       <style dangerouslySetInnerHTML={{ __html: `
         .no-scrollbar::-webkit-scrollbar { display: none; }

@@ -92,7 +92,7 @@ const TravelCompanionWizard = ({ type = 'seeker' }) => {
     <div className="flex flex-col min-h-screen bg-gray-50 font-poppins">
       <Navbar />
       <div className="flex-grow pt-6 pb-20 px-4">
-        <div className="max-w-4xl mx-auto mb-6">
+        <div className="hidden md:block max-w-4xl mx-auto mb-6">
           <Link to="/" className="text-gray-500 hover:text-[#2563eb] text-sm font-medium font-dmsans">Home</Link>
           <span className="text-gray-400 mx-2 text-sm font-medium font-dmsans">{">"}</span>
           <Link to="/travel-companion" className="text-gray-500 hover:text-[#2563eb] text-sm font-medium font-dmsans">Travel Companion</Link>
@@ -557,7 +557,7 @@ const TravelCompanionWizard = ({ type = 'seeker' }) => {
     <div className="flex flex-col min-h-screen font-poppins">
       <Navbar />
       <div className="flex-grow bg-gray-100/30 pt-6 pb-24 px-4">
-      <div className="max-w-3xl mx-auto mb-6">
+      <div className="hidden md:block max-w-3xl mx-auto mb-6">
         <Link to="/" className="text-gray-500 hover:text-[#2563eb] text-sm font-medium font-dmsans">Home</Link>
         <span className="text-gray-400 mx-2 text-sm font-medium font-dmsans">{">"}</span>
         <Link to="/travel-companion" className="text-gray-500 hover:text-[#2563eb] text-sm font-medium font-dmsans">Travel Companion</Link>
@@ -609,21 +609,23 @@ const TravelCompanionWizard = ({ type = 'seeker' }) => {
 
         {/* Action Buttons */}
         <div className="flex items-center justify-between">
-          <Button
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            startIcon={<ArrowBack />}
-            sx={{ 
-              borderRadius: '16px', 
-              px: 4, 
-              py: 1.5, 
-              color: 'gray', 
-              textTransform: 'none', 
-              fontWeight: 700 
-            }}
-          >
-            Back
-          </Button>
+          <div className="hidden md:flex">
+            <Button
+              disabled={activeStep === 0}
+              onClick={handleBack}
+              startIcon={<ArrowBack />}
+              sx={{ 
+                borderRadius: '16px', 
+                px: 4, 
+                py: 1.5, 
+                color: 'gray', 
+                textTransform: 'none', 
+                fontWeight: 700 
+              }}
+            >
+              Back
+            </Button>
+          </div>
           
           {activeStep === steps.length - 1 ? (
             <Button

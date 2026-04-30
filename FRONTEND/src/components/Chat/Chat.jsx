@@ -20,7 +20,6 @@ function Chat() {
   useEffect(() => {
     const userId = chatPartnerInfo?.chatPartnerId;
     if (adType && adId && userId) {
-      console.log(adType);
       dispatch(fetchChatList({ adType, adId, userId }));
     }
   }, []);
@@ -48,7 +47,7 @@ function Chat() {
           )}
         </div>
       </div>
-      <Footer />
+      <Footer hideOnMobile />
     </div>
   );
 }
