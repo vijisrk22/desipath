@@ -21,6 +21,7 @@ use App\Http\Controllers\EventsController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\AirportController;
 use App\Http\Controllers\TravelCompanionController;
+use App\Http\Controllers\LocalAdsController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -269,6 +270,26 @@ Route::middleware([])->group(function () {
     Route::put('/kids-classes/{id}', [KidsClassController::class, 'update']);
 });
 
+// --- IT Training Routes ---
+use App\Http\Controllers\ItTrainingController;
+Route::middleware([])->group(function () {
+    Route::post('/it-training', [ItTrainingController::class, 'store']);
+    Route::get('/it-training', [ItTrainingController::class, 'index']);
+    Route::get('/it-training/{id}', [ItTrainingController::class, 'show']);
+});
+
+// --- Marketplace Categories ---
+use App\Http\Controllers\MarketplaceCategoryController;
+Route::get('/marketplace/categories', [MarketplaceCategoryController::class, 'index']);
+Route::middleware([])->group(function () {
+    Route::post('/admin/categories', [MarketplaceCategoryController::class, 'store']);
+    Route::put('/admin/categories/{id}', [MarketplaceCategoryController::class, 'update']);
+    Route::delete('/admin/categories/{id}', [MarketplaceCategoryController::class, 'destroy']);
+    Route::post('/admin/categories/{categoryId}/subcategories', [MarketplaceCategoryController::class, 'storeSubcategory']);
+    Route::put('/admin/subcategories/{id}', [MarketplaceCategoryController::class, 'updateSubcategory']);
+    Route::delete('/admin/subcategories/{id}', [MarketplaceCategoryController::class, 'destroySubcategory']);
+});
+
 Route::get('/fix-status-columns', function() {
     $tables = [
         'BuySellHomes',
@@ -313,4 +334,20 @@ Route::middleware('auth:sanctum')->prefix('travel-companion')->group(function ()
     Route::patch('/volunteer-posts/{id}', [TravelCompanionController::class, 'storeVolunteerPost']);
     Route::get('/my-posts', [TravelCompanionController::class, 'myPosts']);
     Route::post('/reports', [TravelCompanionController::class, 'report']);
+});
+// --- Local Ads Routes ---
+Route::prefix('local-ads')->group(function () {
+    Route::get('/', [LocalAdsController::class, 'index']);
+    Route::get('/feed', [LocalAdsController::class, 'index']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/local-ads/mine', [LocalAdsController::class, 'myAds']);
+    Route::post('/local-ads', [LocalAdsController::class, 'store']);
+    Route::put('/local-ads/{id}', [LocalAdsController::class, 'update']);
+    Route::delete('/local-ads/{id}', [LocalAdsController::class, 'destroy']);
+    
+    // Admin Actions
+    Route::get('/admin/local-ads', [LocalAdsController::class, 'adminIndex']);
+    Route::patch('/admin/local-ads/{id}/status', [LocalAdsController::class, 'updateStatus']);
 });

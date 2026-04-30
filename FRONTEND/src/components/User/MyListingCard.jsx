@@ -15,10 +15,10 @@ const MyListingCard = ({ item, category, onEdit, onDelete, onToggleStatus }) => 
     };
 
     // Determine title/location based on item type
-    const title = item.course_title || item.event_name || item.type || item.make || item.home_type || "Listing";
+    const title = item.title || item.course_title || item.event_name || item.type || item.make || item.home_type || "Listing";
     const subTitle = item.location || item.address || `${item.location_city || ''} ${item.location_state || ''}`.trim() || "Local Listing";
     const price = item.price || item.rent || item.deposit_rent || item.course_fee || item.ticket_price;
-    const image = item.images?.[0] || item.photos?.[0] || (item.image_1) || (Array.isArray(item.cover_images) ? item.cover_images[0] : null) || null;
+    const image = item.poster_urls?.[0] || item.images?.[0] || item.photos?.[0] || (item.image_1) || (Array.isArray(item.cover_images) ? item.cover_images[0] : null) || null;
 
     return (
         <div className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-6 hover:shadow-md transition-all duration-300 group">

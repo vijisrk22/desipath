@@ -60,7 +60,7 @@ const services = [
   {
     name: "Local Ads",
     image: "/img/localAds/Desipath_Local_Ads.png",
-    path: "",
+    path: "/services/Localdeals",
   },
   {
     name: "Photography",

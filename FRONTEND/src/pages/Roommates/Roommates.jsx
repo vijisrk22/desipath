@@ -42,7 +42,11 @@ function Roommates() {
         <>
           {" "}
           <div className="flex-grow bg-[#f0f8ff]">
-            <ServiceHeroSection pageDetails={pageDetails} orangeArrow={true} />
+            <ServiceHeroSection 
+              pageDetails={pageDetails} 
+              orangeArrow={true} 
+              bgImg="/img/roommates/Desipath_Roommates.png" 
+            />
           </div>
           <div className="bg-[#f0f8ff]">
             <Footer newsletter={"block"} />

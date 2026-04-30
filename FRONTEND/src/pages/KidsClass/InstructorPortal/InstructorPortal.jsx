@@ -128,6 +128,15 @@ export default function InstructorPortal() {
 
   const updateFormData = (stepKey, data) => {
     setFormData(prev => ({ ...prev, [stepKey]: { ...prev[stepKey], ...data } }));
+    
+    // Clear validation errors for the keys being updated
+    setValidationErrors(prevErrors => {
+      const newErrors = { ...prevErrors };
+      Object.keys(data).forEach(key => {
+        delete newErrors[key];
+      });
+      return newErrors;
+    });
   };
 
   const setTopLevelData = (data) => {

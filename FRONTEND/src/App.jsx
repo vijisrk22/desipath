@@ -39,6 +39,15 @@ import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import UsersAdmin from "./pages/AdminDashboard/UsersAdmin";
 import ZipcodesAdmin from "./pages/AdminDashboard/ZipcodesAdmin";
+import LocalAdsAdmin from "./pages/AdminDashboard/LocalAdsAdmin";
+import Localdeals from "./pages/Localdeals/Localdeals";
+import ItTrainingLanding from "./pages/ItTraining/ItTrainingLanding";
+import ItTrainingSubcategory from "./pages/ItTraining/ItTrainingSubcategory";
+import ItTrainingDetails from "./pages/ItTraining/ItTrainingDetails";
+import ItInstructorPortal from "./pages/ItTraining/InstructorPortal/InstructorPortal";
+import ItInstructorSuccess from "./pages/ItTraining/InstructorPortal/InstructorSuccess";
+import MarketplaceCategories from "./pages/AdminDashboard/MarketplaceCategories";
+
 
 
 function App() {
@@ -101,7 +110,9 @@ function App() {
           />
           <Route path="astrologyAds/:action?" element={<AstrologyAds />} />
           <Route path="classesForKids/:action?" element={<ClassesForKids />} />
+          <Route path="Localdeals" element={<Localdeals />} />
         </Route>
+
 
         {/* Travel Companion V2 Routes */}
         <Route path="/travel-companion" element={<TravelCompanionLanding />} />
@@ -115,6 +126,35 @@ function App() {
 
         <Route path="/kids-class" element={<KidsClassLanding />} />
         
+        {/* IT Training Routes */}
+        <Route path="/it-training" element={<ItTrainingLanding />} />
+        <Route
+          path="/it-training/instructor-portal"
+          element={
+            <PrivateRoute>
+              <ItInstructorPortal />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/it-training/instructor-portal/edit/:id"
+          element={
+            <PrivateRoute>
+              <ItInstructorPortal />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/it-training/instructor-portal/success"
+          element={
+            <PrivateRoute>
+              <ItInstructorSuccess />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/it-training/details/:id" element={<ItTrainingDetails />} />
+        <Route path="/it-training/:categorySlug/:subcategorySlug" element={<ItTrainingSubcategory />} />
+
         {/* Unified Admin Dashboard */}
         <Route path="/admindashboard" element={<AdminDashboard />}>
           <Route index element={<div className="p-10 font-bold text-gray-500 text-xl text-center">
@@ -123,6 +163,7 @@ function App() {
           </div>} />
           <Route path="users" element={<UsersAdmin />} />
           <Route path="kids-class" element={<KidsClassAdmin />} />
+          <Route path="categories" element={<MarketplaceCategories />} />
           <Route path="rental-homes" element={<ListingAdmin endpoint="/api/rentalhomes" title="Rental Homes" categoryIcon="🏘️" />} />
           <Route path="roommates" element={<ListingAdmin endpoint="/api/roommates" title="Roommates" categoryIcon="👥" />} />
           <Route path="cars" element={<ListingAdmin endpoint="/api/cars" title="Buy/Sell Cars" categoryIcon="🚗" />} />
@@ -130,6 +171,7 @@ function App() {
           <Route path="events" element={<ListingAdmin endpoint="/api/events" title="Events" categoryIcon="🎟️" />} />
           <Route path="travel" element={<ListingAdmin endpoint="/api/travelcompanions" title="Travel Companion" categoryIcon="✈️" customBasePath="travelCompanion" />} />
           <Route path="trainings" element={<ListingAdmin endpoint="/api/trainingads" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
+          <Route path="local-ads" element={<LocalAdsAdmin />} />
           <Route path="zipcodes" element={<ZipcodesAdmin />} />
           <Route path="*" element={<div className="p-10 font-bold text-gray-500">Module coming soon...</div>} />
         </Route>

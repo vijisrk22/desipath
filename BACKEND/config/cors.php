@@ -12,7 +12,11 @@ return [
     // ],
     // 'allowed_origins' => ['*'], // allow all domains
     // 'allowed_origins' => ['http://localhost:3000'],
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'http://localhost:3000',
+        'http://localhost:8000',
+        'http://localhost:5173',
+    ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],

@@ -1,103 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-
-const CATEGORIES = [
-  {
-    name: "Indian Languages",
-    color: "bg-orange-50 border-orange-200 text-orange-900 border",
-    accent: "bg-orange-100 text-orange-600",
-    slug: "indian-languages",
-    icon: "🗣",
-    subcategories: [
-      { name: "Hindi", slug: "hindi", icon: "अ" },
-      { name: "Tamil", slug: "tamil", icon: "அ" },
-      { name: "Telugu", slug: "telugu", icon: "అ" },
-      { name: "Kannada", slug: "kannada", icon: "ಅ" },
-      { name: "Malayalam", slug: "malayalam", icon: "അ" },
-      { name: "Gujarati", slug: "gujarati", icon: "અ" },
-      { name: "Punjabi", slug: "punjabi", icon: "ਅ" },
-    ],
-  },
-  {
-    name: "Classical Arts-Dance",
-    color: "bg-pink-50 border-pink-200 text-pink-900 border",
-    accent: "bg-pink-100 text-pink-600",
-    slug: "classical-arts-dance",
-    icon: "💃",
-    subcategories: [
-      { name: "Bharatanatyam", slug: "bharatanatyam", icon: "💃" },
-      { name: "Kathak", slug: "kathak", icon: "💃" },
-      { name: "Bollywood Dance", slug: "bollywood-dance", icon: "👯" },
-    ],
-  },
-  {
-    name: "Music",
-    color: "bg-purple-50 border-purple-200 text-purple-900 border",
-    accent: "bg-purple-100 text-purple-600",
-    slug: "music",
-    icon: "🎵",
-    subcategories: [
-      { name: "Carnatic Vocal", slug: "carnatic-vocal", icon: "🎤" },
-      { name: "Hindustani Vocal", slug: "hindustani-vocal", icon: "🎤" },
-      { name: "Veena", slug: "veena", icon: "🎸" },
-      { name: "Keyboard", slug: "keyboard", icon: "🎹" },
-      { name: "Mridangam", slug: "mridangam", icon: "🥁" },
-      { name: "Tabla", slug: "tabla", icon: "🥁" },
-    ],
-  },
-  {
-    name: "Academic Classes",
-    color: "bg-blue-50 border-blue-200 text-blue-900 border",
-    accent: "bg-blue-100 text-blue-600",
-    slug: "academic-classes",
-    icon: "📚",
-    subcategories: [
-      { name: "Online Chess", slug: "online-chess", icon: "♟️" },
-      { name: "Online English", slug: "online-english", icon: "📖" },
-      { name: "Maths Class", slug: "maths", icon: "🧮" },
-      { name: "Computer Programming", slug: "computer-programming", icon: "💻" },
-    ],
-  },
-  {
-    name: "Spiritual & Cultural",
-    color: "bg-yellow-50 border-yellow-200 text-yellow-900 border",
-    accent: "bg-yellow-100 text-yellow-700",
-    slug: "spiritual-cultural",
-    icon: "🕉",
-    subcategories: [
-      { name: "Sloka Chanting", slug: "sloka-chanting", icon: "🙏" },
-      { name: "Vedic Math", slug: "vedic-math", icon: "🔢" },
-      { name: "Shlokas w/ Meaning", slug: "shlokas-meaning", icon: "📝" },
-    ],
-  },
-  {
-    name: "Mythology Storytelling",
-    color: "bg-red-50 border-red-200 text-red-900 border",
-    accent: "bg-red-100 text-red-600",
-    slug: "mythology-storytelling",
-    icon: "📜",
-    subcategories: [
-      { name: "Ramayana", slug: "ramayana", icon: "🏹" },
-      { name: "Mahabharata", slug: "mahabharata", icon: "⚔️" },
-      { name: "Panchatantra", slug: "panchatantra", icon: "🐅" },
-    ],
-  },
-];
-
 import LocationSelectorModal from "../../components/LocationSelectorModal";
-import { useEffect } from "react";
+import api from "../../utils/api";
 
 export default function KidsClassLanding() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const savedLocation = localStorage.getItem('user_location');
     if (!savedLocation) {
       setShowLocationModal(true);
     }
+    
+    const fetchCats = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get('/api/marketplace/categories?module=kids_class');
+        if (res.data.success) {
+          setCategories(res.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch Kids categories", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCats();
   }, []);
 
   const handleLocationSelect = (locationString) => {
@@ -105,18 +38,15 @@ export default function KidsClassLanding() {
     setShowLocationModal(false);
   };
 
-  // Real-time filtering logic
-  const filteredCategories = CATEGORIES.map((category) => {
-    // If the category name itself matches, show all its subcategories
+  const filteredCategories = categories.map((category) => {
     if (category.name.toLowerCase().includes(searchTerm.toLowerCase())) {
       return category;
     }
-    // Otherwise, filter subcategories
-    const filteredSubs = category.subcategories.filter((sub) =>
+    const filteredSubs = (category.subcategories || []).filter((sub) =>
       sub.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     return { ...category, subcategories: filteredSubs };
-  }).filter((category) => category.subcategories.length > 0);
+  }).filter((category) => (category.subcategories || []).length > 0);
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -129,8 +59,7 @@ export default function KidsClassLanding() {
       />
 
       {/* Hero / Banner Section */}
-      <div className="bg-gradient-to-r from-blue-100 via-[#e0f2fe] to-pink-100 py-5 px-[7%] relative overflow-hidden">
-        {/* Top Right Action Button */}
+      <div className="bg-gradient-to-r from-blue-100 via-[#e0f2fe] to-pink-100 py-10 px-[7%] relative overflow-hidden">
         <div className="absolute top-4 right-[7%] z-20 hidden md:block">
           <Link 
             to="/kids-class/instructor-portal"
@@ -149,7 +78,6 @@ export default function KidsClassLanding() {
             Discover a world of rich cultural learning, academics, and arts. Find the perfect classes to nurture your child's roots and talents!
           </p>
 
-          {/* Search Bar Container */}
           <div className="w-full max-w-3xl flex flex-col md:flex-row items-center gap-4 justify-center">
             <div className="w-full max-w-lg relative">
               <input
@@ -166,7 +94,6 @@ export default function KidsClassLanding() {
           </div>
         </div>
         
-        {/* Subtle decorative background element */}
         <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none hidden md:block">
            <span className="text-9xl">🎒</span>
         </div>
@@ -174,7 +101,11 @@ export default function KidsClassLanding() {
 
       {/* Categories Grid Section */}
       <div className="flex-grow w-full px-[7%] py-6">
-        {filteredCategories.length > 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : filteredCategories.length > 0 ? (
           <div className="space-y-8">
             {filteredCategories.map((category, idx) => (
               <div key={idx} className={`p-5 md:p-6 rounded-2xl ${category.color} shadow-sm border`}>
@@ -188,7 +119,7 @@ export default function KidsClassLanding() {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                  {category.subcategories.map((sub, jdx) => (
+                  {(category.subcategories || []).map((sub, jdx) => (
                     <Link
                       key={jdx}
                       to={`/kids-class/${category.slug}/${sub.slug}`}

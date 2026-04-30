@@ -1,13 +1,5 @@
-import React, { useState } from 'react';
-
-const CATEGORIES = {
-  'Indian Languages': ['Hindi', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Gujarati', 'Punjabi'],
-  'Classical Arts-Dance': ['Bharatanatyam', 'Kathak', 'Bollywood Dance'],
-  'Music': ['Carnatic Vocal', 'Hindustani Vocal', 'Veena', 'Keyboard', 'Mridangam', 'Tabla'],
-  'Academic Classes': ['Online Chess', 'Online English', 'Maths Class', 'Computer Programming'],
-  'Spiritual & Cultural': ['Sloka Chanting', 'Vedic Math', 'Shlokas w/ Meaning'],
-  'Mythology Storytelling': ['Ramayana', 'Mahabharata', 'Panchatantra']
-};
+import React, { useState, useEffect } from 'react';
+import api from '../../../utils/api';
 
 const LEVELS = ['Beginner', 'Mid-Level', 'Advanced'];
 const FORMATS = ['Online', 'Offline', 'Hybrid'];
@@ -15,6 +7,25 @@ const AGE_GROUPS = ['Under 5 yrs', '5-8 yrs', '9-12 yrs', '13-17 yrs'];
 
 export default function Step2ClassBasic({ data, update }) {
   const [tagInput, setTagInput] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [loadingCats, setLoadingCats] = useState(false);
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      setLoadingCats(true);
+      try {
+        const res = await api.get('/api/marketplace/categories?module=kids_class');
+        if (res.data.success) {
+          setCategories(res.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch Kids categories", err);
+      } finally {
+        setLoadingCats(false);
+      }
+    };
+    fetchCats();
+  }, []);
 
   const toggleArrayItem = (field, value) => {
     const current = data[field] || [];
@@ -39,6 +50,8 @@ export default function Step2ClassBasic({ data, update }) {
   const removeTag = (tagToRemove) => {
     update({ tags: (data.tags || []).filter(t => t !== tagToRemove) });
   };
+
+  const selectedCat = categories.find(c => c.name === data.category);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -70,10 +83,11 @@ export default function Step2ClassBasic({ data, update }) {
                 update({ category: e.target.value, subcategory: '' }); // Reset subcategory
               }}
               className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 bg-white"
+              disabled={loadingCats}
             >
-              <option value="">Select a Category</option>
-              {Object.keys(CATEGORIES).map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              <option value="">{loadingCats ? 'Loading...' : 'Select a Category'}</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.name}>{cat.name}</option>
               ))}
             </select>
           </div>
@@ -87,8 +101,8 @@ export default function Step2ClassBasic({ data, update }) {
               disabled={!data.category}
             >
               <option value="">Select Subcategory</option>
-              {data.category && CATEGORIES[data.category] ? CATEGORIES[data.category].map(sub => (
-                <option key={sub} value={sub}>{sub}</option>
+              {selectedCat && selectedCat.subcategories ? selectedCat.subcategories.map(sub => (
+                <option key={sub.id} value={sub.name}>{sub.name}</option>
               )) : null}
             </select>
           </div>
@@ -104,6 +118,7 @@ export default function Step2ClassBasic({ data, update }) {
                 return (
                   <button 
                     key={level}
+                    type="button"
                     onClick={() => toggleArrayItem('level', level)}
                     className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${isSelected ? 'bg-blue-100 border-blue-500 text-blue-700' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'}`}
                   >
@@ -121,6 +136,7 @@ export default function Step2ClassBasic({ data, update }) {
                 return (
                   <button 
                     key={fmt}
+                    type="button"
                     onClick={() => toggleArrayItem('format', fmt)}
                     className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${isSelected ? 'bg-orange-100 border-orange-500 text-orange-700' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'}`}
                   >
@@ -155,6 +171,7 @@ export default function Step2ClassBasic({ data, update }) {
                 return (
                   <button 
                     key={age}
+                    type="button"
                     onClick={() => toggleArrayItem('ageGroup', age)}
                     className={`px-3 py-1.5 rounded-md border text-sm transition-all ${isSelected ? 'bg-green-100 border-green-500 text-green-700' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'}`}
                   >
@@ -172,7 +189,7 @@ export default function Step2ClassBasic({ data, update }) {
               {(data.tags || []).map(tag => (
                 <span key={tag} className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded-full flex items-center gap-1">
                   {tag}
-                  <button onClick={() => removeTag(tag)} className="text-gray-500 hover:text-red-500">×</button>
+                  <button type="button" onClick={() => removeTag(tag)} className="text-gray-500 hover:text-red-500">×</button>
                 </span>
               ))}
             </div>

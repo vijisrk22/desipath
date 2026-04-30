@@ -224,6 +224,15 @@ class RoomMatesController extends Controller
         $data['poster_name'] = $receiver->name;
         $data['status'] = 'active';
 
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
+
         if ($request->has('photos') && !empty($request->photos)) {
             $photos = [];
             
@@ -343,41 +352,54 @@ class RoomMatesController extends Controller
         $city = trim($request->city);
         $state = trim($request->state);
         $zipcode = trim($request->zipcode);
-        $priceMin = $request->priceMin;
-        $priceMax = $request->priceMax;
+        $radius = 40; // Miles
 
-        $query->where(function ($q) use ($city, $state, $zipcode, $priceMin, $priceMax, $request) {
-            $q->where(function ($query) use ($request) {
-                if ($request->filled('city')) {
-                    $query->where('location_city', '=', $request->city);
-                }
-                if ($request->filled('state')) {
-                    $query->where('location_state', '=', $request->state);
-                }
-                if ($request->filled('zipcode')) {
-                    $query->where('location_zipcode', '=', $request->zipcode);
-                }
+        $centerPoint = null;
 
-                if ($request->filled('priceMin')) {
-                    $query->where('rent', '>=', $request->priceMin);
-                }
+        // Try to get coordinates for the search center
+        if ($zipcode) {
+            $centerPoint = \DB::table('usa_zipcodes')->where('zip', $zipcode)->first();
+        } elseif ($city) {
+            $centerPoint = \DB::table('usa_zipcodes')
+                ->where('city', 'like', '%' . $city . '%')
+                ->when($state, function ($q) use ($state) {
+                    return $q->where('state_id', $state)->orWhere('state_name', $state);
+                })
+                ->first();
+        }
 
-                if ($request->filled('priceMax')) {
-                    $query->where('rent', '<=', $request->priceMax);
-                }
+        if ($centerPoint && $centerPoint->lat && $centerPoint->lng) {
+            $lat = $centerPoint->lat;
+            $lng = $centerPoint->lng;
+            $searchZip = $centerPoint->zip;
 
-                // if ($request->filled('priceMin') || $request->filled('priceMax')) {
-                //     $query->orWhere(function ($subQuery) use ($request) {
-                //         if ($request->filled('priceMin')) {
-                //             $subQuery->where('rent', '>=', $request->priceMin);
-                //         }
-                //         if ($request->filled('priceMax')) {
-                //             $subQuery->where('rent', '<=', $request->priceMax);
-                //         }
-                //     });
-                // }
-            });
-        });
+            $query->select('*')
+                ->selectRaw("(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
+                ->having('distance', '<=', $radius);
+            
+            // Priority ordering: exact zip first, then by distance
+            $query->orderByRaw("CASE WHEN location_zipcode = ? THEN 0 ELSE 1 END ASC", [$searchZip])
+                  ->orderBy('distance', 'asc');
+        } else {
+            // Fallback to basic keyword matching if no coordinates found
+            if ($request->filled('city')) {
+                $query->where('location_city', 'like', '%' . $request->city . '%');
+            }
+            if ($request->filled('state')) {
+                $query->where('location_state', 'like', '%' . $request->state . '%');
+            }
+            if ($request->filled('zipcode')) {
+                $query->where('location_zipcode', 'like', '%' . $request->zipcode . '%');
+            }
+        }
+
+        if ($request->filled('priceMin')) {
+            $query->where('rent', '>=', $request->priceMin);
+        }
+
+        if ($request->filled('priceMax')) {
+            $query->where('rent', '<=', $request->priceMax);
+        }
 
         $roommates = $query->get();
         // dd($roommates);
@@ -458,6 +480,15 @@ class RoomMatesController extends Controller
                 return response()->json(['error' => 'User not found'], 404);
             }
             $data['poster_name'] = $receiver->name;
+        }
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
         }
 
         if ($request->has('existingPhotos') && !empty($request->existingPhotos)) {

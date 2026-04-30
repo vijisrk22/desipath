@@ -12,6 +12,8 @@ import { fetchRentalHomes, deleteRentalHome, updateRentalHome } from "../../stor
 import { fetchEvents, deleteEvent, updateEvent } from "../../store/EventsSlice";
 import { fetchTrainings, deleteTraining, updateTraining } from "../../store/ITTrainingsSlice";
 import { deleteHouse, updateHouse } from "../../store/HousesSlice";
+import { deleteLocalAd, updateLocalAd } from "../../store/LocalAdsSlice";
+
 
 // Imports for Edit Modals
 import EditRoomPostModal from "../Roommates/EditRoomPostModal";
@@ -48,6 +50,7 @@ const MyListings = () => {
         { id: 'Travel', label: 'Travel', icon: '✈️', listPath: '/api/travelcompanions/my-listings', del: deleteTravelCompanion, upd: updateTravelCompanion },
         { id: 'Trainings', label: 'Trainings', icon: '💻', listPath: '/api/trainingads/my-listings', del: deleteTraining, upd: updateTraining, modal: EditTrainingPostModal },
         { id: 'Events', label: 'Events', icon: '🎟️', listPath: '/api/events/my-listings', del: deleteEvent, upd: updateEvent, redirect: '/services/events/edit' },
+        { id: 'LocalAds', label: 'Local Ads', icon: '📢', listPath: '/api/local-ads/mine', del: deleteLocalAd, upd: updateLocalAd, redirect: '/services/Localdeals/edit' },
     ];
 
     const fetchCategoryData = async (catId) => {
@@ -118,6 +121,7 @@ const MyListings = () => {
                          item._catId.toLowerCase() === 'rental' ? 'rentalHomeId' :
                          item._catId.toLowerCase() === 'travel' ? 'companionId' :
                          item._catId.toLowerCase() === 'events' ? 'eventId' :
+                         item._catId.toLowerCase() === 'localads' ? 'id' :
                          item._catId.toLowerCase() === 'trainings' ? 'trainingId' : 'id';
             
             const dataKey = item._catId.toLowerCase() === 'houses' ? 'houseData' :
@@ -126,6 +130,7 @@ const MyListings = () => {
                            item._catId.toLowerCase() === 'rental' ? 'rentalHomeData' :
                            item._catId.toLowerCase() === 'travel' ? 'companionData' :
                            item._catId.toLowerCase() === 'events' ? 'eventData' :
+                           item._catId.toLowerCase() === 'localads' ? 'data' :
                            item._catId.toLowerCase() === 'trainings' ? 'trainingData' : 'data';
 
             await dispatch(item._config.upd({ 
