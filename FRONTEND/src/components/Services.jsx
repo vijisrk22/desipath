@@ -40,7 +40,7 @@ const services = [
   {
     name: "IT Trainings",
     image: "/img/itTrainings/Desipath_ITTraining.png",
-    path: "/services/itTrainings",
+    path: "/it-training",
   },
   {
     name: "Lawyers",

@@ -37,6 +37,8 @@ class RoomMate extends Model
         'poster_name',
         'address',
         'is_furnished',
+        'latitude',
+        'longitude',
         'status'
     ];
 

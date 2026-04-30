@@ -29,10 +29,11 @@ export const fetchLearningPaths = createAsyncThunk(
 
 export const postQuery = createAsyncThunk("itTrainings/postSearchQuery", async (searchQuery, {rejectWithValue}) => {
     try {
-        const response = await api.post("/api/itTrainings/searchResult", searchQuery);
+        const query = typeof searchQuery === 'object' ? searchQuery.query : searchQuery;
+        const response = await api.get(`/api/it-training?query=${encodeURIComponent(query)}`);
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response?.data || "Failed to search "); 
+        return rejectWithValue(error.response?.data || "Failed to search"); 
     }    
 });
 
@@ -119,7 +120,7 @@ const itTrainingsSlice = createSlice({
             })
             .addCase(postQuery.fulfilled, (state, action) => {
                 state.loading = false ;
-                state.searchResults = action.payload.searchResults || [] ;
+                state.searchResults = action.payload.data || [] ;
             })
             .addCase(postQuery.rejected, (state, action) => {           
                 state.loading = false ;

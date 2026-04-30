@@ -317,6 +317,35 @@ Route::get('/fix-status-columns', function() {
     return 'Status columns added and initialized to active for all marketplace tables.';
 });
 
+Route::get('/sync-marketplace-coords', function() {
+    $models = [
+        \App\Models\RoomMate::class,
+        \App\Models\RentalHome::class,
+        \App\Models\BuySellCar::class,
+        \App\Models\BuySellHome::class,
+        \App\Models\Event::class
+    ];
+    
+    $count = 0;
+    foreach ($models as $modelClass) {
+        $items = $modelClass::whereNull('latitude')->orWhere('latitude', '')->get();
+        foreach ($items as $item) {
+            $zip = $item->location_zipcode ?? $item->dealer_zipcode ?? null;
+            if ($zip) {
+                $coords = \DB::table('usa_zipcodes')->where('zip', $zip)->first();
+                if ($coords) {
+                    $item->update([
+                        'latitude' => $coords->lat,
+                        'longitude' => $coords->lng
+                    ]);
+                    $count++;
+                }
+            }
+        }
+    }
+    return "Synced coordinates for $count listings.";
+});
+
 Route::get('/users', function() {
     return User::all();
 });

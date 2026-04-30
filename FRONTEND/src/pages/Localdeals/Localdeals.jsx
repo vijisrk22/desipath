@@ -315,6 +315,11 @@ export default function Localdeals() {
     }
   };
 
+  const handleSetLocation = (newLoc) => {
+    localStorage.setItem('local_deals_location', newLoc);
+    setLocation(newLoc);
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />

@@ -172,6 +172,16 @@ class ItTrainingController extends Controller
 
         $category = $request->query('category');
         $subcategory = $request->query('subcategory');
+        $searchTerm = $request->query('search') ?: $request->query('query');
+
+        if ($searchTerm) {
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('it_training_classes.title', 'like', "%{$searchTerm}%")
+                  ->orWhere('it_training_classes.category', 'like', "%{$searchTerm}%")
+                  ->orWhere('it_training_classes.subcategory', 'like', "%{$searchTerm}%")
+                  ->orWhere('it_training_classes.tags', 'like', "%{$searchTerm}%");
+            });
+        }
 
         $trainings = $query->select(
             'it_training_classes.*',

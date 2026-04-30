@@ -13,7 +13,7 @@ class RentalHome extends Model
 
     protected $fillable = [
         'property_type', 'available_from', 'area', 'deposit_rent', 'bhk', 'address',
-        'community_name', 'amenities', 'pets', 'images', 'accommodates', 'smoking', 'owner_id', 'location_state', 'location_city', 'location_zipcode', 'owner_name', 'description', 'contact_no', 'status'
+        'community_name', 'amenities', 'pets', 'images', 'accommodates', 'smoking', 'owner_id', 'location_state', 'location_city', 'location_zipcode', 'latitude', 'longitude', 'owner_name', 'description', 'contact_no', 'status'
     ];
 
     protected $casts = [
