@@ -113,7 +113,7 @@ function SearchAndFilter({ initialLocation = "", onEditLocation }) {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  placeholder="Search classes, cars, homes..."
+                  placeholder="Select Category"
                   variant="standard"
                   InputProps={{
                     ...params.InputProps,
