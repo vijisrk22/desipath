@@ -10,6 +10,7 @@ import Services from "../components/Services";
 
 import { useState, useEffect } from "react";
 import LocationSelectorModal from "../components/LocationSelectorModal";
+import KidsClassCarousel from "../components/KidsClass/KidsClassCarousel";
 
 function LandingPage() {
   const [showLocationModal, setShowLocationModal] = useState(false);
@@ -58,6 +59,9 @@ function LandingPage() {
         </div>
         <div className="mt-[50px] pb-[30px]">
           <RentalHomesCarousel />
+        </div>
+        <div className="mt-[50px] pb-[30px]">
+          <KidsClassCarousel />
         </div>
       </div>
 

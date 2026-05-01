@@ -251,6 +251,7 @@ Route::middleware([])->group(function () {
 });
 Route::middleware([])->group(function () {
     Route::get('/kids-classes/public/category/{category}/{subcategory}', [KidsClassController::class, 'getPublicByCategory']);
+    Route::get('/kids-classes/public/listings', [KidsClassController::class, 'getPublicListings']);
     Route::get('/kids-classes/public/details/{id}', [KidsClassController::class, 'getPublicDetails']);
 });
 Route::get('/fix-general', function() {

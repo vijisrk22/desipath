@@ -125,7 +125,7 @@ export default function KidsClassLanding() {
                       to={`/kids-class/${category.slug}/${sub.slug}`}
                       className="bg-white hover:bg-gray-50 flex flex-nowrap items-center gap-2 p-3 rounded-xl shadow-sm border border-black/5 hover:shadow-md transition-all transform hover:-translate-y-0.5"
                     >
-                      <span className="text-lg md:text-xl shrink-0">{sub.icon}</span>
+                      <span className="text-lg md:text-xl shrink-0">{sub.icon || '🔹'}</span>
                       <span className="font-semibold text-gray-800 text-sm font-dmsans truncate">
                         {sub.name}
                       </span>

@@ -64,7 +64,9 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
       PaperProps={{
         sx: {
           borderRadius: '24px',
-          padding: '16px'
+          padding: '16px',
+          margin: { xs: '16px', sm: '32px' },
+          width: { xs: 'calc(100% - 32px)', sm: 'auto' }
         }
       }}
     >
@@ -82,30 +84,37 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
         </Typography>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent sx={{ p: 0, overflow: 'hidden' }}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Box sx={{ mb: 3, display: 'flex', gap: 1.5, alignItems: 'center' }}>
-            <Box sx={{ flex: 1 }}>
+          <Box sx={{ 
+            mb: 3, 
+            display: 'flex', 
+            gap: { xs: 1, sm: 1.5 }, 
+            alignItems: 'center',
+            width: '100%' 
+          }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
               <LocationAutocompleteInput 
                 control={control} 
                 setValue={setValue} 
                 type="search"
                 onSelect={onSelectLocation}
-                placeholder="Enter City or Zipcode"
+                placeholder="Enter City, State, Zip"
               />
             </Box>
             <Button
               type="submit"
               variant="contained"
               sx={{
-                height: '42px', // Matches the height of type="search" input wrapper
-                px: 3,
-                borderRadius: '30px', // Matches the rounded style of search input
+                flexShrink: 0,
+                height: '42px',
+                px: { xs: 2.5, sm: 3 },
+                borderRadius: '30px',
                 bgcolor: '#ffa41c',
                 color: 'white',
                 fontWeight: 800,
-                fontSize: '0.9rem',
-                textTransform: 'none',
+                fontSize: '0.85rem',
+                textTransform: 'uppercase',
                 boxShadow: 'none',
                 '&:hover': {
                   bgcolor: '#e69419',
@@ -157,7 +166,7 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
               }
             }}
           >
-            Choose Later
+            Skip
           </Button>
         </form>
       </DialogContent>

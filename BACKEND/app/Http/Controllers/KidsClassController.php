@@ -250,6 +250,51 @@ class KidsClassController extends Controller
     }
 
     /**
+     * Public API: Fetch all active classes for landing page
+     */
+    public function getPublicListings(Request $request)
+    {
+        $limit = $request->input('limit', 12);
+        
+        $classes = DB::table('kids_classes')
+            ->join('instructors', 'kids_classes.instructor_id', '=', 'instructors.id')
+            ->leftJoin('class_pricing', 'kids_classes.id', '=', 'class_pricing.class_id')
+            ->leftJoin('class_schedules', 'kids_classes.id', '=', 'class_schedules.class_id')
+            ->where('kids_classes.status', 'active')
+            ->select(
+                'kids_classes.id',
+                'kids_classes.title',
+                'kids_classes.category',
+                'kids_classes.subcategory',
+                'kids_classes.level',
+                'kids_classes.format',
+                'kids_classes.short_description',
+                'kids_classes.age_group_min',
+                'kids_classes.age_group_max',
+                'instructors.name as instructorName',
+                'instructors.profile_photo_url as photoUrl',
+                'class_pricing.fee_amount',
+                'class_pricing.fee_type',
+                'class_schedules.duration_label',
+                'class_schedules.location_address'
+            )
+            ->orderBy('kids_classes.created_at', 'desc')
+            ->limit($limit)
+            ->get();
+
+        $mapped = $classes->map(function ($c) {
+            $c->level = json_decode($c->level) ?? [];
+            $c->format = json_decode($c->format) ?? [];
+            if ($c->photoUrl && !str_starts_with($c->photoUrl, 'http')) {
+                $c->photoUrl = $c->photoUrl;
+            }
+            return $c;
+        });
+
+        return response()->json(['success' => true, 'data' => $mapped]);
+    }
+
+    /**
      * Public API: Fetch active classes by subcategory
      */
     public function getPublicByCategory(Request $request, $category, $subcategory)

@@ -46,10 +46,13 @@ export default function MarketplaceCategories() {
     }
   };
 
-  const handleSaveSubcategory = async (catId, e) => {
+  const handleSaveSubcategory = async (e) => {
     e.preventDefault();
+    if (!editingSubcategory) return;
+    
+    const catId = editingSubcategory.category_id;
     try {
-      if (editingSubcategory) {
+      if (editingSubcategory.id) {
         await api.put(`/api/admin/subcategories/${editingSubcategory.id}`, subcategoryForm);
       } else {
         await api.post(`/api/admin/categories/${catId}/subcategories`, subcategoryForm);
@@ -60,6 +63,15 @@ export default function MarketplaceCategories() {
     } catch (err) {
       alert("Error saving subcategory");
     }
+  };
+
+  const startEditSubcategory = (sub) => {
+    setEditingSubcategory(sub);
+    setSubcategoryForm({ name: sub.name, icon: sub.icon || '' });
+    // Scroll to the subcategory form
+    setTimeout(() => {
+      document.getElementById('subcategory-form')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   const handleDeleteCategory = async (id) => {
@@ -157,7 +169,11 @@ export default function MarketplaceCategories() {
                     <div className="p-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
                       <span className="text-xs font-bold text-gray-400 uppercase">Subcategories</span>
                       <button 
-                        onClick={() => { setEditingSubcategory({ category_id: cat.id }); setSubcategoryForm({ name: '', icon: '' }); }}
+                        onClick={() => { 
+                          setEditingSubcategory({ category_id: cat.id }); 
+                          setSubcategoryForm({ name: '', icon: '' });
+                          setTimeout(() => document.getElementById('subcategory-form')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                        }}
                         className="text-[10px] font-bold text-blue-600 uppercase hover:underline"
                       >
                         + Add Sub
@@ -170,7 +186,7 @@ export default function MarketplaceCategories() {
                           <span className="text-sm font-medium text-gray-700">{sub.name}</span>
                           <div className="hidden group-hover:flex items-center gap-1 ml-2">
                             <button 
-                              onClick={() => { setEditingSubcategory(sub); setSubcategoryForm({ name: sub.name, icon: sub.icon || '' }); }}
+                              onClick={() => startEditSubcategory(sub)}
                               className="text-[10px] hover:text-blue-600"
                             >
                               ✏️
@@ -265,12 +281,12 @@ export default function MarketplaceCategories() {
 
           {/* Subcategory Form (shown when adding/editing sub) */}
           {(editingSubcategory) && (
-            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 animate-slide-up">
+            <div id="subcategory-form" className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 animate-slide-up">
               <h3 className="font-bold text-gray-900 mb-4">
                 {editingSubcategory.id ? 'Edit' : 'Add'} Subcategory 
                 {editingSubcategory.category_id && !editingSubcategory.id && ' for ' + categories.find(c => c.id === editingSubcategory.category_id)?.name}
               </h3>
-              <form onSubmit={(e) => handleSaveSubcategory(editingSubcategory.category_id, e)} className="space-y-4">
+              <form onSubmit={handleSaveSubcategory} className="space-y-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-1">Name</label>
                   <input 
