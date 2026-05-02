@@ -9,6 +9,7 @@ export default function AdminDashboard() {
   const navItems = [
     { name: 'Dashboard Home', path: '/admindashboard', icon: '🏠' },
     { name: 'Registered Users', path: '/admindashboard/users', icon: '👤' },
+    { name: 'Admin Users', path: '/admindashboard/admins', icon: '👮' },
     { name: 'Kids Classes', path: '/admindashboard/kids-class', icon: '🎨' },
     { name: 'Rental Homes', path: '/admindashboard/rental-homes', icon: '🏘️' },
     { name: 'Roommates', path: '/admindashboard/roommates', icon: '👥' },

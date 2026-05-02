@@ -22,6 +22,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\AirportController;
 use App\Http\Controllers\TravelCompanionController;
 use App\Http\Controllers\LocalAdsController;
+use App\Http\Controllers\AdminManagementController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -382,4 +383,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Actions
     Route::get('/admin/local-ads', [LocalAdsController::class, 'adminIndex']);
     Route::patch('/admin/local-ads/{id}/status', [LocalAdsController::class, 'updateStatus']);
+
+    // Admin User Management
+    Route::get('/admin/users', [AdminManagementController::class, 'index']);
+    Route::post('/admin/users', [AdminManagementController::class, 'store']);
+    Route::put('/admin/users/{id}', [AdminManagementController::class, 'update']);
+    Route::delete('/admin/users/{id}', [AdminManagementController::class, 'destroy']);
 });

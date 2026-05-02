@@ -38,6 +38,7 @@ import PostAdPage from "./pages/PostAdPage";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import UsersAdmin from "./pages/AdminDashboard/UsersAdmin";
+import AdminUsersAdmin from "./pages/AdminDashboard/AdminUsersAdmin";
 import ZipcodesAdmin from "./pages/AdminDashboard/ZipcodesAdmin";
 import LocalAdsAdmin from "./pages/AdminDashboard/LocalAdsAdmin";
 import Localdeals from "./pages/Localdeals/Localdeals";
@@ -167,6 +168,7 @@ function App() {
             Welcome to Desipath Master Control.<br/>Select a module from the left to manage the marketplace.
           </div>} />
           <Route path="users" element={<UsersAdmin />} />
+          <Route path="admins" element={<AdminUsersAdmin />} />
           <Route path="kids-class" element={<KidsClassAdmin />} />
           <Route path="categories" element={<MarketplaceCategories />} />
           <Route path="rental-homes" element={<ListingAdmin endpoint="/api/rentalhomes" title="Rental Homes" categoryIcon="🏘️" />} />

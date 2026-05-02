@@ -248,18 +248,10 @@ class LocalAdsController extends Controller
     {
         try {
             if (!Auth::check()) {
-                \Log::warning('Admin Index: User not authenticated');
                 return response()->json(['message' => 'Unauthenticated'], 401);
             }
 
-            \Log::info('Admin Index Called', [
-                'user_id' => Auth::id(),
-                'role' => Auth::user() ? Auth::user()->role : 'N/A',
-                'status' => $request->status
-            ]);
-
             if (Auth::user()->role !== 'admin') {
-                \Log::warning('Admin Index: Unauthorized access attempt', ['user_id' => Auth::id()]);
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
 
