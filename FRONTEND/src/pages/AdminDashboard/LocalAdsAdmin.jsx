@@ -20,11 +20,21 @@ export default function LocalAdsAdmin() {
     const fetchAds = async () => {
         setLoading(true);
         try {
+            console.log(`Fetching ads with filter: "${filter}", page: ${page}`);
             const res = await api.get(`/api/admin/local-ads?status=${filter}&page=${page}`);
-            setAds(res.data.data);
-            setTotalPages(res.data.last_page);
+            console.log('Admin ads response:', res.data);
+            
+            if (res.data && res.data.data) {
+                setAds(res.data.data);
+                setTotalPages(res.data.last_page);
+            } else {
+                console.error('Unexpected response format:', res.data);
+                showToast('Unexpected response from server', 'error');
+            }
         } catch (err) {
             console.error('Error fetching ads:', err);
+            const msg = err.response?.data?.message || 'Error fetching moderation queue.';
+            showToast(msg, 'error');
         } finally {
             setLoading(false);
         }

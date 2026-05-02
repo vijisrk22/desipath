@@ -22,6 +22,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\AirportController;
 use App\Http\Controllers\TravelCompanionController;
 use App\Http\Controllers\LocalAdsController;
+use App\Http\Controllers\AdminManagementController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -99,6 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/trainingads/my-listings', [TrainingAdsController::class, 'getMyListings']);
     Route::get('/travelcompanions/my-listings', [TravelCompanionsController::class, 'getMyListings']);
     Route::get('/events/my-listings', [EventsController::class, 'getMyListings']);
+    Route::get('/local-ads/my-listings', [LocalAdsController::class, 'myAds']);
 
     // Ad Statistics Endpoints (High Performance — returns only count)
     Route::get('/cars/my-count', [CarController::class, 'getMyAdCount']);
@@ -108,6 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/trainingads/my-count', [TrainingAdsController::class, 'getMyAdCount']);
     Route::get('/travelcompanions/my-count', [TravelCompanionsController::class, 'getMyAdCount']);
     Route::get('/events/my-count', [EventsController::class, 'getMyAdCount']);
+    Route::get('/local-ads/my-count', [LocalAdsController::class, 'getMyAdCount']);
 });
 
 // Public car read routes (no auth required — anyone can browse listings)
@@ -372,8 +375,6 @@ Route::prefix('local-ads')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/local-ads/mine', [LocalAdsController::class, 'myAds']);
-    Route::get('/local-ads/my-count', [LocalAdsController::class, 'getMyAdCount']);
     Route::get('/local-ads/{id}', [LocalAdsController::class, 'show'])->where('id', '[0-9]+');
     Route::post('/local-ads', [LocalAdsController::class, 'store']);
     Route::put('/local-ads/{id}', [LocalAdsController::class, 'update'])->where('id', '[0-9]+');
@@ -382,4 +383,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Actions
     Route::get('/admin/local-ads', [LocalAdsController::class, 'adminIndex']);
     Route::patch('/admin/local-ads/{id}/status', [LocalAdsController::class, 'updateStatus']);
+
+    // Admin User Management
+    Route::get('/admin/users', [AdminManagementController::class, 'index']);
+    Route::post('/admin/users', [AdminManagementController::class, 'store']);
+    Route::put('/admin/users/{id}', [AdminManagementController::class, 'update']);
+    Route::delete('/admin/users/{id}', [AdminManagementController::class, 'destroy']);
 });
