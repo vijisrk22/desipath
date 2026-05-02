@@ -246,17 +246,35 @@ class LocalAdsController extends Controller
      */
     public function adminIndex(Request $request)
     {
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        try {
+            if (!Auth::check()) {
+                \Log::warning('Admin Index: User not authenticated');
+                return response()->json(['message' => 'Unauthenticated'], 401);
+            }
+
+            \Log::info('Admin Index Called', [
+                'user_id' => Auth::id(),
+                'role' => Auth::user() ? Auth::user()->role : 'N/A',
+                'status' => $request->status
+            ]);
+
+            if (Auth::user()->role !== 'admin') {
+                \Log::warning('Admin Index: Unauthorized access attempt', ['user_id' => Auth::id()]);
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
+
+            $query = LocalAd::with('businessAccount')->orderBy('created_at', 'desc');
+
+            if ($request->has('status') && !empty($request->status)) {
+                $query->where('status', $request->status);
+            }
+
+            $result = $query->paginate(20);
+            return response()->json($result);
+        } catch (\Exception $e) {
+            \Log::error('Admin Index Error: ' . $e->getMessage());
+            return response()->json(['message' => 'Internal Server Error'], 500);
         }
-
-        $query = LocalAd::with('businessAccount')->orderBy('created_at', 'desc');
-
-        if ($request->has('status') && !empty($request->status)) {
-            $query->where('status', $request->status);
-        }
-
-        return response()->json($query->paginate(20));
     }
     /**
      * Get count of ads for the logged-in user's business account
