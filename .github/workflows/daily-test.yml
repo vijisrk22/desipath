@@ -10,6 +10,8 @@ on:
 jobs:
   test_and_report:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout Code
@@ -18,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install Dependencies
         working-directory: ./FRONTEND
@@ -30,33 +32,33 @@ jobs:
         run: npm run test:report
         continue-on-error: true
 
-      - name: Zip HTML Report
-        working-directory: ./FRONTEND
-        run: zip -r test-report.zip html/
+      - name: Upload HTML Report as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-html-report
+          path: ./FRONTEND/html/
 
-      - name: Send Email with Test Report
+      - name: Send Email Notification
         uses: dawidd6/action-send-mail@v3
         with:
-          # SMTP configuration (Required in GitHub Secrets)
+          # SMTP configuration
           server_address: smtp.gmail.com
           server_port: 465
           secure: true
-          # Read these from repository secrets
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          # Email headers
           subject: Desipath Daily Frontend Test Report
-          # Recipients
           to: vivekaanand@gmail.com, vijisrk@gmail.com
-          # Email body
           from: Desipath CI
           body: |
             Hello,
 
-            The daily frontend test run has completed. 
-            Attached is the HTML report containing the full results of the Vitest suite.
+            The daily frontend test run has completed! 
+            
+            Because Gmail blocks zip files containing JavaScript code for security reasons, the full interactive HTML report has been saved directly to GitHub.
+            
+            You can view the test results and download the HTML report by visiting your GitHub Actions tab:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             
             Best regards,
             Desipath Automated CI/CD
-          # Attachment
-          attachments: ./FRONTEND/test-report.zip
