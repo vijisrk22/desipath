@@ -5,8 +5,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 const HomeIcon = ({ filled }) => (
   <svg viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor"
     strokeWidth={filled ? 0 : 1.8} className="w-6 h-6">
-    <path strokeLinecap="round" strokeLinejoin="round"
-      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    {filled ? (
+      <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+    ) : (
+      <path strokeLinecap="round" strokeLinejoin="round"
+        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    )}
+    {filled && (
+      <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.432z" />
+    )}
   </svg>
 );
 
@@ -162,8 +169,8 @@ export default function MobileBottomNav() {
       >
         {/* Safe-area spacer for notched phones */}
         <div
-          className="bg-white border-t border-gray-100"
-          style={{ boxShadow: "0 -4px 24px rgba(0,0,0,0.08)" }}
+          className="bg-[#ffa41c] border-t border-orange-400"
+          style={{ boxShadow: "0 -4px 24px rgba(0,0,0,0.15)" }}
         >
           <div className="flex items-end justify-around px-2 pt-1 pb-2"
             style={{ paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
@@ -175,28 +182,28 @@ export default function MobileBottomNav() {
               className="flex flex-col items-center gap-0.5 flex-1 py-1 group"
               aria-label="Home"
             >
-              <span className={`transition-colors ${activeHome ? "text-[#0857d0]" : "text-gray-400 group-hover:text-gray-600"}`}>
+              <span className={`transition-colors ${activeHome ? "text-blue-900" : "text-blue-800/70 group-hover:text-blue-900"}`}>
                 <HomeIcon filled={activeHome} />
               </span>
-              <span className={`text-[10px] font-semibold transition-colors ${activeHome ? "text-[#0857d0]" : "text-gray-400"}`}>
+              <span className={`text-[10px] font-bold transition-colors ${activeHome ? "text-blue-900" : "text-blue-800/70"}`}>
                 Home
               </span>
-              {activeHome && <span className="w-1 h-1 rounded-full bg-[#0857d0] mt-0.5" />}
+              {activeHome && <span className="w-1 h-1 rounded-full bg-blue-900 mt-0.5" />}
             </Link>
 
-            {/* 2 — Local Ads */}
+            {/* 2 — Local Deals */}
             <Link
               to="/services/Localdeals"
               className="flex flex-col items-center gap-0.5 flex-1 py-1 group"
-              aria-label="Local Ads"
+              aria-label="Local Deals"
             >
-              <span className={`transition-colors ${activeAds ? "text-[#0857d0]" : "text-gray-400 group-hover:text-gray-600"}`}>
+              <span className={`transition-colors ${activeAds ? "text-blue-900" : "text-blue-800/70 group-hover:text-blue-900"}`}>
                 <MegaphoneIcon filled={activeAds} />
               </span>
-              <span className={`text-[10px] font-semibold transition-colors ${activeAds ? "text-[#0857d0]" : "text-gray-400"}`}>
-                Local Ads
+              <span className={`text-[10px] font-bold transition-colors ${activeAds ? "text-blue-900" : "text-blue-800/70"}`}>
+                Local Deals
               </span>
-              {activeAds && <span className="w-1 h-1 rounded-full bg-[#0857d0] mt-0.5" />}
+              {activeAds && <span className="w-1 h-1 rounded-full bg-blue-900 mt-0.5" />}
             </Link>
 
             {/* 3 — Events */}
@@ -205,13 +212,13 @@ export default function MobileBottomNav() {
               className="flex flex-col items-center gap-0.5 flex-1 py-1 group"
               aria-label="Events"
             >
-              <span className={`transition-colors ${activeEvents ? "text-[#0857d0]" : "text-gray-400 group-hover:text-gray-600"}`}>
+              <span className={`transition-colors ${activeEvents ? "text-blue-900" : "text-blue-800/70 group-hover:text-blue-900"}`}>
                 <CalendarIcon filled={activeEvents} />
               </span>
-              <span className={`text-[10px] font-semibold transition-colors ${activeEvents ? "text-[#0857d0]" : "text-gray-400"}`}>
+              <span className={`text-[10px] font-bold transition-colors ${activeEvents ? "text-blue-900" : "text-blue-800/70"}`}>
                 Events
               </span>
-              {activeEvents && <span className="w-1 h-1 rounded-full bg-[#0857d0] mt-0.5" />}
+              {activeEvents && <span className="w-1 h-1 rounded-full bg-blue-900 mt-0.5" />}
             </Link>
 
             {/* 4 — Inbox */}
@@ -220,13 +227,13 @@ export default function MobileBottomNav() {
               className="flex flex-col items-center gap-0.5 flex-1 py-1 group"
               aria-label="Inbox"
             >
-              <span className={`transition-colors ${activeChat ? "text-[#0857d0]" : "text-gray-400 group-hover:text-gray-600"}`}>
+              <span className={`transition-colors ${activeChat ? "text-blue-900" : "text-blue-800/70 group-hover:text-blue-900"}`}>
                 <ChatIcon filled={activeChat} />
               </span>
-              <span className={`text-[10px] font-semibold transition-colors ${activeChat ? "text-[#0857d0]" : "text-gray-400"}`}>
+              <span className={`text-[10px] font-bold transition-colors ${activeChat ? "text-blue-900" : "text-blue-800/70"}`}>
                 Inbox
               </span>
-              {activeChat && <span className="w-1 h-1 rounded-full bg-[#0857d0] mt-0.5" />}
+              {activeChat && <span className="w-1 h-1 rounded-full bg-blue-900 mt-0.5" />}
             </Link>
 
             {/* 5 — Profile & Post Ad */}
@@ -236,13 +243,13 @@ export default function MobileBottomNav() {
               aria-label="Profile and Post Ad"
               aria-expanded={profileMenuOpen}
             >
-              <span className={`transition-colors ${activeUser || profileMenuOpen ? "text-[#0857d0]" : "text-gray-400 group-hover:text-gray-600"}`}>
+              <span className={`transition-colors ${activeUser || profileMenuOpen ? "text-blue-900" : "text-blue-800/70 group-hover:text-blue-900"}`}>
                 <UserIcon filled={activeUser || profileMenuOpen} />
               </span>
-              <span className={`text-[10px] font-semibold transition-colors ${activeUser || profileMenuOpen ? "text-[#0857d0]" : "text-gray-400"}`}>
+              <span className={`text-[10px] font-bold transition-colors ${activeUser || profileMenuOpen ? "text-blue-900" : "text-blue-800/70"}`}>
                 Profile
               </span>
-              {(activeUser || profileMenuOpen) && <span className="w-1 h-1 rounded-full bg-[#0857d0] mt-0.5" />}
+              {(activeUser || profileMenuOpen) && <span className="w-1 h-1 rounded-full bg-blue-900 mt-0.5" />}
             </button>
 
           </div>

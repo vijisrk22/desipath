@@ -59,7 +59,7 @@ function LoginPage() {
             </Link>
           </div>
 
-          <div className="relative z-10 mt-12 md:mt-0">
+          <div className="relative z-10 mt-12 md:mt-0 hidden md:block">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-poppins leading-[1.2] mb-6">
               Easy way to interact with Desi!
             </h2>
@@ -163,11 +163,7 @@ function LoginPage() {
               )}
             </form>
 
-            <div className="mt-10 md:hidden p-4 bg-gray-50 rounded-2xl border border-gray-100">
-              <p className="text-gray-500 text-xs leading-relaxed">
-                Find local services, Roommates, Buy & Sell Home, Rental home, Travel companion, IT trainings, browse local events etc.
-              </p>
-            </div>
+
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import TextFieldInput from "./TextFieldInput";
 import { Paper, MenuItem, CircularProgress, Typography } from "@mui/material";
-import { useWatch } from "react-hook-form";
+import { useWatch, Controller } from "react-hook-form";
 import { useQuery } from "react-query";
 import api from "../../utils/api";
 import { MdMyLocation } from "react-icons/md";
@@ -13,6 +13,7 @@ function LocationAutocompleteInput({
   type = "",
   text = "Location",
   onSelect,
+  placeholder,
 }) {
   const wrapperRef = useRef();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -132,13 +133,22 @@ function LocationAutocompleteInput({
       {type === "search" ? (
         // Custom UI for 'search' input
         <div className="px-4 py-1 sm:py-1.5 rounded-[30px] bg-white text-md md:text-sm lg:text-base border-[1.5px] border-[#ccc] focus-within:border-[#ffa41c] transition-all shadow-sm flex w-full items-center">
-          <input
+          <Controller
             name="location"
-            autoComplete="off"
-            placeholder="City, State, Zip"
-            value={input}
-            onChange={(e) => setValue("location", e.target.value)}
-            className="outline-none px-1 py-1  flex-1 min-w-0 rounded-lg"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                autoComplete="off"
+                placeholder={placeholder || "City, State, Zip"}
+                className="outline-none px-1 py-1  flex-1 min-w-0 rounded-lg"
+                onFocus={() => {
+                  if (field.value && field.value.length >= 2) {
+                    setIsDropdownOpen(true);
+                  }
+                }}
+              />
+            )}
           />
           <MdMyLocation
             className="cursor-pointer text-gray-500 hover:text-blue-500 ml-2"

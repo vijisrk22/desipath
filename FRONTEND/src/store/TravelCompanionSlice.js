@@ -5,7 +5,7 @@ export const fetchTravelCompanions = createAsyncThunk(
     "travelCompanions/fetchTravelCompanions",
     async (_, {rejectWithValue}) => {
         try {
-            const response = await api.get("/api/travelCompanions/companion");
+            const response = await api.get("/api/travel-companion/volunteers");
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch travel companions");
@@ -15,7 +15,7 @@ export const fetchTravelCompanions = createAsyncThunk(
 
 export const postTravelCompanion = createAsyncThunk("travelCompanions/postTravelCompanion", async (travelCompanionData, {rejectWithValue}) => {
     try {
-        const response = await api.post("/api/travelcompanions", travelCompanionData);
+        const response = await api.post("/api/travel-companion/volunteer-posts", travelCompanionData);
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response?.data || "Failed to post travel companion");
@@ -26,7 +26,7 @@ export const fetchTravelers = createAsyncThunk(
     "travelCompanions/fetchTravelers",
     async (_, {rejectWithValue}) => {
         try {
-            const response = await api.get("/api/travelcompanions/traveler");
+            const response = await api.get("/api/travel-companion/requests");
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch travelers");
@@ -107,7 +107,8 @@ const travelCompanionsSlice = createSlice({
             })
             .addCase(fetchTravelCompanions.fulfilled, (state, action) => {
                 state.loading = false;
-                state.travelCompanions = action.payload.travelCompanions || [];
+                // Handle both paginated and non-paginated responses
+                state.travelCompanions = action.payload.data || action.payload.travelCompanions || action.payload || [];
             })      
             .addCase(fetchTravelCompanions.rejected, (state, action) => {   
                 state.loading = false;
@@ -119,7 +120,8 @@ const travelCompanionsSlice = createSlice({
             })  
             .addCase(postTravelCompanion.fulfilled, (state, action) => {            
                 state.loading = false;
-                state.travelCompanions.push(action.payload.travelCompanions);
+                const newPost = action.payload.data || action.payload.travelCompanions || action.payload;
+                if (newPost) state.travelCompanions.push(newPost);
             })          
             .addCase(postTravelCompanion.rejected, (state, action) => {
                 state.loading = false;
@@ -131,7 +133,8 @@ const travelCompanionsSlice = createSlice({
             })
             .addCase(fetchTravelers.fulfilled, (state, action) => {
                 state.loading = false;
-                state.travelers = action.payload.travelers || [];
+                // Handle both paginated and non-paginated responses
+                state.travelers = action.payload.data || action.payload.travelers || action.payload || [];
             })      
             .addCase(fetchTravelers.rejected, (state, action) => {   
                 state.loading = false;

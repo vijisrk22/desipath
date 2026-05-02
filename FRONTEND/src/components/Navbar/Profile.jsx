@@ -89,6 +89,44 @@ function Profile({ user, viewPortClass = "md:flex hidden" }) {
                 Your Profile
               </MenuItem>
               <MenuItem
+                onClick={() => {
+                  handleClose();
+                  navigate("/postad");
+                }}
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  mt: 2,
+                  py: 1,
+                  px: 2,
+                  borderRadius: '12px',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 164, 28, 0.05)'
+                  }
+                }}
+              >
+                <Typography sx={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#374151' }}>My Ads</Typography>
+                <Box 
+                  sx={{ 
+                    mt: 0.5,
+                    color: '#1a2e05', 
+                    fontWeight: 900, 
+                    textTransform: 'uppercase', 
+                    fontSize: '0.7rem', 
+                    background: '#bef264', 
+                    px: 1.5, 
+                    py: 0.5, 
+                    borderRadius: '6px', 
+                    letterSpacing: '0.5px',
+                    boxShadow: '0 2px 8px rgba(190, 242, 100, 0.4)',
+                    border: '1px solid #a3e635'
+                  }}
+                >
+                  Post Ad FREE
+                </Box>
+              </MenuItem>
+              <MenuItem
                 onClick={handleLogout}
                 sx={{
                   display: "flex",

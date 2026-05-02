@@ -58,7 +58,7 @@ const services = [
     path: "/services/astrologyAds",
   },
   {
-    name: "Local Ads",
+    name: "Local Deals",
     image: "/img/localAds/Desipath_Local_Ads.png",
     path: "/services/Localdeals",
   },
@@ -114,6 +114,7 @@ export default function ServicesSection() {
                 className="w-full h-full object-cover"
                 src={service.image}
                 alt={service.name}
+                loading="lazy"
                 onError={(e) => {
                   // replace broken image with generated SVG placeholder
                   e.currentTarget.onerror = null;

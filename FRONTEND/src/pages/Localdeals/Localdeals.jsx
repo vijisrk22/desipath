@@ -6,6 +6,8 @@ import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import api from '../../utils/api';
 import { getFullImageUrl } from '../../utils/imageHelper';
+import { useForm } from 'react-hook-form';
+import LocationAutocompleteInput from '../../components/InputTemplate/LocationAutocompleteInput';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -27,15 +29,15 @@ const AdCard = ({ ad, onOpenInfo }) => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    arrows: true,
+    arrows: posterUrls.length > 1,
     beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex),
     appendDots: dots => (
-      <div style={{ bottom: "10px" }}>
-        <ul className="flex justify-center gap-1"> {dots} </ul>
+      <div style={{ bottom: "12px" }}>
+        <ul className="flex justify-center gap-2 px-3 py-1 bg-black/20 backdrop-blur-[2px] rounded-full mx-auto w-fit"> {dots} </ul>
       </div>
     ),
     customPaging: i => (
-      <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === currentSlide ? 'bg-white scale-125' : 'bg-white/50'}`} />
+      <div className={`w-2 h-2 rounded-full transition-all duration-300 ${i === currentSlide ? 'bg-yellow-400 scale-125 shadow-sm' : 'bg-white/70 hover:bg-white'}`} />
     )
   };
 
@@ -59,15 +61,31 @@ const AdCard = ({ ad, onOpenInfo }) => {
       {/* Carousel */}
       <div className="relative group">
         <Slider {...sliderSettings} className="local-ads-slider">
-          {posterUrls.map((img, idx) => (
-            <div key={idx} className="aspect-[4/5] bg-gray-100 flex items-center justify-center">
-              <img src={getFullImageUrl(img)} alt={`${ad.title} ${idx + 1}`} className="w-full h-full object-cover" />
+          {posterUrls.length > 0 ? (
+            posterUrls.map((img, idx) => (
+              <div key={idx} className="aspect-[4/5] bg-gray-100 flex items-center justify-center relative overflow-hidden">
+                <img 
+                  src={getFullImageUrl(img)} 
+                  alt={`${ad.title} ${idx + 1}`} 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.category)}&background=f3f4f6&color=3b82f6&size=512&bold=true`;
+                    // Alternatively, we can show a nice "Image Not Available" text overlay
+                  }}
+                />
+              </div>
+            ))
+          ) : (
+            <div className="aspect-[4/5] bg-gray-100 flex flex-col items-center justify-center p-8 text-center">
+               <IoInformationCircleOutline size={48} className="text-gray-300 mb-2" />
+               <p className="text-gray-400 text-sm font-medium">Visual flyer coming soon</p>
             </div>
-          ))}
+          )}
         </Slider>
       </div>
 
-      {/* Action Row */}
+      {/* Action Row & Title */}
       <div className="px-4 py-3 flex items-center gap-4">
         <button 
           onClick={() => window.location.href = `/messages/ad/${ad.id}/type/local_ads/user/${ad.business_account?.owner_user_id}`}
@@ -76,24 +94,30 @@ const AdCard = ({ ad, onOpenInfo }) => {
         >
           <IoMailOutline size={28} />
         </button>
-        <button 
-          onClick={() => onOpenInfo(ad)}
-          className="p-1 rounded-full hover:bg-gray-100 transition-colors text-gray-800"
-          title="View Details"
-        >
-          <IoInformationCircleOutline size={30} />
-        </button>
-      </div>
-
-      {/* Content Info */}
-      <div className="px-4 pb-2">
-        <h4 className="text-[15px] font-bold text-gray-900 leading-tight">{ad.title}</h4>
+        <div className="flex items-center gap-2 flex-grow min-w-0">
+          <button 
+            onClick={() => onOpenInfo(ad)}
+            className="p-1 rounded-full hover:bg-gray-100 transition-colors text-gray-800 shrink-0"
+            title="View Details"
+          >
+            <IoInformationCircleOutline size={30} />
+          </button>
+          <h4 className="text-[15px] font-bold text-gray-900 leading-tight truncate">{ad.title}</h4>
+        </div>
       </div>
     </div>
   );
 };
 
 const LocationPrompt = ({ onSetLocation }) => {
+  const { control, setValue, handleSubmit } = useForm();
+
+  const onSubmit = (data) => {
+    if (data.location) {
+      onSetLocation(data.location);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center px-4">
       <motion.div 
@@ -113,11 +137,13 @@ const LocationPrompt = ({ onSetLocation }) => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Find Local Deals</h2>
           <p className="text-gray-500 mb-8">See what's happening in your city. Select your location to get started.</p>
           
-          <div className="space-y-3">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <button 
+              type="button"
               onClick={() => onSetLocation("Nearby")}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-200"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-2"
             >
+              <IoLocationOutline size={18} />
               Use Current Location
             </button>
             <div className="flex items-center gap-4 py-2">
@@ -125,21 +151,32 @@ const LocationPrompt = ({ onSetLocation }) => {
               <span className="text-gray-400 text-sm font-medium">OR</span>
               <div className="h-[1px] flex-1 bg-gray-200" />
             </div>
-            <div className="relative">
-              <input 
-                type="text" 
+            <div className="text-left">
+              <LocationAutocompleteInput 
+                control={control}
+                setValue={setValue}
+                type="search"
                 placeholder="Enter City, State"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                onKeyDown={(e) => e.key === 'Enter' && onSetLocation(e.target.value)}
+                onSelect={(loc) => onSetLocation(loc)}
               />
             </div>
-            <button 
-              onClick={() => onSetLocation("All")}
-              className="w-full py-3 text-gray-500 hover:text-gray-700 font-medium transition-colors"
-            >
-              Browse All Ads
-            </button>
-          </div>
+            
+            <div className="flex flex-col gap-2 pt-2">
+              <button 
+                type="submit"
+                className="w-full py-3 bg-gray-900 hover:bg-black text-white font-bold rounded-xl transition-all"
+              >
+                Go
+              </button>
+              <button 
+                type="button"
+                onClick={() => onSetLocation("All")}
+                className="w-full py-2 text-gray-500 hover:text-gray-700 font-medium transition-colors text-sm"
+              >
+                Browse All Deals
+              </button>
+            </div>
+          </form>
         </div>
       </motion.div>
     </div>
@@ -414,12 +451,29 @@ export default function Localdeals() {
 
           {/* Desktop Search Bar (Hidden on mobile) */}
           <div className="relative mb-4 hidden md:block">
-            <IoSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <button 
+              onClick={() => {
+                setAds([]);
+                setPage(1);
+                fetchAds(1, true);
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors"
+            >
+              <IoSearch size={20} />
+            </button>
             <input 
               type="text"
               placeholder="Search deals, businesses..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (e.target.value === "") {
+                  // Reset search when input is cleared
+                  setAds([]);
+                  setPage(1);
+                  fetchAds(1, true);
+                }
+              }}
               onKeyDown={handleSearch}
               className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400"
             />
@@ -502,23 +556,36 @@ export default function Localdeals() {
       <style dangerouslySetInnerHTML={{ __html: `
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .local-ads-slider .slick-prev:before, .local-ads-slider .slick-next:before {
+          font-size: 24px !important;
+          color: #facc15 !important;
+          line-height: 1;
+          opacity: 1 !important;
+        }
         .local-ads-slider .slick-prev, .local-ads-slider .slick-next {
           z-index: 10;
-          width: 30px;
-          height: 30px;
-          opacity: 0;
-          transition: opacity 0.3s;
+          width: 40px;
+          height: 40px;
+          opacity: 0.8;
+          transition: all 0.3s;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 50%;
+          backdrop-filter: blur(4px);
+          display: flex !important;
+          align-items: center;
+          justify-content: center;
+          top: 50%;
+          transform: translateY(-50%);
         }
-        .local-ads-slider:hover .slick-prev, .local-ads-slider:hover .slick-next {
+        .local-ads-slider .slick-prev:hover, .local-ads-slider .slick-next:hover {
           opacity: 1;
+          background: rgba(0, 0, 0, 0.5);
+          transform: scale(1.1) translateY(-50%);
         }
-        .local-ads-slider .slick-prev { left: 10px; }
-        .local-ads-slider .slick-next { right: 10px; }
-        .local-ads-slider .slick-prev:before, .local-ads-slider .slick-next:before {
-          font-size: 24px;
-          text-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
+        .local-ads-slider .slick-prev { left: 15px; }
+        .local-ads-slider .slick-next { right: 15px; }
         .local-ads-slider .slick-dots li button:before { display: none; }
+        .local-ads-slider .slick-dots li { margin: 0; width: 12px; height: 12px; }
       `}} />
     </div>
   );

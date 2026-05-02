@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
 import { getFullImageUrl } from '../../utils/imageHelper';
+import { Link } from 'react-router-dom';
 
 export default function LocalAdsAdmin() {
     const [ads, setAds] = useState([]);
@@ -72,7 +73,7 @@ export default function LocalAdsAdmin() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
                 <div>
                     <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-3">
-                        <span className="text-4xl">📢</span> Local Ads Moderation
+                        <span className="text-4xl">📢</span> Local Deals Moderation
                     </h1>
                     <p className="text-gray-500 font-medium mt-1">Review and approve business advertisements.</p>
                 </div>
@@ -136,7 +137,7 @@ export default function LocalAdsAdmin() {
                                     ))}
                                 </div>
 
-                                <div className="flex gap-3">
+                                <div className="flex flex-wrap gap-3">
                                     {ad.status === 'pending' && (
                                         <>
                                             <button 
@@ -161,8 +162,33 @@ export default function LocalAdsAdmin() {
                                             Revoke/Suspend
                                         </button>
                                     )}
+                                    
+                                    <Link 
+                                        to={`/services/Localdeals/edit/${ad.id}`}
+                                        className="px-6 py-2 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-colors"
+                                    >
+                                        Edit Ad
+                                    </Link>
+
+                                    <button 
+                                        onClick={async () => {
+                                            if(window.confirm('Are you sure you want to delete this ad?')) {
+                                                try {
+                                                    await api.delete(`/api/local-ads/${ad.id}`);
+                                                    showToast('Ad deleted successfully');
+                                                    fetchAds();
+                                                } catch(e) {
+                                                    showToast('Error deleting ad', 'error');
+                                                }
+                                            }
+                                        }}
+                                        className="px-6 py-2 bg-red-50 text-red-600 border border-red-100 rounded-xl font-bold text-sm hover:bg-red-100 transition-colors"
+                                    >
+                                        Delete
+                                    </button>
+
                                     {ad.status === 'rejected' && (
-                                        <div className="text-xs text-red-500 italic bg-red-50 p-2 rounded-lg w-full">
+                                        <div className="mt-2 text-xs text-red-500 italic bg-red-50 p-2 rounded-lg w-full">
                                             Reason: {ad.rejection_reason}
                                         </div>
                                     )}

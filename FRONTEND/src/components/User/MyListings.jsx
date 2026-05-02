@@ -50,7 +50,7 @@ const MyListings = () => {
         { id: 'Travel', label: 'Travel', icon: '✈️', listPath: '/api/travelcompanions/my-listings', del: deleteTravelCompanion, upd: updateTravelCompanion },
         { id: 'Trainings', label: 'Trainings', icon: '💻', listPath: '/api/trainingads/my-listings', del: deleteTraining, upd: updateTraining, modal: EditTrainingPostModal },
         { id: 'Events', label: 'Events', icon: '🎟️', listPath: '/api/events/my-listings', del: deleteEvent, upd: updateEvent, redirect: '/services/events/edit' },
-        { id: 'LocalAds', label: 'Local Ads', icon: '📢', listPath: '/api/local-ads/mine', del: deleteLocalAd, upd: updateLocalAd, redirect: '/services/Localdeals/edit' },
+        { id: 'LocalAds', label: 'Local Deals', icon: '📢', listPath: '/api/local-ads/mine', del: deleteLocalAd, upd: updateLocalAd, redirect: '/services/Localdeals/edit' },
     ];
 
     const fetchCategoryData = async (catId) => {

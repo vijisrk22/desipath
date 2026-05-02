@@ -53,7 +53,7 @@ const SEGMENT_LABELS = {
   'categories':             'Categories',
   'rental-homes':           'Rental Homes',
   'kids-class-admin':       'Kids Class',
-  'local-ads':              'Local Ads',
+  'local-ads':              'Local Deals',
   'zipcodes':               'Zipcodes',
   'trainings':              'Trainings',
   'travel':                 'Travel',

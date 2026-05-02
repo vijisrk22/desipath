@@ -278,7 +278,7 @@ class KidsClassController extends Controller
                 'class_schedules.duration_label',
                 'class_schedules.location_address'
             )
-            ->orderBy('kids_classes.created_at', 'desc')
+            ->inRandomOrder()
             ->limit($limit)
             ->get();
 

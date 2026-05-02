@@ -174,35 +174,27 @@ function ContentModal({ type, onClose }) {
 }
 
 /* ─── Main DrawerComp ───────────────────────────────────────────────────── */
-function DrawerComp({ navPages, setValue }) {
+function DrawerComp({ navItems, setValue }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [modalType,  setModalType]  = useState(null); // "aboutus" | "contact"
   const navigate   = useNavigate();
   const location   = useLocation();
   const user       = JSON.parse(localStorage.getItem("user"));
 
-  let currentPath = location.pathname.replace("/", "").toLowerCase();
+  let currentPath = location.pathname;
 
   /* Desktop: navigate normally */
-  function handleDesktopClick(page) {
+  function handleItemClick(item) {
     setOpenDrawer(false);
-    navigate(`/${page.replace(" ", "").toLowerCase()}`);
-  }
-
-  /* Mobile: About Us / Contact → open modal, others → navigate */
-  function handleMobileClick(page) {
-    const key = page.replace(" ", "").toLowerCase();
-    if (key === "aboutus" || key === "contact") {
-      setOpenDrawer(false);
-      setModalType(key);
+    if (item.path === "/aboutus" || item.path === "/contact") {
+      setModalType(item.path.replace("/", ""));
     } else {
-      setOpenDrawer(false);
-      navigate(`/${key}`);
+      navigate(item.path);
     }
   }
 
   // Mobile only shows About Us and Contact
-  const mobilePages = ["About Us", "Contact"];
+  const mobileItems = navItems.filter(item => item.label === "About Us" || item.label === "Contact");
 
   return (
     <>
@@ -221,39 +213,37 @@ function DrawerComp({ navPages, setValue }) {
 
         {/* Mobile menu — only About Us & Contact */}
         <div className="md:hidden flex flex-col items-center gap-2 py-8 px-6">
-          {mobilePages.map(page => {
-            const key = page.replace(" ", "").toLowerCase();
-            const isActive = key === currentPath;
+          {mobileItems.map(item => {
+            const isActive = item.path === currentPath;
             return (
               <button
-                key={page}
-                onClick={() => handleMobileClick(page)}
+                key={item.label}
+                onClick={() => handleItemClick(item)}
                 className={`w-full py-3 rounded-2xl text-sm font-bold font-dmsans transition-all ${
                   isActive
                     ? "bg-[#0857d0] text-white"
                     : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
-                {page}
+                {item.label}
               </button>
             );
           })}
         </div>
 
-        {/* Desktop menu — all navPages (unchanged) */}
+        {/* Desktop menu — all navItems (unchanged) */}
         <div className="hidden md:flex flex-col items-center gap-2 py-8 px-6">
-          {navPages.map(page => {
-            const key = page.replace(" ", "").toLowerCase();
-            const isActive = key === currentPath || (currentPath === "" && key === "home");
+          {navItems.map(item => {
+            const isActive = currentPath === item.path || (currentPath === "/" && item.path === "/");
             return (
               <button
-                key={page}
-                onClick={() => handleDesktopClick(page)}
+                key={item.label}
+                onClick={() => handleItemClick(item)}
                 className={`w-full py-3 rounded-2xl text-sm font-bold font-dmsans transition-all ${
                   isActive ? "bg-[#0857d0] text-white" : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
-                {page}
+                {item.label}
               </button>
             );
           })}

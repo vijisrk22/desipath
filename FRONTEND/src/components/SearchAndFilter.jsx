@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchButton from "./SearchButton";
 import { Autocomplete, TextField, Box, IconButton } from "@mui/material";
-import { Edit as EditIcon } from "@mui/icons-material";
+import { Edit as EditIcon, Close as CloseIcon } from "@mui/icons-material";
 
 const categories = [
   { label: "Rental home", path: "/services/rentalhomes" },
@@ -16,7 +16,7 @@ const categories = [
   { label: "Lawyers", path: "/services/lawyers" },
   { label: "Doctors", path: "/services/doctors" },
   { label: "Astrology", path: "/services/astrologyAds" },
-  { label: "Local Ads", path: "/services/localAds" },
+  { label: "Local Deals", path: "/services/Localdeals" },
   { label: "Photography", path: "/services/photography" },
   { label: "Immigration", path: "/services/immigration" },
   { label: "Jobs", path: "/services/jobs" },
@@ -27,8 +27,7 @@ const phrases = [
   <>Built{" "}<span className="mx-1.5 border-b-4 border-[#0857d0]">by</span>{" "}desis,{" "}<span className="mx-1.5 border-b-4 border-[#0857d0]">for</span>{" "}desis</>
 ];
 
-function SearchAndFilter({ initialLocation = "", onEditLocation }) {
-  const [location, setLocation] = useState(initialLocation);
+function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [fade, setFade] = useState(true);
@@ -44,12 +43,6 @@ function SearchAndFilter({ initialLocation = "", onEditLocation }) {
     }, 6000); // Cycle every 6 seconds for a slow feel
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    if (initialLocation) {
-      setLocation(initialLocation);
-    }
-  }, [initialLocation]);
 
   const handleSearch = (e) => {
     if (e) e.preventDefault();
@@ -81,11 +74,24 @@ function SearchAndFilter({ initialLocation = "", onEditLocation }) {
             <input
               type="text"
               placeholder="Zipcode/City"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={initialLocation}
+              onClick={onEditLocation}
               autoComplete="off"
-              className="w-full text-gray-800 text-sm font-semibold font-dmsans outline-none placeholder:text-gray-400 truncate"
+              className="w-full text-gray-800 text-sm font-semibold font-dmsans outline-none placeholder:text-gray-400 truncate cursor-pointer"
+              readOnly
             />
+            {initialLocation && (
+              <IconButton 
+                size="small" 
+                onClick={onClearLocation}
+                sx={{ 
+                  color: '#ccc',
+                  '&:hover': { color: '#ef4444' }
+                }}
+              >
+                <CloseIcon sx={{ fontSize: '16px' }} />
+              </IconButton>
+            )}
             <IconButton 
               size="small" 
               onClick={onEditLocation}

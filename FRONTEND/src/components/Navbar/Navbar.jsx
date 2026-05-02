@@ -6,10 +6,16 @@ import Breadcrumbs from "../Common/Breadcrumbs";
 
 function Navbar() {
   const location = useLocation();
-  const navPages = ["Home", "Post Ad", "About Us", "Inbox", "Contact"];
+  const navItems = [
+    { label: "Home", path: "/" },
+    { label: "My Ads", path: "/postad" },
+    { label: "About Us", path: "/aboutus" },
+    { label: "Inbox", path: "/inbox" },
+    { label: "Contact", path: "/contact" }
+  ];
   const user = JSON.parse(localStorage.getItem("user"));
 
-  let currentPath = location.pathname.replace("/", "").toLowerCase();
+  let currentPath = location.pathname;
 
   return (
     <div className="flex flex-col">
@@ -19,22 +25,17 @@ function Navbar() {
         </Link>
 
         <div className="md:flex gap-4 md:gap-8 hidden">
-          {navPages.map((item, index) => {
-            const path = item.replace(" ", "").toLowerCase();
-
-            if (currentPath == "") {
-              currentPath = "home";
-            }
-            const isActive = path === currentPath;
+          {navItems.map((item, index) => {
+            const isActive = currentPath === item.path || (currentPath === "/" && item.path === "/");
             return (
               <Link
                 key={index}
-                to={`/${path}`}
+                to={item.path}
                 className={`${
                   isActive ? "text-[#0857d0]" : "text-gray-400"
                 } text-sm sm:text-base md:text-sm lg:text-base font-bold font-dmsans`}
               >
-                {item}
+                {item.label}
               </Link>
             );
           })}
@@ -42,9 +43,8 @@ function Navbar() {
 
         {user ? <Profile user={user} /> : <SignInUp />}
 
-        {/* Hamburger Navbar on smaller screens*/}
         <div className="md:hidden flex">
-          <DrawerComp navPages={navPages} />
+          <DrawerComp navItems={navItems} />
         </div>
       </div>
     </div>

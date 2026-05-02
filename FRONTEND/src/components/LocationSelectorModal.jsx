@@ -18,12 +18,14 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
   const [detecting, setDetecting] = useState(false);
 
   const onSubmit = (data) => {
+    console.log("Modal onSubmit data:", data);
     if (data.location) {
       onSelectLocation(data.location);
     }
   };
 
   const handleDetectLocation = () => {
+    console.log("Detecting location...");
     setDetecting(true);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -35,6 +37,7 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
             const data = await response.json();
             const address = data.address;
             const locationString = `${address.city || address.town || address.village || ''}, ${address.state || ''}, ${address.postcode || ''}`;
+            console.log("Detected location:", locationString);
             onSelectLocation(locationString);
           } catch (error) {
             console.error("Error detecting location details:", error);
@@ -58,7 +61,7 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
   return (
     <Dialog 
       open={open} 
-      onClose={onClose}
+      onClose={() => { console.log("Dialog onClose called"); onClose(); }}
       maxWidth="xs"
       fullWidth
       PaperProps={{
@@ -75,7 +78,7 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
           <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a1a1a' }}>
             Set Your Location
           </Typography>
-          <IconButton onClick={onClose} size="small">
+          <IconButton onClick={() => { console.log("X Close clicked"); onClose(); }} size="small">
             <Close />
           </IconButton>
         </Box>
@@ -98,7 +101,10 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
                 control={control} 
                 setValue={setValue} 
                 type="search"
-                onSelect={onSelectLocation}
+                onSelect={(loc) => {
+                   console.log("Autocomplete onSelect:", loc);
+                   onSelectLocation(loc);
+                }}
                 placeholder="Enter City, State, Zip"
               />
             </Box>
@@ -127,6 +133,7 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
           </Box>
           
           <Button
+            type="button"
             fullWidth
             variant="outlined"
             startIcon={<MyLocation />}
@@ -152,10 +159,12 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
           </Box>
 
           <Button
+            type="button"
             fullWidth
             variant="text"
-            onClick={onClose}
+            onClick={() => { console.log("Exit button clicked"); onClose(); }}
             sx={{
+              mt: 1,
               textTransform: 'none',
               fontWeight: 700,
               color: '#666',
@@ -166,7 +175,7 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
               }
             }}
           >
-            Skip
+            Exit
           </Button>
         </form>
       </DialogContent>

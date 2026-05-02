@@ -373,9 +373,11 @@ Route::prefix('local-ads')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/local-ads/mine', [LocalAdsController::class, 'myAds']);
+    Route::get('/local-ads/my-count', [LocalAdsController::class, 'getMyAdCount']);
+    Route::get('/local-ads/{id}', [LocalAdsController::class, 'show'])->where('id', '[0-9]+');
     Route::post('/local-ads', [LocalAdsController::class, 'store']);
-    Route::put('/local-ads/{id}', [LocalAdsController::class, 'update']);
-    Route::delete('/local-ads/{id}', [LocalAdsController::class, 'destroy']);
+    Route::put('/local-ads/{id}', [LocalAdsController::class, 'update'])->where('id', '[0-9]+');
+    Route::delete('/local-ads/{id}', [LocalAdsController::class, 'destroy'])->where('id', '[0-9]+');
     
     // Admin Actions
     Route::get('/admin/local-ads', [LocalAdsController::class, 'adminIndex']);

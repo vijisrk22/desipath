@@ -47,6 +47,8 @@ import ItTrainingDetails from "./pages/ItTraining/ItTrainingDetails";
 import ItInstructorPortal from "./pages/ItTraining/InstructorPortal/InstructorPortal";
 import ItInstructorSuccess from "./pages/ItTraining/InstructorPortal/InstructorSuccess";
 import MarketplaceCategories from "./pages/AdminDashboard/MarketplaceCategories";
+import LocalAdPortal from "./pages/Localdeals/Portal/LocalAdPortal";
+import LocalAdSuccess from "./pages/Localdeals/Portal/LocalAdSuccess";
 
 
 
@@ -111,6 +113,9 @@ function App() {
           <Route path="astrologyAds/:action?" element={<AstrologyAds />} />
           <Route path="classesForKids/:action?" element={<ClassesForKids />} />
           <Route path="Localdeals" element={<Localdeals />} />
+          <Route path="Localdeals/post" element={<PrivateRoute><LocalAdPortal /></PrivateRoute>} />
+          <Route path="Localdeals/edit/:id" element={<PrivateRoute><LocalAdPortal /></PrivateRoute>} />
+          <Route path="Localdeals/post/success" element={<PrivateRoute><LocalAdSuccess /></PrivateRoute>} />
         </Route>
 
 

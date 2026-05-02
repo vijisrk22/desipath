@@ -29,10 +29,12 @@ class LocalAdsController extends Controller
             $query->where('location_city', 'like', '%' . $request->city . '%');
         }
 
-        if ($request->has('search')) {
+        if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%")
                   ->orWhereHas('businessAccount', function($sq) use ($search) {
                       $sq->where('business_name', 'like', "%{$search}%");
                   });
@@ -87,20 +89,45 @@ class LocalAdsController extends Controller
             'category' => 'required|string',
             'location_city' => 'required|string',
             'location_state' => 'nullable|string',
+            'zipcode' => 'nullable|string',
             'country' => 'required|string',
             'website_url' => 'nullable|url',
             'tags' => 'nullable|array',
             'images' => 'required|array|min:1|max:5',
-            'images.*' => 'string' // Base64 strings
+            'images.*' => 'string', // Base64 strings
+            
+            // Display & Contact Overrides
+            'display_phone' => 'nullable|string',
+            'display_email' => 'nullable|email',
+            'is_contact_person_different' => 'boolean',
+            'ad_contact_name' => 'nullable|string',
+            'ad_contact_email' => 'nullable|email',
+            'ad_contact_phone' => 'nullable|string'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $data = $request->only(['title', 'description', 'category', 'location_city', 'location_state', 'country', 'website_url', 'tags']);
+        $data = $request->only([
+            'title', 'description', 'category', 'location_city', 'location_state', 
+            'country', 'website_url', 'tags', 'display_phone', 'display_email',
+            'is_contact_person_different', 'ad_contact_name', 'ad_contact_email', 'ad_contact_phone'
+        ]);
+        
         $data['business_account_id'] = $businessAccount->id;
         $data['status'] = 'pending';
+
+        // Update business account info if provided in Step 1
+        if ($request->has('business_address')) {
+            $businessAccount->update([
+                'address_line1' => $request->business_address,
+                'zipcode' => $request->zipcode,
+                'contact_person_name' => $request->contact_person_name,
+                'contact_person_email' => $request->contact_person_email,
+                'contact_person_phone' => $request->contact_person_phone,
+            ]);
+        }
 
         // Handle Image Uploads
         $posterUrls = [];
@@ -225,10 +252,37 @@ class LocalAdsController extends Controller
 
         $query = LocalAd::with('businessAccount')->orderBy('created_at', 'desc');
 
-        if ($request->has('status')) {
+        if ($request->has('status') && !empty($request->status)) {
             $query->where('status', $request->status);
         }
 
         return response()->json($query->paginate(20));
+    }
+    /**
+     * Get count of ads for the logged-in user's business account
+     */
+    public function getMyAdCount(Request $request)
+    {
+        $businessAccount = BusinessAccount::where('owner_user_id', Auth::id())->first();
+        if (!$businessAccount) return response()->json(0);
+
+        $count = LocalAd::where('business_account_id', $businessAccount->id)->count();
+        return response()->json($count);
+    }
+
+    /**
+     * Show a specific ad (for editing)
+     */
+    public function show($id)
+    {
+        $ad = LocalAd::with('businessAccount')->findOrFail($id);
+        
+        // Security: only owner or admin can see full details for edit
+        $businessAccount = BusinessAccount::where('owner_user_id', Auth::id())->first();
+        if (Auth::user()->role !== 'admin' && (!$businessAccount || $ad->business_account_id !== $businessAccount->id)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json($ad);
     }
 }

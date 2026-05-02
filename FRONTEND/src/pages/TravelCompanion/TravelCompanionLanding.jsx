@@ -60,6 +60,32 @@ const TravelCompanionLanding = () => {
         </p>
       </div>
 
+      {/* Quick Access Grid */}
+      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <Link to="/travel-companion/browse-volunteers" className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all text-center border border-gray-100 group min-h-[140px] flex flex-col items-center justify-center">
+          <Search className="text-gray-400 group-hover:text-[#2563eb] mb-2 transition-colors" />
+          <div className="text-sm font-bold text-gray-700">Browse Volunteers</div>
+          <div className="text-[10px] text-gray-400 mt-1 leading-tight font-medium">Find Travel companion for your loved ones</div>
+        </Link>
+        <Link to="/travel-companion/browse-requests" className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all text-center border border-gray-100 group min-h-[140px] flex flex-col items-center justify-center">
+          <History className="text-gray-400 group-hover:text-[#2563eb] mb-2 transition-colors" />
+          <div className="text-sm font-bold text-gray-700">Browse Requests</div>
+          <div className="text-[10px] text-gray-400 mt-1 leading-tight font-medium italic">IF you are a traveller wanted to be an volunteer</div>
+        </Link>
+        <Link 
+          to="/travel-companion/my-posts" 
+          onClick={(e) => handleLinkClick(e, "/travel-companion/my-posts")}
+          className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all text-center border border-gray-100 group"
+        >
+          <History className="text-gray-400 group-hover:text-[#2563eb] mb-2 transition-colors" />
+          <div className="text-sm font-bold text-gray-700">My Posts</div>
+        </Link>
+        <Link to="/travel-companion/guidelines" className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all text-center border border-gray-100 group">
+          <ShieldMoon className="text-gray-400 group-hover:text-[#2563eb] mb-2 transition-colors" />
+          <div className="text-sm font-bold text-gray-700">Safety Guidelines</div>
+        </Link>
+      </div>
+
       {/* Main Categories */}
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 mb-16">
         {categories.map((cat, idx) => (
@@ -80,30 +106,6 @@ const TravelCompanionLanding = () => {
             </Link>
           </div>
         ))}
-      </div>
-
-      {/* Quick Access Grid */}
-      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link to="/travel-companion/browse-volunteers" className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all text-center border border-gray-100 group">
-          <Search className="text-gray-400 group-hover:text-[#2563eb] mb-2 transition-colors" />
-          <div className="text-sm font-bold text-gray-700">Browse Volunteers</div>
-        </Link>
-        <Link to="/travel-companion/browse-requests" className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all text-center border border-gray-100 group">
-          <History className="text-gray-400 group-hover:text-[#2563eb] mb-2 transition-colors" />
-          <div className="text-sm font-bold text-gray-700">Browse Requests</div>
-        </Link>
-        <Link 
-          to="/travel-companion/my-posts" 
-          onClick={(e) => handleLinkClick(e, "/travel-companion/my-posts")}
-          className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all text-center border border-gray-100 group"
-        >
-          <History className="text-gray-400 group-hover:text-[#2563eb] mb-2 transition-colors" />
-          <div className="text-sm font-bold text-gray-700">My Posts</div>
-        </Link>
-        <Link to="/travel-companion/guidelines" className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all text-center border border-gray-100 group">
-          <ShieldMoon className="text-gray-400 group-hover:text-[#2563eb] mb-2 transition-colors" />
-          <div className="text-sm font-bold text-gray-700">Safety Guidelines</div>
-        </Link>
       </div>
 
       {/* Info Section */}
