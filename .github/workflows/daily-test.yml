@@ -24,17 +24,13 @@ jobs:
         working-directory: ./FRONTEND
         run: npm ci
 
-      - name: Run Tests and Generate HTML Report
+      - name: Run Tests and Generate Simple Text Report
         working-directory: ./FRONTEND
-        # Run tests and continue on error so the email still sends if tests fail
-        run: npm run test:report
+        env:
+          NO_COLOR: '1' # Disables terminal colors so the text file is clean
+        # Run tests, pipe output to a text file, and continue on error so the email still sends
+        run: npm run test:report > test-report.txt 2>&1
         continue-on-error: true
-
-      - name: Upload HTML Report as Artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: vitest-html-report
-          path: ./FRONTEND/html/
 
       - name: Send Email Notification
         uses: dawidd6/action-send-mail@v4
@@ -53,10 +49,8 @@ jobs:
 
             The daily frontend test run has completed! 
             
-            Because Gmail blocks zip files containing JavaScript code for security reasons, the full interactive HTML report has been saved directly to GitHub.
-            
-            You can view the test results and download the HTML report by visiting your GitHub Actions tab:
-            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Attached is a simple text file (`test-report.txt`) containing the full breakdown of which tests passed, which failed, and the specific error messages for any failures.
             
             Best regards,
             Desipath Automated CI/CD
+          attachments: ./FRONTEND/test-report.txt

@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:report": "vitest run --reporter=html",
+    "test:report": "vitest run --reporter=verbose",
     "prepare": "husky"
   },
   "dependencies": {
