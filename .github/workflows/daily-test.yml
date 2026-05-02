@@ -10,15 +10,13 @@ on:
 jobs:
   test_and_report:
     runs-on: ubuntu-latest
-    env:
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
@@ -33,13 +31,13 @@ jobs:
         continue-on-error: true
 
       - name: Upload HTML Report as Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vitest-html-report
           path: ./FRONTEND/html/
 
       - name: Send Email Notification
-        uses: dawidd6/action-send-mail@v3
+        uses: dawidd6/action-send-mail@v4
         with:
           # SMTP configuration
           server_address: smtp.gmail.com
