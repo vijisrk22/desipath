@@ -1,0 +1,62 @@
+name: Daily Test Run and Email Report
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  test_and_report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        working-directory: ./FRONTEND
+        run: npm ci
+
+      - name: Run Tests and Generate HTML Report
+        working-directory: ./FRONTEND
+        # Run tests and continue on error so the email still sends if tests fail
+        run: npm run test:report
+        continue-on-error: true
+
+      - name: Zip HTML Report
+        working-directory: ./FRONTEND
+        run: zip -r test-report.zip html/
+
+      - name: Send Email with Test Report
+        uses: dawidd6/action-send-mail@v3
+        with:
+          # SMTP configuration (Required in GitHub Secrets)
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          # Read these from repository secrets
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          # Email headers
+          subject: Desipath Daily Frontend Test Report
+          # Recipients
+          to: vivekaanand@gmail.com, vijisrk@gmail.com
+          # Email body
+          from: Desipath CI
+          body: |
+            Hello,
+
+            The daily frontend test run has completed. 
+            Attached is the HTML report containing the full results of the Vitest suite.
+            
+            Best regards,
+            Desipath Automated CI/CD
+          # Attachment
+          attachments: ./FRONTEND/test-report.zip
