@@ -113,7 +113,7 @@ export default function MarketplaceCategories() {
             onClick={() => setModule('local_ads')}
             className={`px-6 py-2.5 rounded-xl font-bold transition-all ${module === 'local_ads' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
           >
-            📢 Local Deals
+            📢 Deals
           </button>
         </div>
       </div>
@@ -127,7 +127,7 @@ export default function MarketplaceCategories() {
                 Categories for {
                   module === 'kids_class' ? 'Kids Class' : 
                   module === 'it_training' ? 'IT Training' : 
-                  'Local Deals'
+                  'Deals'
                 }
               </h2>
               <button 
