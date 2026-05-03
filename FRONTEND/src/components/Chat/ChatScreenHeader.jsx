@@ -1,14 +1,21 @@
-import { Avatar, Box, Button } from "@mui/material";
-import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import VideocamIcon from "@mui/icons-material/Videocam";
+import { Avatar, Box, Typography } from "@mui/material";
+import { useMemo } from "react";
 
 import { useSearchParams } from "react-router-dom";
 
 function ChatScreenHeader({ adId, adType }) {
   const [searchParams] = useSearchParams();
-  const chatPartnerInfo = JSON.parse(
-    decodeURIComponent(searchParams.get("chatPartnerInfo"))
-  );
+  const chatPartnerInfo = useMemo(() => {
+    const raw = searchParams.get("chatPartnerInfo");
+    if (!raw) return null;
+    try {
+      return JSON.parse(decodeURIComponent(raw));
+    } catch (err) {
+      console.error("Error parsing chatPartnerInfo in Header:", err);
+      return null;
+    }
+  }, [searchParams]);
+
   // Ensure chatPartner is available before attempting to render its information
   const avatarSrc = ""; // Default to an empty string if no photoUrl
 
@@ -19,65 +26,67 @@ function ChatScreenHeader({ adId, adType }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "10px",
-        borderBottom: "1px solid #E4E4E7",
+        p: 2,
+        backgroundColor: "#ffffff",
+        borderBottom: "1px solid #f3f4f6",
+        zIndex: 10
       }}
     >
-      <Box
-        sx={{
-          gap: "24px",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         <Avatar
           src={avatarSrc}
           sx={{
-            width: { xs: 40, sm: 60, md: 70, lg: 80, xl: 90 },
-            height: { xs: 40, sm: 60, md: 70, lg: 80, xl: 90 },
+            width: 48,
+            height: 48,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            border: "2px solid #fff",
+            backgroundColor: "#eff6ff",
+            color: "#2563eb",
+            fontWeight: "bold"
           }}
-        />
+        >
+          {chatPartnerInfo?.chatPartnerName?.charAt(0)}
+        </Avatar>
         <Box>
-          <div className="text-gray-800 text-xl md:text-2xl font-semibold font-dmsans">
-            {chatPartnerInfo?.chatPartnerName || "Unknown User"}
-          </div>
-          <div className="text-gray-500 text-xs md:text-sm font-normal font-dmsans">
-            {adType.charAt(0).toUpperCase() + adType.slice(1)} Advertisement ID:{" "}
-            {adId || "Unknown Ad ID"}
-          </div>
-          <div className="text-gray-500 text-xs md:text-sm font-normal font-dmsans">
-            {chatPartnerInfo?.chatPartnerLocation || "Unknown Location"}
-          </div>
+          <Typography
+            sx={{
+              color: "#111827",
+              fontSize: "1.05rem",
+              fontWeight: "700",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            {chatPartnerInfo?.chatPartnerName || "User"}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box 
+              sx={{ 
+                px: 1, 
+                py: 0.25, 
+                borderRadius: "4px", 
+                backgroundColor: "#dcfce7", 
+                fontSize: "0.6rem", 
+                color: "#166534",
+                fontWeight: "bold",
+                textTransform: "uppercase"
+              }}
+            >
+              {adType}
+            </Box>
+            <Typography
+              sx={{
+                color: "#9ca3af",
+                fontSize: "0.75rem",
+                fontWeight: "500",
+              }}
+            >
+              ID: {adId}
+            </Typography>
+          </Box>
         </Box>
       </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: "24px",
-        }}
-      >
-        <Button color="gray">
-          <LocalPhoneIcon
-            sx={{
-              width: { xs: 24, sm: 28, md: 32, lg: 36, xl: 40 },
-              height: { xs: 24, sm: 28, md: 32, lg: 36, xl: 40 },
-              color: "#1D4ED8",
-            }}
-          />
-        </Button>
 
-        <Button color="gray">
-          <VideocamIcon
-            sx={{
-              width: { xs: 24, sm: 28, md: 32, lg: 36, xl: 40 },
-              height: { xs: 24, sm: 28, md: 32, lg: 36, xl: 40 },
-              color: "#1D4ED8",
-            }}
-          />
-        </Button>
-      </Box>
     </Box>
   );
 }

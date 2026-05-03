@@ -50,6 +50,11 @@ import ItInstructorSuccess from "./pages/ItTraining/InstructorPortal/InstructorS
 import MarketplaceCategories from "./pages/AdminDashboard/MarketplaceCategories";
 import LocalAdPortal from "./pages/Localdeals/Portal/LocalAdPortal";
 import LocalAdSuccess from "./pages/Localdeals/Portal/LocalAdSuccess";
+import ItTrainingLeadsAdmin from "./pages/AdminDashboard/ItTrainingLeadsAdmin";
+import { lazy, Suspense } from 'react';
+
+const ForumLanding = lazy(() => import("./pages/Forum/ForumLanding"));
+const ForumPostDetail = lazy(() => import("./pages/Forum/ForumPostDetail"));
 
 
 
@@ -161,6 +166,23 @@ function App() {
         <Route path="/it-training/details/:id" element={<ItTrainingDetails />} />
         <Route path="/it-training/:categorySlug/:subcategorySlug" element={<ItTrainingSubcategory />} />
 
+        <Route 
+          path="/forum" 
+          element={
+            <Suspense fallback={<div className="min-h-screen bg-[#dae0e6] flex items-center justify-center font-bold text-gray-400">Loading Community...</div>}>
+              <ForumLanding />
+            </Suspense>
+          } 
+        />
+        <Route 
+          path="/forum/post/:id" 
+          element={
+            <Suspense fallback={<div className="min-h-screen bg-[#dae0e6] flex items-center justify-center font-bold text-gray-400">Loading Discussion...</div>}>
+              <ForumPostDetail />
+            </Suspense>
+          } 
+        />
+
         {/* Unified Admin Dashboard */}
         <Route path="/admindashboard" element={<AdminDashboard />}>
           <Route index element={<div className="p-10 font-bold text-gray-500 text-xl text-center">
@@ -180,6 +202,7 @@ function App() {
           <Route path="trainings" element={<ListingAdmin endpoint="/api/trainingads" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
           <Route path="local-ads" element={<LocalAdsAdmin />} />
           <Route path="zipcodes" element={<ZipcodesAdmin />} />
+          <Route path="it-training-leads" element={<ItTrainingLeadsAdmin />} />
           <Route path="*" element={<div className="p-10 font-bold text-gray-500">Module coming soon...</div>} />
         </Route>
 

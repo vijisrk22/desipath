@@ -1,13 +1,30 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { getFullImageUrl } from "../../utils/imageHelper";
+import LazyImage from "../LazyImage";
 
 export default function CarCard({ car }) {
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.user);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const images = useMemo(() => {
+    if (!car.pictures) return [];
+    try {
+      const parsed = typeof car.pictures === "string" ? JSON.parse(car.pictures) : car.pictures;
+      return Array.isArray(parsed) ? parsed : [parsed];
+    } catch (e) {
+      console.error("Error parsing car images:", e);
+      return [];
+    }
+  }, [car.pictures]);
+
+  const mainImage = images.length > 0 ? getFullImageUrl(images[0]) : "/img/cars/backgroundCarImg.png";
+
   return (
     <Card
       sx={{ 
@@ -48,28 +65,17 @@ export default function CarCard({ car }) {
         </div>
       )}
 
-      <CardMedia
-        component="img"
-        image={
-          car?.pictures && car.pictures.length > 0
-            ? getFullImageUrl(car.pictures[0])
-            : "/img/cars/backgroundCarImg.png"
-        }
-        onError={(e) => {
-          e.currentTarget.setAttribute('data-broken', 'true');
-          const url = e.currentTarget.src;
-          e.currentTarget.title = `Broken Image URL: ${url}`;
-        }}
-        title={`${car.make} ${car.model}`}
-        sx={{
-          height: 220,
-          objectFit: "cover",
-          p: 0,
-          "&[data-broken='true']": {
-            backgroundColor: "#f8f9fa",
-          }
-        }}
-      />
+      <div 
+        className="relative cursor-pointer overflow-hidden h-[220px]"
+        onClick={() => navigate(`/services/cars/buyCar/${car.id}`)}
+      >
+        <LazyImage
+          src={mainImage}
+          alt={`${car.make} ${car.model}`}
+          className="w-full h-full object-cover"
+        />
+      </div>
+
       <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
         <div className="flex justify-between items-start mb-2">
           <div className="text-[#007185] text-[22px] font-bold font-dmsans truncate flex-1">

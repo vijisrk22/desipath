@@ -82,6 +82,7 @@ Route::middleware('auth:sanctum')->group(function () { // Need to uncomment if t
     // Fetch messages between authenticated user and another user
     
     Route::get('/messages/ad/{adId}/type/{adType}/user/{userId}', [MessageController::class, 'getMessagesForAd']);
+    Route::get('/messages/conversations', [MessageController::class, 'getConversations']);
 
     Route::get('/messages/sent', [MessageController::class, 'getMessagesBySender']);
     Route::get('/messages/{userId}', [MessageController::class, 'index']);
@@ -283,6 +284,19 @@ Route::middleware([])->group(function () {
     Route::post('/it-training', [ItTrainingController::class, 'store']);
     Route::get('/it-training', [ItTrainingController::class, 'index']);
     Route::get('/it-training/{id}', [ItTrainingController::class, 'show']);
+    Route::post('/it-training/leads', [ItTrainingController::class, 'submitLead']);
+    Route::get('/it-training/admin/leads', [ItTrainingController::class, 'getLeads']);
+});
+
+// --- Forum Routes ---
+use App\Http\Controllers\ForumController;
+Route::get('/forum/posts', [ForumController::class, 'index']);
+Route::get('/forum/posts/{id}', [ForumController::class, 'show']);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/forum/posts', [ForumController::class, 'storePost']);
+    Route::post('/forum/comments', [ForumController::class, 'storeComment']);
+    Route::post('/forum/posts/{id}/vote', [ForumController::class, 'votePost']);
 });
 
 // --- Marketplace Categories ---

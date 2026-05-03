@@ -7,8 +7,14 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { getFullImageUrl } from "../../utils/imageHelper";
 import { getStateCode } from "../../utils/locationHelper";
 
+import LazyImage from "../LazyImage";
+
 export default function RentalHomeCard({ rentalHome }) {
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const mainImage = rentalHome?.images && rentalHome.images.length > 0
+    ? getFullImageUrl(rentalHome.images[0])
+    : "/rentalHomeHero.png";
 
   return (
     <Card
@@ -28,7 +34,7 @@ export default function RentalHomeCard({ rentalHome }) {
     >
       <button
         onClick={() => setIsFavorited(!isFavorited)}
-        className="absolute top-3 right-4  flex items-center justify-center bg-white/40 p-2 rounded-full shadow-md"
+        className="absolute top-3 right-4  flex items-center justify-center bg-white/40 p-2 rounded-full shadow-md z-20"
       >
         {isFavorited ? (
           <FavoriteIcon
@@ -47,34 +53,13 @@ export default function RentalHomeCard({ rentalHome }) {
         to={`/services/rentalhomes/${rentalHome.id}`}
         className="flex flex-col h-full"
       >
-        <CardMedia
-          component="img"
-          image={
-            rentalHome?.images && rentalHome.images.length > 0
-              ? getFullImageUrl(rentalHome.images[0])
-              : "/rentalHomeHero.png"
-          }
-          onError={(e) => {
-            // Do not replace with alternative image as per user request
-            // Instead, we can mark it as broken to show the URL in title
-            e.currentTarget.setAttribute('data-broken', 'true');
-            const url = e.currentTarget.src;
-            e.currentTarget.title = `Broken Image URL: ${url}`;
-          }}
-          title={rentalHome?.address || "rental home"}
-          sx={{
-            height: 220,
-            objectFit: "cover",
-            p: 0,
-            // Visual feedback for broken images if needed
-            "&[data-broken='true']": {
-              backgroundColor: "#f8f9fa",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }
-          }}
-        />
+        <div className="relative h-[220px] overflow-hidden">
+          <LazyImage
+            src={mainImage}
+            alt={rentalHome?.address || "rental home"}
+            className="w-full h-full object-cover"
+          />
+        </div>
 
         <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
           <div className="flex justify-between items-baseline mb-3 gap-2 overflow-hidden">

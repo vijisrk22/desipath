@@ -69,13 +69,15 @@ function CarDetails() {
       chatPartnerLocation: carDetails.location,
     };
 
+    const defaultMsg = `I am interested in your Ad Car: ${carDetails.year} ${carDetails.make} ${carDetails.model}`;
+
     try {
       navigate(
         `/inbox?adType=car&adId=${
           carDetails.id
         }&chatPartnerInfo=${encodeURIComponent(
           JSON.stringify(chatPartnerInfo)
-        )}`
+        )}&initialMessage=${encodeURIComponent(defaultMsg)}`
       );
     } catch (err) {
       console.log(err);
@@ -198,14 +200,14 @@ function CarDetails() {
 
           <button
             onClick={handleClick}
-            disabled={carDetails?.seller_id === user?.id}
+            disabled={Number(carDetails?.seller_id) === Number(user?.id)}
             className={`w-full px-7 py-4 rounded-[57px] inline-flex justify-center items-center gap-2.5 border-2 border-[#0857d0] bg-white text-[#0857d0] hover:bg-blue-50 transition-all shadow-sm ${
-              carDetails?.seller_id === user?.id 
+              Number(carDetails?.seller_id) === Number(user?.id) 
                 ? "opacity-50 cursor-not-allowed border-gray-300 text-gray-400" 
                 : ""
             }`}
           >
-            <SmsOutlinedIcon color={carDetails?.seller_id === user?.id ? "disabled" : "primary"} />
+            <SmsOutlinedIcon color={Number(carDetails?.seller_id) === Number(user?.id) ? "disabled" : "primary"} />
             <div className="text-base font-bold font-dmsans">
               Message {carDetails?.is_dealer ? "Dealer" : "Owner"}
             </div>

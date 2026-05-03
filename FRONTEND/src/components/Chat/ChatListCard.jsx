@@ -9,23 +9,19 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-function ChatListCard({ chat, onClick }) {
-  const lastMessageDate = parseISO(
-    chat?.messages[chat?.messages.length - 1].created_at
-  ); // Convert ISO string to Date object
+function ChatListCard({ chat }) {
+  const lastMessageDate = chat?.created_at ? parseISO(chat.created_at) : new Error();
   const navigate = useNavigate();
-
-  console.log(chat);
 
   let displayDate;
   if (isToday(lastMessageDate)) {
-    displayDate = "Today";
+    displayDate = format(lastMessageDate, "hh:mm a");
   } else if (isYesterday(lastMessageDate)) {
     displayDate = "Yesterday";
   } else if (differenceInDays(new Date(), lastMessageDate) < 7) {
-    displayDate = format(lastMessageDate, "EEEE"); // Show day of the week (e.g., "Monday")
+    displayDate = format(lastMessageDate, "EEEE");
   } else {
-    displayDate = format(lastMessageDate, "MM/dd/yyyy"); // Show date (e.g., "03/03/2025")
+    displayDate = format(lastMessageDate, "MMM d");
   }
 
   const handleClick = () => {
@@ -34,102 +30,106 @@ function ChatListCard({ chat, onClick }) {
       chatPartnerName: chat.chatPartner.name,
     };
 
-    try {
-      navigate(
-        `/inbox?adType=${chat.ad_type}&adId=${
-          chat.ad_id
-        }&chatPartnerInfo=${encodeURIComponent(
-          JSON.stringify(chatPartnerInfo)
-        )}`
-      );
-    } catch (err) {
-      console.log(err);
-    }
+    navigate(
+      `/inbox?adType=${chat.ad_type}&adId=${chat.ad_id}&chatPartnerInfo=${encodeURIComponent(
+        JSON.stringify(chatPartnerInfo)
+      )}`
+    );
   };
+
   return (
     <Card
+      elevation={0}
       sx={{
-        my: "0.5rem",
+        mb: 1,
         display: "flex",
-        justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: "white",
-        px: 2,
-        borderRadius: "8px",
-        boxShadow: "0px 0px 2px 0px rgba(8,87,208,0.25)",
+        backgroundColor: "transparent",
+        borderRadius: "12px",
         cursor: "pointer",
-        "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.05)" },
+        transition: "all 0.2s ease",
+        p: 1.5,
+        "&:hover": { 
+          backgroundColor: "#ffffff",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+          transform: "translateY(-1px)"
+        },
       }}
       onClick={handleClick}
     >
-      <CardHeader
-        avatar={
-          <Avatar
-            src={chat?.photoUrl || "/user.svg"}
-            sx={{
-              width: { xs: 30, sm: 40, md: 60 },
-              height: { xs: 30, sm: 40, md: 60 },
-              fontSize: { xs: 30, sm: 20, md: 30 },
-            }}
-          >
-            {chat?.chatPartner.name
-              ?.split(" ")
-              .map((word) => word.charAt(0))
-              .join("")}
-          </Avatar>
-        }
-        title={
-          <Typography
-            sx={{
-              color: "gray.800",
-              fontSize: "1rem",
-              fontWeight: "600",
-            }}
-            className="font-dmsans"
-          >
-            {chat.chatPartner.name} ({chat.ad_type}Ad: {chat.ad_id})
-          </Typography>
-        }
-        subheader={
-          <Typography
-            sx={{
-              color: "#6b7280",
-              fontSize: "0.875rem",
-              fontWeight: "500",
-            }}
-            className="font-dmsans"
-          >
-            {chat.messages[chat.messages.length - 1]?.message ||
-              "No messages yet."}
-          </Typography>
-        }
-      />
-
-      <Box
-        sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}
+      <Avatar
+        src={chat?.photoUrl}
+        sx={{
+          width: 54,
+          height: 54,
+          mr: 2,
+          backgroundColor: "#eff6ff",
+          color: "#2563eb",
+          fontWeight: "600",
+          fontSize: "1.1rem",
+          border: "2px solid #fff",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
+        }}
       >
-        <Typography
-          sx={{
-            color: "#6b7280",
-            fontSize: "0.75rem",
-            lineHeight: "1rem",
-          }}
-          className="font-dmsans"
-        >
-          {displayDate}
-        </Typography>
-        {isToday(lastMessageDate) && (
+        {chat?.chatPartner?.name?.charAt(0) || "U"}
+      </Avatar>
+
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", mb: 0.5 }}>
           <Typography
             sx={{
-              color: "#6b7280",
-              fontSize: "0.75rem",
-              lineHeight: "1rem",
+              color: "#111827",
+              fontSize: "0.95rem",
+              fontWeight: "600",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              fontFamily: "'Inter', sans-serif",
             }}
-            className="font-dmsans"
           >
-            {format(lastMessageDate, "hh:mm a")} {/* Show time if today */}
+            {chat?.chatPartner?.name || "Unknown User"}
           </Typography>
-        )}
+          <Typography
+            sx={{
+              color: "#9ca3af",
+              fontSize: "0.75rem",
+              fontWeight: "500",
+              ml: 1
+            }}
+          >
+            {displayDate}
+          </Typography>
+        </Box>
+        
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+           <Typography
+            sx={{
+              color: "#6b7280",
+              fontSize: "0.85rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              flex: 1
+            }}
+          >
+            {chat.message}
+          </Typography>
+          <Box 
+            sx={{ 
+              px: 1, 
+              py: 0.25, 
+              borderRadius: "4px", 
+              backgroundColor: "#f3f4f6", 
+              fontSize: "0.65rem", 
+              color: "#6b7280",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              letterSpacing: "0.025em"
+            }}
+          >
+            {chat.ad_type}
+          </Box>
+        </Box>
       </Box>
     </Card>
   );

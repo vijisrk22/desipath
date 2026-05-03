@@ -62,7 +62,9 @@ class ItTrainingController extends Controller
                 'subcategory' => !empty($classBasic['subcategory']) ? $classBasic['subcategory'] : 'General',
                 'level' => json_encode($classBasic['level'] ?? []),
                 'format' => json_encode($classBasic['format'] ?? []),
+                'training_covers' => $classBasic['trainingCovers'] ?? null,
                 'short_description' => $classBasic['shortDescription'] ?? null,
+                'curriculum_pdf_url' => $request->hasFile('curriculumPdf') ? $request->file('curriculumPdf')->store('it_training/curriculums', 'public') : null,
                 'thumbnail_url' => null,
                 'tags' => json_encode($classBasic['tags'] ?? []),
                 'status' => 'active',
@@ -86,6 +88,7 @@ class ItTrainingController extends Controller
                 'online_platform' => $schedule['platform'] ?? null,
                 'max_students' => $schedule['maxStudents'] ?? null,
                 'trial_available' => $schedule['trialAvailable'] ?? false,
+                'schedule_category' => $schedule['scheduleCategory'] ?? 'Weekend',
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
@@ -184,13 +187,17 @@ class ItTrainingController extends Controller
         }
 
         $trainings = $query->select(
-            'it_training_classes.*',
+            'it_training_classes.thumbnail_url',
+            'it_training_classes.training_covers',
+            'it_training_classes.start_date',
             'it_instructors.name as instructorName',
             'it_instructors.profile_photo_url as photoUrl',
             'it_training_pricing.fee_amount',
             'it_training_pricing.fee_type',
             'it_training_schedules.duration_label',
-            'it_training_schedules.days_of_week'
+            'it_training_schedules.days_of_week',
+            'it_training_schedules.batch_start_date as start_date',
+            'it_training_schedules.schedule_category'
         )->get();
 
         // If slugs are provided, filter in PHP (more robust for sluggified matches)
@@ -237,5 +244,47 @@ class ItTrainingController extends Controller
             'success' => true,
             'data' => compact('classBasic', 'instructor', 'schedule', 'about', 'pricing', 'reqs', 'modules')
         ]);
+    }
+
+    public function submitLead(Request $request)
+    {
+        $request->validate([
+            'class_id' => 'required',
+            'name' => 'required',
+            'email' => 'required|email'
+        ]);
+
+        $leadId = Str::orderedUuid()->toString();
+        $now = Carbon::now();
+
+        DB::table('it_training_leads')->insert([
+            'id' => $leadId,
+            'class_id' => $request->class_id,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'message' => $request->message,
+            'created_at' => $now,
+            'updated_at' => $now
+        ]);
+
+        // Logic to send email to instructor can be added here
+        // For now, we return success
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your request for syllabus has been sent to the instructor.'
+        ]);
+    }
+
+    public function getLeads()
+    {
+        $leads = DB::table('it_training_leads')
+            ->join('it_training_classes', 'it_training_leads.class_id', '=', 'it_training_classes.id')
+            ->select('it_training_leads.*', 'it_training_classes.title as course_title')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json(['success' => true, 'data' => $leads]);
     }
 }

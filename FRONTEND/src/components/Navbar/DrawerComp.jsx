@@ -193,8 +193,8 @@ function DrawerComp({ navItems, setValue }) {
     }
   }
 
-  // Mobile only shows About Us and Contact
-  const mobileItems = navItems.filter(item => item.label === "About Us" || item.label === "Contact");
+  // Mobile only shows About Us, Contact, and Forum
+  const mobileItems = navItems.filter(item => item.label === "About Us" || item.label === "Contact" || item.label === "Forum");
 
   return (
     <>

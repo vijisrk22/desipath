@@ -5,7 +5,13 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import { getFullImageUrl } from "../../utils/imageHelper";
 
+import LazyImage from "../LazyImage";
+
 export default function KidsClassCard({ cls }) {
+  const mainImage = cls.photoUrl 
+    ? getFullImageUrl(cls.photoUrl)
+    : "/img/kidsclass_default.jpg";
+
   return (
     <Card
       sx={{ 
@@ -26,23 +32,13 @@ export default function KidsClassCard({ cls }) {
         to={`/kids-class/details/${cls.id}`}
         className="flex flex-col h-full"
       >
-        <CardMedia
-          component="img"
-          image={
-            cls.photoUrl 
-              ? getFullImageUrl(cls.photoUrl)
-              : "/img/kidsclass_default.jpg" // Fallback if no photo
-          }
-          onError={(e) => {
-            e.currentTarget.src = "/img/kidsclass_default.jpg";
-          }}
-          title={cls.title}
-          sx={{
-            height: 220,
-            objectFit: "cover",
-            p: 0,
-          }}
-        />
+        <div className="relative h-[220px] overflow-hidden">
+          <LazyImage
+            src={mainImage}
+            alt={cls.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
 
         <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
           <div className="flex justify-between items-baseline mb-3 gap-2 overflow-hidden">

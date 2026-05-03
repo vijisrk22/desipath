@@ -85,6 +85,10 @@ export default function Step6Preview({ data, onEditStep }) {
               {renderBadgeList(classBasic?.tags, 'bg-slate-100 text-slate-600 border border-slate-200')}
             </div>
             <div className="col-span-full">
+              <p className="text-xs text-gray-400 font-bold uppercase mb-2">Training Coverage (Short Summary)</p>
+              <p className="text-gray-900 font-bold text-lg bg-blue-50/50 p-4 rounded-xl border border-blue-100">{classBasic?.trainingCovers || 'N/A'}</p>
+            </div>
+            <div className="col-span-full">
               <p className="text-xs text-gray-400 font-bold uppercase mb-2">Program Summary</p>
               <p className="text-gray-700 font-medium leading-relaxed italic border-l-4 border-blue-200 pl-4 bg-blue-50/30 py-3 rounded-r-xl">{classBasic?.shortDescription || 'N/A'}</p>
             </div>
@@ -99,9 +103,13 @@ export default function Step6Preview({ data, onEditStep }) {
             <div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Total Duration</p><p className="font-bold">{schedule?.duration || 'N/A'}</p></div>
             <div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Sessions Count</p><p className="font-bold">{schedule?.totalSessions || 'N/A'}</p></div>
             <div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Session length</p><p className="font-bold">{schedule?.sessionLength ? `${schedule.sessionLength} Mins` : 'N/A'}</p></div>
-            <div className="col-span-full">
+            <div>
               <p className="text-xs text-gray-400 font-bold uppercase mb-2">Weekly Schedule</p>
               {renderBadgeList(schedule?.daysOfWeek, 'bg-indigo-50 text-indigo-700 border border-indigo-100')}
+            </div>
+            <div>
+               <p className="text-xs text-gray-400 font-bold uppercase mb-1">Schedule Category</p>
+               <p className="font-black text-indigo-600">{schedule?.scheduleCategory || 'N/A'}</p>
             </div>
             <div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Time Slot</p><p className="font-bold">{schedule?.timeStart || '-'} to {schedule?.timeEnd || '-'}</p></div>
             <div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Batch Starts</p><p className="font-bold">{schedule?.startDate || 'N/A'}</p></div>
@@ -112,7 +120,14 @@ export default function Step6Preview({ data, onEditStep }) {
         {/* Step 4: Curriculum */}
         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
           <button onClick={() => onEditStep(4)} className="absolute top-6 right-8 text-blue-600 opacity-0 group-hover:opacity-100 text-sm font-bold underline transition-all">Edit Curriculum</button>
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-3 mb-6">Step 4: Deep-Dive Curriculum</h3>
+          <div className="flex justify-between items-center border-b pb-3 mb-6">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Step 4: Deep-Dive Curriculum</h3>
+            {data.curriculumPdfName && (
+              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+                <span>📄 {data.curriculumPdfName}</span>
+              </div>
+            )}
+          </div>
           
           <div className="space-y-8">
             <div>

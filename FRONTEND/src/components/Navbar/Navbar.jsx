@@ -11,6 +11,7 @@ function Navbar() {
     { label: "My Ads", path: "/postad" },
     { label: "About Us", path: "/aboutus" },
     { label: "Inbox", path: "/inbox" },
+    { label: "Forum", path: "/forum" },
     { label: "Contact", path: "/contact" }
   ];
   const user = JSON.parse(localStorage.getItem("user"));

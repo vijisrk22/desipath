@@ -13,9 +13,15 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { getFullImageUrl } from "../../utils/imageHelper";
 import { useNavigate } from "react-router-dom";
 
+import LazyImage from "../LazyImage";
+
 export default function RoomCard({ room }) {
   const [isFavorited, setIsFavorited] = useState(false);
   const navigate = useNavigate();
+
+  const mainImage = room?.photos && room.photos.length > 0
+    ? getFullImageUrl(room.photos[0])
+    : "/img/roommates/roommatePlaceholder.png";
 
   const handleCardClick = () => {
     navigate(`/services/roommates/${room.id}`);
@@ -53,7 +59,7 @@ export default function RoomCard({ room }) {
           e.stopPropagation();
           setIsFavorited(!isFavorited);
         }}
-        className="absolute top-3 right-4 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm p-2 rounded-full shadow-sm hover:bg-white transition-colors"
+        className="absolute top-3 right-4 z-20 flex items-center justify-center bg-white/70 backdrop-blur-sm p-2 rounded-full shadow-sm hover:bg-white transition-colors"
       >
         {isFavorited ? (
           <FavoriteIcon
@@ -68,23 +74,11 @@ export default function RoomCard({ room }) {
         )}
       </button>
 
-      <div className="relative overflow-hidden group">
-        <CardMedia
-          component="img"
-          image={
-            room?.photos && room.photos.length > 0
-              ? getFullImageUrl(room.photos[0])
-              : "/img/roommates/roommatePlaceholder.png"
-          }
-          title={room.type || "room"}
-          sx={{
-            height: 240,
-            objectFit: "cover",
-            transition: "transform 0.5s ease",
-            ".group:hover &": {
-              transform: "scale(1.05)"
-            }
-          }}
+      <div className="relative overflow-hidden group h-[240px]">
+        <LazyImage
+          src={mainImage}
+          alt={room.type || "room"}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute bottom-3 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
           <div className="flex items-baseline gap-1">

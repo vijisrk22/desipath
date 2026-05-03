@@ -81,7 +81,34 @@ export default function Step4AboutTabbed({ data, update }) {
 
     return (
       <div className="space-y-6 animate-fade-in">
-        <h3 className="text-xl font-bold text-gray-800 border-b pb-2">Course Modules</h3>
+        <div className="flex justify-between items-center border-b pb-2">
+          <h3 className="text-xl font-bold text-gray-800">Course Modules</h3>
+          <div className="flex items-center gap-3">
+             <label className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-xl cursor-pointer hover:bg-blue-100 transition font-bold text-xs">
+               <span className="text-lg">📄</span>
+               {data.curriculumPdf ? 'Replace Curriculum PDF' : 'Upload Curriculum PDF'}
+               <input 
+                 type="file" 
+                 accept=".pdf" 
+                 className="hidden" 
+                 onChange={(e) => {
+                   const file = e.target.files[0];
+                   if (file) {
+                     if (file.type !== 'application/pdf') return alert("Please upload a PDF file");
+                     update({ curriculumPdf: file, curriculumPdfName: file.name });
+                   }
+                 }}
+               />
+             </label>
+             {data.curriculumPdfName && (
+               <div className="flex items-center gap-2 text-xs font-bold text-gray-500 bg-gray-100 px-3 py-2 rounded-xl">
+                 <span className="truncate max-w-[150px]">{data.curriculumPdfName}</span>
+                 <button onClick={() => update({ curriculumPdf: null, curriculumPdfName: '' })} className="text-red-500 hover:text-red-700">×</button>
+               </div>
+             )}
+          </div>
+        </div>
+
         {modules.map((mod, idx) => (
           <div key={mod.id} className="p-5 border border-gray-200 rounded-2xl bg-gray-50 space-y-4 shadow-inner">
             <div className="flex justify-between items-center">

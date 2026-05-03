@@ -54,13 +54,15 @@ function RoomDetails() {
       chatPartnerLocation: `${roomDetails.location_state}, ${roomDetails.location_city}, ${roomDetails.location_zipcode}`,
     };
     console.log("Chat Partner Info:", chatPartnerInfo);
+    const defaultMsg = `I am interested in your Ad Roommate listing at ${roomDetails.location_city}, ${roomDetails.location_state} ${roomDetails.location_zipcode}`;
+
     try {
       navigate(
         `/inbox?adType=roommate&adId=${
           roomDetails.id
         }&chatPartnerInfo=${encodeURIComponent(
           JSON.stringify(chatPartnerInfo)
-        )}`
+        )}&initialMessage=${encodeURIComponent(defaultMsg)}`
       );
     } catch (err) {
       console.log(err);
@@ -114,7 +116,7 @@ function RoomDetails() {
 
   console.log("Room Details:", roomDetails);
   return (
-    <div className="mx-20 my-10">
+    <div className="mx-20 my-10 font-dmsans">
       <DisplayPath
         paths={paths}
         color="[#667479]"
@@ -139,24 +141,24 @@ function RoomDetails() {
         ))}
       </div>
 
-      <div className="flex items-start justify-between gap-3 mt-5">
-        <div>
-          <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-loose">
+      <div className="flex items-start justify-between gap-8 mt-10">
+        <div className="flex-1">
+          <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-tight mb-2">
             {roomDetails?.rent
               ? `$${Number(roomDetails.rent).toLocaleString("en-US")}`
               : "Loading..."}
           </div>
-          <div className="text-gray-800 text-[26px] font-bold font-dmsans">
+          <div className="text-gray-800 text-[26px] font-bold font-dmsans mb-1">
             {roomDetails?.roomType || "Single Room"}
           </div>
-          <div className="text-gray-400 text-[26px] font-bold font-dmsans">
+          <div className="text-gray-400 text-[22px] font-bold font-dmsans mb-6">
             {roomDetails?.owner ? "Owner" : (roomDetails?.agent ? "Agent" : "Owner")} - {roomDetails?.poster_name}
           </div>
           <ReviewPostContent contents={contents} type="displayDetails" />
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="mt-3 px-7 py-3 bg-[#ffa41c] rounded-[57px] inline-flex justify-center items-center gap-2.5">
+        <div className="flex flex-col gap-4 min-w-[240px]">
+          <div className="cursor-pointer px-7 py-4 bg-[#ffa41c] rounded-[57px] inline-flex justify-center items-center gap-2.5 shadow-md hover:bg-[#e8931a] transition-all">
             <PhoneOutlinedIcon />
             <div className=" text-gray-800 text-base font-bold font-dmsans">
               Contact
@@ -165,13 +167,15 @@ function RoomDetails() {
 
           <button
             onClick={handleClick}
-            disabled={roomDetails?.poster_id === user?.id}
-            className={`px-5 py-2.5 rounded-[57px] inline-flex justify-center items-center gap-2.5 ${
-              roomDetails?.poster_id === user?.id ? "cursor-not-allowed" : ""
+            disabled={Number(roomDetails?.poster_id) === Number(user?.id)}
+            className={`w-full px-7 py-4 rounded-[57px] inline-flex justify-center items-center gap-2.5 border-2 border-[#0857d0] bg-white text-[#0857d0] hover:bg-blue-50 transition-all shadow-sm ${
+              Number(roomDetails?.poster_id) === Number(user?.id) 
+                ? "opacity-50 cursor-not-allowed border-gray-300 text-gray-400" 
+                : ""
             }`}
           >
-            <SmsOutlinedIcon color="primary" />
-            <div className="justify-end text-[#ffa41c] text-base font-bold font-dmsans">
+            <SmsOutlinedIcon color={Number(roomDetails?.poster_id) === Number(user?.id) ? "disabled" : "primary"} />
+            <div className="text-base font-bold font-dmsans">
               Chat with Owner
             </div>
           </button>

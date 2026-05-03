@@ -203,7 +203,7 @@ export default function Step2ClassBasic({ data, update }) {
           </div>
         </div>
 
-        {/* Short Description */}
+        {/* Program Summary */}
         <div className="space-y-2">
           <label className="font-semibold text-gray-700">Program Summary</label>
           <p className="text-xs text-gray-500">Briefly explain what makes your training unique (shown in search results).</p>
@@ -214,6 +214,23 @@ export default function Step2ClassBasic({ data, update }) {
             className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
             placeholder="e.g., Become a job-ready DevOps engineer in 12 weeks with real-world projects on AWS and Azure..."
           ></textarea>
+        </div>
+
+        {/* Training Coverage */}
+        <div className="space-y-2">
+          <label className="font-semibold text-gray-700">What does the training Covers? <span className="text-red-500">*</span></label>
+          <p className="text-xs text-gray-500">Provide less than 70 characters, this will appear in search results.</p>
+          <input 
+            type="text" 
+            maxLength={70}
+            placeholder="e.g., React, Node.js, MongoDB, AWS Deployment"
+            value={data.trainingCovers || ''}
+            onChange={(e) => update({ trainingCovers: e.target.value })}
+            className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+          <div className="text-right text-xs text-gray-400">
+            {(data.trainingCovers || '').length}/70
+          </div>
         </div>
 
         {/* Tags */}

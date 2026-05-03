@@ -185,7 +185,70 @@ export default function ItInstructorPortal() {
     setIsSaving(true);
     try {
       const endpoint = isEditMode ? `/api/it-training/${editClassId}` : '/api/it-training';
-      const result = await (isEditMode ? api.put(endpoint, formData) : api.post(endpoint, formData));
+      
+      const form = new FormData();
+      // Append top level IDs
+      form.append('instructorId', formData.instructorId);
+      form.append('classId', formData.classId);
+
+      // Append instructorInfo
+      Object.keys(formData.instructorInfo).forEach(key => {
+        if (key === 'photoUrl' && formData.instructorInfo[key] instanceof File) {
+          form.append(`instructorInfo[${key}]`, formData.instructorInfo[key]);
+        } else if (key === 'photoUrl' && typeof formData.instructorInfo[key] === 'string') {
+          form.append(`instructorInfo[${key}]`, formData.instructorInfo[key]);
+        } else if (key !== 'photoUrl') {
+          form.append(`instructorInfo[${key}]`, formData.instructorInfo[key]);
+        }
+      });
+
+      // Append classBasic
+      Object.keys(formData.classBasic).forEach(key => {
+        if (Array.isArray(formData.classBasic[key])) {
+          formData.classBasic[key].forEach(val => form.append(`classBasic[${key}][]`, val));
+        } else {
+          form.append(`classBasic[${key}]`, formData.classBasic[key]);
+        }
+      });
+
+      // Append schedule
+      Object.keys(formData.schedule).forEach(key => {
+        if (Array.isArray(formData.schedule[key])) {
+          formData.schedule[key].forEach(val => form.append(`schedule[${key}][]`, val));
+        } else {
+          form.append(`schedule[${key}]`, formData.schedule[key]);
+        }
+      });
+
+      // Append about
+      form.append('about[overview][detailedDescription]', formData.about.overview.detailedDescription || '');
+      (formData.about.overview.whoIsItFor || []).forEach(val => form.append('about[overview][whoIsItFor][]', val));
+      (formData.about.overview.whatWillKidsLearn || []).forEach(val => form.append('about[overview][whatWillKidsLearn][]', val));
+      (formData.about.overview.highlights || []).forEach(val => form.append('about[overview][highlights][]', val));
+      
+      (formData.about.curriculum || []).forEach((mod, idx) => {
+        form.append(`about[curriculum][${idx}][title]`, mod.title);
+        form.append(`about[curriculum][${idx}][description]`, mod.description);
+        form.append(`about[curriculum][${idx}][duration]`, mod.duration);
+      });
+
+      (formData.about.requirements.prerequisites || []).forEach(val => form.append('about[requirements][prerequisites][]', val));
+      (formData.about.requirements.materialsNeeded || []).forEach(val => form.append('about[requirements][materialsNeeded][]', val));
+      (formData.about.requirements.techRequirements || []).forEach(val => form.append('about[requirements][techRequirements][]', val));
+
+      // Append curriculumPdf if exists
+      if (formData.about.curriculumPdf instanceof File) {
+        form.append('curriculumPdf', formData.about.curriculumPdf);
+      }
+
+      // Append pricing
+      Object.keys(formData.pricing).forEach(key => {
+        form.append(`pricing[${key}]`, formData.pricing[key]);
+      });
+
+      const result = await api.post(endpoint, form, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       
       if (result.data.success) {
         navigate('/it-training/instructor-portal/success');

@@ -26,7 +26,8 @@ export default function AdminDashboard() {
     { name: 'Events', path: '/admindashboard/events', icon: '🎟️' },
     { name: 'Travel Companion', path: '/admindashboard/travel', icon: '✈️' },
     { name: 'IT Trainings', path: '/admindashboard/trainings', icon: '💻' },
-    { name: 'Local Deals', path: '/admindashboard/local-ads', icon: '📢' },
+    {name: 'Local Deals', path: '/admindashboard/local-ads', icon: '📢' },
+    { name: 'IT Training Leads', path: '/admindashboard/it-training-leads', icon: '📈' },
   ];
 
   return (

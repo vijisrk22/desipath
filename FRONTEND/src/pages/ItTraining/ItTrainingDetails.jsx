@@ -26,10 +26,21 @@ export default function ItTrainingDetails() {
   const handleEnquiry = (e) => {
     e.preventDefault();
     if (!enquiryParams.name || !enquiryParams.email) return alert("Name and Email are required");
-    setTimeout(() => {
-      setEnquirySent(true);
-      setEnquiryParams({ name: '', email: '', phone: '', message: '' });
-    }, 800);
+    
+    api.post('/api/it-training/leads', {
+      class_id: id,
+      ...enquiryParams
+    })
+    .then(res => {
+      if (res.data.success) {
+        setEnquirySent(true);
+        setEnquiryParams({ name: '', email: '', phone: '', message: '' });
+      }
+    })
+    .catch(err => {
+      console.error("Error submitting lead:", err);
+      alert("Failed to send request. Please try again later.");
+    });
   };
 
   const renderBadgeList = (list, colorClass = "bg-gray-100 border text-gray-700") => {
@@ -255,12 +266,24 @@ export default function ItTrainingDetails() {
                      ))}
                    </div>
                  </div>
-                 <div className="pt-4">
-                   <span className="text-gray-500 font-bold text-xs uppercase tracking-tight block mb-3">Target Skill Level</span>
-                   {renderBadgeList(classBasic.level, "bg-indigo-50 border-indigo-100 text-indigo-700")}
-                 </div>
-               </div>
-            </div>
+                  <div className="pt-4">
+                    <span className="text-gray-500 font-bold text-xs uppercase tracking-tight block mb-3">Target Skill Level</span>
+                    {renderBadgeList(classBasic.level, "bg-indigo-50 border-indigo-100 text-indigo-700")}
+                  </div>
+                  {classBasic.curriculum_pdf_url && (
+                    <div className="pt-6 border-t border-slate-50 mt-4">
+                      <a 
+                        href={getFullImageUrl(classBasic.curriculum_pdf_url)} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 w-full py-3 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-xs hover:bg-emerald-100 transition-all border border-emerald-100"
+                      >
+                        <span className="text-lg">📄</span> Download Curriculum PDF
+                      </a>
+                    </div>
+                  )}
+                </div>
+             </div>
 
             {/* Instructor Card */}
             <div className="bg-blue-900 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-blue-900/30">
@@ -277,51 +300,51 @@ export default function ItTrainingDetails() {
 
             {/* Request More Info Form */}
             <div id="enquiry-form" className="bg-white p-8 rounded-[2.5rem] shadow-2xl shadow-blue-900/10 border border-gray-100">
-               <h3 className="text-2xl font-black text-blue-900 mb-6">Request Syllabus</h3>
-               
-               {enquirySent ? (
-                 <div className="bg-emerald-50 text-emerald-700 p-8 rounded-3xl text-center font-bold border border-emerald-100 animate-fade-in">
-                   <div className="text-5xl mb-4">📩</div>
-                   <p className="text-lg">Request Received!</p>
-                   <div className="text-xs font-bold uppercase opacity-60 mt-2">The instructor will reach out within 24 hours.</div>
-                 </div>
-               ) : (
-                 <form onSubmit={handleEnquiry} className="space-y-4">
-                   <input 
-                     type="text" 
-                     placeholder="Your Professional Name *"
-                     required
-                     value={enquiryParams.name}
-                     onChange={e => setEnquiryParams({...enquiryParams, name: e.target.value})}
-                     className="w-full p-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold bg-slate-50 transition-all"
-                   />
-                   <input 
-                     type="email" 
-                     placeholder="Professional Email *"
-                     required
-                     value={enquiryParams.email}
-                     onChange={e => setEnquiryParams({...enquiryParams, email: e.target.value})}
-                     className="w-full p-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold bg-slate-50 transition-all"
-                   />
-                   <input 
-                     type="tel" 
-                     placeholder="Phone (Optional)"
-                     value={enquiryParams.phone}
-                     onChange={e => setEnquiryParams({...enquiryParams, phone: e.target.value})}
-                     className="w-full p-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold bg-slate-50 transition-all"
-                   />
-                   <textarea 
-                     rows="4"
-                     placeholder="Share your learning goals or ask for prerequisites..."
-                     value={enquiryParams.message}
-                     onChange={e => setEnquiryParams({...enquiryParams, message: e.target.value})}
-                     className="w-full p-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold bg-slate-50 transition-all"
-                   ></textarea>
-                   <button type="submit" className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 transition-all transform hover:-translate-y-1">
-                     Download Full Syllabus
-                   </button>
-                 </form>
-               )}
+                <h3 className="text-2xl font-black text-blue-900 mb-6">Request Syllabus</h3>
+                
+                {enquirySent ? (
+                  <div className="bg-emerald-50 text-emerald-700 p-8 rounded-3xl text-center font-bold border border-emerald-100 animate-fade-in">
+                    <div className="text-5xl mb-4">📩</div>
+                    <p className="text-lg">Request Received!</p>
+                    <div className="text-xs font-bold uppercase opacity-60 mt-2">The instructor will reach out within 24 hours.</div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleEnquiry} className="space-y-4">
+                    <input 
+                      type="text" 
+                      placeholder="Your Name *"
+                      required
+                      value={enquiryParams.name}
+                      onChange={e => setEnquiryParams({...enquiryParams, name: e.target.value})}
+                      className="w-full p-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold bg-slate-50 transition-all"
+                    />
+                    <input 
+                      type="email" 
+                      placeholder="Your Email *"
+                      required
+                      value={enquiryParams.email}
+                      onChange={e => setEnquiryParams({...enquiryParams, email: e.target.value})}
+                      className="w-full p-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold bg-slate-50 transition-all"
+                    />
+                    <input 
+                      type="tel" 
+                      placeholder="Phone (Optional)"
+                      value={enquiryParams.phone}
+                      onChange={e => setEnquiryParams({...enquiryParams, phone: e.target.value})}
+                      className="w-full p-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold bg-slate-50 transition-all"
+                    />
+                    <textarea 
+                      rows="4"
+                      placeholder="Message (Optional)..."
+                      value={enquiryParams.message}
+                      onChange={e => setEnquiryParams({...enquiryParams, message: e.target.value})}
+                      className="w-full p-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold bg-slate-50 transition-all"
+                    ></textarea>
+                    <button type="submit" className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 transition-all transform hover:-translate-y-1">
+                      Request Syllabus
+                    </button>
+                  </form>
+                )}
             </div>
 
           </div>

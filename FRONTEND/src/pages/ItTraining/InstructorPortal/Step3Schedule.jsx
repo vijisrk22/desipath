@@ -143,6 +143,32 @@ export default function Step3Schedule({ data, update }) {
           </div>
         </div>
 
+        <div className="space-y-2">
+          <label className="font-semibold text-gray-700">Schedule Category <span className="text-red-500">*</span></label>
+          <div className="flex items-center gap-4 h-full pt-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input 
+                type="radio" 
+                name="scheduleCategory"
+                checked={data.scheduleCategory === 'Weekday'} 
+                onChange={() => update({ scheduleCategory: 'Weekday' })} 
+                className="w-5 h-5 text-blue-600" 
+              />
+              <span className="font-medium text-gray-700">Weekday</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input 
+                type="radio" 
+                name="scheduleCategory"
+                checked={data.scheduleCategory === 'Weekend'} 
+                onChange={() => update({ scheduleCategory: 'Weekend' })} 
+                className="w-5 h-5 text-blue-600" 
+              />
+              <span className="font-medium text-gray-700">Weekend</span>
+            </label>
+          </div>
+        </div>
+
         <div className="col-span-1 md:col-span-2 space-y-2">
           <label className="font-semibold text-gray-700">Location Address (If Hybrid/Offline)</label>
           <textarea 

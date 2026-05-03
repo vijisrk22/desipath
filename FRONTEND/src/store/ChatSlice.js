@@ -7,7 +7,7 @@ export const fetchChatList = createAsyncThunk(
   'chat/fetchChatList',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/api/messages/sent'); // Adjust the endpoint as needed
+      const response = await api.get('/api/messages/conversations');
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch chats'); // Handle error response
@@ -100,8 +100,27 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.loading = false;
+        // Update current conversation
         state.conversation.push(action.payload);
-     
+        
+        // Update the conversation list (inbox) immediately
+        const sentMsg = action.payload;
+        const index = state.userMessages.findIndex(m => 
+          m.ad_id === sentMsg.ad_id && 
+          m.ad_type === sentMsg.ad_type &&
+          ((m.sender_id === sentMsg.sender_id && m.receiver_id === sentMsg.receiver_id) ||
+           (m.sender_id === sentMsg.receiver_id && m.receiver_id === sentMsg.sender_id))
+        );
+
+        if (index !== -1) {
+          // Move to top and update message
+          const updatedConv = { ...state.userMessages[index], ...sentMsg };
+          state.userMessages.splice(index, 1);
+          state.userMessages.unshift(updatedConv);
+        } else {
+          // New conversation
+          state.userMessages.unshift(sentMsg);
+        }
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.loading = false;

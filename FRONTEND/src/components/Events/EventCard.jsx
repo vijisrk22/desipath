@@ -12,9 +12,13 @@ import ShareIcon from "@mui/icons-material/Share";
 import { Link, useNavigate } from "react-router-dom";
 import { getFullImageUrl } from "../../utils/imageHelper";
 
+import LazyImage from "../LazyImage";
+
 export default function EventCard({ event }) {
   const [isFavorited, setIsFavorited] = useState(false);
   const navigate = useNavigate();
+
+  const mainImage = event?.image ? getFullImageUrl(event.image) : "/img/events/eventSmpl1.png";
 
   const handleCardClick = () => {
     navigate(`/services/events/findEvent/${event.id}`);
@@ -42,22 +46,11 @@ export default function EventCard({ event }) {
         onClick={handleCardClick}
         sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
       >
-        <div className="relative">
-          <CardMedia
-            component="img"
-            image={event?.image ? getFullImageUrl(event.image) : "/img/events/eventSmpl1.png"}
-            onError={(e) => {
-              e.currentTarget.setAttribute('data-broken', 'true');
-            }}
-            title={event?.title || "event"}
-            sx={{ 
-              height: 240,
-              objectFit: "cover",
-              p: 0,
-              "&[data-broken='true']": {
-                backgroundColor: "#f8f9fa",
-              }
-            }}
+        <div className="relative h-[240px] overflow-hidden">
+          <LazyImage
+            src={mainImage}
+            alt={event?.title || "event"}
+            className="w-full h-full object-cover"
           />
           {event?.event_type && (
             <div className="absolute top-3 left-3 text-white/70 text-[10px] font-bold uppercase tracking-widest drop-shadow-md z-10 font-dmsans">

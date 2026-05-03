@@ -4,11 +4,18 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { getFullImageUrl } from "../../utils/imageHelper";
 import { getStateCode } from "../../utils/locationHelper";
 
+import LazyImage from "../LazyImage";
+
 export default function HouseCard({ house }) {
   const [isFavorited, setIsFavorited] = useState(false);
 
   // Calculate total baths
   const totalBaths = (house.full_bathroom_total || 0) + (house.half_bathroom_total || 0);
+
+  const mainImage = house.images && house.images.length > 0
+    ? getFullImageUrl(house.images[0])
+    : "/homesSmpl.png";
+
   return (
     <Link
       to={`/services/BuyHome/${house.id}`}
@@ -16,10 +23,8 @@ export default function HouseCard({ house }) {
     >
       {/* Image Section */}
       <div className="relative h-56 lg:h-64 overflow-hidden">
-        <img
-          src={house.images && house.images.length > 0
-            ? getFullImageUrl(house.images[0])
-            : "/homesSmpl.png"}
+        <LazyImage
+          src={mainImage}
           alt={house.home_type}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />

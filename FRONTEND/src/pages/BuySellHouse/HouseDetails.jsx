@@ -69,11 +69,13 @@ function HouseDetails() {
     };
 
     try {
+      const defaultMsg = `I am interested in your Ad Buy/Sell Home at ${houseDetails.location_city}, ${houseDetails.location_state} ${houseDetails.location_zipcode}`;
+
       navigate(
-        `/inbox?adType=house&adId=${houseDetails.id
+        `/inbox?adType=buysellhome&adId=${houseDetails.id
         }&chatPartnerInfo=${encodeURIComponent(
           JSON.stringify(chatPartnerInfo)
-        )}`
+        )}&initialMessage=${encodeURIComponent(defaultMsg)}`
       );
     } catch (err) {
       console.log(err);
@@ -224,11 +226,11 @@ function HouseDetails() {
 
           <button
             onClick={handleMessageClick}
-            disabled={houseDetails?.seller_id === user?.id}
-            className={`w-full px-7 py-4 rounded-[57px] inline-flex justify-center items-center gap-2.5 border-2 border-[#0857d0] bg-white text-[#0857d0] hover:bg-blue-50 transition-all shadow-sm ${houseDetails?.seller_id === user?.id ? "opacity-50 cursor-not-allowed border-gray-300 text-gray-400" : ""
+            disabled={Number(houseDetails?.seller_id) === Number(user?.id)}
+            className={`w-full px-7 py-4 rounded-[57px] inline-flex justify-center items-center gap-2.5 border-2 border-[#0857d0] bg-white text-[#0857d0] hover:bg-blue-50 transition-all shadow-sm ${Number(houseDetails?.seller_id) === Number(user?.id) ? "opacity-50 cursor-not-allowed border-gray-300 text-gray-400" : ""
               }`}
           >
-            <SmsOutlinedIcon color={houseDetails?.seller_id === user?.id ? "disabled" : "primary"} />
+            <SmsOutlinedIcon color={Number(houseDetails?.seller_id) === Number(user?.id) ? "disabled" : "primary"} />
             <div className="text-base font-bold font-dmsans">
               Message Seller
             </div>
