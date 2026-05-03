@@ -1,10 +1,12 @@
-import { Avatar, Box, Typography } from "@mui/material";
+import { Avatar, Box, Typography, IconButton } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useMemo } from "react";
 
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 function ChatScreenHeader({ adId, adType }) {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const chatPartnerInfo = useMemo(() => {
     const raw = searchParams.get("chatPartnerInfo");
     if (!raw) return null;
@@ -19,7 +21,10 @@ function ChatScreenHeader({ adId, adType }) {
   // Ensure chatPartner is available before attempting to render its information
   const avatarSrc = ""; // Default to an empty string if no photoUrl
 
-  console.log("Chat Partner Info:", chatPartnerInfo);
+  const handleBack = () => {
+    navigate('/inbox');
+  };
+
   return (
     <Box
       sx={{
@@ -32,7 +37,13 @@ function ChatScreenHeader({ adId, adType }) {
         zIndex: 10
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 2 } }}>
+        <IconButton 
+          onClick={handleBack}
+          sx={{ display: { xs: 'flex', lg: 'none' }, color: "#4b5563", p: 1 }}
+        >
+          <ArrowBackIcon />
+        </IconButton>
         <Avatar
           src={avatarSrc}
           sx={{

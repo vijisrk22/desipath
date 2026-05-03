@@ -12,6 +12,7 @@ use App\Http\Controllers\ClassesforKidsAdsController;
 use App\Http\Controllers\TravelCompanionsController;
 use App\Models\BuySellCar;
 use App\Models\BuySellHome;
+use App\Http\Controllers\KidsClassController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Api\Auth\GoogleAuthController;
@@ -247,7 +248,6 @@ Route::prefix('events')->group(function () {
     Route::get('/{id}', [EventsController::class, 'show']);
 });
 
-use App\Http\Controllers\KidsClassController;
 Route::middleware([])->group(function () {
     Route::post('/instructors/upload-photo', [InstructorController::class, 'uploadPhoto']);
     Route::post('/kids-classes', [KidsClassController::class, 'store']);

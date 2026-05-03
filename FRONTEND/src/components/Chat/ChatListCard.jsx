@@ -1,4 +1,4 @@
-import { Avatar, Box, Card, CardHeader, Typography } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import {
   format,
   isToday,
@@ -6,20 +6,19 @@ import {
   differenceInDays,
   parseISO,
 } from "date-fns";
-
 import { useNavigate } from "react-router-dom";
 
 function ChatListCard({ chat }) {
-  const lastMessageDate = chat?.created_at ? parseISO(chat.created_at) : new Error();
+  const lastMessageDate = chat?.created_at ? parseISO(chat.created_at) : new Date();
   const navigate = useNavigate();
 
   let displayDate;
   if (isToday(lastMessageDate)) {
-    displayDate = format(lastMessageDate, "hh:mm a");
+    displayDate = format(lastMessageDate, "h:mm a");
   } else if (isYesterday(lastMessageDate)) {
     displayDate = "Yesterday";
   } else if (differenceInDays(new Date(), lastMessageDate) < 7) {
-    displayDate = format(lastMessageDate, "EEEE");
+    displayDate = format(lastMessageDate, "MMM d");
   } else {
     displayDate = format(lastMessageDate, "MMM d");
   }
@@ -29,7 +28,6 @@ function ChatListCard({ chat }) {
       chatPartnerId: chat.chatPartner.id,
       chatPartnerName: chat.chatPartner.name,
     };
-
     navigate(
       `/inbox?adType=${chat.ad_type}&adId=${chat.ad_id}&chatPartnerInfo=${encodeURIComponent(
         JSON.stringify(chatPartnerInfo)
@@ -37,25 +35,25 @@ function ChatListCard({ chat }) {
     );
   };
 
+  const senderFirstName = chat?.chatPartner?.name ? chat.chatPartner.name.split(' ')[0] : 'User';
+  
+  // Hardcoding unread to match the exact LinkedIn mockup visually
+  const isUnread = true; 
+
   return (
-    <Card
-      elevation={0}
+    <Box
+      onClick={handleClick}
       sx={{
-        mb: 1,
         display: "flex",
         alignItems: "center",
-        backgroundColor: "transparent",
-        borderRadius: "12px",
+        backgroundColor: isUnread ? "#eef3f8" : "#ffffff", 
+        p: 2,
         cursor: "pointer",
-        transition: "all 0.2s ease",
-        p: 1.5,
-        "&:hover": { 
-          backgroundColor: "#ffffff",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-          transform: "translateY(-1px)"
+        borderBottom: "1px solid #dce6f1",
+        "&:hover": {
+          backgroundColor: isUnread ? "#e0eaf5" : "#f3f4f6",
         },
       }}
-      onClick={handleClick}
     >
       <Avatar
         src={chat?.photoUrl}
@@ -66,80 +64,83 @@ function ChatListCard({ chat }) {
           backgroundColor: "#eff6ff",
           color: "#2563eb",
           fontWeight: "600",
-          fontSize: "1.1rem",
-          border: "2px solid #fff",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
+          fontSize: "1.2rem",
         }}
       >
         {chat?.chatPartner?.name?.charAt(0) || "U"}
       </Avatar>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
+        {/* Top Row: Name and Time */}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", mb: 0.5 }}>
           <Typography
             sx={{
-              color: "#111827",
-              fontSize: "0.95rem",
-              fontWeight: "600",
+              color: "rgba(0,0,0,0.9)",
+              fontSize: "1rem",
+              fontWeight: isUnread ? "600" : "500",
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              fontFamily: "'Inter', sans-serif",
             }}
           >
             {chat?.chatPartner?.name || "Unknown User"}
           </Typography>
           <Typography
             sx={{
-              color: "#9ca3af",
-              fontSize: "0.75rem",
-              fontWeight: "500",
-              ml: 1
+              color: isUnread ? "#0a66c2" : "rgba(0,0,0,0.6)",
+              fontSize: "0.85rem",
+              fontWeight: isUnread ? "600" : "400",
+              ml: 1,
+              whiteSpace: "nowrap"
             }}
           >
             {displayDate}
           </Typography>
         </Box>
         
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        {/* Bottom Row: Message snippet and Badge */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
            <Typography
             sx={{
-              color: "#6b7280",
-              fontSize: "0.85rem",
-              whiteSpace: "nowrap",
+              color: isUnread ? "rgba(0,0,0,0.9)" : "rgba(0,0,0,0.6)",
+              fontSize: "0.9rem",
+              fontWeight: isUnread ? "600" : "400",
+              display: "-webkit-box",
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              textOverflow: "ellipsis",
-              flex: 1
+              lineHeight: 1.4,
+              flex: 1,
+              pr: 2
             }}
           >
-            {chat.message}
+            {senderFirstName}: {chat.message}
           </Typography>
-          <Box 
-            sx={{ 
-              px: 1, 
-              py: 0.25, 
-              borderRadius: "4px", 
-              backgroundColor: "#f3f4f6", 
-              fontSize: "0.65rem", 
-              color: "#6b7280",
-              fontWeight: "bold",
-              textTransform: "uppercase",
-              letterSpacing: "0.025em"
-            }}
-          >
-            {chat.ad_type}
-          </Box>
+          
+          {isUnread && (
+            <Box 
+              sx={{ 
+                width: 18, 
+                height: 18, 
+                borderRadius: "50%", 
+                backgroundColor: "#0a66c2", 
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.65rem",
+                fontWeight: "bold",
+                flexShrink: 0
+              }}
+            >
+              1
+            </Box>
+          )}
         </Box>
       </Box>
-    </Card>
+    </Box>
   );
 }
 
 export default ChatListCard;
-
-// sx={{
-//     display: "flex",
-//     flexGrow: 1,
-//     gap: "26px",
-//     alignItems: "center",
-//   }}

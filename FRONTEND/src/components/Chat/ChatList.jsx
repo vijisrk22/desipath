@@ -50,8 +50,8 @@ function ChatList() {
         sx={{
           flex: 1,
           overflowY: "auto",
-          p: 1.5,
-          backgroundColor: "#fafafa",
+          p: 0,
+          backgroundColor: "#ffffff",
           "&::-webkit-scrollbar": {
             width: "4px",
           },

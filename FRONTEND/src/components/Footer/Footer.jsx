@@ -58,9 +58,6 @@ function Footer({ bgColor = "bg-[#f3f5f7]", newsletter = "hidden", hideOnMobile 
           <div className="text-gray-500 text-xs lg:text-sm font-medium font-dmsans my-2">
             © 2024 Desipath. All rights reserved.
           </div>
-          <div className="text-center text-[#0857d0] text-3xl font-normal font-fredoka">
-            Desipath
-          </div>
 
           <div className="text-gray-500 text-xs lg:text-sm font-medium font-dmsans  my-2">
             Terms of Service Privacy Policy

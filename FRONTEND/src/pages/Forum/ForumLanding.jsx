@@ -46,27 +46,32 @@ export default function ForumLanding() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({ title: '', content: '', category: 'General' });
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
   React.useEffect(() => {
-    fetchPosts();
+    setPage(1);
+    fetchPosts(1, false);
   }, [searchTerm, selectedCategory]);
 
-  const fetchPosts = () => {
+  const fetchPosts = (currentPage = 1, append = false) => {
     setLoading(true);
-    console.log("Fetching forum posts with search:", searchTerm, "category:", selectedCategory);
-    api.get(`/api/forum/posts?search=${searchTerm}&category=${selectedCategory}`)
+    api.get(`/api/forum/posts?search=${searchTerm}&category=${selectedCategory}&page=${currentPage}`)
       .then(res => {
-        console.log("Forum API Response:", res.data);
         if (res.data.success) {
-          // Laravel pagination returns the array in the .data field of the pagination object
-          const items = res.data.data.data || res.data.data;
-          setPosts(Array.isArray(items) ? items : []);
+          const newPosts = res.data.data.data || res.data.data;
+          setPosts(append ? prev => [...prev, ...(Array.isArray(newPosts) ? newPosts : [])] : (Array.isArray(newPosts) ? newPosts : []));
+          setHasMore(res.data.data.current_page < res.data.data.last_page);
         }
       })
-      .catch(err => {
-        console.error("Forum API Error:", err);
-      })
+      .catch(err => console.error("Forum API Error:", err))
       .finally(() => setLoading(false));
+  };
+
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchPosts(nextPage, true);
   };
 
   const handleCreatePost = (e) => {
@@ -93,17 +98,17 @@ export default function ForumLanding() {
       <main className="max-w-6xl mx-auto w-full px-4 py-6 flex gap-6">
         
         {/* Left: Main Feed */}
-        <div className="flex-grow space-y-4">
+        <div className="flex-grow min-w-0 space-y-4">
           
           {/* Create Post Input (Reddit Style) */}
           <div className="bg-white p-2 rounded-md border border-gray-300 flex items-center gap-3 shadow-sm">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl grayscale">👤</div>
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl shrink-0 grayscale">👤</div>
             <input 
               type="text" 
               placeholder="Create Post" 
               onClick={() => setIsPostModalOpen(true)}
               readOnly
-              className="flex-grow bg-[#f6f7f8] border border-gray-200 rounded-md px-4 py-2 hover:bg-white hover:border-blue-500 transition-all outline-none cursor-pointer"
+              className="flex-grow min-w-0 bg-[#f6f7f8] border border-gray-200 rounded-md px-4 py-2 hover:bg-white hover:border-blue-500 transition-all outline-none cursor-pointer text-sm"
             />
           </div>
 
@@ -157,7 +162,7 @@ export default function ForumLanding() {
           )}
 
           {/* Filter Bar */}
-          <div className="bg-white p-3 rounded-md border border-gray-300 flex items-center gap-6 shadow-sm overflow-x-auto">
+          <div className="bg-white p-3 rounded-md border border-gray-300 flex items-center gap-4 sm:gap-6 shadow-sm overflow-x-auto no-scrollbar">
             {['🔥 Hot', '✨ New', '🏆 Top', '📈 Rising'].map((tag, i) => (
               <button key={i} className={`px-4 py-1.5 rounded-full font-bold text-sm whitespace-nowrap transition ${i === 0 ? 'bg-gray-100 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>
                 {tag}
@@ -179,41 +184,73 @@ export default function ForumLanding() {
               posts.map(post => (
                 <div 
                   key={post.id} 
-                  className="bg-white rounded-md border border-gray-300 flex hover:border-gray-400 transition-all cursor-pointer shadow-sm group"
+                  className="bg-white rounded-md border border-gray-300 flex flex-col hover:border-gray-400 transition-all cursor-pointer shadow-sm group p-3"
                   onClick={() => navigate(`/forum/post/${post.id}`)}
                 >
-                  {/* Voting Sidebar */}
-                  <div className="w-10 bg-[#f8f9fa] flex flex-col items-center py-2 gap-1 rounded-l-md shrink-0">
-                    <button className="text-gray-400 hover:text-orange-600 hover:bg-gray-200 p-1 rounded transition text-lg" onClick={(e) => {e.stopPropagation(); /* handleVote(post.id, 'up') */}}>▲</button>
-                    <span className="text-xs font-black text-gray-700">{post.votes}</span>
-                    <button className="text-gray-400 hover:text-blue-600 hover:bg-gray-200 p-1 rounded transition text-lg" onClick={(e) => {e.stopPropagation(); /* handleVote(post.id, 'down') */}}>▼</button>
-                  </div>
-
                   {/* Post Content */}
-                  <div className="p-3 flex-grow">
-                    <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold mb-2">
-                      <span className="text-gray-900 hover:underline">d/{post.category || 'General'}</span>
+                  <div className="w-full min-w-0">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-gray-500 mb-2">
+                      <img src="/reddit-avatar.png" alt="" className="w-5 h-5 rounded-full bg-gray-200" onError={(e) => e.target.style.display='none'} />
+                      <span className="text-gray-900 font-bold hover:underline break-all">d/{post.category || 'General'}</span>
                       <span>•</span>
-                      <span>Posted by u/{post.user?.name || 'Anonymous'}</span>
-                      <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                      <span className="truncate">{new Date(post.created_at).toLocaleDateString()}</span>
                     </div>
-                    <h2 className="text-lg font-bold text-gray-900 mb-2 leading-tight group-hover:text-blue-600 transition-colors">{post.title}</h2>
-                    <p className="text-sm text-gray-600 line-clamp-3 mb-4 leading-relaxed">{post.content}</p>
+                    <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 leading-tight group-hover:text-blue-600 transition-colors break-words">{post.title}</h2>
+                    <p className="text-sm text-gray-700 line-clamp-3 mb-4 leading-relaxed break-words">{post.content}</p>
                     
-                    <div className="flex items-center gap-4 text-xs font-black text-gray-500 uppercase tracking-tighter">
-                      <div className="flex items-center gap-2 hover:bg-gray-100 px-2 py-2 rounded transition">
-                        <span className="text-lg">💬</span> {post.comments_count} Comments
+                    {/* Action Pills */}
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-bold text-gray-700 mt-2">
+                      
+                      {/* Vote Pill */}
+                      <div className="flex items-center bg-[#eaedef] rounded-full overflow-hidden">
+                        <button 
+                          className="flex items-center justify-center p-2 hover:bg-gray-300 transition text-gray-600 hover:text-orange-600"
+                          onClick={(e) => {e.stopPropagation(); /* handleVote(post.id, 'up') */}}
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                        </button>
+                        <span className="px-1 font-bold">{post.votes}</span>
+                        <button 
+                          className="flex items-center justify-center p-2 hover:bg-gray-300 transition text-gray-600 hover:text-indigo-600"
+                          onClick={(e) => {e.stopPropagation(); /* handleVote(post.id, 'down') */}}
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+                        </button>
                       </div>
-                      <div className="flex items-center gap-2 hover:bg-gray-100 px-2 py-2 rounded transition">
-                        <span className="text-lg">🎁</span> Award
+
+                      {/* Comments Pill */}
+                      <div className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span>{post.comments_count}</span>
                       </div>
-                      <div className="flex items-center gap-2 hover:bg-gray-100 px-2 py-2 rounded transition">
-                        <span className="text-lg">📤</span> Share
+
+                      {/* Award Pill */}
+                      <div className="flex items-center justify-center bg-[#eaedef] hover:bg-gray-300 p-2 rounded-full transition cursor-pointer hidden sm:flex">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
                       </div>
+
+                      {/* Share Pill */}
+                      <div className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
+                        <span className="hidden sm:inline">Share</span>
+                      </div>
+
                     </div>
                   </div>
                 </div>
               ))
+            )}
+            
+            {/* Load More Button */}
+            {hasMore && !loading && (
+              <div className="flex justify-center mt-6 pb-6">
+                <button 
+                  onClick={loadMore}
+                  className="px-6 py-2 bg-white border border-blue-600 text-blue-600 font-bold rounded-full hover:bg-blue-50 transition shadow-sm"
+                >
+                  Load More
+                </button>
+              </div>
             )}
           </div>
         </div>
