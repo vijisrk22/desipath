@@ -29,6 +29,8 @@ export default function PhotographyPortal() {
     experience_years: "",
     languages: "English",
     video_url: "",
+    open_to_travel: false,
+    travel_policy: "Travel Expenses to be paid",
     services: {}, // { "Photography Services": ["Wedding Photography"], ... }
     packages: [{ name: "", price: "", description: "" }],
     locations: [{ address: "", city: "", state: "", zipcode: "" }],
@@ -73,6 +75,8 @@ export default function PhotographyPortal() {
               languages: d.languages,
               services: d.services || {},
               video_url: d.video_url || "",
+              open_to_travel: !!d.open_to_travel,
+              travel_policy: d.travel_policy || "Travel Expenses to be paid",
               packages: d.packages?.length > 0 ? d.packages : [{ name: "", price: "", description: "" }],
               locations: d.locations?.length > 0 ? d.locations : [{ address: "", city: "", state: "", zipcode: "" }],
             });
@@ -88,7 +92,8 @@ export default function PhotographyPortal() {
   }, [id]);
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
   };
 
   const handleServiceToggle = (category, service) => {
@@ -122,6 +127,16 @@ export default function PhotographyPortal() {
     setFormData({ ...formData, locations: newLocs });
   };
 
+  const addLocation = () => {
+    setFormData({ ...formData, locations: [...formData.locations, { address: "", city: "", state: "", zipcode: "" }] });
+  };
+
+  const removeLocation = (index) => {
+    if (formData.locations.length === 1) return;
+    const newLocs = formData.locations.filter((_, i) => i !== index);
+    setFormData({ ...formData, locations: newLocs });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -133,6 +148,8 @@ export default function PhotographyPortal() {
     data.append("experience_years", formData.experience_years);
     data.append("languages", formData.languages);
     data.append("video_url", formData.video_url);
+    data.append("open_to_travel", formData.open_to_travel);
+    data.append("travel_policy", formData.travel_policy);
     
     // Services need to be stringified for FormData if sending as array/object
     data.append("services", JSON.stringify(formData.services));
@@ -244,6 +261,38 @@ export default function PhotographyPortal() {
                     required
                     placeholder="Tell clients about your style, equipment, and passion..."
                   />
+                </div>
+                <div className="mt-6 p-4 bg-blue-50/50 rounded-2xl border border-blue-100/50">
+                    <FormControlLabel
+                        control={
+                            <Checkbox 
+                                name="open_to_travel"
+                                checked={formData.open_to_travel}
+                                onChange={handleInputChange}
+                            />
+                        }
+                        label={
+                            <div className="flex flex-col">
+                                <span className="font-bold text-gray-800">Open to Travel</span>
+                                <span className="text-xs text-gray-500">Willing to travel for assignments outside primary service area.</span>
+                            </div>
+                        }
+                    />
+                    {formData.open_to_travel && (
+                        <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                             <TextField
+                                label="Travel Policy"
+                                name="travel_policy"
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                value={formData.travel_policy}
+                                onChange={handleInputChange}
+                                placeholder="e.g. Travel Expenses to be paid"
+                                sx={{ backgroundColor: 'white' }}
+                             />
+                        </div>
+                    )}
                 </div>
               </section>
 
@@ -360,62 +409,81 @@ export default function PhotographyPortal() {
 
               {/* Service Locations */}
               <section>
-                <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">5</span>
-                  Primary Service Area
-                </h2>
-
-                <div className="mb-6">
-                   <Autocomplete
-                    fullWidth
-                    options={locOptions}
-                    getOptionLabel={(option) => option.city ? `${option.city}, ${option.state_id} ${option.zip}` : ""}
-                    filterOptions={(x) => x}
-                    onInputChange={(e, val) => setLocInput(val)}
-                    onChange={(e, val) => {
-                      if (val) {
-                        const newLocs = [...formData.locations];
-                        newLocs[0] = {
-                          ...newLocs[0],
-                          city: val.city,
-                          state: val.state_id,
-                          zipcode: val.zip
-                        };
-                        setFormData({ ...formData, locations: newLocs });
-                      }
-                    }}
-                    renderInput={(params) => (
-                      <TextField 
-                        {...params} 
-                        label="Search City, State or Zip" 
-                        helperText="Search and select to auto-fill location details"
-                      />
-                    )}
-                  />
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">5</span>
+                    Service Areas
+                    </h2>
+                    <Button onClick={addLocation} variant="outlined" size="small" sx={{ borderRadius: 57 }}>+ Add Another Area</Button>
                 </div>
+                
+                <div className="space-y-8">
+                    {formData.locations.map((loc, idx) => (
+                        <div key={idx} className="p-8 border border-gray-100 rounded-[40px] bg-slate-50/30 relative animate-in zoom-in-95 duration-300">
+                            {formData.locations.length > 1 && (
+                                <IconButton 
+                                    onClick={() => removeLocation(idx)}
+                                    sx={{ position: 'absolute', top: 16, right: 16, color: 'red', backgroundColor: 'white', '&:hover': { backgroundColor: '#fee2e2' } }}
+                                    size="small"
+                                >
+                                    ✕
+                                </IconButton>
+                            )}
+                            
+                            <div className="mb-6">
+                               <Autocomplete
+                                fullWidth
+                                options={locOptions}
+                                getOptionLabel={(option) => option.city ? `${option.city}, ${option.state_id} ${option.zip}` : ""}
+                                filterOptions={(x) => x}
+                                onInputChange={(e, val) => setLocInput(val)}
+                                onChange={(e, val) => {
+                                  if (val) {
+                                    handleLocationChange(idx, 'city', val.city);
+                                    handleLocationChange(idx, 'state', val.state_id);
+                                    handleLocationChange(idx, 'zipcode', val.zip);
+                                  }
+                                }}
+                                renderInput={(params) => (
+                                  <TextField 
+                                    {...params} 
+                                    label={`Search Area ${idx + 1}`} 
+                                    helperText="Select a location to auto-fill details"
+                                    sx={{ backgroundColor: 'white', borderRadius: '12px' }}
+                                  />
+                                )}
+                              />
+                            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                   <TextField
-                     label="City"
-                     value={formData.locations[0].city}
-                     onChange={(e) => handleLocationChange(0, 'city', e.target.value)}
-                     required
-                   />
-                   <TextField
-                     label="State"
-                     value={formData.locations[0].state}
-                     onChange={(e) => handleLocationChange(0, 'state', e.target.value)}
-                     required
-                   />
-                   <TextField
-                     label="Zipcode"
-                     value={formData.locations[0].zipcode}
-                     onChange={(e) => handleLocationChange(0, 'zipcode', e.target.value)}
-                     required
-                   />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                               <TextField
+                                 label="City"
+                                 value={loc.city}
+                                 onChange={(e) => handleLocationChange(idx, 'city', e.target.value)}
+                                 required
+                                 sx={{ backgroundColor: 'white' }}
+                               />
+                               <TextField
+                                 label="State"
+                                 value={loc.state}
+                                 onChange={(e) => handleLocationChange(idx, 'state', e.target.value)}
+                                 required
+                                 sx={{ backgroundColor: 'white' }}
+                               />
+                               <TextField
+                                 label="Zipcode"
+                                 value={loc.zipcode}
+                                 onChange={(e) => handleLocationChange(idx, 'zipcode', e.target.value)}
+                                 required
+                                 sx={{ backgroundColor: 'white' }}
+                               />
+                            </div>
+                        </div>
+                    ))}
                 </div>
-                <p className="mt-4 text-xs text-gray-400 font-medium">
-                  Note: Clients within a 100-mile radius of this zip code will be able to find you in search results.
+                
+                <p className="mt-6 text-xs text-gray-400 font-medium italic">
+                  Note: Clients within a 100-mile radius of your selected zip codes will be able to find you.
                 </p>
               </section>
 

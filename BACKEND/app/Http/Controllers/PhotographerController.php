@@ -80,6 +80,8 @@ class PhotographerController extends Controller
             'languages' => 'nullable|string',
             'services' => 'nullable|array',
             'video_url' => 'nullable|string',
+            'open_to_travel' => 'nullable',
+            'travel_policy' => 'nullable|string',
             'packages' => 'required|array|min:1',
             'packages.*.name' => 'required|string',
             'packages.*.price' => 'required|numeric',
@@ -90,6 +92,11 @@ class PhotographerController extends Controller
             'locations.*.state' => 'required|string',
             'locations.*.zipcode' => 'required|string',
         ]);
+
+        // Handle boolean from FormData
+        if (isset($data['open_to_travel'])) {
+            $data['open_to_travel'] = ($data['open_to_travel'] === 'true' || $data['open_to_travel'] === true || $data['open_to_travel'] === 1 || $data['open_to_travel'] === '1');
+        }
 
         try {
             DB::beginTransaction();

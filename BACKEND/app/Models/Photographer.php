@@ -20,11 +20,14 @@ class Photographer extends Model
         'profile_photo',
         'backdrop_photo',
         'video_url',
+        'open_to_travel',
+        'travel_policy',
         'status'
     ];
 
     protected $casts = [
-        'services' => 'array'
+        'services' => 'array',
+        'open_to_travel' => 'boolean'
     ];
 
     public function user()
