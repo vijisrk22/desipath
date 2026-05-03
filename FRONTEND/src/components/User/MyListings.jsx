@@ -14,6 +14,7 @@ import { fetchTrainings, deleteTraining, updateTraining } from "../../store/ITTr
 import { deleteHouse, updateHouse } from "../../store/HousesSlice";
 import { deleteLocalAd, updateLocalAd } from "../../store/LocalAdsSlice";
 import { deleteKidsClass, updateKidsClass } from "../../store/KidsClassSlice";
+import { deletePhotographer, updatePhotographer } from "../../store/PhotographySlice";
 
 
 // Imports for Edit Modals
