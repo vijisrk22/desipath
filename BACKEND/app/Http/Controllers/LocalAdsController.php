@@ -204,41 +204,12 @@ class LocalAdsController extends Controller
         $ad = LocalAd::findOrFail($id);
         $businessAccount = BusinessAccount::where('owner_user_id', Auth::id())->first();
 
-        if ($ad->business_account_id !== $businessAccount->id && Auth::user()->role !== 'admin') {
+        if ($ad->business_account_id !== $businessAccount->id && !in_array(Auth::user()->role, ['admin', 'super_admin'])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $ad->delete();
         return response()->json(['message' => 'Ad deleted successfully']);
-    }
-
-    /**
-     * Admin: Approve or Reject ad
-     */
-    public function updateStatus(Request $request, $id)
-    {
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $request->validate([
-            'status' => 'required|in:approved,rejected,suspended',
-            'rejection_reason' => 'required_if:status,rejected'
-        ]);
-
-        $ad = LocalAd::findOrFail($id);
-        $ad->status = $request->status;
-        
-        if ($request->status === 'approved') {
-            $ad->approved_at = Carbon::now();
-            $ad->expires_at = Carbon::now()->addDays(15);
-            $ad->rejection_reason = null;
-        } else {
-            $ad->rejection_reason = $request->rejection_reason;
-        }
-
-        $ad->save();
-        return response()->json(['message' => 'Ad status updated to ' . $request->status, 'data' => $ad]);
     }
 
     /**
@@ -306,7 +277,8 @@ class LocalAdsController extends Controller
         }
 
         $request->validate([
-            'status' => 'required|string|in:pending,approved,rejected'
+            'status' => 'required|string|in:pending,approved,rejected,suspended',
+            'rejection_reason' => 'required_if:status,rejected'
         ]);
 
         $ad = LocalAd::findOrFail($id);
@@ -314,12 +286,15 @@ class LocalAdsController extends Controller
         
         if ($request->status === 'approved') {
             $ad->approved_at = now();
-            // Extend expiry if needed
+            // Extend expiry to 30 days
             $ad->expires_at = now()->addDays(30);
+            $ad->rejection_reason = null;
+        } elseif ($request->status === 'rejected') {
+            $ad->rejection_reason = $request->rejection_reason;
         }
 
         $ad->save();
 
-        return response()->json(['message' => 'Ad status updated', 'data' => $ad]);
+        return response()->json(['message' => 'Ad status updated to ' . $request->status, 'data' => $ad]);
     }
 }
