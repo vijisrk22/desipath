@@ -44,15 +44,15 @@ export default function PhotographerCard({ photographer }) {
         className="flex flex-col h-full"
       >
         {/* Backdrop & Profile Image Section */}
-        <div className="relative h-24 overflow-hidden">
+        <div className="relative h-24">
           <img 
             src={backdropImage} 
             alt="Backdrop" 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            className="w-full h-full object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-t-2xl" />
           
-          <div className="absolute -bottom-10 left-6 p-1 bg-white rounded-full shadow-lg">
+          <div className="absolute -bottom-10 left-6 p-1 bg-white rounded-full shadow-lg z-10">
             <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white">
               <img 
                 src={mainImage} 
@@ -69,7 +69,7 @@ export default function PhotographerCard({ photographer }) {
           </div>
         </div>
 
-        <CardContent sx={{ flexGrow: 1, px: 2, pt: 10, pb: 2 }}>
+        <CardContent sx={{ flexGrow: 1, px: 2, pt: 12, pb: 2 }}>
           <div className="mb-1">
              <Tooltip title={photographer.title} arrow placement="top">
                 <h3 className="text-lg font-bold text-gray-900 line-clamp-1 cursor-help group-hover:text-blue-600 transition-colors">
