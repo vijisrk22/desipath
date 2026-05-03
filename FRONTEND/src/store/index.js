@@ -12,6 +12,7 @@ import locationReducer from "./LocationSlice";
 import statsReducer from "./StatsSlice";
 import localAdsReducer from "./LocalAdsSlice";
 import kidsClassReducer from "./KidsClassSlice";
+import photographyReducer from "./PhotographySlice";
 
 const store = configureStore({
   reducer: {
@@ -29,6 +30,7 @@ const store = configureStore({
     stats: statsReducer,
     localAds: localAdsReducer,
     kidsClass: kidsClassReducer,
+    photography: photographyReducer,
   },
 });
 

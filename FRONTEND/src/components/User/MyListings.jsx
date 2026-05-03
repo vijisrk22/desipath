@@ -53,6 +53,7 @@ const MyListings = () => {
         { id: 'Events', label: 'Events', icon: '🎟️', listPath: '/api/events/my-listings', del: deleteEvent, upd: updateEvent, redirect: '/services/events/edit' },
         { id: 'LocalAds', label: 'Local Deals', icon: '📢', listPath: '/api/local-ads/my-listings', del: deleteLocalAd, upd: updateLocalAd, redirect: '/services/Localdeals/edit' },
         { id: 'KidsClass', label: 'Kids Class', icon: '🎨', listPath: '/api/kids-classes/my-listings', del: deleteKidsClass, upd: updateKidsClass, redirect: '/kids-class/instructor-portal/edit' },
+        { id: 'Photography', label: 'Photography', icon: '📸', listPath: '/api/photography/my-listings', del: deletePhotographer, upd: updatePhotographer, redirect: '/services/photography/edit' },
     ];
 
     const fetchCategoryData = async (catId) => {

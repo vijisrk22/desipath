@@ -19,6 +19,7 @@ const categories = [
     { id: 'Trainings', label: "List my IT Trainings", icon: "💻", postPath: "/services/itTrainings/postTraining", viewPath: "/profile/myListings", description: "Share your expertise and train the next generation.", countPath: "/api/trainingads/my-count" },
     { id: 'Events', label: "List my Event", icon: "🎟️", postPath: "/services/events/postEvent", viewPath: "/profile/myListings", description: "Promote your events and sell tickets easily.", countPath: "/api/events/my-count" },
     { id: 'KidsClass', label: "Kids Class", icon: "🎨", postPath: "/kids-class/instructor-portal", viewPath: "/profile/myListings", description: "Inspire the next generation with your classes.", countPath: "/api/kids-classes/my-count" },
+    { id: 'Photography', label: "Photography & Video", icon: "📸", postPath: "/services/photography/post", viewPath: "/profile/myListings", description: "List your photography or videography services.", countPath: "/api/photography/my-count" },
     { id: 'LocalAds', label: "Post Local Deal", icon: "🏷️", postPath: "/services/Localdeals/post", viewPath: "/profile/myListings", description: "Create a vibrant deal for your local business.", countPath: "/api/local-ads/my-count" },
 ];
 

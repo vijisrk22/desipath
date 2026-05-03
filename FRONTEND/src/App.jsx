@@ -51,6 +51,11 @@ import MarketplaceCategories from "./pages/AdminDashboard/MarketplaceCategories"
 import LocalAdPortal from "./pages/Localdeals/Portal/LocalAdPortal";
 import LocalAdSuccess from "./pages/Localdeals/Portal/LocalAdSuccess";
 import ItTrainingLeadsAdmin from "./pages/AdminDashboard/ItTrainingLeadsAdmin";
+import PhotographyAdmin from "./pages/AdminDashboard/PhotographyAdmin";
+import PhotographySearch from "./pages/Photography/PhotographySearch";
+import PhotographerDetails from "./pages/Photography/PhotographerDetails";
+import PhotographyPortal from "./pages/Photography/PhotographyPortal";
+import PhotographySuccess from "./pages/Photography/PhotographySuccess";
 import { lazy, Suspense } from 'react';
 
 const ForumLanding = lazy(() => import("./pages/Forum/ForumLanding"));
@@ -122,6 +127,13 @@ function App() {
           <Route path="Localdeals/post" element={<PrivateRoute><LocalAdPortal /></PrivateRoute>} />
           <Route path="Localdeals/edit/:id" element={<PrivateRoute><LocalAdPortal /></PrivateRoute>} />
           <Route path="Localdeals/post/success" element={<PrivateRoute><LocalAdSuccess /></PrivateRoute>} />
+          
+          {/* Photography */}
+          <Route path="photography" element={<PhotographySearch />} />
+          <Route path="photography/details/:id" element={<PhotographerDetails />} />
+          <Route path="photography/post" element={<PrivateRoute><PhotographyPortal /></PrivateRoute>} />
+          <Route path="photography/edit/:id" element={<PrivateRoute><PhotographyPortal /></PrivateRoute>} />
+          <Route path="photography/success" element={<PrivateRoute><PhotographySuccess /></PrivateRoute>} />
         </Route>
 
 
@@ -201,6 +213,7 @@ function App() {
           <Route path="travel" element={<ListingAdmin endpoint="/api/travelcompanions" title="Travel Companion" categoryIcon="✈️" customBasePath="travelCompanion" />} />
           <Route path="trainings" element={<ListingAdmin endpoint="/api/trainingads" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
           <Route path="local-ads" element={<LocalAdsAdmin />} />
+          <Route path="photography" element={<PhotographyAdmin />} />
           <Route path="zipcodes" element={<ZipcodesAdmin />} />
           <Route path="it-training-leads" element={<ItTrainingLeadsAdmin />} />
           <Route path="*" element={<div className="p-10 font-bold text-gray-500">Module coming soon...</div>} />

@@ -65,7 +65,7 @@ const services = [
   {
     name: "Photography",
     image: "/img/photography/Desipath_Photography.png",
-    path: "",
+    path: "/services/photography",
   },
   {
     name: "Immigration",

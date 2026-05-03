@@ -24,6 +24,7 @@ use App\Http\Controllers\AirportController;
 use App\Http\Controllers\TravelCompanionController;
 use App\Http\Controllers\LocalAdsController;
 use App\Http\Controllers\AdminManagementController;
+use App\Http\Controllers\PhotographerController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -262,6 +263,19 @@ Route::middleware([])->group(function () {
     Route::get('/kids-classes/public/details/{id}', [KidsClassController::class, 'getPublicDetails']);
     Route::get('/kids-classes/keywords', [KidsClassController::class, 'getKeywords']);
     Route::get('/kids-classes/search', [KidsClassController::class, 'search']);
+});
+
+// Photography Routes
+Route::get('/photography/search', [PhotographerController::class, 'index']);
+Route::get('/photography/details/{id}', [PhotographerController::class, 'show']);
+
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('/photography/my-count', [PhotographerController::class, 'myCount']);
+    Route::get('/photography/my-listings', [PhotographerController::class, 'myListings']);
+    Route::post('/photography/store', [PhotographerController::class, 'store']);
+    Route::post('/photography/update/{id}', [PhotographerController::class, 'update']);
+    Route::delete('/photography/delete/{id}', [PhotographerController::class, 'destroy']);
+    Route::post('/photography/toggle-status/{id}', [PhotographerController::class, 'toggleStatus']);
 });
 Route::get('/fix-general', function() {
     \DB::table('kids_classes')->where('subcategory', 'General')->update(['subcategory' => 'Keyboard']);
