@@ -163,8 +163,9 @@ class LocalAdsController extends Controller
     {
         $ad = LocalAd::findOrFail($id);
         $businessAccount = BusinessAccount::where('owner_user_id', Auth::id())->first();
+        $isAdmin = in_array(Auth::user()->role, ['admin', 'super_admin']);
 
-        if ($ad->business_account_id !== $businessAccount->id) {
+        if (!$isAdmin && (!$businessAccount || $ad->business_account_id !== $businessAccount->id)) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
