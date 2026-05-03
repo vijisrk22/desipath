@@ -14,8 +14,8 @@ class AdminManagementController extends Controller
      */
     public function index(Request $request)
     {
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (Auth::user()->role !== 'super_admin') {
+            return response()->json(['message' => 'Unauthorized. Super Admin access required.'], 403);
         }
 
         $query = User::query();
@@ -32,8 +32,8 @@ class AdminManagementController extends Controller
      */
     public function store(Request $request)
     {
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (Auth::user()->role !== 'super_admin') {
+            return response()->json(['message' => 'Unauthorized. Super Admin access required.'], 403);
         }
 
         $request->validate([
@@ -59,8 +59,8 @@ class AdminManagementController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (Auth::user()->role !== 'super_admin') {
+            return response()->json(['message' => 'Unauthorized. Super Admin access required.'], 403);
         }
 
         $user = User::findOrFail($id);
@@ -89,8 +89,8 @@ class AdminManagementController extends Controller
      */
     public function destroy($id)
     {
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (Auth::user()->role !== 'super_admin') {
+            return response()->json(['message' => 'Unauthorized. Super Admin access required.'], 403);
         }
 
         // Prevent self-deletion

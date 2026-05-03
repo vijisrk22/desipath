@@ -1,15 +1,19 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 
 export default function AdminDashboard() {
   const location = useLocation();
 
+  const user = useSelector((state) => state.user.user);
+  const isSuperAdmin = user?.role === 'super_admin';
+
   const navItems = [
     { name: 'Dashboard Home', path: '/admindashboard', icon: '🏠' },
     { name: 'Registered Users', path: '/admindashboard/users', icon: '👤' },
-    { name: 'Admin Users', path: '/admindashboard/admins', icon: '👮' },
+    ...(isSuperAdmin ? [{ name: 'Admin Users', path: '/admindashboard/admins', icon: '👮' }] : []),
     { name: 'Kids Classes', path: '/admindashboard/kids-class', icon: '🎨' },
     { name: 'Rental Homes', path: '/admindashboard/rental-homes', icon: '🏘️' },
     { name: 'Roommates', path: '/admindashboard/roommates', icon: '👥' },

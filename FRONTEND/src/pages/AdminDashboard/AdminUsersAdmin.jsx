@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import api from '../../utils/api';
 
 export default function AdminUsersAdmin() {
+  const user = useSelector((state) => state.user.user);
+  const isSuperAdmin = user?.role === 'super_admin';
+
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -63,6 +67,16 @@ export default function AdminUsersAdmin() {
       alert('Error deleting admin');
     }
   };
+
+  if (!isSuperAdmin) {
+    return (
+      <div className="bg-white rounded-3xl p-16 text-center shadow-sm border border-gray-200">
+        <span className="text-6xl block mb-4">🚫</span>
+        <h2 className="text-2xl font-bold text-gray-800">Access Denied</h2>
+        <p className="text-gray-500">Super Admin access is required to manage administrative users.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in">

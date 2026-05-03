@@ -251,7 +251,7 @@ class LocalAdsController extends Controller
                 return response()->json(['message' => 'Unauthenticated'], 401);
             }
 
-            if (Auth::user()->role !== 'admin') {
+            if (!in_array(Auth::user()->role, ['admin', 'super_admin'])) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
 
@@ -289,10 +289,37 @@ class LocalAdsController extends Controller
         
         // Security: only owner or admin can see full details for edit
         $businessAccount = BusinessAccount::where('owner_user_id', Auth::id())->first();
-        if (Auth::user()->role !== 'admin' && (!$businessAccount || $ad->business_account_id !== $businessAccount->id)) {
+        if (!in_array(Auth::user()->role, ['admin', 'super_admin']) && (!$businessAccount || $ad->business_account_id !== $businessAccount->id)) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         return response()->json($ad);
+    }
+
+    /**
+     * Admin: Update ad status (approve/reject)
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        if (!in_array(Auth::user()->role, ['admin', 'super_admin'])) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'status' => 'required|string|in:pending,approved,rejected'
+        ]);
+
+        $ad = LocalAd::findOrFail($id);
+        $ad->status = $request->status;
+        
+        if ($request->status === 'approved') {
+            $ad->approved_at = now();
+            // Extend expiry if needed
+            $ad->expires_at = now()->addDays(30);
+        }
+
+        $ad->save();
+
+        return response()->json(['message' => 'Ad status updated', 'data' => $ad]);
     }
 }
