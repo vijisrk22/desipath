@@ -69,7 +69,7 @@ export default function PhotographerCard({ photographer }) {
           </div>
         </div>
 
-        <CardContent sx={{ flexGrow: 1, px: 2, pt: 12, pb: 2 }}>
+        <CardContent sx={{ flexGrow: 1, px: 2, pt: 7, pb: 2 }}>
           <div className="mb-1">
              <Tooltip title={photographer.title} arrow placement="top">
                 <h3 className="text-lg font-bold text-gray-900 line-clamp-1 cursor-help group-hover:text-blue-600 transition-colors">
