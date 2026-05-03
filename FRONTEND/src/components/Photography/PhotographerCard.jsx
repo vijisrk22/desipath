@@ -52,8 +52,8 @@ export default function PhotographerCard({ photographer }) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           
-          <div className="absolute -bottom-6 left-6 p-0.5 bg-white rounded-full shadow-lg">
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white">
+          <div className="absolute -bottom-10 left-6 p-1 bg-white rounded-full shadow-lg">
+            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white">
               <img 
                 src={mainImage} 
                 alt={photographer.title} 
@@ -69,24 +69,24 @@ export default function PhotographerCard({ photographer }) {
           </div>
         </div>
 
-        <CardContent sx={{ flexGrow: 1, px: 2, pt: 8, pb: 2 }}>
-          <div className="mb-2">
+        <CardContent sx={{ flexGrow: 1, px: 2, pt: 10, pb: 2 }}>
+          <div className="mb-1">
              <Tooltip title={photographer.title} arrow placement="top">
                 <h3 className="text-lg font-bold text-gray-900 line-clamp-1 cursor-help group-hover:text-blue-600 transition-colors">
                     {photographer.title}
                 </h3>
              </Tooltip>
-             <div className="flex items-center gap-2 mt-0.5 text-gray-500">
+             <div className="flex items-center gap-2 mt-0 text-gray-500">
                 <span className="text-xs">🏢</span>
                 <span className="text-xs font-medium">{location}</span>
              </div>
           </div>
 
-          <p className="text-gray-600 text-xs line-clamp-2 mb-3">
+          <p className="text-gray-600 text-xs line-clamp-2 mb-2">
             {photographer.bio}
           </p>
 
-          <div className="flex items-center gap-3 mb-3 text-gray-600 border-y border-gray-50 py-2">
+          <div className="flex items-center gap-3 mb-2 text-gray-600 border-y border-gray-50 py-2">
             <div className="flex items-center gap-1.5 flex-1">
               <span className="text-xs">🗓️</span>
               <span className="text-[10px] font-semibold">{photographer.experience_years}y Exp</span>
