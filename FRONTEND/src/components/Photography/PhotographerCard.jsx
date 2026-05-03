@@ -66,6 +66,11 @@ export default function PhotographerCard({ photographer }) {
             <span className="bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full text-[9px] font-bold text-blue-600 shadow-sm uppercase tracking-wider">
               {photographer.service_type}
             </span>
+            {photographer.open_to_travel && (
+              <span className="bg-green-500 text-white px-2 py-0.5 rounded-full text-[9px] font-bold shadow-sm uppercase tracking-wider">
+                Travel Ready
+              </span>
+            )}
           </div>
         </div>
 

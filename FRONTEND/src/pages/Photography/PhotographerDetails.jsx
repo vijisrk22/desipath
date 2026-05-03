@@ -140,6 +140,15 @@ export default function PhotographerDetails() {
                    <span className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Service area</span>
                    <span className="text-xl font-black text-[#007185]">100 miles</span>
                  </div>
+                 {photographer.open_to_travel && (
+                   <div className="col-span-2 md:col-span-1">
+                     <span className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Travel Status</span>
+                     <span className="text-sm font-bold text-green-600 flex items-center gap-1">
+                        ✈️ Open to Travel
+                     </span>
+                     <p className="text-[10px] text-gray-500 font-medium italic mt-1">{photographer.travel_policy}</p>
+                   </div>
+                 )}
                </div>
              </div>
            )}
