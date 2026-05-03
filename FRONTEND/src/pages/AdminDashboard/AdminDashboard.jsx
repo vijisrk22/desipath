@@ -13,7 +13,11 @@ export default function AdminDashboard() {
   const navItems = [
     { name: 'Dashboard Home', path: '/admindashboard', icon: '🏠' },
     { name: 'Registered Users', path: '/admindashboard/users', icon: '👤' },
-    ...(isSuperAdmin ? [{ name: 'Admin Users', path: '/admindashboard/admins', icon: '👮' }] : []),
+    ...(isSuperAdmin ? [
+      { name: 'Admin Users', path: '/admindashboard/admins', icon: '👮' },
+      { name: 'Category Management', path: '/admindashboard/categories', icon: '📁' },
+      { name: 'Zipcodes', path: '/admindashboard/zipcodes', icon: '📍' }
+    ] : []),
     { name: 'Kids Classes', path: '/admindashboard/kids-class', icon: '🎨' },
     { name: 'Rental Homes', path: '/admindashboard/rental-homes', icon: '🏘️' },
     { name: 'Roommates', path: '/admindashboard/roommates', icon: '👥' },
@@ -23,8 +27,6 @@ export default function AdminDashboard() {
     { name: 'Travel Companion', path: '/admindashboard/travel', icon: '✈️' },
     { name: 'IT Trainings', path: '/admindashboard/trainings', icon: '💻' },
     { name: 'Local Deals', path: '/admindashboard/local-ads', icon: '📢' },
-    { name: 'Category Management', path: '/admindashboard/categories', icon: '📁' },
-    { name: 'Zipcodes', path: '/admindashboard/zipcodes', icon: '📍' },
   ];
 
   return (

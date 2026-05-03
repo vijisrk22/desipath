@@ -109,6 +109,12 @@ export default function MarketplaceCategories() {
           >
             💻 IT Training
           </button>
+          <button 
+            onClick={() => setModule('local_ads')}
+            className={`px-6 py-2.5 rounded-xl font-bold transition-all ${module === 'local_ads' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            📢 Local Deals
+          </button>
         </div>
       </div>
 
@@ -117,7 +123,13 @@ export default function MarketplaceCategories() {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-6 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="font-bold text-gray-800">Categories for {module === 'kids_class' ? 'Kids Class' : 'IT Training'}</h2>
+              <h2 className="font-bold text-gray-800">
+                Categories for {
+                  module === 'kids_class' ? 'Kids Class' : 
+                  module === 'it_training' ? 'IT Training' : 
+                  'Local Deals'
+                }
+              </h2>
               <button 
                 onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', icon: '', color: '', accent: '' }); }}
                 className="text-sm font-bold text-blue-600 hover:underline"
