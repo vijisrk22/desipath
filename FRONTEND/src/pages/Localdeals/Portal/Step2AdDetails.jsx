@@ -4,6 +4,7 @@ import DescriptionInput from '../../../components/InputTemplate/DescriptionInput
 import SelectInput from '../../../components/InputTemplate/SelectInput';
 import CheckBoxInput from '../../../components/InputTemplate/CheckBoxInput';
 import { useForm } from 'react-hook-form';
+import api from '../../../utils/api';
 
 export default function Step2AdDetails({ data, update, onNext, onBack }) {
   console.log("Step2AdDetails rendering...");
@@ -18,12 +19,26 @@ export default function Step2AdDetails({ data, update, onNext, onBack }) {
     onNext();
   };
 
-  const categories = [
+  const [categories, setCategories] = React.useState([
     "Restaurant & Food", "Grocery & Retail", "Beauty & Wellness", 
     "Healthcare", "Education & Tutoring", "IT & Technology", 
     "Legal & Financial", "Home Services", "Travel & Immigration", 
     "Events & Entertainment", "Other"
-  ];
+  ]);
+
+  React.useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const res = await api.get('/api/marketplace/categories?module=local_ads');
+        if (res.data.success && res.data.data.length > 0) {
+          setCategories(res.data.data.map(c => c.name));
+        }
+      } catch (err) {
+        console.error("Error fetching categories for local ads:", err);
+      }
+    };
+    fetchCats();
+  }, []);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
