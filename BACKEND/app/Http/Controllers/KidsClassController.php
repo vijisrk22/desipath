@@ -58,6 +58,7 @@ class KidsClassController extends Controller
 
             DB::table('kids_classes')->insert([
                 'id' => $classId,
+                'user_id' => $request->user() ? $request->user()->id : null,
                 'instructor_id' => $instructorId,
                 'title' => $classBasic['title'] ?? 'Untitled Class',
                 'category' => !empty($classBasic['category']) ? $classBasic['category'] : 'Uncategorized',
@@ -422,29 +423,37 @@ class KidsClassController extends Controller
         
         DB::beginTransaction();
         try {
-            // Update Instructor
-            DB::table('instructors')->where('id', $instructorId)->update([
-                'account_type' => $instructorData['accountType'] ?? 'individual',
-                'name' => $instructorData['name'] ?? 'Unknown',
-                'email' => $instructorData['email'] ?? null,
-                'phone' => $instructorData['phone'] ?? null,
-                'bio' => $instructorData['bio'] ?? null,
-                'years_experience' => $instructorData['yearsExperience'] ?? null,
-                'profile_photo_url' => (isset($instructorData['photoUrl']) && !str_starts_with($instructorData['photoUrl'], 'blob:')) ? $instructorData['photoUrl'] : null,
-                'updated_at' => now(),
-            ]);
+            // Update Instructor (only if data provided)
+            if (!empty($instructorData)) {
+                DB::table('instructors')->where('id', $instructorId)->update([
+                    'account_type' => $instructorData['accountType'] ?? 'individual',
+                    'name' => $instructorData['name'] ?? 'Unknown',
+                    'email' => $instructorData['email'] ?? null,
+                    'phone' => $instructorData['phone'] ?? null,
+                    'bio' => $instructorData['bio'] ?? null,
+                    'years_experience' => $instructorData['yearsExperience'] ?? null,
+                    'profile_photo_url' => (isset($instructorData['photoUrl']) && !str_starts_with($instructorData['photoUrl'], 'blob:')) ? $instructorData['photoUrl'] : null,
+                    'updated_at' => now(),
+                ]);
+            }
 
             // Update Class Basic
-            DB::table('kids_classes')->where('id', $id)->update([
-                'title' => $classBasic['title'] ?? 'Untitled Class',
-                'category' => !empty($classBasic['category']) ? $classBasic['category'] : 'Uncategorized',
-                'subcategory' => !empty($classBasic['subcategory']) ? $classBasic['subcategory'] : 'General',
-                'level' => json_encode($classBasic['level'] ?? []),
-                'format' => json_encode($classBasic['format'] ?? []),
-                'short_description' => $classBasic['shortDescription'] ?? null,
-                'tags' => json_encode($classBasic['tags'] ?? []),
-                'updated_at' => now(),
-            ]);
+            $updateData = [];
+            if (isset($classBasic['title'])) $updateData['title'] = $classBasic['title'];
+            if (isset($classBasic['category'])) $updateData['category'] = $classBasic['category'];
+            if (isset($classBasic['subcategory'])) $updateData['subcategory'] = $classBasic['subcategory'];
+            if (isset($classBasic['level'])) $updateData['level'] = json_encode($classBasic['level']);
+            if (isset($classBasic['format'])) $updateData['format'] = json_encode($classBasic['format']);
+            if (isset($classBasic['shortDescription'])) $updateData['short_description'] = $classBasic['shortDescription'];
+            if (isset($classBasic['tags'])) $updateData['tags'] = json_encode($classBasic['tags']);
+            
+            // Special case for status toggle from MyListings
+            if (isset($payload['data']['status'])) $updateData['status'] = $payload['data']['status'];
+            
+            if (!empty($updateData)) {
+                $updateData['updated_at'] = now();
+                DB::table('kids_classes')->where('id', $id)->update($updateData);
+            }
 
             // For related tables, the easiest/safest approach for deeply nested arrays is often delete-and-recreate,
             // or simply update if they are 1-to-1 relationships.
@@ -584,5 +593,28 @@ class KidsClassController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => '10 Kids Classes added', 'data' => $inserted]);
+    }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = DB::table('kids_classes')
+            ->where('user_id', $request->user()->id)
+            ->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = DB::table('kids_classes')
+            ->where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return response()->json($listings);
+    }
+
+    public function destroy($id)
+    {
+        DB::table('kids_classes')->where('id', $id)->delete();
+        return response()->json(['success' => true, 'message' => 'Listing deleted successfully']);
     }
 }

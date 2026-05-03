@@ -111,6 +111,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/travelcompanions/my-count', [TravelCompanionsController::class, 'getMyAdCount']);
     Route::get('/events/my-count', [EventsController::class, 'getMyAdCount']);
     Route::get('/local-ads/my-count', [LocalAdsController::class, 'getMyAdCount']);
+    Route::get('/kids-classes/my-count', [KidsClassController::class, 'getMyAdCount']);
+    Route::get('/kids-classes/my-listings', [KidsClassController::class, 'getMyListings']);
 });
 
 // Public car read routes (no auth required — anyone can browse listings)
@@ -272,6 +274,7 @@ Route::middleware([])->group(function () {
 });
 Route::middleware([])->group(function () {
     Route::put('/kids-classes/{id}', [KidsClassController::class, 'update']);
+    Route::delete('/kids-classes/{id}', [KidsClassController::class, 'destroy']);
 });
 
 // --- IT Training Routes ---

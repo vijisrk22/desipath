@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IoImageOutline, IoCloseCircle } from 'react-icons/io5';
+import { getFullImageUrl } from '../../../utils/imageHelper';
 
 export default function Step3Media({ data, update, onNext, onBack }) {
   const [previews, setPreviews] = useState(data.images || []);
@@ -42,7 +43,7 @@ export default function Step3Media({ data, update, onNext, onBack }) {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {previews.map((src, idx) => (
             <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden group border-2 border-gray-100">
-              <img src={src} alt="Preview" className="w-full h-full object-cover" />
+              <img src={getFullImageUrl(src)} alt="Preview" className="w-full h-full object-cover" />
               <button 
                 onClick={() => removeImage(idx)}
                 className="absolute top-1 right-1 text-red-500 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"

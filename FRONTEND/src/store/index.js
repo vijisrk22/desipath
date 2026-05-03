@@ -11,6 +11,7 @@ import eventsReducer from "./EventsSlice"; // Import your events reducer
 import locationReducer from "./LocationSlice";
 import statsReducer from "./StatsSlice";
 import localAdsReducer from "./LocalAdsSlice";
+import kidsClassReducer from "./KidsClassSlice";
 
 const store = configureStore({
   reducer: {
@@ -27,6 +28,7 @@ const store = configureStore({
     location: locationReducer,
     stats: statsReducer,
     localAds: localAdsReducer,
+    kidsClass: kidsClassReducer,
   },
 });
 

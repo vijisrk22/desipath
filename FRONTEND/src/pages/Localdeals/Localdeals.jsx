@@ -11,13 +11,6 @@ import LocationAutocompleteInput from '../../components/InputTemplate/LocationAu
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const CATEGORIES = [
-  "All", "Restaurant & Food", "Grocery & Retail", "Beauty & Wellness", 
-  "Healthcare", "Education & Tutoring", "IT & Technology", 
-  "Legal & Financial", "Home Services", "Travel & Immigration", 
-  "Events & Entertainment", "Other"
-];
-
 const AdCard = ({ ad, onOpenInfo }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const posterUrls = ad.poster_urls || [];
@@ -354,6 +347,22 @@ export default function Localdeals() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [categories, setCategories] = useState(["All"]);
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const res = await api.get('/api/marketplace/categories?module=local_ads');
+        if (res.data.success) {
+          const names = res.data.data.map(c => c.name);
+          setCategories(["All", ...names]);
+        }
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCats();
+  }, []);
   
   const observer = useRef();
   const lastAdElementRef = (node) => {
@@ -481,7 +490,7 @@ export default function Localdeals() {
 
           {/* Categories */}
           <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
-            {CATEGORIES.map(cat => (
+            {categories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}

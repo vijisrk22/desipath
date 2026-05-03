@@ -15,8 +15,7 @@ export default function Step2AdDetails({ data, update, onNext, onBack }) {
   const isContactDifferent = watch('isContactDifferent');
 
   const onSubmit = (values) => {
-    update(values);
-    onNext();
+    onNext(values);
   };
 
   const [categories, setCategories] = React.useState([
@@ -130,10 +129,6 @@ export default function Step2AdDetails({ data, update, onNext, onBack }) {
                   const tags = val.split(',').map(t => t.trim()).filter(Boolean);
                   return tags.length <= 5 || 'Maximum 5 tags allowed';
               }
-          }}
-          onChange={(e) => {
-              const tags = e.target.value.split(',').map(t => t.trim()).filter(Boolean);
-              update({ tags: tags, tagsStr: e.target.value });
           }}
         />
       </div>

@@ -73,6 +73,7 @@ export default function LocalAdPortal() {
             adContactPhone: ad.ad_contact_phone || '',
             category: ad.category || 'Restaurant & Food',
             tags: ad.tags || [],
+            tagsStr: (ad.tags || []).join(', '),
             images: ad.poster_urls || []
           });
         })
@@ -87,6 +88,13 @@ export default function LocalAdPortal() {
 
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
+  const handleStep2Submit = (values) => {
+    // Process tagsStr into tags array before updating
+    const tags = values.tagsStr ? values.tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
+    updateFormData({ ...values, tags });
+    nextStep();
+  };
 
   const handleSubmit = async () => {
     setIsSaving(true);
@@ -136,7 +144,7 @@ export default function LocalAdPortal() {
   const renderStep = () => {
     switch (currentStep) {
       case 1: return <Step1Business data={formData} update={updateFormData} onNext={nextStep} />;
-      case 2: return <Step2AdDetails data={formData} update={updateFormData} onNext={nextStep} onBack={prevStep} />;
+      case 2: return <Step2AdDetails data={formData} update={updateFormData} onNext={handleStep2Submit} onBack={prevStep} />;
       case 3: return <Step3Media data={formData} update={updateFormData} onNext={nextStep} onBack={prevStep} />;
       case 4: return <Step4Review data={formData} onBack={prevStep} onSubmit={handleSubmit} isSaving={isSaving} />;
       default: return null;

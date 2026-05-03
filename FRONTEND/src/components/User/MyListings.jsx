@@ -13,6 +13,7 @@ import { fetchEvents, deleteEvent, updateEvent } from "../../store/EventsSlice";
 import { fetchTrainings, deleteTraining, updateTraining } from "../../store/ITTrainingsSlice";
 import { deleteHouse, updateHouse } from "../../store/HousesSlice";
 import { deleteLocalAd, updateLocalAd } from "../../store/LocalAdsSlice";
+import { deleteKidsClass, updateKidsClass } from "../../store/KidsClassSlice";
 
 
 // Imports for Edit Modals
@@ -51,6 +52,7 @@ const MyListings = () => {
         { id: 'Trainings', label: 'Trainings', icon: '💻', listPath: '/api/trainingads/my-listings', del: deleteTraining, upd: updateTraining, modal: EditTrainingPostModal },
         { id: 'Events', label: 'Events', icon: '🎟️', listPath: '/api/events/my-listings', del: deleteEvent, upd: updateEvent, redirect: '/services/events/edit' },
         { id: 'LocalAds', label: 'Local Deals', icon: '📢', listPath: '/api/local-ads/my-listings', del: deleteLocalAd, upd: updateLocalAd, redirect: '/services/Localdeals/edit' },
+        { id: 'KidsClass', label: 'Kids Class', icon: '🎨', listPath: '/api/kids-classes/my-listings', del: deleteKidsClass, upd: updateKidsClass, redirect: '/kids-class/instructor-portal/edit' },
     ];
 
     const fetchCategoryData = async (catId) => {
@@ -122,6 +124,7 @@ const MyListings = () => {
                          item._catId.toLowerCase() === 'travel' ? 'companionId' :
                          item._catId.toLowerCase() === 'events' ? 'eventId' :
                          item._catId.toLowerCase() === 'localads' ? 'id' :
+                         item._catId.toLowerCase() === 'kidsclass' ? 'id' :
                          item._catId.toLowerCase() === 'trainings' ? 'trainingId' : 'id';
             
             const dataKey = item._catId.toLowerCase() === 'houses' ? 'houseData' :
@@ -131,6 +134,7 @@ const MyListings = () => {
                            item._catId.toLowerCase() === 'travel' ? 'companionData' :
                            item._catId.toLowerCase() === 'events' ? 'eventData' :
                            item._catId.toLowerCase() === 'localads' ? 'data' :
+                           item._catId.toLowerCase() === 'kidsclass' ? 'data' :
                            item._catId.toLowerCase() === 'trainings' ? 'trainingData' : 'data';
 
             await dispatch(item._config.upd({ 
