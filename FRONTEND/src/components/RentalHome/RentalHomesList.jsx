@@ -34,14 +34,14 @@ function RentalHomesList() {
 
   // Fetch rentalHomes on mount and when page or sort parameters change
   useEffect(() => {
+    const savedLocation = localStorage.getItem('user_location');
+    
     if (lastSearchQuery) {
       dispatch(searchRentalHome({ searchQuery: lastSearchQuery, page, sortOption }));
-    } else {
+    } else if (!savedLocation) {
       dispatch(fetchRentalHomes({ page, sortOption }));
     }
-    // We only want to trigger this when page or sort change, 
-    // or on initial mount. lastSearchQuery changes are handled by SearchFieldInput.
-  }, [dispatch, page, sortOption]);
+  }, [dispatch, page, sortOption]); // Removed lastSearchQuery to avoid loop
 
   const numsOfPage = pagination?.last_page || 1;
 

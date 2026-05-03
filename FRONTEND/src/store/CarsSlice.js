@@ -11,6 +11,15 @@ export const fetchCars = createAsyncThunk("cars/fetchCars", async(_, {rejectWith
     }
 })
 
+export const fetchMyCars = createAsyncThunk("cars/fetchMyCars", async(_, {rejectWithValue}) =>{
+    try{
+        const response = await api.get("/api/cars/my-listings");
+        return response.data;
+    }catch(error){
+        return rejectWithValue(error.response?.data || "Failed to fetch your cars");
+    }
+})
+
 export const fetchCarById = createAsyncThunk("cars/fetchCarById", async(carId, {rejectWithValue})=>{
     try{
         const response = await api.get(`/api/cars/${carId}`);
@@ -101,6 +110,7 @@ const carsSlice = createSlice({
         car_model: [],
         car_attributes: { fuel_types: [], transmissions: [], conditions: [] },
         carDetails: null,
+        myCars: [],
         error: null,
         loading: false,
         lastSearchQuery: null,
@@ -147,6 +157,18 @@ const carsSlice = createSlice({
             .addCase(fetchCars.rejected, (state,action)=>{
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch cars";
+            })
+            .addCase(fetchMyCars.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyCars.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myCars = action.payload || [];
+            })
+            .addCase(fetchMyCars.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch your cars";
             })
             .addCase(fetchCarById.pending, (state)=>{
                 state.loading = true;
@@ -243,7 +265,9 @@ const carsSlice = createSlice({
             })
             .addCase(deleteCar.fulfilled, (state, action) => {
                 state.loading = false;
-                state.cars = state.cars.filter(car => car.id !== action.payload.id);
+                const deletedId = action.meta.arg;
+                state.cars = state.cars.filter(car => car.id !== deletedId);
+                state.myCars = state.myCars.filter(car => car.id !== deletedId);
             })
             .addCase(deleteCar.rejected, (state, action) => {
                 state.loading = false;

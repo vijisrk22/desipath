@@ -15,12 +15,14 @@ function Houses() {
   const [page, setPage] = useState(1);
   const [sortOption, setSortOption] = useState("created_at-desc");
   useEffect(() => {
+    const savedLocation = localStorage.getItem('user_location');
+
     if (lastSearchQuery) {
       dispatch(searchHouse({ searchQuery: lastSearchQuery, page, sortOption }));
-    } else {
+    } else if (!savedLocation) {
       dispatch(fetchHouses({ page, sortOption }));
     }
-  }, [dispatch, page, sortOption]);
+  }, [dispatch, page, sortOption, lastSearchQuery]);
 
   const numsOfPage = pagination?.last_page || 1;
 

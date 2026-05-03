@@ -12,7 +12,7 @@ function Cars() {
   // backend API endpoint /api/rooms
   // State for events
   const dispatch = useDispatch();
-  const { loading, error, cars } = useSelector((state) => state.cars);
+  const { loading, error, cars, lastSearchQuery } = useSelector((state) => state.cars);
 
   const carsPerPage = 15;
   const [page, setPage] = useState(1);
@@ -40,8 +40,13 @@ function Cars() {
 
   // Set rooms on mount
   useEffect(() => {
-    dispatch(fetchCars());
-  }, [dispatch]);
+    // Only fetch all cars if there is no active search query 
+    // and no saved location that triggers auto-search in SearchFieldInput
+    const savedLocation = localStorage.getItem('user_location');
+    if (!lastSearchQuery && !savedLocation) {
+      dispatch(fetchCars());
+    }
+  }, [dispatch, lastSearchQuery]);
 
   // if (loading) {
   //   return <Loader />;

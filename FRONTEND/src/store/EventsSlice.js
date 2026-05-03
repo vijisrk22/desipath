@@ -16,6 +16,20 @@ export const fetchEvents = createAsyncThunk(
   }
 );
 
+export const fetchMyEvents = createAsyncThunk(
+  "events/fetchMyEvents",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/api/events/my-listings");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch your events"
+      );
+    }
+  }
+);
+
 export const fetchEventById = createAsyncThunk(
   "events/fetchEventById",
   async (eventId, { rejectWithValue }) => {
@@ -90,6 +104,7 @@ const eventsSlice = createSlice({
     name: "events", 
     initialState: {
         events: [],
+        myEvents: [],
         eventDetails: null,
         error: null,
         loading: false, // Legacy fallback
@@ -123,6 +138,18 @@ const eventsSlice = createSlice({
                 state.loadingList = false;
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch events";
+            })
+            .addCase(fetchMyEvents.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyEvents.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myEvents = action.payload || [];
+            })
+            .addCase(fetchMyEvents.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch your events";
             })
             .addCase(fetchEventById.pending, (state) => {
                 state.loadingDetails = true;
@@ -184,6 +211,7 @@ const eventsSlice = createSlice({
             })
             .addCase(deleteEvent.fulfilled, (state, action) => {
                 state.events = state.events.filter(e => e.id !== action.payload);
+                state.myEvents = state.myEvents.filter(e => e.id !== action.payload);
             });
     }
 }); 

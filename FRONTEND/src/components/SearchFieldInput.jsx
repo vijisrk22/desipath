@@ -25,53 +25,72 @@ function SearchFieldInput({ inputs, title }) {
   } = useForm();
 
   const dispatch = useDispatch();
-  const [priceRange, setPriceRange] = useState([0, 10000]);
-  const [priceBounds, setPriceBounds] = useState([0, 10000]);
+  const [priceRange, setPriceRange] = useState([0, title === "Buy a Car" ? 100000 : 10000]);
+  const [priceBounds, setPriceBounds] = useState([0, title === "Buy a Car" ? 100000 : 10000]);
 
   // Sync form with Redux active filters
-  const rentalHomesState = useSelector((state) => state.rentalHomes);
-  const lastSearchQuery = rentalHomesState?.lastSearchQuery;
+  const state = useSelector((state) => {
+    if (title === "Find a Room") return state.roommates;
+    if (title === "Buy a Car") return state.cars;
+    if (title === "Rent a Home") return state.rentalHomes;
+    if (title === "Buy a home") return state.houses;
+    if (title === "Find an Event") return state.events;
+    return {};
+  });
+  const lastSearchQuery = state?.lastSearchQuery;
 
   const [hasAutoSearched, setHasAutoSearched] = useState(false);
 
   useEffect(() => {
+    const savedLocation = localStorage.getItem('user_location');
+
     // 1. Sync from Redux (lastSearchQuery)
     if (lastSearchQuery) {
-      if (title === "Rent a Home") {
-        if (lastSearchQuery.city || lastSearchQuery.state || lastSearchQuery.zipcode) {
-          const locParts = [lastSearchQuery.city, lastSearchQuery.state, lastSearchQuery.zipcode].filter(Boolean);
-          const newLoc = locParts.join(", ");
-          if (watch("location") !== newLoc) {
-            setValue("location", newLoc);
-          }
+      const reduxLoc = lastSearchQuery.location || [lastSearchQuery.city, lastSearchQuery.state, lastSearchQuery.zipcode].filter(Boolean).join(", ");
+      
+      // If global location changed elsewhere (e.g. Home page), prioritize it
+      if (savedLocation && reduxLoc !== savedLocation && !hasAutoSearched) {
+        setValue("location", savedLocation);
+        setHasAutoSearched(true);
+        handleSubmit(onSubmit)();
+        return;
+      }
+
+      if (title === "Rent a Home" || title === "Buy a home" || title === "Buy a Car" || title === "Find a Room" || title === "Find an Event") {
+        const newLoc = reduxLoc;
+        if (watch("location") !== newLoc) {
+          setValue("location", newLoc);
         }
+        
         // Sync Price
         if (lastSearchQuery.priceMin !== undefined && lastSearchQuery.priceMax !== undefined) {
           if (priceRange[0] !== lastSearchQuery.priceMin || priceRange[1] !== lastSearchQuery.priceMax) {
             setPriceRange([lastSearchQuery.priceMin, lastSearchQuery.priceMax]);
           }
         }
-        // Sync Types
-        const rentalTypes = ["Condo", "Single family Home", "Apartment", "Basement Apartment"];
-        rentalTypes.forEach(type => {
-          const isChecked = lastSearchQuery.rentalHomeType?.includes(type);
-          if (watch(`rentalHomeType.${type}`) !== isChecked) {
-            setValue(`rentalHomeType.${type}`, isChecked); 
-          }
-        });
+        
+        // Sync Types for Rental Homes
+        if (title === "Rent a Home") {
+          const rentalTypes = ["Condo", "Single family Home", "Apartment", "Basement Apartment"];
+          rentalTypes.forEach(type => {
+            const isChecked = lastSearchQuery.rentalHomeType?.includes(type);
+            if (watch(`rentalHomeType.${type}`) !== isChecked) {
+              setValue(`rentalHomeType.${type}`, isChecked); 
+            }
+          });
+        }
       }
       return;
     }
 
     // 2. If no Redux query, check localStorage for session location
-    const savedLocation = localStorage.getItem('user_location');
     if (savedLocation && !hasAutoSearched) {
       setValue("location", savedLocation);
       // Automatically trigger search ONCE
       setHasAutoSearched(true);
       handleSubmit(onSubmit)();
     }
-  }, [lastSearchQuery, title, setValue, handleSubmit, hasAutoSearched]);
+  }, [lastSearchQuery, title, setValue, handleSubmit, hasAutoSearched, watch, priceRange]);
 
   useEffect(() => {
     const maxPrice =

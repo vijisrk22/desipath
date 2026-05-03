@@ -10,14 +10,17 @@ function Rooms() {
   // backend API endpoint /api/rooms
   // State for events
   const dispatch = useDispatch();
-  const { loading, error, rooms } = useSelector((state) => state.roommates);
+  const { loading, error, rooms, lastSearchQuery } = useSelector((state) => state.roommates);
   const roomsPerPage = 15;
   const [page, setPage] = useState(1);
   const [sortOption, setSortOption] = useState("created_at-desc");
   // Set rooms on mount
   useEffect(() => {
-    dispatch(fetchRooms());
-  }, [dispatch]);
+    const savedLocation = localStorage.getItem('user_location');
+    if (!lastSearchQuery && !savedLocation) {
+      dispatch(fetchRooms());
+    }
+  }, [dispatch]); // Removed lastSearchQuery to avoid redundant calls
 
   console.log(rooms);
   const getSortedRooms = () => {

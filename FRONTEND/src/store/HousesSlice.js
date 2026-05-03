@@ -15,6 +15,15 @@ export const fetchHouses = createAsyncThunk("houses/fetchHouses", async({ page =
     }
 })
 
+export const fetchMyHouses = createAsyncThunk("houses/fetchMyHouses", async(_, {rejectWithValue}) =>{
+    try{
+        const response = await api.get("/api/homes/my-listings");
+        return response.data;
+    }catch(error){
+        return rejectWithValue(error.response?.data || "Failed to fetch your houses");
+    }
+})
+
 export const fetchHouseById = createAsyncThunk("houses/fetchHouseById", async(houseId, {rejectWithValue})=>{
     try{
         const response = await api.get(`/api/homes/${houseId}`);
@@ -78,6 +87,7 @@ const housesSlice = createSlice({
             to: 0
         },
         houseDetails: null,
+        myHouses: [],
         error: null,
         loading: false,
         lastSearchQuery: null,
@@ -128,6 +138,18 @@ const housesSlice = createSlice({
             .addCase(fetchHouses.rejected, (state,action)=>{
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch houses";
+            })
+            .addCase(fetchMyHouses.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyHouses.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myHouses = action.payload || [];
+            })
+            .addCase(fetchMyHouses.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch your houses";
             })
             .addCase(fetchHouseById.pending, (state)=>{
                 state.loading = true;
@@ -196,6 +218,20 @@ const housesSlice = createSlice({
             .addCase(updateHouse.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to update house";
+            })
+            .addCase(deleteHouse.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteHouse.fulfilled, (state, action) => {
+                state.loading = false;
+                const deletedId = action.meta.arg;
+                state.houses = state.houses.filter(h => h.id !== deletedId);
+                state.myHouses = state.myHouses.filter(h => h.id !== deletedId);
+            })
+            .addCase(deleteHouse.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to delete house";
             });
     }
 })

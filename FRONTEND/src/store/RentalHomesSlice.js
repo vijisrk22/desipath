@@ -15,6 +15,15 @@ export const fetchRentalHomes = createAsyncThunk("rentalHomes/fetchRentalHomes",
     }
 })
 
+export const fetchMyRentalHomes = createAsyncThunk("rentalHomes/fetchMyRentalHomes", async(_, {rejectWithValue}) =>{
+    try{
+        const response = await api.get("/api/rentalhomes/my-listings");
+        return response.data;
+    }catch(error){
+        return rejectWithValue(error.response?.data || "Failed to fetch your rental homes");
+    }
+})
+
 export const fetchRentalHomeById = createAsyncThunk("rentalHomes/fetchRentalHomeById", async (rentalHomeId, { rejectWithValue }) => {
     try {
         const response = await api.get(`/api/rentalhomes/${rentalHomeId}`);
@@ -79,6 +88,7 @@ const rentalHomesSlice = createSlice({
             per_page: 9
         },
         rentalHomeDetails: null,
+        myRentalHomes: [],
         error: null,
         loading: false,
 
@@ -128,6 +138,18 @@ const rentalHomesSlice = createSlice({
             .addCase(fetchRentalHomes.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch rental homes";
+            })
+            .addCase(fetchMyRentalHomes.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyRentalHomes.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myRentalHomes = action.payload || [];
+            })
+            .addCase(fetchMyRentalHomes.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch your rental homes";
             })
             .addCase(fetchRentalHomeById.pending, (state) => {
                 state.loading = true;
@@ -191,14 +213,12 @@ const rentalHomesSlice = createSlice({
             })
             .addCase(deleteRentalHome.fulfilled, (state, action) => {
                 state.loading = false;
-                // Remove the deleted rental home from the list
-                // Warning: Delete might leave a page with one less item. Ideally refetch.
+                const deletedId = action.meta.arg;
                 state.rentalHomes = state.rentalHomes.filter(
-                    (rentalHome) => rentalHome.id !== action.payload.id // This assumes API returns the deleted object with ID, or request arg was ID?
-                    // Actually deleteRentalHome arg is rentalHomeId. action.payload might be just a message or the object.
-                    // Previous code assumed action.payload.id. Let's keep it consistent or check return.
-                    // Controller returns {message: ...}. So this might fail if we look for id in payload.
-                    // We should use meta arg if needed, but let's assume a refetch is safer or we fix this later.
+                    (rentalHome) => rentalHome.id !== deletedId
+                );
+                state.myRentalHomes = state.myRentalHomes.filter(
+                    (rentalHome) => rentalHome.id !== deletedId
                 );
             })
             .addCase(deleteRentalHome.rejected, (state, action) => {

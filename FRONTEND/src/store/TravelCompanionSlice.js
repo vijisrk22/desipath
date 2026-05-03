@@ -13,6 +13,18 @@ export const fetchTravelCompanions = createAsyncThunk(
     }
 );
 
+export const fetchMyTravelCompanions = createAsyncThunk(
+    "travelCompanions/fetchMyTravelCompanions",
+    async (_, {rejectWithValue}) => {
+        try {
+            const response = await api.get("/api/travelcompanions/my-listings");
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch your travel posts");
+        }
+    }
+);
+
 export const postTravelCompanion = createAsyncThunk("travelCompanions/postTravelCompanion", async (travelCompanionData, {rejectWithValue}) => {
     try {
         const response = await api.post("/api/travel-companion/volunteer-posts", travelCompanionData);
@@ -82,6 +94,7 @@ const travelCompanionsSlice = createSlice({
     initialState: {
         travelCompanions: [],
         travelers: [],
+        myTravelCompanions: [],
         error: null,
         loading: false,
     },
@@ -113,6 +126,18 @@ const travelCompanionsSlice = createSlice({
             .addCase(fetchTravelCompanions.rejected, (state, action) => {   
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch travel companions";
+            })
+            .addCase(fetchMyTravelCompanions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyTravelCompanions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myTravelCompanions = action.payload || [];
+            })
+            .addCase(fetchMyTravelCompanions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch your travel posts";
             })
             .addCase(postTravelCompanion.pending, (state) => {
                 state.loading = true;
@@ -151,6 +176,11 @@ const travelCompanionsSlice = createSlice({
             .addCase(postTraveler.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to post traveler";
+            })
+            .addCase(deleteTravelCompanion.fulfilled, (state, action) => {
+                state.loading = false;
+                state.travelCompanions = state.travelCompanions.filter(c => c.id !== action.payload);
+                state.myTravelCompanions = state.myTravelCompanions.filter(c => c.id !== action.payload);
             });
     }
 });

@@ -36,10 +36,10 @@ function EventsBody({ sortOption: sortProp, setSortOption: setSortProp }) {
     const savedLocation = localStorage.getItem("user_location");
     if (!savedLocation) {
       setShowLocationModal(true);
+      dispatch(fetchEvents()); // No location, show all
     } else {
-      handleModalLocationSelect(savedLocation);
+      handleModalLocationSelect(savedLocation); // This triggers searchEvents
     }
-    dispatch(fetchEvents());
   }, [dispatch]);
 
   /* ── IntersectionObserver for mobile infinite scroll ─────────────── */
