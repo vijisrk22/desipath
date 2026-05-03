@@ -44,7 +44,7 @@ export default function PhotographerCard({ photographer }) {
         className="flex flex-col h-full"
       >
         {/* Backdrop & Profile Image Section */}
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-24 overflow-hidden">
           <img 
             src={backdropImage} 
             alt="Backdrop" 
@@ -52,8 +52,8 @@ export default function PhotographerCard({ photographer }) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           
-          <div className="absolute -bottom-10 left-6 p-1 bg-white rounded-full shadow-lg">
-            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white">
+          <div className="absolute -bottom-6 left-6 p-0.5 bg-white rounded-full shadow-lg">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white">
               <img 
                 src={mainImage} 
                 alt={photographer.title} 
@@ -62,53 +62,53 @@ export default function PhotographerCard({ photographer }) {
             </div>
           </div>
 
-          <div className="absolute top-3 right-3 flex gap-2">
-            <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-blue-600 shadow-sm uppercase tracking-wider">
+          <div className="absolute top-2 right-2 flex gap-2">
+            <span className="bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full text-[9px] font-bold text-blue-600 shadow-sm uppercase tracking-wider">
               {photographer.service_type}
             </span>
           </div>
         </div>
 
-        <CardContent sx={{ flexGrow: 1, px: 3, pt: 12, pb: 3 }}>
-          <div className="mb-4">
+        <CardContent sx={{ flexGrow: 1, px: 2, pt: 8, pb: 2 }}>
+          <div className="mb-2">
              <Tooltip title={photographer.title} arrow placement="top">
-                <h3 className="text-xl font-bold text-gray-900 line-clamp-1 cursor-help group-hover:text-blue-600 transition-colors">
+                <h3 className="text-lg font-bold text-gray-900 line-clamp-1 cursor-help group-hover:text-blue-600 transition-colors">
                     {photographer.title}
                 </h3>
              </Tooltip>
-             <div className="flex items-center gap-2 mt-1 text-gray-500">
-                <span className="text-sm">🏢</span>
-                <span className="text-sm font-medium">{location}</span>
+             <div className="flex items-center gap-2 mt-0.5 text-gray-500">
+                <span className="text-xs">🏢</span>
+                <span className="text-xs font-medium">{location}</span>
              </div>
           </div>
 
-          <p className="text-gray-600 text-sm line-clamp-2 mb-4 h-10">
+          <p className="text-gray-600 text-xs line-clamp-2 mb-3">
             {photographer.bio}
           </p>
 
-          <div className="flex items-center gap-3 mb-5 text-gray-600 border-y border-gray-50 py-3">
+          <div className="flex items-center gap-3 mb-3 text-gray-600 border-y border-gray-50 py-2">
             <div className="flex items-center gap-1.5 flex-1">
-              <span className="text-sm">🗓️</span>
-              <span className="text-xs font-semibold">{photographer.experience_years}y Exp</span>
+              <span className="text-xs">🗓️</span>
+              <span className="text-[10px] font-semibold">{photographer.experience_years}y Exp</span>
             </div>
             <div className="flex items-center gap-1.5 flex-1 border-x border-gray-50 px-2 justify-center">
-              <span className="text-sm">🌐</span>
-              <span className="text-xs font-semibold truncate">{photographer.languages || 'English'}</span>
+              <span className="text-xs">🌐</span>
+              <span className="text-[10px] font-semibold truncate">{photographer.languages || 'English'}</span>
             </div>
             <div className="flex items-center gap-1.5 flex-1 justify-end">
-              <span className="text-sm">📹</span>
-              <span className="text-xs font-semibold">{photographer.video_url ? 'Has Reel' : 'No Reel'}</span>
+              <span className="text-xs">📹</span>
+              <span className="text-[10px] font-semibold">{photographer.video_url ? 'Has Reel' : 'No Reel'}</span>
             </div>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase font-bold text-gray-400">Starting from</span>
-              <span className="text-[#007185] text-2xl font-black font-dmsans">
-                {minPrice ? `₹${Number(minPrice).toLocaleString("en-IN")}` : "Contact"}
+              <span className="text-[9px] uppercase font-bold text-gray-400">Starting from</span>
+              <span className="text-[#007185] text-xl font-black font-dmsans">
+                {minPrice ? `$${Number(minPrice).toLocaleString("en-US")}` : "Contact"}
               </span>
             </div>
-            <div className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold group-hover:bg-blue-600 group-hover:text-white transition-all">
+            <div className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold group-hover:bg-blue-600 group-hover:text-white transition-all">
               View Profile
             </div>
           </div>

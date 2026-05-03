@@ -16,10 +16,15 @@ class Photographer extends Model
         'service_type',
         'experience_years',
         'languages',
+        'services',
         'profile_photo',
         'backdrop_photo',
         'video_url',
         'status'
+    ];
+
+    protected $casts = [
+        'services' => 'array'
     ];
 
     public function user()

@@ -78,6 +78,7 @@ class PhotographerController extends Controller
             'service_type' => 'required|in:Photographer,Videographer,Both',
             'experience_years' => 'required|integer',
             'languages' => 'nullable|string',
+            'services' => 'nullable|array',
             'video_url' => 'nullable|string',
             'packages' => 'required|array|min:1',
             'packages.*.name' => 'required|string',

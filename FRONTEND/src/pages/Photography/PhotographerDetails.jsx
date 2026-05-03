@@ -68,7 +68,7 @@ export default function PhotographerDetails() {
       <Navbar />
 
       {/* Hero Header */}
-      <div className="relative h-[300px] md:h-[450px]">
+      <div className="relative h-[150px] md:h-[225px]">
         <img 
           src={backdropImage} 
           alt="Backdrop" 
@@ -115,6 +115,7 @@ export default function PhotographerDetails() {
         <div className="lg:col-span-8">
            <Tabs value={tab} onChange={(e, v) => setTab(v)} sx={{ mb: 4, borderBottom: 1, borderColor: 'divider' }}>
              <Tab label="About" sx={{ fontWeight: 'bold', textTransform: 'none' }} />
+             <Tab label="Services" sx={{ fontWeight: 'bold', textTransform: 'none' }} />
              <Tab label="Packages" sx={{ fontWeight: 'bold', textTransform: 'none' }} />
              <Tab label="Showreel" sx={{ fontWeight: 'bold', textTransform: 'none' }} />
            </Tabs>
@@ -144,13 +145,43 @@ export default function PhotographerDetails() {
            )}
 
            {tab === 1 && (
+             <div className="animate-fade-in">
+                <h2 className="text-2xl font-bold mb-6 text-gray-800">Services Offered</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {photographer.services && Object.keys(photographer.services).length > 0 ? (
+                    Object.entries(photographer.services).map(([category, services]) => (
+                      services.length > 0 && (
+                        <div key={category} className="space-y-4">
+                          <h3 className="text-sm font-bold text-[#007185] uppercase tracking-widest bg-[#007185]/5 p-2 rounded-lg">
+                            {category}
+                          </h3>
+                          <ul className="space-y-2">
+                            {services.map(service => (
+                              <li key={service} className="flex items-center gap-2 text-gray-600 text-sm font-medium">
+                                <span className="text-[#007185]">✓</span> {service}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    ))
+                  ) : (
+                    <div className="col-span-3 py-10 text-center bg-gray-50 rounded-[32px] border-2 border-dashed border-gray-200">
+                       <p className="text-gray-400 font-bold">No specific services listed.</p>
+                    </div>
+                  )}
+                </div>
+             </div>
+           )}
+
+           {tab === 2 && (
              <div className="animate-fade-in space-y-6">
                <h2 className="text-2xl font-bold mb-6 text-gray-800">Service Packages</h2>
                {photographer.packages?.map((pkg, idx) => (
                  <div key={idx} className="bg-white border-2 border-gray-100 p-8 rounded-[32px] hover:border-blue-500 transition-all group">
                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                      <h3 className="text-2xl font-black text-gray-900">{pkg.name}</h3>
-                     <span className="text-3xl font-black text-blue-600">₹{Number(pkg.price).toLocaleString("en-IN")}</span>
+                     <span className="text-3xl font-black text-blue-600">${Number(pkg.price).toLocaleString("en-US")}</span>
                    </div>
                    <p className="text-gray-600 font-medium leading-relaxed">
                      {pkg.description}
@@ -160,7 +191,7 @@ export default function PhotographerDetails() {
              </div>
            )}
 
-           {tab === 2 && (
+           {tab === 3 && (
              <div className="animate-fade-in">
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">Video Showreel</h2>
                 {embedUrl ? (

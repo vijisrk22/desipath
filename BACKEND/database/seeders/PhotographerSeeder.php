@@ -20,6 +20,11 @@ class PhotographerSeeder extends Seeder
             'service_type' => 'Both',
             'experience_years' => 10,
             'languages' => 'English, Hindi',
+            'services' => [
+                'Photography Services' => ['Wedding Photography', 'Event Photography', 'Portrait Photography'],
+                'Videography Services' => ['Wedding Videography', 'Cinematic Film'],
+                'Specialty Services' => ['Photo Editing / Retouching', 'Highlight Reel']
+            ],
             'status' => 'active',
             'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
         ]);

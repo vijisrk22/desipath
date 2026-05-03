@@ -3,7 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import api from "../../utils/api";
-import { CircularProgress, Button, TextField, MenuItem, IconButton } from "@mui/material";
+import { CircularProgress, Button, TextField, MenuItem, IconButton, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import { PHOTOGRAPHY_SERVICES } from "../../constants/photographyServices";
 
 export default function PhotographyPortal() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export default function PhotographyPortal() {
     experience_years: "",
     languages: "English",
     video_url: "",
+    services: {}, // { "Photography Services": ["Wedding Photography"], ... }
     packages: [{ name: "", price: "", description: "" }],
     locations: [{ address: "", city: "", state: "", zipcode: "" }],
   });
@@ -38,6 +40,7 @@ export default function PhotographyPortal() {
               service_type: d.service_type,
               experience_years: d.experience_years,
               languages: d.languages,
+              services: d.services || {},
               video_url: d.video_url || "",
               packages: d.packages?.length > 0 ? d.packages : [{ name: "", price: "", description: "" }],
               locations: d.locations?.length > 0 ? d.locations : [{ address: "", city: "", state: "", zipcode: "" }],
@@ -55,6 +58,21 @@ export default function PhotographyPortal() {
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleServiceToggle = (category, service) => {
+    const currentServices = { ...formData.services };
+    if (!currentServices[category]) {
+      currentServices[category] = [];
+    }
+
+    if (currentServices[category].includes(service)) {
+      currentServices[category] = currentServices[category].filter(s => s !== service);
+    } else {
+      currentServices[category].push(service);
+    }
+
+    setFormData({ ...formData, services: currentServices });
   };
 
   const handlePackageChange = (index, field, value) => {
@@ -85,6 +103,9 @@ export default function PhotographyPortal() {
     data.append("languages", formData.languages);
     data.append("video_url", formData.video_url);
     
+    // Services need to be stringified for FormData if sending as array/object
+    data.append("services", JSON.stringify(formData.services));
+
     formData.packages.forEach((pkg, i) => {
       data.append(`packages[${i}][name]`, pkg.name);
       data.append(`packages[${i}][price]`, pkg.price);
@@ -195,10 +216,40 @@ export default function PhotographyPortal() {
                 </div>
               </section>
 
-              {/* Media Section */}
+              {/* Service Categories Section */}
               <section className="bg-slate-50 -mx-10 p-10">
                 <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
                   <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">2</span>
+                  Services Offered
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {Object.entries(PHOTOGRAPHY_SERVICES).map(([category, services]) => (
+                    <div key={category} className="space-y-3">
+                      <h3 className="font-bold text-[#007185] border-b pb-2">{category}</h3>
+                      <FormGroup>
+                        {services.map(service => (
+                          <FormControlLabel
+                            key={service}
+                            control={
+                              <Checkbox 
+                                size="small"
+                                checked={formData.services[category]?.includes(service) || false}
+                                onChange={() => handleServiceToggle(category, service)}
+                              />
+                            }
+                            label={<span className="text-sm text-gray-700">{service}</span>}
+                          />
+                        ))}
+                      </FormGroup>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Media Section */}
+              <section className="p-0">
+                <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">3</span>
                   Visual Identity
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -237,7 +288,7 @@ export default function PhotographyPortal() {
               <section>
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">3</span>
+                    <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">4</span>
                     Pricing Packages
                     </h2>
                     <Button onClick={addPackage} variant="outlined" size="small" sx={{ borderRadius: 57 }}>+ Add Package</Button>
@@ -255,7 +306,7 @@ export default function PhotographyPortal() {
                             className="md:col-span-2"
                           />
                           <TextField
-                            label="Price (₹)"
+                            label="Price ($)"
                             type="number"
                             value={pkg.price}
                             onChange={(e) => handlePackageChange(idx, 'price', e.target.value)}
@@ -279,7 +330,7 @@ export default function PhotographyPortal() {
               {/* Service Locations */}
               <section>
                 <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">4</span>
+                  <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">5</span>
                   Primary Service Area
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
