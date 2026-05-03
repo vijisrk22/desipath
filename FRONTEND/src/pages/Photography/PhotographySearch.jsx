@@ -96,12 +96,12 @@ export default function PhotographySearch() {
       <Navbar />
 
       {/* Hero Search Section */}
-      <div className="bg-[#007185] py-12 px-[7%] text-white">
+      <div className="bg-[#007185] py-6 px-[7%] text-white">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-black mb-2 font-dmsans">Find Professional Photographers</h1>
-          <p className="text-blue-100 mb-8 font-medium">Capture your best moments with top-rated photographers and videographers.</p>
+          <h1 className="text-4xl font-black mb-1 font-dmsans">Find Professional Photographers</h1>
+          <p className="text-blue-100 mb-4 font-medium">Capture your best moments with top-rated photographers and videographers.</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-white p-4 rounded-3xl shadow-2xl items-center">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-white py-2 px-4 rounded-3xl shadow-2xl items-center">
             <div className="md:col-span-5 relative">
                <TextField
                 fullWidth
@@ -168,7 +168,7 @@ export default function PhotographySearch() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-4">
+          <div className="mt-4 flex flex-wrap items-center gap-4">
             <span className="text-sm font-bold text-blue-100 uppercase tracking-widest">Service Type:</span>
             <ToggleButtonGroup
               value={type}
