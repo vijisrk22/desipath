@@ -9,18 +9,39 @@ import {
   ToggleButton, 
   ToggleButtonGroup,
   TextField,
-  InputAdornment
+  InputAdornment,
+  Autocomplete
 } from "@mui/material";
 
 export default function PhotographySearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [zip, setZip] = useState("");
+  const [zipOptions, setZipOptions] = useState([]);
+  const [zipInput, setZipInput] = useState("");
   const [radius, setRadius] = useState(100);
   const [type, setType] = useState("Both");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const searchTimeout = useRef(null);
   const abortController = useRef(null);
+
+  // Fetch locations for autocomplete
+  useEffect(() => {
+    if (zipInput.length < 2) {
+      setZipOptions([]);
+      return;
+    }
+    const fetchLocations = async () => {
+      try {
+        const res = await api.get(`/api/location/locations?filter=${zipInput}`);
+        setZipOptions(res.data);
+      } catch (err) {
+        console.error("Failed to fetch locations", err);
+      }
+    };
+    const timer = setTimeout(fetchLocations, 300);
+    return () => clearTimeout(timer);
+  }, [zipInput]);
 
   const fetchResults = async (currentTerm, currentZip, currentRadius, currentType) => {
     if (abortController.current) abortController.current.abort();
@@ -101,21 +122,34 @@ export default function PhotographySearch() {
             </div>
 
             <div className="md:col-span-3 border-l border-gray-100 pl-4">
-               <TextField
+              <Autocomplete
                 fullWidth
-                placeholder="Zip Code (e.g. 77001)"
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-                variant="standard"
-                InputProps={{
-                  disableUnderline: true,
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <span className="text-xl">📍</span>
-                    </InputAdornment>
-                  ),
-                  className: "py-2 px-2 text-gray-800 font-medium"
+                options={zipOptions}
+                getOptionLabel={(option) => `${option.city}, ${option.state_id} ${option.zip}`}
+                filterOptions={(x) => x}
+                value={zipOptions.find(o => o.zip === zip) || (zip ? { zip, city: '', state_id: '' } : null)}
+                onChange={(e, newVal) => {
+                  if (newVal) setZip(newVal.zip);
+                  else setZip("");
                 }}
+                onInputChange={(e, newInputValue) => setZipInput(newInputValue)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="City, State or Zip"
+                    variant="standard"
+                    InputProps={{
+                      ...params.InputProps,
+                      disableUnderline: true,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <span className="text-xl">📍</span>
+                        </InputAdornment>
+                      ),
+                      className: "py-2 px-2 text-gray-800 font-medium"
+                    }}
+                  />
+                )}
               />
             </div>
 

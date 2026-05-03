@@ -3,7 +3,17 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import api from "../../utils/api";
-import { CircularProgress, Button, TextField, MenuItem, IconButton, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import { 
+  CircularProgress, 
+  Button, 
+  TextField, 
+  MenuItem, 
+  IconButton, 
+  Checkbox, 
+  FormControlLabel, 
+  FormGroup,
+  Autocomplete
+} from "@mui/material";
 import { PHOTOGRAPHY_SERVICES } from "../../constants/photographyServices";
 
 export default function PhotographyPortal() {
@@ -26,6 +36,27 @@ export default function PhotographyPortal() {
 
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [backdropPhoto, setBackdropPhoto] = useState(null);
+
+  const [locOptions, setLocOptions] = useState([]);
+  const [locInput, setLocInput] = useState("");
+
+  // Fetch locations for autocomplete
+  useEffect(() => {
+    if (locInput.length < 2) {
+      setLocOptions([]);
+      return;
+    }
+    const fetchLocs = async () => {
+      try {
+        const res = await api.get(`/api/location/locations?filter=${locInput}`);
+        setLocOptions(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    const t = setTimeout(fetchLocs, 300);
+    return () => clearTimeout(t);
+  }, [locInput]);
 
   useEffect(() => {
     if (id) {
@@ -333,6 +364,36 @@ export default function PhotographyPortal() {
                   <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">5</span>
                   Primary Service Area
                 </h2>
+
+                <div className="mb-6">
+                   <Autocomplete
+                    fullWidth
+                    options={locOptions}
+                    getOptionLabel={(option) => option.city ? `${option.city}, ${option.state_id} ${option.zip}` : ""}
+                    filterOptions={(x) => x}
+                    onInputChange={(e, val) => setLocInput(val)}
+                    onChange={(e, val) => {
+                      if (val) {
+                        const newLocs = [...formData.locations];
+                        newLocs[0] = {
+                          ...newLocs[0],
+                          city: val.city,
+                          state: val.state_id,
+                          zipcode: val.zip
+                        };
+                        setFormData({ ...formData, locations: newLocs });
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField 
+                        {...params} 
+                        label="Search City, State or Zip" 
+                        helperText="Search and select to auto-fill location details"
+                      />
+                    )}
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                    <TextField
                      label="City"
