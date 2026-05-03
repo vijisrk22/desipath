@@ -79,7 +79,10 @@ export const updateUserProfile = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     console.log(userData)
     try {
-      const request = await api.patch("/api/profile", userData);
+      const isFormData = userData instanceof FormData;
+      const request = isFormData 
+        ? await api.post("/api/profile", userData)
+        : await api.patch("/api/profile", userData);
       const response = request.data;
       // Update local storage with new user data
       localStorage.setItem("user", JSON.stringify(response.data));

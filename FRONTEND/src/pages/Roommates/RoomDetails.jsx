@@ -116,14 +116,14 @@ function RoomDetails() {
 
   console.log("Room Details:", roomDetails);
   return (
-    <div className="mx-20 my-10 font-dmsans">
+    <div className="mx-4 md:mx-20 my-6 md:my-10 font-dmsans">
       <DisplayPath
         paths={paths}
         color="[#667479]"
         additionalStyles={"leading-tight mb-4"}
       />
       {roomDetails.photos?.length > 0 && (
-        <div className="h-[476px] my-5 flex justify-center items-center shadow-sm rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
+        <div className="h-[250px] md:h-[476px] my-5 flex justify-center items-center shadow-sm rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
           <div className="w-full h-full">
             <ImageScroller images={roomDetails.photos.map(img => getFullImageUrl(img))} />
           </div>
@@ -141,23 +141,23 @@ function RoomDetails() {
         ))}
       </div>
 
-      <div className="flex items-start justify-between gap-8 mt-10">
-        <div className="flex-1">
-          <div className="text-[#0857d0] text-[38px] font-bold font-dmsans leading-tight mb-2">
+      <div className="flex flex-col lg:flex-row items-start justify-between gap-8 mt-10">
+        <div className="flex-1 w-full">
+          <div className="text-[#0857d0] text-[28px] md:text-[38px] font-bold font-dmsans leading-tight mb-2">
             {roomDetails?.rent
               ? `$${Number(roomDetails.rent).toLocaleString("en-US")}`
               : "Loading..."}
           </div>
-          <div className="text-gray-800 text-[26px] font-bold font-dmsans mb-1">
+          <div className="text-gray-800 text-[20px] md:text-[26px] font-bold font-dmsans mb-1">
             {roomDetails?.roomType || "Single Room"}
           </div>
-          <div className="text-gray-400 text-[22px] font-bold font-dmsans mb-6">
+          <div className="text-gray-400 text-[18px] md:text-[22px] font-bold font-dmsans mb-6">
             {roomDetails?.owner ? "Owner" : (roomDetails?.agent ? "Agent" : "Owner")} - {roomDetails?.poster_name}
           </div>
           <ReviewPostContent contents={contents} type="displayDetails" />
         </div>
 
-        <div className="flex flex-col gap-4 min-w-[240px]">
+        <div className="flex flex-col gap-4 w-full lg:min-w-[240px] lg:w-auto">
           <div className="cursor-pointer px-7 py-4 bg-[#ffa41c] rounded-[57px] inline-flex justify-center items-center gap-2.5 shadow-md hover:bg-[#e8931a] transition-all">
             <PhoneOutlinedIcon />
             <div className=" text-gray-800 text-base font-bold font-dmsans">

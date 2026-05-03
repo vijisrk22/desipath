@@ -50,6 +50,7 @@ Route::get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 
 Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
@@ -259,6 +260,8 @@ Route::middleware([])->group(function () {
     Route::get('/kids-classes/public/category/{category}/{subcategory}', [KidsClassController::class, 'getPublicByCategory']);
     Route::get('/kids-classes/public/listings', [KidsClassController::class, 'getPublicListings']);
     Route::get('/kids-classes/public/details/{id}', [KidsClassController::class, 'getPublicDetails']);
+    Route::get('/kids-classes/keywords', [KidsClassController::class, 'getKeywords']);
+    Route::get('/kids-classes/search', [KidsClassController::class, 'search']);
 });
 Route::get('/fix-general', function() {
     \DB::table('kids_classes')->where('subcategory', 'General')->update(['subcategory' => 'Keyboard']);
@@ -296,6 +299,8 @@ Route::get('/forum/posts/{id}', [ForumController::class, 'show']);
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/forum/posts', [ForumController::class, 'storePost']);
     Route::post('/forum/comments', [ForumController::class, 'storeComment']);
+    Route::put('/forum/comments/{id}', [ForumController::class, 'updateComment']);
+    Route::delete('/forum/comments/{id}', [ForumController::class, 'destroyComment']);
     Route::post('/forum/posts/{id}/vote', [ForumController::class, 'votePost']);
 });
 

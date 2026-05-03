@@ -139,6 +139,7 @@ function LocationAutocompleteInput({
             render={({ field }) => (
               <input
                 {...field}
+                value={field.value || ""}
                 autoComplete="off"
                 placeholder={placeholder || "City, State, Zip"}
                 className="outline-none px-1 py-1  flex-1 min-w-0 rounded-lg"

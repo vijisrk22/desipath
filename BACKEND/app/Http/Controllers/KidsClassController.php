@@ -617,4 +617,65 @@ class KidsClassController extends Controller
         DB::table('kids_classes')->where('id', $id)->delete();
         return response()->json(['success' => true, 'message' => 'Listing deleted successfully']);
     }
+
+    /**
+     * Get unique keywords for search autocomplete
+     */
+    public function getKeywords()
+    {
+        $subcategories = DB::table('kids_classes')->where('status', 'active')->pluck('subcategory')->unique()->toArray();
+
+        $keywords = array_values(array_unique($subcategories));
+
+        return response()->json(['success' => true, 'data' => $keywords]);
+    }
+
+    /**
+     * Search classes by title, category, or subcategory
+     */
+    public function search(Request $request)
+    {
+        $term = $request->input('q');
+        
+        $query = DB::table('kids_classes')
+            ->join('instructors', 'kids_classes.instructor_id', '=', 'instructors.id')
+            ->leftJoin('class_pricing', 'kids_classes.id', '=', 'class_pricing.class_id')
+            ->leftJoin('class_schedules', 'kids_classes.id', '=', 'class_schedules.class_id')
+            ->where('kids_classes.status', 'active');
+
+        if ($term) {
+            $query->where(function($q) use ($term) {
+                $q->where('kids_classes.title', 'like', "%{$term}%")
+                  ->orWhere('kids_classes.category', 'like', "%{$term}%")
+                  ->orWhere('kids_classes.subcategory', 'like', "%{$term}%")
+                  ->orWhere('kids_classes.tags', 'like', "%{$term}%");
+            });
+        }
+
+        $classes = $query->select(
+            'kids_classes.id',
+            'kids_classes.title',
+            'kids_classes.category',
+            'kids_classes.subcategory',
+            'kids_classes.level',
+            'kids_classes.format',
+            'kids_classes.short_description',
+            'kids_classes.age_group_min',
+            'kids_classes.age_group_max',
+            'instructors.name as instructorName',
+            'instructors.profile_photo_url as photoUrl',
+            'class_pricing.fee_amount',
+            'class_pricing.fee_type',
+            'class_schedules.duration_label',
+            'class_schedules.location_address'
+        )->get();
+
+        $mapped = $classes->map(function ($c) {
+            $c->level = json_decode($c->level) ?? [];
+            $c->format = json_decode($c->format) ?? [];
+            return $c;
+        });
+
+        return response()->json(['success' => true, 'data' => $mapped]);
+    }
 }

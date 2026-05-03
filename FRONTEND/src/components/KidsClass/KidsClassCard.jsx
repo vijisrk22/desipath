@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
+import Tooltip from "@mui/material/Tooltip";
 import { getFullImageUrl } from "../../utils/imageHelper";
 
 import LazyImage from "../LazyImage";
@@ -56,21 +57,23 @@ export default function KidsClassCard({ cls }) {
           </div>
 
           <div className="mb-4">
-             <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{cls.title}</h3>
+             <Tooltip title={cls.title} arrow placement="top">
+                <h3 className="text-lg font-bold text-gray-900 line-clamp-1 cursor-help">{cls.title}</h3>
+             </Tooltip>
              <p className="text-gray-500 text-xs font-medium">by {cls.instructorName}</p>
           </div>
 
           <div className="flex items-center gap-3 mb-4 text-gray-600 border-y border-gray-50 py-3">
             <div className="flex items-center gap-1.5 flex-1">
-              <span className="text-[10px] uppercase font-bold text-gray-400">Ages</span>
+              <span className="text-sm">👶</span>
               <span className="text-xs font-semibold">{cls.age_group_min}-{cls.age_group_max}</span>
             </div>
             <div className="flex items-center gap-1.5 flex-1 border-x border-gray-50 px-2 justify-center">
-              <span className="text-[10px] uppercase font-bold text-gray-400">Format</span>
+              <span className="text-sm">💻</span>
               <span className="text-xs font-semibold truncate">{(cls.format || [])[0] || 'Varies'}</span>
             </div>
             <div className="flex items-center gap-1.5 flex-1 justify-end">
-              <span className="text-[10px] uppercase font-bold text-gray-400">Duration</span>
+              <span className="text-sm">⏱️</span>
               <span className="text-xs font-semibold truncate">{cls.duration_label || 'Varies'}</span>
             </div>
           </div>

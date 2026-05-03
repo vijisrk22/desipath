@@ -74,6 +74,18 @@ class ProfileController extends Controller
             $validatedData['password'] = Hash::make($validatedData['password']);
         }
 
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            $request->validate([
+                'photo' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            
+            $file = $request->file('photo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('profile_photos', $filename, 'public');
+            $validatedData['profile_photo'] = $path;
+        }
+
         $user->update($validatedData);
 
         return response()->json([

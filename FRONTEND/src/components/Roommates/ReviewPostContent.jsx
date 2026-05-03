@@ -6,7 +6,7 @@ function ReviewPostContent({ contents, type = "reviewPost" }) {
       {contents?.map((content, index) => (
         <div
           key={index}
-          className="grid grid-cols-2 gap-4 border-b border-b-gray-300 py-2 "
+          className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 border-b border-b-gray-300 py-3 sm:py-2"
         >
           <div className="text-gray-500 text-base font-medium font-dmsans">
             {content.text}

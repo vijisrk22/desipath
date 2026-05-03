@@ -48,6 +48,7 @@ function TextFieldInput({
             <div className="w-full">
               <TextField
                 {...field}
+                value={field.value || ""}
                 id={name}
                 type={type}
                 variant="outlined"

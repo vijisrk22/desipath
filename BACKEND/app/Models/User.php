@@ -31,6 +31,9 @@ class User extends Authenticatable
         'phone_number',
         'country_code',
         'status',
+        'profile_photo',
+        'otp',
+        'otp_expires_at',
     ];
 
     /**

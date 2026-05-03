@@ -131,7 +131,11 @@ export default function ForumLanding() {
                     <option>Real estate in USA</option>
                     <option>New to USA</option>
                     <option>About Studies</option>
-                    <option>Kids</option>
+                    <option>School and Kids</option>
+                    <option>Healthcare & Health Insurance</option>
+                    <option>Job referrals</option>
+                    <option>Women topics</option>
+                    <option>Car DL and Insurance</option>
                   </select>
 
                   <input 
@@ -185,7 +189,7 @@ export default function ForumLanding() {
                 <div 
                   key={post.id} 
                   className="bg-white rounded-md border border-gray-300 flex flex-col hover:border-gray-400 transition-all cursor-pointer shadow-sm group p-3"
-                  onClick={() => navigate(`/forum/post/${post.id}`)}
+                  onClick={() => navigate(`/forum/post/${post.slug || post.id}`)}
                 >
                   {/* Post Content */}
                   <div className="w-full min-w-0">
@@ -201,32 +205,10 @@ export default function ForumLanding() {
                     {/* Action Pills */}
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-bold text-gray-700 mt-2">
                       
-                      {/* Vote Pill */}
-                      <div className="flex items-center bg-[#eaedef] rounded-full overflow-hidden">
-                        <button 
-                          className="flex items-center justify-center p-2 hover:bg-gray-300 transition text-gray-600 hover:text-orange-600"
-                          onClick={(e) => {e.stopPropagation(); /* handleVote(post.id, 'up') */}}
-                        >
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
-                        </button>
-                        <span className="px-1 font-bold">{post.votes}</span>
-                        <button 
-                          className="flex items-center justify-center p-2 hover:bg-gray-300 transition text-gray-600 hover:text-indigo-600"
-                          onClick={(e) => {e.stopPropagation(); /* handleVote(post.id, 'down') */}}
-                        >
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
-                        </button>
-                      </div>
-
                       {/* Comments Pill */}
                       <div className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         <span>{post.comments_count}</span>
-                      </div>
-
-                      {/* Award Pill */}
-                      <div className="flex items-center justify-center bg-[#eaedef] hover:bg-gray-300 p-2 rounded-full transition cursor-pointer hidden sm:flex">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
                       </div>
 
                       {/* Share Pill */}
@@ -278,7 +260,7 @@ export default function ForumLanding() {
             <div className="p-4">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-14 h-14 rounded-full border-4 border-white -mt-10 bg-blue-500 flex items-center justify-center text-2xl text-white font-fredoka">D</div>
-                <h3 className="font-bold text-gray-900 mt-[-10px]">r/DesipathForum</h3>
+                <h3 className="font-bold text-gray-900 mt-[-10px]">d/DesipathForum</h3>
               </div>
               <p className="text-sm text-gray-700 leading-relaxed mb-4">
                 The hub for Indian students, professionals, and families in the USA. Share stories, ask for advice, and grow together.
@@ -291,25 +273,25 @@ export default function ForumLanding() {
             </div>
           </div>
 
-          {/* Trending Communities */}
+          {/* Trending Subforums */}
           <div className="bg-white rounded-md border border-gray-300 shadow-sm p-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 mb-4">Communities</h3>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 mb-4">Subforums</h3>
             <div className="space-y-4">
               <div 
                 className={`flex items-center gap-3 cursor-pointer p-1 rounded hover:bg-gray-50 ${selectedCategory === '' ? 'bg-blue-50' : ''}`}
                 onClick={() => setSelectedCategory('')}
               >
                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-xs">🌐</div>
-                <span className="text-sm font-bold text-gray-900">All Communities</span>
+                <span className="text-sm font-bold text-gray-900">All Subforums</span>
               </div>
-              {['H1B Visa discussion', 'Indian Cooking', 'Real estate in USA', 'New to USA', 'About Studies', 'Kids'].map((item, i) => (
+              {['H1B Visa discussion', 'Indian Cooking', 'Real estate in USA', 'New to USA', 'About Studies', 'School and Kids', 'Healthcare & Health Insurance', 'Job referrals', 'Women topics', 'Car DL and Insurance'].map((item, i) => (
                 <div 
                   key={i} 
                   className={`flex items-center justify-between cursor-pointer group p-1 rounded hover:bg-gray-50 ${selectedCategory === item ? 'bg-blue-50 text-blue-600' : ''}`}
                   onClick={() => setSelectedCategory(item)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs group-hover:bg-indigo-100">r/</div>
+                    <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs group-hover:bg-indigo-100">d/</div>
                     <span className="text-sm font-bold text-gray-900 group-hover:text-blue-600">{item}</span>
                   </div>
                 </div>

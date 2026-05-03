@@ -30,10 +30,12 @@ class ForumController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function show($slug)
     {
         $post = ForumPost::with(['user:id,name', 'comments.user:id,name', 'comments.replies.user:id,name'])
-            ->findOrFail($id);
+            ->where('slug', $slug)
+            ->orWhere('id', $slug)
+            ->firstOrFail();
 
         return response()->json([
             'success' => true,
@@ -97,6 +99,45 @@ class ForumController extends Controller
         return response()->json([
             'success' => true,
             'votes' => $post->votes
+        ]);
+    }
+    public function updateComment(Request $request, $id)
+    {
+        $comment = ForumComment::findOrFail($id);
+
+        if ($comment->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $comment->update([
+            'content' => $request->content,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $comment
+        ]);
+    }
+
+    public function destroyComment($id)
+    {
+        $comment = ForumComment::findOrFail($id);
+
+        if ($comment->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        // Optional: If comments have replies, you might want to handle deletion differently
+        // e.g., set content to '[deleted]' or actually delete it.
+        $comment->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment deleted successfully'
         ]);
     }
 }

@@ -1,21 +1,68 @@
-import { Avatar } from "@mui/material";
-import { useSelector } from "react-redux";
+import { Avatar, CircularProgress } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer/Footer";
-import { RiUserSettingsLine, RiShieldLine, RiTimeLine, RiMapPinLine } from "react-icons/ri";
+import { RiUserSettingsLine, RiShieldLine, RiTimeLine, RiMapPinLine, RiCameraLine } from "react-icons/ri";
+import { useRef, useState } from "react";
+import { updateUserProfile } from "../../store/UserSlice";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 function ViewProfile() {
-  const user = useSelector((state) => state.user.user);
+  const { user, loading } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleEditProfile = () => {
     navigate("/profile/editProfile");
   };
 
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("photo", file);
+    // Since our backend route is PATCH, we use the _method trick for multipart/form-data
+    formData.append("_method", "PATCH");
+
+    setUploading(true);
+    try {
+      // We dispatch the updateUserProfile thunk
+      // We need to pass the FormData. 
+      // Note: updateUserProfile in UserSlice uses api.patch, 
+      // but Laravel needs POST with _method=PATCH for files.
+      // I'll update the thunk to handle this or just call api directly here if needed.
+      // Let's assume the thunk needs to be POST for files.
+      
+      const res = await dispatch(updateUserProfile(formData)).unwrap();
+      console.log("Upload success:", res);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Failed to upload profile photo. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
-    <div className="bg-[#f8faff] min-h-screen flex flex-col">
+    <div className="bg-[#f8faff] min-h-screen flex flex-col font-dmsans">
       <div className="flex-grow w-full px-4 sm:px-[7%] py-6 sm:py-12 lg:py-20">
         <div className="max-w-4xl mx-auto">
+
+          {/* Hidden File Input */}
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileChange} 
+            className="hidden" 
+            accept="image/*"
+          />
 
           {/* ── Profile Header Card ─────────────────────────────────── */}
           <div className="bg-white rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden mb-5">
@@ -31,17 +78,27 @@ function ViewProfile() {
             <div className="px-4 sm:px-8 pb-6 sm:pb-10 -mt-10 sm:-mt-16">
               {/* Avatar + Name row */}
               <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 mb-6">
-                <div className="relative shrink-0">
-                  <Avatar
-                    alt={user?.name}
-                    src={user?.photoUrl || ""}
-                    sx={{
-                      width:  { xs: 80, sm: 110, md: 130 },
-                      height: { xs: 80, sm: 110, md: 130 },
-                      border: "5px solid white",
-                      boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
-                    }}
-                  />
+                <div className="relative shrink-0 group">
+                  <div 
+                    className="relative cursor-pointer"
+                    onClick={handleAvatarClick}
+                  >
+                    <Avatar
+                      alt={user?.name}
+                      src={getFullImageUrl(user?.profile_photo || user?.photoUrl)}
+                      sx={{
+                        width:  { xs: 80, sm: 110, md: 130 },
+                        height: { xs: 80, sm: 110, md: 130 },
+                        border: "5px solid white",
+                        boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+                        bgcolor: "#f0f2f5"
+                      }}
+                    />
+                    {/* Camera Overlay */}
+                    <div className="absolute inset-0 bg-black/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      {uploading ? <CircularProgress size={24} color="inherit" /> : <RiCameraLine size={32} />}
+                    </div>
+                  </div>
                   <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full" />
                 </div>
 
