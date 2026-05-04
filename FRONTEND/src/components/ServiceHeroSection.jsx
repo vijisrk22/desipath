@@ -7,7 +7,7 @@ function ServiceHeroSection({ pageDetails, bgImg, orangeArrow = false }) {
       className={`flex flex-wrap-reverse justify-between items-center py-8 px-[7%] w-full`}
     >
       <div
-        className={`flex flex-col gap-4 text-start ${bgImg ? "flex-1 max-w-lg" : ""
+        className={`flex flex-col gap-4 text-center lg:text-start w-full lg:w-auto items-center lg:items-start ${bgImg ? "flex-1 max-w-lg" : ""
           }`}
       >
         <HeadingAndButton
@@ -26,7 +26,7 @@ function ServiceHeroSection({ pageDetails, bgImg, orangeArrow = false }) {
       </div>
 
       {bgImg ? (
-        <div className="md:bg-transparent flex justify-center">
+        <div className="md:bg-transparent flex justify-center w-full lg:w-auto mb-6 lg:mb-0">
           <img
             src={bgImg}
             className="h-[250px] md:h-[350px] lg:h-[400px] xl:h-[450px] w-auto object-contain"
@@ -34,10 +34,11 @@ function ServiceHeroSection({ pageDetails, bgImg, orangeArrow = false }) {
           />
         </div>
       ) : (
-        <div className="">
+        <div className="flex justify-center w-full lg:w-auto mb-6 lg:mb-0">
           <img
             src="/servicesHeroImg.jpg"
             className="h-[250px] md:h-[350px] lg:h-[400px] xl:h-auto w-auto"
+            alt="Hero Service"
           />
         </div>
       )}
