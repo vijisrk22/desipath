@@ -56,11 +56,11 @@ const AdCard = ({ ad, onOpenInfo }) => {
         <Slider {...sliderSettings} className="local-ads-slider">
           {posterUrls.length > 0 ? (
             posterUrls.map((img, idx) => (
-              <div key={idx} className="w-full relative overflow-hidden block">
+              <div key={idx} className="aspect-[4/5] sm:aspect-square w-full bg-gray-50 relative overflow-hidden block">
                 <img 
                   src={getFullImageUrl(img)} 
                   alt={`${ad.title} ${idx + 1}`} 
-                  className="w-full h-auto block"
+                  className="absolute inset-0 w-full h-full object-contain"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.category)}&background=f3f4f6&color=3b82f6&size=512&bold=true`;
