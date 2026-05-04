@@ -1,35 +1,63 @@
 import React, { useState } from 'react';
-import { IoImageOutline, IoCloseCircle } from 'react-icons/io5';
+import { IoImageOutline, IoCloseCircle, IoCropOutline } from 'react-icons/io5';
 import { getFullImageUrl } from '../../../utils/imageHelper';
+import ImageCropModal from '../../../components/ImageCrop/ImageCropModal';
+import imageCompression from 'browser-image-compression';
 
 export default function Step3Media({ data, update, onNext, onBack }) {
   const [previews, setPreviews] = useState(data.images || []);
+  const [croppingIndex, setCroppingIndex] = useState(null);
+  const [isCompressing, setIsCompressing] = useState(false);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
     if (previews.length + files.length > 5) {
       alert("Max 5 images allowed");
       return;
     }
 
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result;
-        setPreviews(prev => {
-          const newList = [...prev, base64];
-          update({ images: newList });
-          return newList;
-        });
+    setIsCompressing(true);
+    try {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true
       };
-      reader.readAsDataURL(file);
-    });
+
+      for (const file of files) {
+        const compressedFile = await imageCompression(file, options);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result;
+          setPreviews(prev => {
+            const newList = [...prev, base64];
+            update({ images: newList });
+            return newList;
+          });
+        };
+        reader.readAsDataURL(compressedFile);
+      }
+    } catch (error) {
+      console.error("Compression failed", error);
+    } finally {
+      setIsCompressing(false);
+    }
   };
 
   const removeImage = (idx) => {
     const newList = previews.filter((_, i) => i !== idx);
     setPreviews(newList);
     update({ images: newList });
+  };
+
+  const handleCropComplete = (croppedBase64) => {
+    setPreviews(prev => {
+      const newList = [...prev];
+      newList[croppingIndex] = croppedBase64;
+      update({ images: newList });
+      return newList;
+    });
+    setCroppingIndex(null);
   };
 
   return (
@@ -42,14 +70,25 @@ export default function Step3Media({ data, update, onNext, onBack }) {
       <div className="space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {previews.map((src, idx) => (
-            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden group border-2 border-gray-100">
-              <img src={getFullImageUrl(src)} alt="Preview" className="w-full h-full object-cover" />
-              <button 
-                onClick={() => removeImage(idx)}
-                className="absolute top-1 right-1 text-red-500 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <IoCloseCircle size={24} />
-              </button>
+            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden group border-2 border-gray-100 bg-gray-50">
+              <img src={getFullImageUrl(src)} alt="Preview" className="w-full h-full object-contain" />
+              
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                <button 
+                  onClick={() => setCroppingIndex(idx)}
+                  className="p-2 bg-white text-blue-600 rounded-full shadow-lg transform hover:scale-110 transition-transform flex items-center justify-center"
+                  title="Crop Image"
+                >
+                  <IoCropOutline size={20} />
+                </button>
+                <button 
+                  onClick={() => removeImage(idx)}
+                  className="p-2 bg-white text-red-500 rounded-full shadow-lg transform hover:scale-110 transition-transform flex items-center justify-center"
+                  title="Remove Image"
+                >
+                  <IoCloseCircle size={20} />
+                </button>
+              </div>
             </div>
           ))}
           
@@ -61,6 +100,14 @@ export default function Step3Media({ data, update, onNext, onBack }) {
             </label>
           )}
         </div>
+
+        {croppingIndex !== null && (
+          <ImageCropModal 
+            imageSrc={previews[croppingIndex]}
+            onCropComplete={handleCropComplete}
+            onCancel={() => setCroppingIndex(null)}
+          />
+        )}
 
         <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
           <p className="text-sm text-blue-700 leading-relaxed">

@@ -13,7 +13,14 @@ import api from "../utils/api";
 function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { loading, error } = useSelector((state) => state.user); // Access loading and error from the Redux store
+  const { loading, error } = useSelector((state) => state.user);
+  
+  const [showOtp, setShowOtp] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError, setOtpError] = useState("");
+
   const {
     register,
     handleSubmit,

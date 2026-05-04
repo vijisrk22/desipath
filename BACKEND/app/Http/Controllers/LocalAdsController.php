@@ -19,7 +19,10 @@ class LocalAdsController extends Controller
     {
         $query = LocalAd::with('businessAccount')
             ->where('status', 'approved')
-            ->where('expires_at', '>', Carbon::now());
+            ->where(function($q) {
+                $q->where('expires_at', '>', Carbon::now())
+                  ->orWhereNull('expires_at');
+            });
 
         if ($request->has('category') && $request->category !== 'All' && !empty($request->category)) {
             $query->where('category', $request->category);
@@ -68,11 +71,23 @@ class LocalAdsController extends Controller
      */
     public function store(Request $request)
     {
-        $businessAccount = BusinessAccount::where('owner_user_id', Auth::id())->first();
-        
-        if (!$businessAccount) {
-            return response()->json(['message' => 'Business account not active or found'], 403);
-        }
+        $businessAccount = BusinessAccount::updateOrCreate(
+            ['owner_user_id' => Auth::id()],
+            [
+                'business_name' => $request->business_name ?? 'My Business',
+                'category' => $request->business_category ?? 'Other',
+                'owner_name' => $request->owner_name ?? 'Owner',
+                'email' => $request->business_email ?? Auth::user()->email,
+                'address_line1' => $request->business_address,
+                'city' => $request->business_city ?? 'City',
+                'state_province' => $request->business_state ?? 'State',
+                'zipcode' => $request->business_zipcode,
+                'country' => $request->business_country ?? 'USA',
+                'contact_person_name' => $request->contact_person_name,
+                'contact_person_email' => $request->contact_person_email,
+                'contact_person_phone' => $request->contact_person_phone,
+            ]
+        );
 
         // Check active ad limit (3)
         $activeCount = LocalAd::where('business_account_id', $businessAccount->id)
@@ -117,17 +132,6 @@ class LocalAdsController extends Controller
         
         $data['business_account_id'] = $businessAccount->id;
         $data['status'] = 'pending';
-
-        // Update business account info if provided in Step 1
-        if ($request->has('business_address')) {
-            $businessAccount->update([
-                'address_line1' => $request->business_address,
-                'zipcode' => $request->zipcode,
-                'contact_person_name' => $request->contact_person_name,
-                'contact_person_email' => $request->contact_person_email,
-                'contact_person_phone' => $request->contact_person_phone,
-            ]);
-        }
 
         // Handle Image Uploads
         $posterUrls = [];

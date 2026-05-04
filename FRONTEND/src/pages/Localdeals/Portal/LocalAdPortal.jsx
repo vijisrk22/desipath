@@ -108,12 +108,21 @@ export default function LocalAdPortal() {
         location_state: formData.state,
         zipcode: formData.zipcode,
         country: formData.country,
-        website_url: '', // optional
+        website_url: formData.website_url || null, // optional
         tags: formData.tags,
         images: formData.images,
         
         // Business Profile updates
+        business_name: formData.businessName,
         business_address: formData.address,
+        business_city: formData.city,
+        business_state: formData.state,
+        business_zipcode: formData.zipcode,
+        business_country: formData.country,
+        business_email: formData.ownerEmail, // Use owner email as biz email by default
+        business_category: formData.category, // Use ad category as biz category by default
+        owner_name: formData.ownerName,
+        
         contact_person_name: formData.ownerName,
         contact_person_email: formData.ownerEmail,
         contact_person_phone: formData.ownerPhone,
@@ -135,7 +144,8 @@ export default function LocalAdPortal() {
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to submit ad. Please check all fields.');
+      const serverMessage = err.response?.data?.message || err.response?.data?.errors ? Object.values(err.response.data.errors).flat().join('\n') : null;
+      alert(serverMessage || 'Failed to submit ad. Please check all fields.');
     } finally {
       setIsSaving(false);
     }

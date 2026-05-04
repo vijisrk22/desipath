@@ -23,6 +23,8 @@ const AdCard = ({ ad, onOpenInfo }) => {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: posterUrls.length > 1,
+    adaptiveHeight: true,
+    swipeToSlide: true,
     beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex),
     appendDots: dots => (
       <div style={{ bottom: "12px" }}>
@@ -68,11 +70,11 @@ const AdCard = ({ ad, onOpenInfo }) => {
         ) : posterUrls.length > 1 ? (
           <Slider {...sliderSettings} className="local-ads-slider">
             {posterUrls.map((img, idx) => (
-              <div key={idx} className="w-full focus:outline-none bg-gray-50">
+              <div key={idx} className="w-full focus:outline-none bg-gray-50 overflow-hidden">
                 <img 
                   src={getFullImageUrl(img)} 
                   alt={`${ad.title} ${idx + 1}`} 
-                  className="w-full h-auto block"
+                  className="w-full h-auto block max-w-full"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.category)}&background=f3f4f6&color=3b82f6&size=512&bold=true`;
@@ -606,6 +608,10 @@ export default function Localdeals() {
         .local-ads-slider .slick-next { right: 15px; }
         .local-ads-slider .slick-dots li button:before { display: none; }
         .local-ads-slider .slick-dots li { margin: 0; width: 12px; height: 12px; }
+        .local-ads-slider .slick-list { margin: 0 !important; padding: 0 !important; }
+        .local-ads-slider .slick-slide > div { display: block; }
+        .local-ads-slider .slick-track { display: flex !important; }
+        .local-ads-slider { width: 100% !important; max-width: 100vw !important; }
       `}} />
     </div>
   );
