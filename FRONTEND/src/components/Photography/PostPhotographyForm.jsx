@@ -26,7 +26,10 @@ function PostPhotographyForm() {
     service_type: "Photographer",
     experience_years: "",
     languages: "English",
+    album_url: "",
     video_url: "",
+    video_url_2: "",
+    video_url_3: "",
     open_to_travel: false,
     travel_policy: "Travel Expenses to be paid",
     services: {}, // { "Photography Services": ["Wedding Photography"], ... }
@@ -72,7 +75,10 @@ function PostPhotographyForm() {
               experience_years: d.experience_years,
               languages: d.languages,
               services: d.services || {},
+              album_url: d.album_url || "",
               video_url: d.video_url || "",
+              video_url_2: d.video_url_2 || "",
+              video_url_3: d.video_url_3 || "",
               open_to_travel: !!d.open_to_travel,
               travel_policy: d.travel_policy || "Travel Expenses to be paid",
               packages: d.packages?.length > 0 ? d.packages : [{ name: "", price: "", description: "" }],
@@ -145,7 +151,10 @@ function PostPhotographyForm() {
     data.append("service_type", formData.service_type);
     data.append("experience_years", formData.experience_years);
     data.append("languages", formData.languages);
+    data.append("album_url", formData.album_url);
     data.append("video_url", formData.video_url);
+    data.append("video_url_2", formData.video_url_2);
+    data.append("video_url_3", formData.video_url_3);
     data.append("open_to_travel", formData.open_to_travel);
     data.append("travel_policy", formData.travel_policy);
     
@@ -344,13 +353,40 @@ function PostPhotographyForm() {
                 />
              </div>
           </div>
-          <div className="mt-5">
+          <div className="mt-5 space-y-4">
             <TextField
-              label="Video Showreel URL (YouTube/Vimeo)"
+              label="Photography Album Website URL"
+              name="album_url"
+              fullWidth
+              size="small"
+              value={formData.album_url}
+              onChange={handleInputChange}
+              placeholder="https://your-portfolio.com or https://flickr.com/..."
+            />
+            <TextField
+              label="Video Showreel URL 1 (YouTube/Vimeo)"
               name="video_url"
               fullWidth
               size="small"
               value={formData.video_url}
+              onChange={handleInputChange}
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+            <TextField
+              label="Video Showreel URL 2 (YouTube/Vimeo)"
+              name="video_url_2"
+              fullWidth
+              size="small"
+              value={formData.video_url_2}
+              onChange={handleInputChange}
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+            <TextField
+              label="Video Showreel URL 3 (YouTube/Vimeo)"
+              name="video_url_3"
+              fullWidth
+              size="small"
+              value={formData.video_url_3}
               onChange={handleInputChange}
               placeholder="https://www.youtube.com/watch?v=..."
             />

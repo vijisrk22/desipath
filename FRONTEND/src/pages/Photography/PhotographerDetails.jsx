@@ -61,7 +61,11 @@ export default function PhotographerDetails() {
     return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
   };
 
-  const embedUrl = getEmbedUrl(photographer.video_url);
+  const embedUrls = [
+    getEmbedUrl(photographer.video_url),
+    getEmbedUrl(photographer.video_url_2),
+    getEmbedUrl(photographer.video_url_3)
+  ].filter(Boolean);
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -203,19 +207,23 @@ export default function PhotographerDetails() {
            {tab === 3 && (
              <div className="animate-fade-in">
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">Video Showreel</h2>
-                {embedUrl ? (
-                  <div className="relative pt-[56.25%] rounded-[32px] overflow-hidden shadow-2xl border-4 border-gray-100">
-                    <iframe 
-                      src={embedUrl}
-                      className="absolute inset-0 w-full h-full"
-                      allowFullScreen
-                      title="Showreel"
-                    />
+                {embedUrls.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {embedUrls.map((url, idx) => (
+                      <div key={idx} className={`relative pt-[56.25%] rounded-[32px] overflow-hidden shadow-xl border-4 border-gray-100 ${idx === 0 && embedUrls.length % 2 !== 0 ? 'md:col-span-2' : ''}`}>
+                        <iframe 
+                          src={url}
+                          className="absolute inset-0 w-full h-full"
+                          allowFullScreen
+                          title={`Showreel ${idx + 1}`}
+                        />
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="py-20 text-center bg-gray-50 rounded-[32px] border-2 border-dashed border-gray-200">
                     <span className="text-6xl mb-4 block">🎬</span>
-                    <p className="text-gray-400 font-bold">No video showreel available for this profile.</p>
+                    <p className="text-gray-400 font-bold">No video showreels available for this profile.</p>
                   </div>
                 )}
              </div>
@@ -228,6 +236,16 @@ export default function PhotographerDetails() {
               <h3 className="text-xl font-bold mb-6 text-gray-900">Contact {photographer.user?.name?.split(' ')[0]}</h3>
               
               <div className="space-y-4">
+                {photographer.album_url && (
+                  <a 
+                    href={photographer.album_url.startsWith('http') ? photographer.album_url : `https://${photographer.album_url}`}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-3 bg-blue-50 text-blue-700 text-sm font-bold rounded-[57px] border-2 border-blue-100 hover:bg-blue-100 hover:border-blue-200 transition-all mb-4"
+                  >
+                    <span>📸</span> View Full Portfolio
+                  </a>
+                )}
                 <Button 
                   fullWidth 
                   variant="contained" 

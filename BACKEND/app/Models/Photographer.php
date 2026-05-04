@@ -20,8 +20,11 @@ class Photographer extends Model
         'profile_photo',
         'backdrop_photo',
         'video_url',
+        'video_url_2',
+        'video_url_3',
         'open_to_travel',
         'travel_policy',
+        'album_url',
         'status'
     ];
 
