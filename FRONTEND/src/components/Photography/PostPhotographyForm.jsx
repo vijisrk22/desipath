@@ -195,7 +195,7 @@ function PostPhotographyForm() {
   if (fetching) return <div className="flex items-center justify-center py-20"><CircularProgress /></div>;
 
   return (
-    <div className="px-6 py-4 md:py-6 w-[90%] relative rounded-tr-2xl rounded-b-2xl bg-white flex flex-col gap-y-4 shadow-sm mx-auto mb-10">
+    <div className="px-6 py-4 md:py-6 w-[90%] relative rounded-tr-2xl rounded-b-2xl bg-white flex flex-col gap-y-4 shadow-sm mb-10">
       <form onSubmit={handleSubmit} className="max-w-3xl mx-auto w-full space-y-8 py-6">
         {/* Basic Info */}
         <section>
