@@ -1,4 +1,5 @@
 import React from "react";
+import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import ServiceTopBar from "../../components/ServiceTopBar";
 
@@ -11,6 +12,7 @@ export default function PhotographyPortal() {
 
   return (
     <div className="bg-[#f3f5f7] min-h-screen">
+      <Navbar />
       <div className="mb-20 h-auto">
         <ServiceTopBar
           title="Photography & Videography"
