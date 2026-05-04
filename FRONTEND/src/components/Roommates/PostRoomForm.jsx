@@ -149,8 +149,8 @@ function PostRoomForm() {
           dateFieldName2="available_to"
         />
 
-        <div className="flex gap-4 items-end">
-          <div className="flex-1">
+        <div className="flex flex-col md:flex-row gap-4 md:items-end">
+          <div className="flex-1 w-full">
             <TextFieldInput
               name="rent"
               defaultValue="1500"
@@ -158,7 +158,7 @@ function PostRoomForm() {
               text="Expected Rent"
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 w-full">
             <ThreeRadioInput
               text="Payment Frequency"
               name="rent_frequency"
