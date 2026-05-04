@@ -51,12 +51,24 @@ const AdCard = ({ ad, onOpenInfo }) => {
         </div>
       </div>
 
-      {/* Carousel */}
-      <div className="relative group">
-        <Slider {...sliderSettings} className="local-ads-slider">
-          {posterUrls.length > 0 ? (
-            posterUrls.map((img, idx) => (
-              <div key={idx} className="w-full focus:outline-none">
+      {/* Carousel or Single Image */}
+      <div className="relative group w-full overflow-hidden">
+        {posterUrls.length === 1 ? (
+          <div className="w-full focus:outline-none bg-gray-50">
+            <img 
+              src={getFullImageUrl(posterUrls[0])} 
+              alt={ad.title} 
+              className="w-full h-auto block"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.category)}&background=f3f4f6&color=3b82f6&size=512&bold=true`;
+              }}
+            />
+          </div>
+        ) : posterUrls.length > 1 ? (
+          <Slider {...sliderSettings} className="local-ads-slider">
+            {posterUrls.map((img, idx) => (
+              <div key={idx} className="w-full focus:outline-none bg-gray-50">
                 <img 
                   src={getFullImageUrl(img)} 
                   alt={`${ad.title} ${idx + 1}`} 
@@ -64,18 +76,17 @@ const AdCard = ({ ad, onOpenInfo }) => {
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.category)}&background=f3f4f6&color=3b82f6&size=512&bold=true`;
-                    // Alternatively, we can show a nice "Image Not Available" text overlay
                   }}
                 />
               </div>
-            ))
-          ) : (
-            <div className="aspect-[4/5] bg-gray-100 flex flex-col items-center justify-center p-8 text-center">
-               <IoInformationCircleOutline size={48} className="text-gray-300 mb-2" />
-               <p className="text-gray-400 text-sm font-medium">Visual flyer coming soon</p>
-            </div>
-          )}
-        </Slider>
+            ))}
+          </Slider>
+        ) : (
+          <div className="aspect-[4/5] bg-gray-100 flex flex-col items-center justify-center p-8 text-center">
+             <IoInformationCircleOutline size={48} className="text-gray-300 mb-2" />
+             <p className="text-gray-400 text-sm font-medium">Visual flyer coming soon</p>
+          </div>
+        )}
       </div>
 
       {/* Action Row & Title */}
