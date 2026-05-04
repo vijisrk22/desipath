@@ -302,4 +302,24 @@ class LocalAdsController extends Controller
 
         return response()->json(['message' => 'Ad status updated to ' . $request->status, 'data' => $ad]);
     }
+
+    /**
+     * Admin: Update ad expiry date
+     */
+    public function updateExpiry(Request $request, $id)
+    {
+        if (!in_array(Auth::user()->role, ['admin', 'super_admin'])) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'expires_at' => 'required|date'
+        ]);
+
+        $ad = LocalAd::findOrFail($id);
+        $ad->expires_at = $request->expires_at;
+        $ad->save();
+
+        return response()->json(['message' => 'Ad expiry updated successfully', 'data' => $ad]);
+    }
 }

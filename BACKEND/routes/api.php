@@ -419,6 +419,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Actions
     Route::get('/admin/local-ads', [LocalAdsController::class, 'adminIndex']);
     Route::patch('/admin/local-ads/{id}/status', [LocalAdsController::class, 'updateStatus']);
+    Route::patch('/admin/local-ads/{id}/expiry', [LocalAdsController::class, 'updateExpiry']);
 
     // Admin User Management
     Route::get('/admin/users', [AdminManagementController::class, 'index']);

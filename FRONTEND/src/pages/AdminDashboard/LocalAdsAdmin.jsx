@@ -12,6 +12,8 @@ export default function LocalAdsAdmin() {
     const [totalPages, setTotalPages] = useState(1);
     const [selectedAd, setSelectedAd] = useState(null);
     const [rejectionReason, setRejectionReason] = useState('');
+    const [expiryAd, setExpiryAd] = useState(null);
+    const [expiryDate, setExpiryDate] = useState('');
 
     useEffect(() => {
         fetchAds();
@@ -65,6 +67,19 @@ export default function LocalAdsAdmin() {
         } catch (err) {
             console.error('Error updating status:', err.response?.data || err.message);
             showToast(err.response?.data?.message || 'Error updating status.', 'error');
+        }
+    };
+
+    const handleExpiryUpdate = async (adId) => {
+        try {
+            await api.patch(`/api/admin/local-ads/${adId}/expiry`, {
+                expires_at: expiryDate
+            });
+            showToast('Expiry date updated successfully!');
+            setExpiryAd(null);
+            fetchAds();
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Error updating expiry.', 'error');
         }
     };
 
@@ -135,7 +150,21 @@ export default function LocalAdsAdmin() {
                                         <p className="text-blue-600 font-bold text-sm">By {ad.business_account?.business_name}</p>
                                     </div>
                                     <div className="text-right text-xs text-gray-400">
-                                        Submitted: {new Date(ad.created_at).toLocaleDateString()}
+                                        <div>Submitted: {new Date(ad.created_at).toLocaleDateString()}</div>
+                                        {ad.status === 'approved' && ad.expires_at && (
+                                            <div className="text-blue-500 font-bold mt-1">
+                                                Expires: {new Date(ad.expires_at).toLocaleDateString()}
+                                                <button 
+                                                    onClick={() => {
+                                                        setExpiryAd(ad);
+                                                        setExpiryDate(ad.expires_at.split('T')[0]);
+                                                    }}
+                                                    className="ml-2 text-[10px] underline hover:text-blue-700"
+                                                >
+                                                    Change
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -232,6 +261,38 @@ export default function LocalAdsAdmin() {
                             </button>
                             <button 
                                 onClick={() => { setSelectedAd(null); setRejectionReason(''); }}
+                                className="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-all"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Expiry Modal */}
+            {expiryAd && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Update Expiry Date</h2>
+                        <p className="text-gray-500 mb-6 font-medium">Select a new expiration date for this advertisement.</p>
+                        
+                        <input
+                            type="date"
+                            value={expiryDate}
+                            onChange={(e) => setExpiryDate(e.target.value)}
+                            className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:outline-none mb-6 font-bold text-lg"
+                        />
+
+                        <div className="flex gap-3">
+                            <button 
+                                onClick={() => handleExpiryUpdate(expiryAd.id)}
+                                className="flex-grow py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
+                            >
+                                Save Changes
+                            </button>
+                            <button 
+                                onClick={() => setExpiryAd(null)}
                                 className="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-all"
                             >
                                 Cancel
