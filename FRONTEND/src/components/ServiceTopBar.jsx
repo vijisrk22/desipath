@@ -4,6 +4,7 @@ import PostHouseForm from "./BuySellHouse/PostHouseForm";
 import PostRentalHomeForm from "./RentalHome/PostRentalHomeForm";
 import PostCarForm from "./BuySellCar/PostCarForm";
 import PostEventForm from "./Events/PostEventForm";
+import PostPhotographyForm from "./Photography/PostPhotographyForm";
 
 import SearchFieldInput from "./SearchFieldInput";
 
@@ -11,6 +12,7 @@ function ServiceTopBar({ inputs = [], title, paths, form, plainBg = false }) {
   const getBgImage = () => {
     if (title === "Buy a Car") return "url('/img/cars/backgroundCarImg.png')";
     if (title === "Rent a Home" || title === "Buy a home") return "url('/img/rentalHomes/rentalBanner.png')";
+    if (title === "Photography & Videography") return "url('/img/photography/photographyBanner.png')";
     return "url('/img/roommates/roommates-bg.png')";
   };
 
@@ -94,6 +96,8 @@ function ServiceTopBar({ inputs = [], title, paths, form, plainBg = false }) {
           <PostCarForm />
         ) : form === "event" ? (
           <PostEventForm />
+        ) : form === "photography" ? (
+          <PostPhotographyForm />
         ) : null}
       </div>
     </div>
