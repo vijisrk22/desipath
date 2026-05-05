@@ -1,40 +1,23 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { getFullImageUrl } from "../../utils/imageHelper";
-import { getStateCode } from "../../utils/locationHelper";
 
-import LazyImage from "../LazyImage";
+import api from "../../utils/api";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function RentalHomeCard({ rentalHome }) {
   const [isFavorited, setIsFavorited] = useState(false);
 
-  const mainImage = rentalHome?.images && rentalHome.images.length > 0
-    ? getFullImageUrl(rentalHome.images[0])
-    : "/rentalHomeHero.png";
-
   return (
     <Card
-      sx={{ 
-        width: "100%", 
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 4,
-        transition: "transform 0.2s, box-shadow 0.2s",
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: "0 12px 24px rgba(0,0,0,0.12)"
-        }
-      }}
-      className="relative shadow-sm border border-gray-100"
+      sx={{ minHeight: 375, maxWidth: 345, borderRadius: 5 }}
+      className="relative"
     >
       <button
         onClick={() => setIsFavorited(!isFavorited)}
-        className="absolute top-3 right-4  flex items-center justify-center bg-white/40 p-2 rounded-full shadow-md z-20"
+        className="absolute top-3 right-4  flex items-center justify-center bg-white/40 p-2 rounded-full shadow-md"
       >
         {isFavorited ? (
           <FavoriteIcon
@@ -49,60 +32,74 @@ export default function RentalHomeCard({ rentalHome }) {
         )}
       </button>
 
-      <Link 
-        to={`/services/rentalhomes/${rentalHome.id}`}
-        className="flex flex-col h-full"
-      >
-        <div className="relative h-[220px] overflow-hidden">
-          <LazyImage
-            src={mainImage}
-            alt={rentalHome?.address || "rental home"}
-            className="w-full h-full object-cover"
-          />
-        </div>
+      <CardMedia
+        component="img"
+        image={
+          rentalHome?.images && rentalHome.images.length > 0
+            ? `${api.defaults.baseURL}/${rentalHome.images[0]}`
+            : "https://via.placeholder.com/167"
+        }
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.currentTarget.src = "https://via.placeholder.com/167";
+        }}
+        title="rental home"
+        sx={{
+          p: 1,
+          height: 270,
+          objectFit: "cover", // optional, looks better
+          borderRadius: 5, // optional, if you want rounded corners
+        }}
+      />
 
-        <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
-          <div className="flex justify-between items-baseline mb-3 gap-2 overflow-hidden">
-            <div className="flex items-baseline gap-1 flex-shrink-0">
-              <span className="text-[#007185] text-2xl md:text-3xl font-bold font-dmsans whitespace-nowrap">
-                {rentalHome.deposit_rent 
-                  ? `$${Number(rentalHome.deposit_rent).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` 
-                  : "N/A"}
-              </span>
-              <span className="text-gray-400 text-xs md:text-sm font-medium whitespace-nowrap">/month</span>
+      <Link to={`/services/rentalHomes/${rentalHome.id}`}>
+        <CardContent>
+          <div className=" mx-3">
+            {/* Rent Amount */}
+            <div className="flex justify-start items-center">
+              <div className=" text-blue-700 text-2xl font-extrabold font-dmsans">
+                ${rentalHome.deposit_rent}
+              </div>
+              <div className=" opacity-50 justify-center text-gray-800 text-base font-medium font-dmsans">
+                /month
+              </div>
             </div>
-            <div className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-wider truncate">
-              {rentalHome?.property_type || "Rental"}
-            </div>
-          </div>
+            {/* Rental Home Details */}
+            <div className="flex my-3.5 justify-between">
+              <div className="flex items-center justify-center gap-2 mr-1">
+                <img src="/img/rentalHomes/bedIcon.svg" />
+                <span className="opacity-70 text-gray-800 text-sm font-medium font-dmsans">
+                  {rentalHome?.bhk?.split(" ")[0]} Beds{" "}
+                </span>
+              </div>
 
-          <div className="flex items-center gap-4 mb-4 text-gray-600 border-y border-gray-50 py-3">
-            <div className="flex items-center gap-1.5 flex-1">
-              <img src="/img/rentalHomes/bedIcon.svg" className="w-4 h-4 opacity-70" />
-              <span className="text-xs font-semibold">{rentalHome?.bhk?.split(" ")[0]} Bed</span>
-            </div>
-            <div className="flex items-center gap-1.5 flex-1 border-x border-gray-50 px-2 justify-center">
-              <img src="/img/rentalHomes/bathIcon.svg" className="w-4 h-4 opacity-70" />
-              <span className="text-xs font-semibold">{rentalHome?.bhk?.split(" ")[2]} Bath</span>
-            </div>
-            <div className="flex items-center gap-1.5 flex-1 justify-end">
-              <img src="/img/rentalHomes/squareMetersIcon.svg" className="w-4 h-4 opacity-70" />
-              <span className="text-xs font-semibold">{Math.floor(rentalHome?.area || 0)} sqft</span>
-            </div>
-          </div>
+              <div className="flex items-center justify-center gap-2 mr-1">
+                <img src="/img/rentalHomes/bathIcon.svg" />
+                <span className="opacity-70 text-gray-800 text-sm font-medium font-dmsans">
+                  {rentalHome?.bhk?.split(" ")[2]} Bathrooms
+                </span>
+              </div>
 
-          <div className="flex items-start gap-2">
-             <img src="/location.svg" className="w-4 h-4 mt-1 opacity-60" />
-             <div className="text-gray-500 text-sm font-medium leading-normal line-clamp-2">
-               {(() => {
-                  const addr = rentalHome?.address || "";
-                  const city = rentalHome?.location_city || "";
-                  const state = getStateCode(rentalHome?.location_state || "");
-                  const zip = rentalHome?.location_zipcode || "";
-                  const truncatedZip = zip.substring(0, 5);
-                  return `${addr}${city ? `, ${city}` : ""}${state ? `, ${state}` : ""}${truncatedZip ? ` ${truncatedZip}` : ""}` || "Location not available";
-               })()}
-             </div>
+              <div className="flex items-center justify-center gap-2 mr-1">
+                <img src="/img/rentalHomes/squareMetersIcon.svg" />
+                <span className="opacity-70 text-gray-800 text-sm font-medium font-dmsans">
+                  {Math.floor(rentalHome?.area)} m<sup>2</sup>
+                </span>
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="mb-3.5 opacity-50 text-gray-800 text-base font-medium font-dmsans truncate">
+              {rentalHome?.address}
+            </div>
+
+            {/* Horizontal Line */}
+            <div className=" mb-8 h-0 outline outline-[1.50px]  outline-indigo-50" />
+
+            {/*City */}
+            <div className=" text-gray-800 text-2xl font-bold font-dmsans">
+              {rentalHome?.property_type}
+            </div>
           </div>
         </CardContent>
       </Link>
