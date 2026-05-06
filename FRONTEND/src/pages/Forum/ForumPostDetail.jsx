@@ -411,7 +411,7 @@ export default function ForumPostDetail() {
         </DialogActions>
       </Dialog>
 
-      <Footer newsletter={"hidden"} />
+      <Footer newsletter={"hidden"} hideOnMobile />
     </div>
   );
 }

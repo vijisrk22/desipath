@@ -96,7 +96,7 @@ export default function PhotographySearch() {
       <Navbar />
 
       {/* Hero Search Section */}
-      <div className="bg-[#007185] py-6 px-[7%] text-white">
+      <div className="bg-gradient-to-br from-[#6366f1] via-[#a855f7] to-[#d946ef] py-6 px-[7%] text-white shadow-lg">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-black mb-1 font-dmsans">Find Professional Photographers</h1>
           <p className="text-blue-100 mb-4 font-medium">Capture your best moments with top-rated photographers and videographers.</p>
@@ -162,7 +162,7 @@ export default function PhotographySearch() {
                   min={1}
                   max={500}
                   size="small"
-                  sx={{ color: '#007185' }}
+                  sx={{ color: '#a855f7' }}
                 />
               </div>
             </div>
@@ -189,7 +189,7 @@ export default function PhotographySearch() {
                   fontWeight: 'bold',
                   '&.Mui-selected': {
                     backgroundColor: 'white',
-                    color: '#007185',
+                    color: '#a855f7',
                     '&:hover': { backgroundColor: 'white' }
                   }
                 }
@@ -207,7 +207,7 @@ export default function PhotographySearch() {
       <div className="flex-grow max-w-7xl mx-auto w-full px-[7%] py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <CircularProgress size={60} sx={{ color: '#007185' }} />
+            <CircularProgress size={60} sx={{ color: '#a855f7' }} />
             <p className="mt-4 text-gray-500 font-bold animate-pulse">Finding the best lenses for you...</p>
           </div>
         ) : results.length > 0 ? (

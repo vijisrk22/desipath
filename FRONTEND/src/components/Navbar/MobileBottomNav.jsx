@@ -109,11 +109,17 @@ export default function MobileBottomNav() {
     setProfileMenuOpen(false);
   }, [location.pathname]);
 
-  const activeHome   = isMatch(location.pathname, "/");
+  const isOnForum    = isMatch(location.pathname, "/forum");
+  const activeHome   = isMatch(location.pathname, "/") || isOnForum;
   const activeAds    = isMatch(location.pathname, "/services/Localdeals");
   const activeEvents = isMatch(location.pathname, "/services/events/findEvent");
   const activeChat   = isMatch(location.pathname, "/inbox");
   const activeUser   = isMatch(location.pathname, "/profile") || isMatch(location.pathname, "/postad");
+
+  const showForumBtn = isMatch(location.pathname, "/") || 
+                       activeAds || 
+                       activeEvents || 
+                       activeChat;
 
   return (
     <>
@@ -162,17 +168,20 @@ export default function MobileBottomNav() {
         </div>
       )}
 
-      {/* ── Floating Forum Button (Mobile Only) ──────────────────────────── */}
-      <Link
-        to="/forum"
-        className="fixed bottom-[90px] right-4 z-50 md:hidden bg-[#0857d0] text-white px-4 py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.2)] flex items-center gap-2 hover:bg-blue-700 transition-colors active:scale-95 border-2 border-white/20"
-        aria-label="Community Forum"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
-        </svg>
-        <span className="font-bold font-dmsans text-sm tracking-wide">Forum</span>
-      </Link>
+      {showForumBtn && !isOnForum && (
+        <div className="fixed left-0 top-[45%] z-50 md:hidden">
+          <Link
+            to="/forum"
+            className="flex flex-col items-center gap-2 py-4 px-2 bg-[#0857d0]/30 backdrop-blur-md text-black border-2 border-l-0 border-white/20 rounded-r-xl shadow-2xl transition-all hover:bg-[#0857d0]/50 active:scale-95"
+            aria-label="Community Forum"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+            </svg>
+            <span className="font-bold font-dmsans text-[8px] uppercase tracking-widest [writing-mode:vertical-lr] rotate-180">Forum</span>
+          </Link>
+        </div>
+      )}
 
       {/* ── Bottom Nav Bar ───────────────────────────────────────────────── */}
       <nav
@@ -181,7 +190,7 @@ export default function MobileBottomNav() {
       >
         {/* Safe-area spacer for notched phones */}
         <div
-          className="bg-[#ffa41c] border-t border-orange-400"
+          className="bg-[#ffa41c]/70 backdrop-blur-lg border-t border-orange-400"
           style={{ boxShadow: "0 -4px 24px rgba(0,0,0,0.15)" }}
         >
           <div className="flex items-end justify-around px-2 pt-1 pb-2"

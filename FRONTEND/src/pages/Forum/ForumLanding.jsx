@@ -45,6 +45,7 @@ export default function ForumLanding() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [isSubforumModalOpen, setIsSubforumModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({ title: '', content: '', category: 'General' });
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -161,6 +162,55 @@ export default function ForumLanding() {
                     <button type="submit" className="px-6 py-2 rounded-full bg-blue-600 text-white font-black text-xs hover:bg-blue-700 transition">Post</button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* Mobile Subforum Selector Button */}
+          <div className="lg:hidden">
+            <button 
+              onClick={() => setIsSubforumModalOpen(true)}
+              className="w-full bg-white border border-gray-300 rounded-md py-3 px-4 flex items-center justify-between shadow-sm active:scale-[0.98] transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">d/</div>
+                <span className="font-bold text-sm text-gray-700">
+                  {selectedCategory || "Browse all Subforums"}
+                </span>
+              </div>
+              <svg className={`w-5 h-5 text-gray-400 transition-transform ${isSubforumModalOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Subforum Popup Modal (Mobile Only) */}
+          {isSubforumModalOpen && (
+            <div className="fixed inset-0 z-[600] flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4">
+              <div className="bg-white rounded-t-3xl sm:rounded-xl w-full max-w-xl shadow-2xl overflow-hidden animate-slideUp">
+                <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                  <h3 className="font-bold text-gray-900">Explore Subforums</h3>
+                  <button onClick={() => setIsSubforumModalOpen(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">✕</button>
+                </div>
+                <div className="max-h-[70vh] overflow-y-auto p-4 space-y-2 no-scrollbar">
+                  <div 
+                    className={`flex items-center gap-3 p-3 rounded-xl transition ${selectedCategory === '' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-gray-50 text-gray-700'}`}
+                    onClick={() => { setSelectedCategory(''); setIsSubforumModalOpen(false); }}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-lg">🌐</div>
+                    <span className="font-bold text-sm">All Subforums</span>
+                  </div>
+                  {['H1B Visa discussion', 'Indian Cooking', 'Real estate in USA', 'New to USA', 'About Studies', 'School and Kids', 'Healthcare & Health Insurance', 'Job referrals', 'Women topics', 'Car DL and Insurance'].map((item, i) => (
+                    <div 
+                      key={i} 
+                      className={`flex items-center gap-3 p-3 rounded-xl transition ${selectedCategory === item ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-gray-50 text-gray-700'}`}
+                      onClick={() => { setSelectedCategory(item); setIsSubforumModalOpen(false); }}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-xs font-bold text-indigo-600">d/</div>
+                      <span className="font-bold text-sm">{item}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -314,7 +364,7 @@ export default function ForumLanding() {
 
       </main>
 
-      <Footer newsletter={"hidden"} />
+      <Footer newsletter={"hidden"} hideOnMobile />
     </div>
   );
 }
