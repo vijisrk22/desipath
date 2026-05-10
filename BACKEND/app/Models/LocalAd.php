@@ -18,6 +18,7 @@ class LocalAd extends Model
         'poster_urls',
         'location_city',
         'location_state',
+        'zipcode',
         'country',
         'website_url',
         'status',
@@ -28,6 +29,12 @@ class LocalAd extends Model
         'view_count',
         'popup_open_count',
         'message_click_count',
+        'display_phone',
+        'display_email',
+        'is_contact_person_different',
+        'ad_contact_name',
+        'ad_contact_email',
+        'ad_contact_phone',
     ];
 
     protected $casts = [

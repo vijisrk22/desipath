@@ -6,6 +6,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import api from "../../utils/api";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import LazyImage from "../LazyImage";
 
 export default function RentalHomeCard({ rentalHome }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -32,23 +33,17 @@ export default function RentalHomeCard({ rentalHome }) {
         )}
       </button>
 
-      <CardMedia
-        component="img"
-        image={
+      <LazyImage
+        src={
           rentalHome?.images && rentalHome.images.length > 0
             ? `${api.defaults.baseURL}/${rentalHome.images[0]}`
             : "https://via.placeholder.com/167"
         }
+        alt={rentalHome?.property_type || "rental home"}
+        className="w-full h-[270px] object-cover p-2 rounded-[40px]"
         onError={(e) => {
           e.currentTarget.onerror = null;
           e.currentTarget.src = "https://via.placeholder.com/167";
-        }}
-        title="rental home"
-        sx={{
-          p: 1,
-          height: 270,
-          objectFit: "cover", // optional, looks better
-          borderRadius: 5, // optional, if you want rounded corners
         }}
       />
 
@@ -67,21 +62,21 @@ export default function RentalHomeCard({ rentalHome }) {
             {/* Rental Home Details */}
             <div className="flex my-3.5 justify-between">
               <div className="flex items-center justify-center gap-2 mr-1">
-                <img src="/img/rentalHomes/bedIcon.svg" />
+                <img src="/img/rentalHomes/bedIcon.svg" alt="Bedrooms" />
                 <span className="opacity-70 text-gray-800 text-sm font-medium font-dmsans">
                   {rentalHome?.bhk?.split(" ")[0]} Beds{" "}
                 </span>
               </div>
 
               <div className="flex items-center justify-center gap-2 mr-1">
-                <img src="/img/rentalHomes/bathIcon.svg" />
+                <img src="/img/rentalHomes/bathIcon.svg" alt="Bathrooms" />
                 <span className="opacity-70 text-gray-800 text-sm font-medium font-dmsans">
                   {rentalHome?.bhk?.split(" ")[2]} Bathrooms
                 </span>
               </div>
 
               <div className="flex items-center justify-center gap-2 mr-1">
-                <img src="/img/rentalHomes/squareMetersIcon.svg" />
+                <img src="/img/rentalHomes/squareMetersIcon.svg" alt="Area" />
                 <span className="opacity-70 text-gray-800 text-sm font-medium font-dmsans">
                   {Math.floor(rentalHome?.area)} m<sup>2</sup>
                 </span>

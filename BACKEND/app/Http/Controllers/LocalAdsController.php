@@ -125,7 +125,7 @@ class LocalAdsController extends Controller
         }
 
         $data = $request->only([
-            'title', 'description', 'category', 'location_city', 'location_state', 
+            'title', 'description', 'category', 'location_city', 'location_state', 'zipcode',
             'country', 'website_url', 'tags', 'display_phone', 'display_email',
             'is_contact_person_different', 'ad_contact_name', 'ad_contact_email', 'ad_contact_phone'
         ]);
@@ -174,7 +174,10 @@ class LocalAdsController extends Controller
         }
 
         // Live ads cannot be edited directly; must be set to draft/pending
-        $data = $request->only(['title', 'description', 'category', 'location_city', 'location_state', 'country', 'website_url', 'tags']);
+        $data = $request->only([
+            'title', 'description', 'category', 'location_city', 'location_state', 'zipcode', 'country', 'website_url', 'tags',
+            'display_phone', 'display_email', 'is_contact_person_different', 'ad_contact_name', 'ad_contact_email', 'ad_contact_phone'
+        ]);
         
         if ($request->has('images')) {
             $posterUrls = [];

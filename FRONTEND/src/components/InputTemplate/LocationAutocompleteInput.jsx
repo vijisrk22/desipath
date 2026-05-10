@@ -10,10 +10,11 @@ function LocationAutocompleteInput({
   control,
   setValue,
   defaultLocation,
-  type = "",
+  type = "", // "search", "pill", or default
   text = "Location",
   onSelect,
   placeholder,
+  className = "",
 }) {
   const wrapperRef = useRef();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -25,10 +26,13 @@ function LocationAutocompleteInput({
   // Sync selectedLocation when the field is pre-filled from outside (localStorage / Redux)
   // so the dropdown doesn't falsely open on page load
   useEffect(() => {
-    if (input && input === localStorage.getItem("user_location")) {
+    if (defaultLocation && !input) {
+      setValue("location", defaultLocation);
+      setSelectedLocation(defaultLocation);
+    } else if (input && (input === localStorage.getItem("user_location") || input === defaultLocation)) {
       setSelectedLocation(input);
     }
-  }, [input]);
+  }, [input, defaultLocation]);
 
   // Debounce the input to avoid api calls on every keystroke
   useEffect(() => {
@@ -131,8 +135,8 @@ function LocationAutocompleteInput({
   return (
     <div ref={wrapperRef} style={{ position: "relative" }}>
       {type === "search" ? (
-        // Custom UI for 'search' input
-        <div className="px-4 py-1 sm:py-1.5 rounded-[30px] bg-white text-md md:text-sm lg:text-base border-[1.5px] border-[#ccc] focus-within:border-[#ffa41c] transition-all shadow-sm flex w-full items-center">
+        // Custom UI for 'search' input (now matching standard site inputs)
+        <div className={`px-3 py-1.5 rounded-lg bg-white text-xs border border-gray-200 focus-within:border-blue-500 transition-all shadow-sm flex w-full items-center ${className}`}>
           <Controller
             name="location"
             control={control}
@@ -142,7 +146,7 @@ function LocationAutocompleteInput({
                 value={field.value || ""}
                 autoComplete="off"
                 placeholder={placeholder || "City, State, Zip"}
-                className="outline-none px-1 py-1  flex-1 min-w-0 rounded-lg"
+                className="outline-none px-1 flex-1 min-w-0 bg-transparent text-sm font-bold text-gray-700"
                 onFocus={() => {
                   if (field.value && field.value.length >= 2) {
                     setIsDropdownOpen(true);
@@ -152,9 +156,10 @@ function LocationAutocompleteInput({
             )}
           />
           <MdMyLocation
-            className="cursor-pointer text-gray-500 hover:text-blue-500 ml-2"
+            className="cursor-pointer text-gray-400 hover:text-blue-500 ml-2"
             onClick={handleGeolocation}
             title="Use my current location"
+            size={18}
           />
         </div>
       ) : (
@@ -182,10 +187,11 @@ function LocationAutocompleteInput({
           elevation={4}
           sx={{
             position: "absolute",
-            top: "80%",
+            top: "calc(100% + 4px)",
             left: 0,
             width: "100%",
-            zIndex: 999,
+            minWidth: "200px",
+            zIndex: 9999,
             maxHeight: "200px",
             overflowY: "auto",
           }}

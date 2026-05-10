@@ -20,7 +20,7 @@ function Navbar() {
   let currentPath = location.pathname;
 
   return (
-    <div className="flex flex-col relative z-50 bg-white">
+    <nav className="flex flex-col relative z-50 bg-white">
       <div className="px-[7%] pt-4 pb-2 flex justify-between items-center">
         <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-xl lg:text-2xl font-normal font-fredoka hover:cursor-pointer">
           Desipath
@@ -34,7 +34,7 @@ function Navbar() {
                 key={index}
                 to={item.path}
                 className={`${
-                  isActive ? "text-[#0857d0]" : "text-gray-400"
+                  isActive ? "text-[#0857d0]" : "text-gray-600"
                 } text-sm sm:text-base md:text-sm lg:text-base font-bold font-dmsans`}
               >
                 {item.label}
@@ -61,7 +61,7 @@ function Navbar() {
           </button>
         </div>
       )}
-    </div>
+    </nav>
   );
 }
 

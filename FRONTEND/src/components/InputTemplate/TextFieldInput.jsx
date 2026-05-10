@@ -39,7 +39,7 @@ function TextFieldInput({
         <Controller
           name={name}
           control={control}
-          defaultValue=""
+          defaultValue={defaultValue}
           rules={{
             ...(requiredAssertion ? { required: "This field is required" } : {}),
             ...rules,

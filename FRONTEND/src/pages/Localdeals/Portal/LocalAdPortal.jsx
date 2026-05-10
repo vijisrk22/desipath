@@ -25,6 +25,7 @@ export default function LocalAdPortal() {
     city: '',
     state: '',
     zipcode: '',
+    location: '',
     country: 'USA',
     ownerPhone: '',
     ownerEmail: '',
@@ -59,6 +60,9 @@ export default function LocalAdPortal() {
             city: ad.location_city || '',
             state: ad.location_state || '',
             zipcode: ad.zipcode || '',
+            location: ad.location_city && ad.location_state && ad.zipcode 
+              ? `${ad.location_city}, ${ad.location_state}, ${ad.zipcode}` 
+              : (ad.location_city || ad.zipcode || ''),
             country: ad.country || 'USA',
             ownerPhone: biz?.contact_person_phone || '',
             ownerEmail: biz?.contact_person_email || '',

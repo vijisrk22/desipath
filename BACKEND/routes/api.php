@@ -309,6 +309,7 @@ Route::middleware([])->group(function () {
 use App\Http\Controllers\ForumController;
 Route::get('/forum/posts', [ForumController::class, 'index']);
 Route::get('/forum/posts/{id}', [ForumController::class, 'show']);
+Route::get('/forum/subforums', [ForumController::class, 'listSubforums']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/forum/posts', [ForumController::class, 'storePost']);
@@ -316,6 +317,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/forum/comments/{id}', [ForumController::class, 'updateComment']);
     Route::delete('/forum/comments/{id}', [ForumController::class, 'destroyComment']);
     Route::post('/forum/posts/{id}/vote', [ForumController::class, 'votePost']);
+});
+
+// Admin Forum Management
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/admin/forum/subforums', [ForumController::class, 'listSubforums']);
+    Route::post('/admin/forum/subforums', [ForumController::class, 'storeSubforum']);
+    Route::put('/admin/forum/subforums/{id}', [ForumController::class, 'updateSubforum']);
+    Route::delete('/admin/forum/subforums/{id}', [ForumController::class, 'destroySubforum']);
+    Route::post('/admin/forum/posts/delete-by-url', [ForumController::class, 'deletePostByUrl']);
 });
 
 // --- Marketplace Categories ---

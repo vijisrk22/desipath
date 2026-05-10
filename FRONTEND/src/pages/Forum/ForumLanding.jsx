@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 
@@ -37,6 +38,8 @@ const MOCK_POSTS = [
 ];
 
 import api from '../../utils/api';
+import { useForm } from 'react-hook-form';
+import LocationAutocompleteInput from '../../components/InputTemplate/LocationAutocompleteInput';
 
 export default function ForumLanding() {
   const navigate = useNavigate();
@@ -46,9 +49,127 @@ export default function ForumLanding() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isSubforumModalOpen, setIsSubforumModalOpen] = useState(false);
-  const [newPost, setNewPost] = useState({ title: '', content: '', category: 'General' });
+  const [subforums, setSubforums] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const { user } = useSelector((state) => state.user);
+  const {
+    register,
+    handleSubmit: handleFormSubmit,
+    control,
+    setValue,
+    reset,
+    watch,
+  } = useForm({
+    defaultValues: {
+      title: '',
+      content: '',
+      category: 'General',
+      location: '',
+      location_tag: '',
+      is_location_specific: false
+    }
+  });
+
+  const isLocationSpecific = watch("is_location_specific");
+  const locationValue = watch("location");
+
+  React.useEffect(() => {
+    if (isPostModalOpen) {
+      reset({
+        title: '',
+        content: '',
+        category: subforums.length > 0 ? subforums[0].name : 'General',
+        location: user?.location || '',
+        location_tag: user?.location ? getTagFromLocation(user.location) : '',
+        is_location_specific: false
+      });
+    }
+  }, [isPostModalOpen, user, subforums]);
+
+  const getTagFromLocation = (location) => {
+    if (!location) return "";
+    const stateToTag = {
+      'Alabama': '#DesiATLSouth',
+      'Alaska': '#DesiPacificNW',
+      'Arizona': '#DesiAZ',
+      'Arkansas': '#DesiNWA',
+      'California': '#DesiCA',
+      'Colorado': '#DesiDenverUtahWyoming',
+      'Connecticut': '#DesiMACTNewEngland',
+      'Delaware': '#DesiPhillyDEWV',
+      'District of Columbia': '#DesiDMVArea',
+      'Florida': '#DesiFL',
+      'Georgia': '#DesiATLSouth',
+      'Hawaii': '#DesiCA',
+      'Idaho': '#DesiPacificNW',
+      'Illinois': '#DesiChicagoIL',
+      'Indiana': '#DesiIndy',
+      'Iowa': '#DesiWisconsinIO',
+      'Kansas': '#DesiMOKS',
+      'Kentucky': '#DesiLouisville',
+      'Louisiana': '#DesiLouisiana',
+      'Maine': '#DesiMACTNewEngland',
+      'Maryland': '#DesiDMVArea',
+      'Massachusetts': '#DesiMACTNewEngland',
+      'Michigan': '#DesiMichigan',
+      'Minnesota': '#DesiMinnesotaNDSD',
+      'Mississippi': '#DesiATLSouth',
+      'Missouri': '#DesiMOKS',
+      'Montana': '#DesiPacificNW',
+      'Nebraska': '#DesiOmaha',
+      'Nevada': '#DesiLasVegas',
+      'New Hampshire': '#DesiMACTNewEngland',
+      'New Jersey': '#DesiNYNJ',
+      'New York': '#DesiNYNJ',
+      'North Carolina': '#DesiCarolinas',
+      'North Dakota': '#DesiMinnesotaNDSD',
+      'Ohio': '#DesiOhio',
+      'Oklahoma': '#DesiOKNM',
+      'Oregon': '#DesiPacificNW',
+      'Pennsylvania': '#DesiPhillyDEWV',
+      'Rhode Island': '#DesiMACTNewEngland',
+      'South Carolina': '#DesiCarolinas',
+      'South Dakota': '#DesiMinnesotaNDSD',
+      'Tennessee': '#DesiNashville',
+      'Texas': '#DesiTX',
+      'Utah': '#DesiDenverUtahWyoming',
+      'Vermont': '#DesiMACTNewEngland',
+      'Virginia': '#DesiDMVArea',
+      'Washington': '#DesiPacificNW',
+      'West Virginia': '#DesiPhillyDEWV',
+      'Wisconsin': '#DesiWisconsinIO',
+      'Wyoming': '#DesiDenverUtahWyoming',
+      'Ontario': '#DesiGTA',
+      'British Columbia': '#DesiVancouver',
+    };
+    for (const [state, tag] of Object.entries(stateToTag)) {
+      if (location.toLowerCase().includes(state.toLowerCase())) return tag;
+    }
+    return "";
+  };
+
+  // Sync auto tag when location changes in form
+  React.useEffect(() => {
+    const tag = getTagFromLocation(locationValue);
+    setValue("location_tag", tag);
+  }, [locationValue, setValue]);
+
+  const fetchSubforums = () => {
+    api.get('/api/forum/subforums')
+      .then(res => {
+        if (res.data.success) {
+          setSubforums(res.data.data);
+          if (res.data.data.length > 0) {
+             setValue("category", res.data.data[0].name);
+          }
+        }
+      });
+  };
+
+  React.useEffect(() => {
+    fetchSubforums();
+  }, []);
 
   React.useEffect(() => {
     setPage(1);
@@ -75,15 +196,20 @@ export default function ForumLanding() {
     fetchPosts(nextPage, true);
   };
 
-  const handleCreatePost = (e) => {
-    e.preventDefault();
-    if (!newPost.title || !newPost.content) return alert("Title and content are required");
+  const handleCreatePost = (data) => {
+    if (!data.title || !data.content) return alert("Title and content are required");
     
-    api.post('/api/forum/posts', newPost)
+    const finalData = {
+      ...data,
+      location: data.is_location_specific ? data.location : '',
+      location_tag: data.is_location_specific ? data.location_tag : ''
+    };
+
+    api.post('/api/forum/posts', finalData)
       .then(res => {
         if (res.data.success) {
           setIsPostModalOpen(false);
-          setNewPost({ title: '', content: '', category: 'General' });
+          reset();
           fetchPosts();
         }
       })
@@ -93,7 +219,7 @@ export default function ForumLanding() {
   };
 
   return (
-    <div className="min-h-screen bg-[#dae0e6] flex flex-col font-dmsans">
+    <div className="min-h-screen bg-[#f0f2f5] flex flex-col font-dmsans">
       <Navbar />
       
       <main className="max-w-6xl mx-auto w-full px-4 py-6 flex gap-6">
@@ -120,42 +246,72 @@ export default function ForumLanding() {
                 <button onClick={() => setIsPostModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl">✕</button>
                 <h2 className="text-xl font-bold text-gray-900 mb-6">Create a post</h2>
                 
-                <form onSubmit={handleCreatePost} className="space-y-4">
+                <form onSubmit={handleFormSubmit(handleCreatePost)} className="space-y-4">
                   <select 
-                    value={newPost.category}
-                    onChange={e => setNewPost({...newPost, category: e.target.value})}
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg font-bold text-sm outline-none focus:border-blue-500"
+                    {...register("category")}
+                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg font-bold text-xs outline-none focus:border-blue-500"
                   >
-                    <option>General</option>
-                    <option>H1B Visa discussion</option>
-                    <option>Indian Cooking</option>
-                    <option>Real estate in USA</option>
-                    <option>New to USA</option>
-                    <option>About Studies</option>
-                    <option>School and Kids</option>
-                    <option>Healthcare & Health Insurance</option>
-                    <option>Job referrals</option>
-                    <option>Women topics</option>
-                    <option>Car DL and Insurance</option>
+                    <option value="">Select Category</option>
+                    {subforums.map((sub) => (
+                      <option key={sub.id} value={sub.name}>{sub.name}</option>
+                    ))}
                   </select>
 
                   <input 
                     type="text" 
                     placeholder="Title"
                     required
-                    value={newPost.title}
-                    onChange={e => setNewPost({...newPost, title: e.target.value})}
-                    className="w-full p-3 border border-gray-200 rounded-lg text-sm font-bold outline-none focus:border-blue-500"
+                    {...register("title")}
+                    className="w-full p-2 border border-gray-200 rounded-lg text-xs font-bold outline-none focus:border-blue-500"
                   />
 
                   <textarea 
-                    rows="6"
+                    rows="4"
                     placeholder="Text (optional)"
                     required
-                    value={newPost.content}
-                    onChange={e => setNewPost({...newPost, content: e.target.value})}
-                    className="w-full p-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 resize-none"
+                    {...register("content")}
+                    className="w-full p-2 border border-gray-200 rounded-lg text-xs outline-none focus:border-blue-500 resize-none"
                   ></textarea>
+
+                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-100">
+                    <span className="text-xs font-bold text-gray-700">Is this post related to a specific location?</span>
+                    <div className="flex gap-2">
+                      <button 
+                        type="button"
+                        onClick={() => setValue("is_location_specific", true)}
+                        className={`px-4 py-1 rounded-full text-[10px] font-black transition ${isLocationSpecific ? 'bg-blue-600 text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
+                      >
+                        Yes
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => setValue("is_location_specific", false)}
+                        className={`px-4 py-1 rounded-full text-[10px] font-black transition ${!isLocationSpecific ? 'bg-blue-600 text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+
+                  {isLocationSpecific && (
+                    <div className="animate-fadeIn space-y-3">
+                      <div className="bg-white rounded-lg overflow-visible">
+                        <LocationAutocompleteInput 
+                          control={control}
+                          setValue={setValue}
+                          type="search"
+                          placeholder="Location (City, State, Zip)"
+                        />
+                      </div>
+
+                      {watch("location_tag") && (
+                        <div className="flex items-center gap-2 bg-orange-50 p-2 rounded-lg border border-orange-100">
+                          <span className="text-orange-400 text-[10px] font-bold uppercase tracking-widest">Auto Tag:</span>
+                          <span className="text-orange-600 text-[10px] font-black">{watch("location_tag")}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="flex justify-end gap-3 border-t pt-4">
                     <button type="button" onClick={() => setIsPostModalOpen(false)} className="px-6 py-2 rounded-full border border-blue-600 text-blue-600 font-black text-xs hover:bg-blue-50 transition">Cancel</button>
@@ -200,14 +356,14 @@ export default function ForumLanding() {
                     <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-lg">🌐</div>
                     <span className="font-bold text-sm">All Subforums</span>
                   </div>
-                  {['H1B Visa discussion', 'Indian Cooking', 'Real estate in USA', 'New to USA', 'About Studies', 'School and Kids', 'Healthcare & Health Insurance', 'Job referrals', 'Women topics', 'Car DL and Insurance'].map((item, i) => (
+                  {subforums.map((sub, i) => (
                     <div 
                       key={i} 
-                      className={`flex items-center gap-3 p-3 rounded-xl transition ${selectedCategory === item ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-gray-50 text-gray-700'}`}
-                      onClick={() => { setSelectedCategory(item); setIsSubforumModalOpen(false); }}
+                      className={`flex items-center gap-3 p-3 rounded-xl transition ${selectedCategory === sub.name ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-gray-50 text-gray-700'}`}
+                      onClick={() => { setSelectedCategory(sub.name); setIsSubforumModalOpen(false); }}
                     >
-                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-xs font-bold text-indigo-600">d/</div>
-                      <span className="font-bold text-sm">{item}</span>
+                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-xs font-bold text-indigo-600">{sub.icon || 'd/'}</div>
+                      <span className="font-bold text-sm">{sub.name}</span>
                     </div>
                   ))}
                 </div>
@@ -248,6 +404,18 @@ export default function ForumLanding() {
                       <span className="text-gray-900 font-bold hover:underline break-all">d/{post.category || 'General'}</span>
                       <span>•</span>
                       <span className="truncate">{new Date(post.created_at).toLocaleDateString()}</span>
+                      {post.location && (
+                        <>
+                          <span>•</span>
+                          <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">📍 {post.location}</span>
+                        </>
+                      )}
+                      {post.location_tag && (
+                        <>
+                          <span>•</span>
+                          <span className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-bold">{post.location_tag}</span>
+                        </>
+                      )}
                     </div>
                     <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 leading-tight group-hover:text-blue-600 transition-colors break-words">{post.title}</h2>
                     <p className="text-sm text-gray-700 line-clamp-3 mb-4 leading-relaxed break-words">{post.content}</p>
@@ -334,15 +502,15 @@ export default function ForumLanding() {
                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-xs">🌐</div>
                 <span className="text-sm font-bold text-gray-900">All Subforums</span>
               </div>
-              {['H1B Visa discussion', 'Indian Cooking', 'Real estate in USA', 'New to USA', 'About Studies', 'School and Kids', 'Healthcare & Health Insurance', 'Job referrals', 'Women topics', 'Car DL and Insurance'].map((item, i) => (
+              {subforums.map((sub, i) => (
                 <div 
                   key={i} 
-                  className={`flex items-center justify-between cursor-pointer group p-1 rounded hover:bg-gray-50 ${selectedCategory === item ? 'bg-blue-50 text-blue-600' : ''}`}
-                  onClick={() => setSelectedCategory(item)}
+                  className={`flex items-center justify-between cursor-pointer group p-1 rounded hover:bg-gray-50 ${selectedCategory === sub.name ? 'bg-blue-50 text-blue-600' : ''}`}
+                  onClick={() => setSelectedCategory(sub.name)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs group-hover:bg-indigo-100">d/</div>
-                    <span className="text-sm font-bold text-gray-900 group-hover:text-blue-600">{item}</span>
+                    <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs group-hover:bg-indigo-100">{sub.icon || 'd/'}</div>
+                    <span className="text-sm font-bold text-gray-900 group-hover:text-blue-600">{sub.name}</span>
                   </div>
                 </div>
               ))}

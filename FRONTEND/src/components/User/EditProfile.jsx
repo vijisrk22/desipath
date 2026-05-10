@@ -1,29 +1,59 @@
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import TextFieldInput from "../InputTemplate/TextFieldInput";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile } from "../../store/UserSlice";
 import ButtonRight from "../ButtonRight";
 import PhoneNumberInput from "../InputTemplate/PhoneNumberInput";
 import BackWithHeader from "./BackWithHeader";
+import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
 function EditProfile() {
+  const [formDetails, setFormDetails] = useState(null);
+  const user = useSelector((state) => state.user.user);
+  const navigate = useNavigate();
   const {
     handleSubmit,
     control,
     setValue,
+    reset,
     formState: { errors },
-  } = useForm();
-  const [formDetails, setFormDetails] = useState(null);
-  const user = useSelector((state) => state.user.user);
+  } = useForm({
+    defaultValues: {
+      first_name: user?.name?.split(" ")[0] || "",
+      last_name: user?.name?.split(" ")[1] || "",
+      email: user?.email || "",
+      location: user?.location || "",
+      phone_number: user?.phone_number || "",
+      country_code: user?.country_code || "US",
+    }
+  });
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (user) {
+      reset({
+        first_name: user.name?.split(" ")[0] || "",
+        last_name: user.name?.split(" ")[1] || "",
+        email: user.email || "",
+        location: user.location || "",
+        phone_number: user.phone_number || "",
+        country_code: user.country_code || "US",
+      });
+    }
+  }, [user, reset]);
+
   const onSubmit = async (data) => {
-    const filteredData = Object.fromEntries(
-      Object.entries(data).filter(([key, value]) => value !== "")
-    );
+    // If password is not set or empty, remove it from data
+    if (!data.password || data.password.trim() === "") {
+      delete data.password;
+    }
 
     try {
-      dispatch(updateUserProfile(filteredData));
+      const resultAction = await dispatch(updateUserProfile(data));
+      if (updateUserProfile.fulfilled.match(resultAction)) {
+        navigate("/profile/success");
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -66,11 +96,18 @@ function EditProfile() {
 
         <TextFieldInput
           name="password"
-          defaultValue="******"
+          defaultValue=""
           control={control}
           text="Password"
           type="password"
           requiredAssertion={false}
+          customProps={{ placeholder: "******" }}
+        />
+        <LocationAutocompleteInput
+          control={control}
+          setValue={setValue}
+          defaultLocation={user?.location || ""}
+          text="Current Location"
         />
         <div className="my-4 flex items-center justify-center">
           <ButtonRight

@@ -44,6 +44,7 @@ const LazyImage = ({ src, alt, className, style, ...props }) => {
         src={src}
         alt={alt}
         className={className}
+        loading="lazy"
         style={{
           ...style,
           opacity: isLoaded ? 1 : 0,

@@ -79,7 +79,7 @@ export default function KidsClassCard({ cls }) {
           </div>
 
           <div className="flex items-start gap-2">
-             <img src="/location.svg" className="w-4 h-4 mt-0.5 opacity-60" />
+             <img src="/location.svg" className="w-4 h-4 mt-0.5 opacity-60" alt="Location" />
              <div className="text-gray-500 text-sm font-medium leading-normal line-clamp-1">
                {cls.location_address || "Online / Hybrid"}
              </div>

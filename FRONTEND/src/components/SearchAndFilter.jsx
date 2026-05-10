@@ -77,13 +77,14 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
               value={initialLocation}
               onClick={onEditLocation}
               autoComplete="off"
-              className="w-full text-gray-800 text-sm font-semibold font-dmsans outline-none placeholder:text-gray-400 truncate cursor-pointer"
+              className="w-full text-gray-800 text-sm font-semibold font-dmsans outline-none placeholder:text-gray-600 truncate cursor-pointer"
               readOnly
             />
             {initialLocation && (
               <IconButton 
                 size="small" 
                 onClick={onClearLocation}
+                aria-label="Clear location"
                 sx={{ 
                   color: '#ccc',
                   '&:hover': { color: '#ef4444' }
@@ -95,6 +96,7 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
             <IconButton 
               size="small" 
               onClick={onEditLocation}
+              aria-label="Edit location"
               sx={{ 
                 ml: 0.5, 
                 color: '#999',
@@ -170,7 +172,7 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
             type="submit"
             className="w-full md:w-auto bg-[#0857d0] hover:bg-[#0746a8] text-white font-bold py-3 md:py-3 px-8 rounded-[15px] md:rounded-full transition-all flex items-center justify-center gap-2"
           >
-            <img src="/search.svg" className="size-5 brightness-0 invert" />
+            <img src="/search.svg" className="size-5 brightness-0 invert" alt="Search icon" />
             <span className="text-sm md:text-base">Go</span>
           </button>
         </div>

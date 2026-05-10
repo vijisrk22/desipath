@@ -46,7 +46,7 @@ function LandingPage() {
   };
 
   return (
-    <div>
+    <main>
       <Navbar />
       <LocationSelectorModal 
         open={showLocationModal}
@@ -101,7 +101,7 @@ function LandingPage() {
       <div className="mt-[81px]">
         <Footer newsletter={"block"} hideOnMobile />
       </div>
-    </div>
+    </main>
   );
 }
 

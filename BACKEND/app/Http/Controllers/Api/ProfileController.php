@@ -36,12 +36,13 @@ class ProfileController extends Controller
 
         // Validate only the fields provided
         $rules = [
-            'first_name' => 'sometimes|string|max:100',
-            'last_name' => 'sometimes|string|max:100',
+            'first_name' => 'sometimes|nullable|string|max:100',
+            'last_name' => 'sometimes|nullable|string|max:100',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
-            'password' => 'sometimes|min:6',
-            'phone_number' => 'sometimes|string|max:20',
-            'country_code' => 'sometimes|string|max:10',
+            'password' => 'sometimes|nullable|min:6',
+            'phone_number' => 'sometimes|nullable|string|max:20',
+            'country_code' => 'sometimes|nullable|string|max:10',
+            'location' => 'sometimes|nullable|string|max:255',
         ];
 
         $validatedData = $request->validate($rules);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ForumPost;
 use App\Models\ForumComment;
+use App\Models\ForumSubforum;
 use Illuminate\Support\Facades\Auth;
 
 class ForumController extends Controller
@@ -48,7 +49,8 @@ class ForumController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'category' => 'nullable|string'
+            'category' => 'nullable|string',
+            'location' => 'nullable|string'
         ]);
 
         $post = ForumPost::create([
@@ -56,6 +58,7 @@ class ForumController extends Controller
             'title' => $request->title,
             'content' => $request->content,
             'category' => $request->category,
+            'location' => $request->location,
         ]);
 
         return response()->json([
@@ -139,5 +142,77 @@ class ForumController extends Controller
             'success' => true,
             'message' => 'Comment deleted successfully'
         ]);
+    }
+
+    // --- Admin Subforum Management ---
+
+    public function listSubforums()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => ForumSubforum::orderBy('name')->get()
+        ]);
+    }
+
+    public function storeSubforum(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|unique:forum_subforums,name',
+            'description' => 'nullable|string',
+            'icon' => 'nullable|string'
+        ]);
+
+        $subforum = ForumSubforum::create($request->all());
+
+        return response()->json([
+            'success' => true,
+            'data' => $subforum
+        ]);
+    }
+
+    public function updateSubforum(Request $request, $id)
+    {
+        $subforum = ForumSubforum::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required|string|unique:forum_subforums,name,' . $id,
+            'description' => 'nullable|string',
+            'icon' => 'nullable|string'
+        ]);
+
+        $subforum->update($request->all());
+
+        return response()->json([
+            'success' => true,
+            'data' => $subforum
+        ]);
+    }
+
+    public function destroySubforum($id)
+    {
+        ForumSubforum::findOrFail($id)->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Subforum deleted successfully'
+        ]);
+    }
+
+    public function deletePostByUrl(Request $request)
+    {
+        $url = $request->url;
+        if (!$url) return response()->json(['success' => false, 'message' => 'URL is required'], 400);
+
+        // Extract slug from URL (handles trailing slash and query params)
+        $path = parse_url($url, PHP_URL_PATH);
+        $parts = explode('/', rtrim($path, '/'));
+        $slug = end($parts);
+
+        $post = ForumPost::where('slug', $slug)->orWhere('id', $slug)->first();
+        if ($post) {
+            $post->delete();
+            return response()->json(['success' => true, 'message' => 'Post deleted successfully']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Post not found at this URL'], 404);
     }
 }

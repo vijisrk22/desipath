@@ -34,6 +34,7 @@ class User extends Authenticatable
         'profile_photo',
         'otp',
         'otp_expires_at',
+        'location',
     ];
 
     /**

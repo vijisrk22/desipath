@@ -44,6 +44,8 @@ export default function ForumPostDetail() {
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [isCommentBoxExpanded, setIsCommentBoxExpanded] = useState(false);
 
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
@@ -137,11 +139,21 @@ export default function ForumPostDetail() {
   }, [slug]);
 
   const fetchPost = (showLoading = true) => {
-    if (showLoading) setLoading(true);
+    if (showLoading) {
+      setLoading(true);
+      setNotFound(false);
+    }
     api.get(`/api/forum/posts/${slug}`)
       .then(res => {
         if (res.data.success) {
           setPost(res.data.data);
+        }
+      })
+      .catch(err => {
+        if (err.response?.status === 404) {
+          setNotFound(true);
+        } else {
+          toast.error("Failed to fetch post details");
         }
       })
       .finally(() => {
@@ -162,6 +174,7 @@ export default function ForumPostDetail() {
       if (res.data.success) {
         toast.success("Comment posted successfully!");
         setCommentText("");
+        setIsCommentBoxExpanded(false);
         fetchPost(false); // Refresh post to show new comment silently
       }
     })
@@ -212,7 +225,7 @@ export default function ForumPostDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-[#dae0e6] flex flex-col font-dmsans">
+    <div className="min-h-screen bg-[#f0f2f5] flex flex-col font-dmsans">
       <Navbar />
       
       <main className="max-w-6xl mx-auto w-full px-4 py-6 flex gap-6">
@@ -220,9 +233,27 @@ export default function ForumPostDetail() {
         {/* Left Column: Post and Comments */}
         <div className="flex-grow space-y-4">
           
-          {loading || !post ? (
+          {loading ? (
             <div className="flex justify-center p-20">
                <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : notFound ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center flex flex-col items-center gap-6 animate-fadeIn">
+              <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-4xl">🚫</div>
+              <div>
+                <h2 className="text-xl font-black text-gray-900 mb-2">Post Not Found</h2>
+                <p className="text-sm text-gray-500 font-medium">This page is not found or was removed by the moderator.</p>
+              </div>
+              <button 
+                onClick={() => navigate('/forum')}
+                className="px-8 py-3 bg-[#0857d0] text-white font-bold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 flex items-center gap-2 active:scale-95 text-sm"
+              >
+                Back to Community
+              </button>
+            </div>
+          ) : !post ? (
+            <div className="bg-white rounded-md p-20 text-center border border-gray-300">
+               <p className="text-gray-400 font-bold italic">Something went wrong.</p>
             </div>
           ) : (
             <>
@@ -236,6 +267,18 @@ export default function ForumPostDetail() {
                     <span>•</span>
                     <span>Posted by u/{post.user?.name || 'Anonymous'}</span>
                     <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                    {post.location && (
+                      <>
+                        <span>•</span>
+                        <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">📍 {post.location}</span>
+                      </>
+                    )}
+                    {post.location_tag && (
+                      <>
+                        <span>•</span>
+                        <span className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-bold">{post.location_tag}</span>
+                      </>
+                    )}
                   </div>
                   <h1 className="text-xl font-bold text-gray-900 mb-4">{post.title}</h1>
                   <p className="text-sm text-gray-700 whitespace-pre-line mb-8 leading-relaxed">
@@ -262,22 +305,45 @@ export default function ForumPostDetail() {
               </div>
 
               {/* Comment Box */}
-              <div className="bg-white rounded-md border border-gray-300 p-4 shadow-sm">
-                <p className="text-xs text-gray-500 font-bold mb-2 uppercase tracking-widest">Comment as <span className="text-blue-600">{user?.name || 'User'}</span></p>
-                <form onSubmit={handleComment}>
-                  <textarea 
-                    rows="4" 
-                    placeholder="What are your thoughts?"
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    className="w-full p-4 border border-gray-200 rounded-md outline-none focus:border-blue-500 transition-all text-sm mb-3"
-                  ></textarea>
-                  <div className="flex justify-end">
-                    <button disabled={isSubmittingComment} type="submit" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-full text-xs transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center min-w-[100px] disabled:opacity-50">
-                      {isSubmittingComment ? <CircularProgress size={14} color="inherit" /> : "Comment"}
-                    </button>
+              <div className="bg-white rounded-md border border-gray-300 p-3 shadow-sm">
+                {!isCommentBoxExpanded ? (
+                  <div 
+                    onClick={() => setIsCommentBoxExpanded(true)}
+                    className="flex items-center gap-3 bg-[#f6f7f8] border border-gray-200 rounded-full px-4 py-2 hover:bg-white hover:border-blue-500 transition-all cursor-text"
+                  >
+                    <span className="text-gray-400 text-sm">Join the conversation</span>
                   </div>
-                </form>
+                ) : (
+                  <div className="animate-fadeIn">
+                    <p className="text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-widest px-1">Comment as <span className="text-blue-600">{user?.name || 'User'}</span></p>
+                    <form onSubmit={handleComment}>
+                      <textarea 
+                        rows="4" 
+                        placeholder="What are your thoughts?"
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        className="w-full p-4 border border-gray-200 rounded-lg outline-none focus:border-blue-500 transition-all text-sm mb-3 resize-none bg-gray-50/30"
+                        autoFocus
+                      ></textarea>
+                      <div className="flex justify-end gap-2">
+                        <button 
+                          type="button" 
+                          onClick={() => { setIsCommentBoxExpanded(false); setCommentText(""); }}
+                          className="px-6 py-2 text-gray-500 hover:bg-gray-100 font-black rounded-full text-xs transition-all"
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          disabled={isSubmittingComment || !commentText.trim()} 
+                          type="submit" 
+                          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-full text-xs transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center min-w-[100px] disabled:opacity-50"
+                        >
+                          {isSubmittingComment ? <CircularProgress size={14} color="inherit" /> : "Comment"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
               </div>
 
               {/* Comments List */}

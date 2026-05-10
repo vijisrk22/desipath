@@ -109,7 +109,7 @@ function ViewProfile() {
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-gray-400 text-xs sm:text-sm font-medium">
                     <div className="flex items-center gap-1.5">
                       <RiMapPinLine className="text-[#0857d0] shrink-0" />
-                      <span>North America</span>
+                      <span>{user?.location || "Location not set"}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <RiTimeLine className="text-[#ffa41c] shrink-0" />
@@ -169,6 +169,10 @@ function ViewProfile() {
                     <span className="flex items-center gap-1.5 text-green-600 font-bold text-sm">
                       <RiShieldLine /> Confirmed
                     </span>
+                  </div>
+                  <div className="flex items-center justify-between py-3 border-b border-gray-50">
+                    <span className="text-gray-400 font-medium text-sm">Location</span>
+                    <span className="text-gray-900 font-bold text-sm truncate ml-4 max-w-[55%] text-right">{user?.location || "Not set"}</span>
                   </div>
                 </div>
               </div>

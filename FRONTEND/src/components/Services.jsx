@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import SectionHeadings from "./SectionHeadings";
+import LazyImage from "./LazyImage";
 
 const services = [
   {
@@ -110,11 +111,10 @@ export default function ServicesSection() {
               // ensure a fixed circular container so images render with the expected size
               className="rounded-full overflow-hidden flex justify-center items-center cursor-pointer w-[84px] h-[84px] md:w-[98px] md:h-[98px] lg:w-[116px] lg:h-[116px]"
             >
-              <img
+              <LazyImage
                 className="w-full h-full object-cover"
                 src={service.image}
                 alt={service.name}
-                loading="lazy"
                 onError={(e) => {
                   // replace broken image with generated SVG placeholder
                   e.currentTarget.onerror = null;
