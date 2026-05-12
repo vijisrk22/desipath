@@ -10,9 +10,16 @@ export default defineConfig({
   build: {
     minify: 'esbuild', // Faster and built-in
     sourcemap: false, // Smaller bundle size for production
-    rollupOptions: {
-      // Allow Vite to use its default chunking strategy to prevent circular dependency TDZ errors
-    }
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@mui')) return 'vendor-mui';
+            if (id.includes('react')) return 'vendor-react';
+            if (id.includes('axios') || id.includes('dayjs') || id.includes('react-hook-form')) return 'vendor-utils';
+            return 'vendor';
+          }
+        }
+      }
   },
   esbuild: {
     drop: ['console', 'debugger'],

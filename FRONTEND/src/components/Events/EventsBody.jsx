@@ -14,7 +14,7 @@ const MOBILE_BATCH_SIZE = 8;    // how many more cards to reveal on each scroll 
 
 function EventsBody({ sortOption: sortProp, setSortOption: setSortProp }) {
   const dispatch = useDispatch();
-  const { loadingList, events } = useSelector((state) => state.events);
+  const { loadingList, events, error } = useSelector((state) => state.events);
 
   /* ── Desktop pagination state ─────────────────────────────────────── */
   const [page, setPage] = useState(1);
@@ -147,6 +147,13 @@ function EventsBody({ sortOption: sortProp, setSortOption: setSortProp }) {
           />
         </div>
       </div>
+
+      {error && (
+        <div className="bg-red-100 text-red-800 p-4 mb-8 rounded-2xl text-center font-medium shadow-sm border border-red-200">
+          <span className="mr-2">⚠️</span>
+          {typeof error === 'object' ? (error.message || JSON.stringify(error)) : String(error || "Unknown error")}
+        </div>
+      )}
 
       {/* ── MOBILE: infinite scroll list ───────────────────────────── */}
       <div className="md:hidden">

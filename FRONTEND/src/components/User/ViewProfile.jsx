@@ -104,7 +104,7 @@ function ViewProfile() {
 
                 <div className="flex-1 text-center sm:text-left pb-1 min-w-0">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 font-dmsans mb-2 truncate">
-                    {user?.name || "Member Name"}
+                    {typeof user?.name === 'object' ? (user.name?.name || JSON.stringify(user.name)) : (user?.name || "Member Name")}
                   </h1>
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-gray-400 text-xs sm:text-sm font-medium">
                     <div className="flex items-center gap-1.5">
@@ -162,7 +162,9 @@ function ViewProfile() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between py-3 border-b border-gray-50">
                     <span className="text-gray-400 font-medium text-sm">Display Name</span>
-                    <span className="text-gray-900 font-bold text-sm truncate ml-4 max-w-[55%] text-right">{user?.name}</span>
+                    <span className="text-gray-900 font-bold text-sm truncate ml-4 max-w-[55%] text-right">
+                      {typeof user?.name === 'object' ? (user.name?.name || JSON.stringify(user.name)) : (user?.name || "N/A")}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between py-3 border-b border-gray-50">
                     <span className="text-gray-400 font-medium text-sm">Email Status</span>
@@ -172,7 +174,9 @@ function ViewProfile() {
                   </div>
                   <div className="flex items-center justify-between py-3 border-b border-gray-50">
                     <span className="text-gray-400 font-medium text-sm">Location</span>
-                    <span className="text-gray-900 font-bold text-sm truncate ml-4 max-w-[55%] text-right">{user?.location || "Not set"}</span>
+                    <span className="text-gray-900 font-bold text-sm truncate ml-4 max-w-[55%] text-right">
+                      {typeof user?.location === 'object' ? (user.location?.name || JSON.stringify(user.location)) : (user?.location || "Not set")}
+                    </span>
                   </div>
                 </div>
               </div>

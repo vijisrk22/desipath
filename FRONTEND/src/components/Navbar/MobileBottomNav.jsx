@@ -149,7 +149,9 @@ export default function MobileBottomNav() {
               </div>
               <div>
                 <p className="text-sm font-bold text-gray-800">{user ? "My Profile" : "Sign In"}</p>
-                <p className="text-[10px] text-gray-400">{user ? user.name || "View account" : "Login to continue"}</p>
+                <p className="text-[10px] text-gray-400">
+                  {user ? (typeof user.name === 'object' ? (user.name.name || JSON.stringify(user.name)) : (user.name || "View account")) : "Login to continue"}
+                </p>
               </div>
             </Link>
             <Link

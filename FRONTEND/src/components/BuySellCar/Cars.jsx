@@ -9,10 +9,9 @@ import { fetchCars } from "../../store/CarsSlice";
 import ActiveCarSearchFilters from "./ActiveCarSearchFilters";
 
 function Cars() {
-  // backend API endpoint /api/rooms
-  // State for events
   const dispatch = useDispatch();
-  const { loading, error, cars, lastSearchQuery } = useSelector((state) => state.cars);
+  const { loading, error, cars = [], lastSearchQuery } = useSelector((state) => state.cars);
+  const safeCars = Array.isArray(cars) ? cars : [];
 
   const carsPerPage = 15;
   const [page, setPage] = useState(1);
@@ -20,7 +19,7 @@ function Cars() {
 
   const [sortOption, setSortOption] = useState("created_at-desc");
   const getSortedCars = () => {
-    const carsCopy = [...cars];
+    const carsCopy = [...safeCars];
 
     switch (sortOption) {
       case "price-asc":
@@ -38,27 +37,35 @@ function Cars() {
   const numsOfPage = Math.ceil(sortedCars.length / carsPerPage);
   const displayedCars = sortedCars.slice(startIndex, startIndex + carsPerPage);
 
-  // Set rooms on mount
+  const displayError = error && (typeof error === 'object' ? (error.message || JSON.stringify(error)) : String(error));
+
   useEffect(() => {
-    // Only fetch all cars if there is no active search query 
-    // and no saved location that triggers auto-search in SearchFieldInput
     const savedLocation = localStorage.getItem('user_location');
     if (!lastSearchQuery && !savedLocation) {
       dispatch(fetchCars());
     }
   }, [dispatch, lastSearchQuery]);
 
-  // if (loading) {
-  //   return <Loader />;
-  // }
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+        <div className="text-red-500 text-6xl mb-4">⚠️</div>
+        <h3 className="text-xl font-bold text-gray-800 mb-2 font-dmsans">Something went wrong</h3>
+        <p className="text-gray-500 text-sm max-w-sm mb-6">
+          {typeof error === 'object' ? (error.message || JSON.stringify(error)) : String(error || "Unknown error")}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="px-[7%] mt-20 mb-20 relative">
+    <div className="px-[7%] mt-10 mb-20 relative">
       {loading && (
         <div className="absolute top-[-20px] left-0 right-0 z-50">
           <LinearProgress sx={{ backgroundColor: '#f3f5f7', '& .MuiLinearProgress-bar': { backgroundColor: '#ffa41c' } }} />
         </div>
       )}
-      <div className="mb-6 pt-10 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100/50">
+      <div className="mb-6 pt-4 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100/50">
         <ActiveCarSearchFilters />
         <div className="ml-auto">
           <SortBy
@@ -75,7 +82,7 @@ function Cars() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 justify-items-center">
         {displayedCars.length > 0 ? (
           displayedCars.map((car, index) => (
-            <CarCard key={index} car={car} />
+            car && typeof car === 'object' && !Array.isArray(car) ? <CarCard key={index} car={car} /> : null
           ))
         ) : (
           <div className="col-span-full py-20 text-center text-gray-500 text-xl font-medium">
@@ -86,7 +93,7 @@ function Cars() {
 
       <div className="mx-auto flex flex-col md:flex-row justify-between gap-6 items-center mt-16 px-8 py-6 bg-white rounded-2xl shadow-sm border border-gray-100">
         <div className="text-[#323232] text-sm font-medium font-dmsans">
-          Showing {startIndex + 1}-{Math.min(startIndex + carsPerPage, cars.length)} of {cars.length} vehicles
+          Showing {startIndex + 1}-{Math.min(startIndex + carsPerPage, safeCars.length)} of {safeCars.length} vehicles
         </div>
         <Pagination
           count={numsOfPage}
@@ -98,19 +105,19 @@ function Cars() {
           showLastButton
           sx={{
             "& .MuiPaginationItem-page": {
-              mx: "12px", // Adds spacing between page numbers
+              mx: "12px",
             },
             "& .MuiPaginationItem-page.Mui-selected": {
-              backgroundColor: "#ffa41c", // Sets the background color for the selected page
-              color: "white", // Ensures text is visible
+              backgroundColor: "#ffa41c",
+              color: "white",
             },
             "& .MuiPaginationItem-ellipsis": {
-              color: "#ffa41c", // Sets color for ellipsis (...)
+              color: "#ffa41c",
               fontWeight: "bold",
             },
             "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
               {
-                color: "#ffa41",
+                color: "#ffa41c",
                 mx: "16px",
               },
           }}

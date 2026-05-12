@@ -22,7 +22,7 @@ function Houses() {
     } else if (!savedLocation) {
       dispatch(fetchHouses({ page, sortOption }));
     }
-  }, [dispatch, page, sortOption, lastSearchQuery]);
+  }, [dispatch, page, sortOption]); // Removed lastSearchQuery to prevent infinite loops
 
   const numsOfPage = pagination?.last_page || 1;
 
@@ -33,8 +33,8 @@ function Houses() {
   console.log(houses);
 
   return (
-    <div className="px-[7%] mt-12 mb-20">
-      <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div className="px-[7%] mt-6 mb-20">
+      <div className="mb-8 pt-4 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100/50">
         <div className="text-[#007185] text-[32px] md:text-[40px] font-bold font-dmsans">
           Property Listings
         </div>

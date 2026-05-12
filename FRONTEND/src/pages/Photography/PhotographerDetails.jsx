@@ -7,7 +7,8 @@ import { getFullImageUrl } from "../../utils/imageHelper";
 import { CircularProgress, Button, Tab, Tabs, Box } from "@mui/material";
 
 export default function PhotographerDetails() {
-  const { id } = useParams();
+  const { id: idParam } = useParams();
+  const id = idParam ? idParam.split('-')[0] : null;
   const [photographer, setPhotographer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(0);

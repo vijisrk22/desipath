@@ -20,8 +20,8 @@ function EditProfile() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      first_name: user?.name?.split(" ")[0] || "",
-      last_name: user?.name?.split(" ")[1] || "",
+      first_name: typeof user?.name === 'string' ? user.name.split(" ")[0] : (typeof user?.name === 'object' ? (user.name?.name || "") : ""),
+      last_name: typeof user?.name === 'string' ? user.name.split(" ")[1] : "",
       email: user?.email || "",
       location: user?.location || "",
       phone_number: user?.phone_number || "",
@@ -33,8 +33,8 @@ function EditProfile() {
   useEffect(() => {
     if (user) {
       reset({
-        first_name: user.name?.split(" ")[0] || "",
-        last_name: user.name?.split(" ")[1] || "",
+        first_name: typeof user.name === 'string' ? user.name.split(" ")[0] : (typeof user.name === 'object' ? (user.name?.name || "") : ""),
+        last_name: typeof user.name === 'string' ? user.name.split(" ")[1] : "",
         email: user.email || "",
         location: user.location || "",
         phone_number: user.phone_number || "",
@@ -67,14 +67,14 @@ function EditProfile() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextFieldInput
           name="first_name"
-          defaultValue={user?.name ? user?.name.split(" ")[0] : ""}
+          defaultValue={user?.name && typeof user.name === 'string' ? user.name.split(" ")[0] : (typeof user?.name === 'object' ? (user.name?.name || "") : "")}
           control={control}
           text="First Name"
           requiredAssertion={false}
         />
         <TextFieldInput
           name="last_name"
-          defaultValue={user?.name ? user?.name.split(" ")[1] : ""}
+          defaultValue={user?.name && typeof user.name === 'string' ? user.name.split(" ")[1] : ""}
           control={control}
           text="Last Name"
           requiredAssertion={false}

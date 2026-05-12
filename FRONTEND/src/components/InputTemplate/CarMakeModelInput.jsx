@@ -16,6 +16,12 @@ function CarMakeModelInput({ control, watch, setValue, type = "", onlyMake = fal
   const dispatch = useDispatch();
   const { loading, error, car_make, car_model } = useSelector((state) => state.cars);
 
+  const makeName = typeof make === 'object' ? (make?.make || make?.name) : make;
+  const modelName = typeof model === 'object' ? (model?.model || model?.name) : model;
+
+  const showMakeOther = makeName === "Others";
+  const showModelOther = modelName === "Others";
+
   useEffect(() => {
     dispatch(getCarMake()).unwrap();
   }, [dispatch]);
@@ -26,24 +32,21 @@ function CarMakeModelInput({ control, watch, setValue, type = "", onlyMake = fal
        setValue("model_other", "");
        dispatch(clearCarModel());
     }
-    if (make && make !== "Others" && make.trim() !== "") {
-      dispatch(getCarModel(make)).unwrap();
+    if (makeName && makeName !== "Others" && String(makeName).trim() !== "") {
+      dispatch(getCarModel(makeName)).unwrap();
     }
-  }, [dispatch, make, onlyModel]);
+  }, [dispatch, makeName, onlyModel, setValue]);
 
-  const isMakeLoading = loading && car_make.length === 0;
-  const isModelLoading = loading && car_model.length === 0 && make && make !== "Others";
+  const isMakeLoading = loading && (!car_make || car_make.length === 0);
+  const isModelLoading = loading && (!car_model || car_model.length === 0) && makeName && makeName !== "Others";
 
-  const makeOptions = car_make.length > 0 
-    ? [...car_make.map((m) => (typeof m === 'object' ? m.make : m)), "Others"]
+  const makeOptions = (car_make && car_make.length > 0)
+    ? [...car_make.map((m) => (typeof m === 'object' ? (m.make || m.name) : m)), "Others"]
     : (loading ? [] : ["Others"]);
 
-  const modelOptions = car_model.length > 0
-    ? [...car_model.map((m) => (typeof m === 'object' ? m.model : m)), "Others"]
-    : (isModelLoading ? [] : (make && make !== "Others" ? ["Others"] : []));
-
-  const showMakeOther = make === "Others";
-  const showModelOther = model === "Others";
+  const modelOptions = (car_model && car_model.length > 0)
+    ? [...car_model.map((m) => (typeof m === 'object' ? (m.model || m.name) : m)), "Others"]
+    : (isModelLoading ? [] : (makeName && makeName !== "Others" ? ["Others"] : []));
 
   if (type === "search") {
     return (
@@ -55,6 +58,12 @@ function CarMakeModelInput({ control, watch, setValue, type = "", onlyMake = fal
             options={makeOptions}
             loading={isMakeLoading}
             value={watch("make") || ""}
+            getOptionLabel={(option) => {
+              if (typeof option === 'object') {
+                return option.make || option.name || JSON.stringify(option);
+              }
+              return String(option || "");
+            }}
             onChange={(event, newValue) => {
               setValue("make", newValue);
             }}
@@ -80,6 +89,12 @@ function CarMakeModelInput({ control, watch, setValue, type = "", onlyMake = fal
             options={modelOptions}
             loading={isModelLoading}
             value={watch("model") || ""}
+            getOptionLabel={(option) => {
+              if (typeof option === 'object') {
+                return option.model || option.name || JSON.stringify(option);
+              }
+              return String(option || "");
+            }}
             onChange={(event, newValue) => {
               setValue("model", newValue);
             }}
@@ -122,6 +137,12 @@ function CarMakeModelInput({ control, watch, setValue, type = "", onlyMake = fal
               <Autocomplete
                 options={makeOptions}
                 loading={isMakeLoading}
+                getOptionLabel={(option) => {
+                  if (typeof option === 'object') {
+                    return option.make || option.name || JSON.stringify(option);
+                  }
+                  return String(option || "");
+                }}
                 value={value || null}
                 onChange={(_, newValue) => onChange(newValue)}
                 renderInput={(params) => (
@@ -176,6 +197,12 @@ function CarMakeModelInput({ control, watch, setValue, type = "", onlyMake = fal
                 <Autocomplete
                   options={modelOptions}
                   loading={isModelLoading}
+                  getOptionLabel={(option) => {
+                    if (typeof option === 'object') {
+                      return option.model || option.name || JSON.stringify(option);
+                    }
+                    return String(option || "");
+                  }}
                   value={value || null}
                   onChange={(_, newValue) => onChange(newValue)}
                   disabled={!make || make === "Others"}

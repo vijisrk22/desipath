@@ -22,7 +22,8 @@ function HouseDetails() {
 
   const navigate = useNavigate();
   const { action, houseId: houseIdParam } = useParams();
-  const houseId = houseIdParam || action;
+  const rawId = houseIdParam || action;
+  const houseId = rawId ? rawId.split('-')[0] : null;
   
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);

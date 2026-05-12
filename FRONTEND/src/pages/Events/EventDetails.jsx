@@ -28,7 +28,8 @@ function EventDetails() {
     { text: "Find Events", eP: "/services/events/findEvent" },
   ];
 
-  const { eventId } = useParams();
+  const { eventId: eventIdParam } = useParams();
+  const eventId = eventIdParam ? eventIdParam.split('-')[0] : null;
   const dispatch = useDispatch();
   const { loadingDetails, error, eventDetails } = useSelector((state) => state.events);
   const [isInterested, setIsInterested] = useState(false);

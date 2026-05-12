@@ -13,6 +13,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import CarMakeModelInput from "./InputTemplate/CarMakeModelInput";
 import CheckBoxInput from "./InputTemplate/CheckBoxInput";
+import { Dialog, DialogContent, Slide, AppBar, Toolbar, IconButton, Typography } from "@mui/material";
+import { Close as CloseIcon, Search as SearchIcon } from "@mui/icons-material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import React from "react";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function SearchFieldInput({ inputs, title }) {
   const {
@@ -38,8 +47,17 @@ function SearchFieldInput({ inputs, title }) {
     return {};
   });
   const lastSearchQuery = state?.lastSearchQuery;
-
   const [hasAutoSearched, setHasAutoSearched] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    if (isMobile) {
+      setIsModalOpen(true);
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     const savedLocation = localStorage.getItem('user_location');
@@ -108,7 +126,7 @@ function SearchFieldInput({ inputs, title }) {
   async function onSubmit(data) {
     // Robust parsing helper
     const parseLocation = (loc) => {
-      if (!loc) return { city: "", state: "", zipcode: "" };
+      if (!loc || typeof loc !== 'string') return { city: "", state: "", zipcode: "" };
       const parts = loc.split(",").map((s) => s.trim());
 
       let city = "", state = "", zipcode = "";
@@ -163,9 +181,9 @@ function SearchFieldInput({ inputs, title }) {
         city,
         state,
         zipcode,
-        location: data?.location || "",
-        carMake: data?.make ? data?.make : "",
-        carModel: data?.model ? data?.model : "",
+        location: typeof data?.location === 'object' ? (data.location?.name || JSON.stringify(data.location)) : String(data?.location || ""),
+        carMake: typeof data?.make === 'object' ? (data.make?.make || data.make?.name || JSON.stringify(data.make)) : String(data?.make || ""),
+        carModel: typeof data?.model === 'object' ? (data.model?.model || data.model?.name || JSON.stringify(data.model)) : String(data?.model || ""),
         priceMin: priceRange[0],
         priceMax: priceRange[1],
       };
@@ -243,54 +261,31 @@ function SearchFieldInput({ inputs, title }) {
   const handleLocationSelect = () => {
     // Small timeout to allow state to update if needed, though setValue in child handles value.
     handleSubmit(onSubmit)();
+    if (isModalOpen) setIsModalOpen(false);
   };
 
-  return (
-    <form
-      method="POST"
-      onSubmit={handleSubmit(onSubmit)}
-      className="px-6 py-5 w-full relative rounded-tr-2xl rounded-b-2xl bg-white flex flex-col gap-4 shadow-[0_4px_24px_rgba(0,0,0,0.08)]"
-    >
-      {/* Top Row / Main Area */}
-      <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8 justify-between">
-        
-        {/* Left Section: Inputs (Location, Make/Model) */}
-        <div className="w-full md:flex-1 max-w-xl flex flex-col gap-2">
-          {inputs.includes("location") && (
+  const handleMobileSubmit = (data) => {
+    onSubmit(data);
+    setIsModalOpen(false);
+  };
+
+  const renderSearchContent = (isModal = false) => (
+    <div className={`flex flex-col gap-6 ${isModal ? "p-4" : ""}`}>
+      {/* Top Section: Location + Price Slider */}
+      <div className={`flex flex-col gap-4 ${!isModal ? "md:flex-row md:items-center md:flex-1 w-full" : ""}`}>
+        {inputs.includes("location") && (
+          <div className={!isModal ? "md:flex-[2] md:min-w-[400px]" : ""}>
             <LocationAutocompleteInput
               control={control}
               setValue={setValue}
               type="search"
               onSelect={handleLocationSelect}
             />
-          )}
-          
-          {inputs.includes("makeAndModel") && (
-            <div className="flex gap-3">
-               <div className="flex-1">
-                 <CarMakeModelInput
-                    control={control}
-                    watch={watch}
-                    setValue={setValue}
-                    type="search"
-                    onlyMake={true}
-                  />
-               </div>
-               <div className="flex-1">
-                 <CarMakeModelInput
-                    control={control}
-                    watch={watch}
-                    setValue={setValue}
-                    type="search"
-                    onlyModel={true}
-                  />
-               </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Price Slider Section */}
-        <div className="w-full md:w-[350px] lg:w-[400px]">
+        <div className={!isModal ? "md:flex-1 md:min-w-[250px] lg:min-w-[300px] md:ml-4" : "mt-4"}>
           <MinimumDistanceSlider
             value={priceRange}
             onChange={setPriceRange}
@@ -298,9 +293,80 @@ function SearchFieldInput({ inputs, title }) {
             maxRange={priceBounds[1]}
           />
         </div>
+      </div>
+
+      {/* Secondary Section: Filters (Make/Model or Types) + Search Button */}
+      <div className={`flex flex-col gap-4 ${!isModal ? "md:flex-row md:items-center w-full" : ""}`}>
+        {inputs.includes("makeAndModel") && (
+          <div className={`flex gap-3 ${!isModal ? "md:flex-row md:items-center max-w-2xl flex-1" : "flex-col"}`}>
+             <div className={!isModal ? "w-64" : "flex-1"}>
+               <CarMakeModelInput
+                  control={control}
+                  watch={watch}
+                  setValue={setValue}
+                  type="search"
+                  onlyMake={true}
+                />
+             </div>
+             <div className={!isModal ? "w-64" : "flex-1"}>
+               <CarMakeModelInput
+                  control={control}
+                  watch={watch}
+                  setValue={setValue}
+                  type="search"
+                  onlyModel={true}
+                />
+             </div>
+          </div>
+        )}
+
+        {/* Types Checkboxes (Moved here for desktop) */}
+        {!isModal && (inputs.includes("type") || inputs.includes("eventType") || inputs.includes("homeType")) && (
+          <div className="flex-1">
+            {inputs.includes("type") && (
+              <CheckBoxInput
+                text="Type"
+                options={[
+                  { name: "rentalHomeType.Condo", label: "Condominium" },
+                  { name: "rentalHomeType.Single family Home", label: "Single Family" },
+                  { name: "rentalHomeType.Apartment", label: "Apartment" },
+                  { name: "rentalHomeType.Basement Apartment", label: "Basement" },
+                ]}
+                register={register}
+                type="search"
+              />
+            )}
+            {inputs.includes("homeType") && (
+              <CheckBoxInput
+                text="Home Type"
+                options={[
+                  { name: "homeType.Condominium", label: "Condominium" },
+                  { name: "homeType.Single Family", label: "Single Family" },
+                  { name: "homeType.Apartment", label: "Apartment" },
+                ]}
+                register={register}
+                type="search"
+              />
+            )}
+            {inputs.includes("eventType") && (
+              <CheckBoxInput
+                text="Event Type"
+                options={[
+                  { name: "eventType.Music", label: "Music" },
+                  { name: "eventType.Comedy", label: "Comedy" },
+                  { name: "eventType.Workshop", label: "Workshop" },
+                  { name: "eventType.Bollywood", label: "Bollywood" },
+                  { name: "eventType.Cultural", label: "Cultural" },
+                ]}
+                register={register}
+                type="search"
+              />
+            )}
+          </div>
+        )}
 
         {/* Search Button */}
-        <div className="w-full md:w-auto">
+        <div className={!isModal ? "md:ml-auto" : "mt-6"}>
           <SearchButton
             textVisible={true}
             paddingClass={"rounded-xl px-10 py-3 w-full md:w-auto flex justify-center"}
@@ -309,9 +375,9 @@ function SearchFieldInput({ inputs, title }) {
         </div>
       </div>
 
-      {/* Bottom Row: Checkboxes (if any) */}
-      {(inputs.includes("type") || inputs.includes("eventType") || inputs.includes("homeType")) && (
-        <div className="pt-2 border-t border-gray-50">
+      {/* Mobile-only Checkboxes row (for Modal) */}
+      {isModal && (inputs.includes("type") || inputs.includes("eventType") || inputs.includes("homeType")) && (
+        <div className="pt-2 border-t border-gray-100">
           {inputs.includes("type") && (
             <CheckBoxInput
               text="Type"
@@ -353,6 +419,94 @@ function SearchFieldInput({ inputs, title }) {
           )}
         </div>
       )}
+
+
+    </div>
+  );
+
+  if (isMobile) {
+    return (
+      <div 
+        className="w-full relative rounded-tr-2xl rounded-b-2xl bg-white shadow-[0_4px_24px_rgba(0,0,0,0.08)] overflow-hidden"
+      >
+        {/* Placeholder Bar on Page - Styled like desktop bar container */}
+        <div 
+          onClick={() => setIsModalOpen(true)}
+          className="px-6 py-5 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors"
+        >
+          <SearchIcon className="text-blue-600" />
+          <div className="flex-1 min-w-0">
+            <div className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">Search Filters</div>
+            <div className="text-gray-800 font-bold text-sm truncate flex items-center gap-1">
+              <span className="truncate">{watch("location") || "Anywhere"}</span>
+              {inputs.includes("makeAndModel") && (watch("make") || watch("model")) && (
+                <>
+                  <span className="text-gray-300 mx-1">|</span>
+                  <span className="text-blue-600 truncate">
+                    {[
+                      typeof watch("make") === 'object' ? (watch("make")?.make || watch("make")?.name) : watch("make"),
+                      typeof watch("model") === 'object' ? (watch("model")?.model || watch("model")?.name) : watch("model")
+                    ].filter(Boolean).join(" ")}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-sm font-bold shadow-sm">
+            Edit
+          </div>
+        </div>
+
+        {/* Mobile Modal */}
+        <Dialog
+          fullScreen
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          TransitionComponent={Transition}
+          sx={{
+            "& .MuiDialog-paper": {
+              backgroundColor: "#f9fafb"
+            }
+          }}
+        >
+          <AppBar sx={{ position: 'relative', bgcolor: 'white', color: 'gray.800', boxShadow: 'none', borderBottom: '1px solid #e5e7eb' }}>
+            <Toolbar>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={() => setIsModalOpen(false)}
+                aria-label="close"
+              >
+                <CloseIcon />
+              </IconButton>
+              <Typography sx={{ ml: 2, flex: 1, fontWeight: 700, fontFamily: 'DM Sans' }} variant="h6" component="div">
+                Search Filters
+              </Typography>
+              <button 
+                onClick={handleSubmit(handleMobileSubmit)}
+                className="text-blue-700 font-bold text-sm"
+              >
+                Done
+              </button>
+            </Toolbar>
+          </AppBar>
+          <DialogContent>
+            <form onSubmit={handleSubmit(handleMobileSubmit)}>
+              {renderSearchContent(true)}
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      method="POST"
+      onSubmit={handleSubmit(onSubmit)}
+      className="px-6 py-5 w-full relative rounded-tr-2xl rounded-b-2xl bg-white flex flex-col gap-4 shadow-[0_4px_24px_rgba(0,0,0,0.08)]"
+    >
+      {renderSearchContent(false)}
     </form>
   );
 }

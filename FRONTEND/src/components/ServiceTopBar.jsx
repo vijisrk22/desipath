@@ -68,9 +68,9 @@ function ServiceTopBar({ inputs = [], title, paths, form, plainBg = false }) {
               {title === "Buy a home" && (
                 <a
                   href="/services/BuyHome/sellHouse"
-                  className="px-4 py-1.5 bg-[#ffa41c] hover:bg-[#ff9900] transition-colors rounded-[57px] text-gray-800 text-sm font-bold font-dmsans shadow-md"
+                  className="text-[#ffa41c] hover:text-[#ff9900] text-[15px] font-bold font-dmsans underline decoration-2 underline-offset-4 transition-all whitespace-nowrap"
                 >
-                  Post a House
+                  Sell your Home - Free posting
                 </a>
               )}
            </div>

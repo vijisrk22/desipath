@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchButton from "./SearchButton";
-import { Autocomplete, TextField, Box, IconButton } from "@mui/material";
-import { Edit as EditIcon, Close as CloseIcon } from "@mui/icons-material";
+import { Autocomplete, TextField, Box, IconButton, Dialog, DialogContent, Slide, AppBar, Toolbar, Typography } from "@mui/material";
+import { Edit as EditIcon, Close as CloseIcon, Search as SearchIcon } from "@mui/icons-material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import React from "react";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const categories = [
   { label: "Rental home", path: "/services/rentalhomes" },
@@ -31,7 +38,16 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [fade, setFade] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    if (isMobile) {
+      setIsModalOpen(true);
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -39,8 +55,8 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
       setTimeout(() => {
         setPhraseIndex((prev) => (prev + 1) % phrases.length);
         setFade(true);
-      }, 1000); // Wait for fade out before switching
-    }, 6000); // Cycle every 6 seconds for a slow feel
+      }, 1000);
+    }, 6000);
     return () => clearInterval(interval);
   }, []);
 
@@ -50,10 +66,96 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
     if (selectedCategory && selectedCategory.path) {
       navigate(selectedCategory.path);
     } else {
-      // Fallback if no category selected
       navigate("/services/rentalhomes");
     }
+    if (isModalOpen) setIsModalOpen(false);
   };
+
+  const renderMobileSearchBar = () => (
+    <div 
+      onClick={() => setIsModalOpen(true)}
+      className="flex items-center bg-white border rounded-full border-gray-200 w-full max-w-md p-3 shadow-sm cursor-pointer gap-3"
+    >
+      <SearchIcon className="text-blue-600" />
+      <div className="flex-1 text-gray-500 font-medium text-sm">
+        {selectedCategory ? `Searching in ${selectedCategory.label}` : "What are you looking for?"}
+      </div>
+      <div className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+        {initialLocation || "Anywhere"}
+      </div>
+    </div>
+  );
+
+  const renderSearchFields = (isModal = false) => (
+    <div className={`flex flex-col gap-4 ${!isModal ? "md:flex-row md:items-center w-full" : ""}`}>
+      <div className={`flex flex-col md:flex-row justify-start items-center w-full ${!isModal ? "md:h-full" : "gap-4"}`}>
+        <div className={`flex items-center px-4 border rounded-[15px] md:rounded-none md:border-y-0 md:border-l-0 md:border-r border-gray-200 w-full ${!isModal ? "md:w-[60%] h-[50px] md:h-[34px]" : "h-[50px]"}`}>
+          <input
+            type="text"
+            placeholder="Zipcode/City"
+            value={initialLocation}
+            onClick={onEditLocation}
+            autoComplete="off"
+            className="w-full text-gray-800 text-sm font-semibold font-dmsans outline-none placeholder:text-gray-600 truncate cursor-pointer"
+            readOnly
+          />
+          {initialLocation && (
+            <IconButton 
+              size="small" 
+              onClick={onClearLocation}
+              sx={{ color: '#ccc', '&:hover': { color: '#ef4444' } }}
+            >
+              <CloseIcon sx={{ fontSize: '16px' }} />
+            </IconButton>
+          )}
+          <IconButton size="small" onClick={onEditLocation} sx={{ color: '#999', '&:hover': { color: '#ffa41c' } }}>
+            <EditIcon sx={{ fontSize: '16px' }} />
+          </IconButton>
+        </div>
+
+        <Box className={`flex-1 w-full border rounded-[15px] md:rounded-none md:border-none border-gray-200 ${!isModal ? "h-[50px] md:h-full flex items-center" : "h-[50px] flex items-center"}`}>
+          <Autocomplete
+            fullWidth
+            options={categories}
+            getOptionLabel={(option) => option.label}
+            value={selectedCategory}
+            disableClearable
+            onChange={(event, newValue) => {
+              setSelectedCategory(newValue);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Select Category"
+                variant="standard"
+                InputProps={{
+                  ...params.InputProps,
+                  disableUnderline: true,
+                  sx: {
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    fontFamily: 'DM Sans, sans-serif',
+                    color: '#4b5563',
+                    padding: '0 16px !important'
+                  }
+                }}
+              />
+            )}
+          />
+        </Box>
+      </div>
+
+      <div className={`w-full ${!isModal ? "md:w-auto" : ""}`}>
+        <button
+          type="submit"
+          className="w-full md:w-auto bg-[#0857d0] hover:bg-[#0746a8] text-white font-bold py-3 px-8 rounded-[15px] md:rounded-full transition-all flex items-center justify-center gap-2"
+        >
+          <img src="/search.svg" className="size-5 brightness-0 invert" alt="Search icon" />
+          <span className="text-sm md:text-base">Go</span>
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className=" py-4 max-w-4xl flex-col justify-start items-center gap-6 flex w-full mx-auto px-4 sm:px-0">
@@ -64,119 +166,44 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
         {phrases[phraseIndex]}
       </div>
 
-      <form 
-        onSubmit={handleSearch}
-        className="flex flex-col md:flex-row bg-white border rounded-[20px] md:rounded-full border-gray-200 w-full max-w-md md:max-w-2xl p-[6px] shadow-sm hover:shadow-md transition-shadow items-center gap-2 md:gap-0"
-      >
-        <div className="flex-1 flex flex-col md:flex-row justify-start items-center w-full md:h-full">
-          {/* Location Input with Edit Button */}
-          <div className="flex items-center px-4 border-b md:border-b-0 md:border-r border-gray-200 w-full md:w-[60%] h-[50px] md:h-[34px]">
-            <input
-              type="text"
-              placeholder="Zipcode/City"
-              value={initialLocation}
-              onClick={onEditLocation}
-              autoComplete="off"
-              className="w-full text-gray-800 text-sm font-semibold font-dmsans outline-none placeholder:text-gray-600 truncate cursor-pointer"
-              readOnly
-            />
-            {initialLocation && (
-              <IconButton 
-                size="small" 
-                onClick={onClearLocation}
-                aria-label="Clear location"
-                sx={{ 
-                  color: '#ccc',
-                  '&:hover': { color: '#ef4444' }
-                }}
-              >
-                <CloseIcon sx={{ fontSize: '16px' }} />
-              </IconButton>
-            )}
-            <IconButton 
-              size="small" 
-              onClick={onEditLocation}
-              aria-label="Edit location"
-              sx={{ 
-                ml: 0.5, 
-                color: '#999',
-                '&:hover': { color: '#ffa41c' }
-              }}
-            >
-              <EditIcon sx={{ fontSize: '16px' }} />
-            </IconButton>
-          </div>
-
-          {/* Category Autocomplete */}
-          <Box className="flex-1 w-full h-[50px] md:h-full flex items-center">
-            <Autocomplete
-              fullWidth
-              options={categories}
-              getOptionLabel={(option) => option.label}
-              value={selectedCategory}
-              disableClearable
-              onChange={(event, newValue) => {
-                setSelectedCategory(newValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="Select Category"
-                  variant="standard"
-                  InputProps={{
-                    ...params.InputProps,
-                    disableUnderline: true,
-                    sx: {
-                      fontSize: { xs: '14px', sm: '14px' },
-                      fontWeight: 600,
-                      fontFamily: 'DM Sans, sans-serif',
-                      color: '#4b5563',
-                      '& input': {
-                        padding: '0 !important',
-                        height: '100%'
-                      }
-                    }
-                  }}
-                />
-              )}
-              sx={{
-                '& .MuiAutocomplete-inputRoot': {
-                  padding: '4px 16px 0 !important', // Added top padding to shift text down to the middle
-                  minHeight: '50px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                },
-                '& .MuiAutocomplete-endAdornment': {
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)' // Perfectly center the arrow vertically
-                }
-              }}
-              ListboxProps={{
-                sx: {
-                  fontFamily: 'DM Sans, sans-serif',
-                  '& .MuiAutocomplete-option': {
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    fontFamily: 'DM Sans, sans-serif',
-                    py: 1.5
-                  }
-                }
-              }}
-            />
-          </Box>
-        </div>
-        <div className="w-full md:w-auto mt-2 md:mt-0">
-          <button
-            type="submit"
-            className="w-full md:w-auto bg-[#0857d0] hover:bg-[#0746a8] text-white font-bold py-3 md:py-3 px-8 rounded-[15px] md:rounded-full transition-all flex items-center justify-center gap-2"
+      {isMobile ? (
+        <>
+          {renderMobileSearchBar()}
+          <Dialog
+            fullScreen
+            open={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            TransitionComponent={Transition}
+            sx={{ "& .MuiDialog-paper": { backgroundColor: "#f9fafb" } }}
           >
-            <img src="/search.svg" className="size-5 brightness-0 invert" alt="Search icon" />
-            <span className="text-sm md:text-base">Go</span>
-          </button>
-        </div>
-      </form>
+            <AppBar sx={{ position: 'relative', bgcolor: 'white', color: 'gray.800', boxShadow: 'none', borderBottom: '1px solid #e5e7eb' }}>
+              <Toolbar>
+                <IconButton edge="start" color="inherit" onClick={() => setIsModalOpen(false)}>
+                  <CloseIcon />
+                </IconButton>
+                <Typography sx={{ ml: 2, flex: 1, fontWeight: 700, fontFamily: 'DM Sans' }} variant="h6">
+                  Search
+                </Typography>
+                <button onClick={handleSearch} className="text-blue-700 font-bold text-sm">
+                  Search
+                </button>
+              </Toolbar>
+            </AppBar>
+            <DialogContent className="pt-6">
+              <form onSubmit={handleSearch}>
+                {renderSearchFields(true)}
+              </form>
+            </DialogContent>
+          </Dialog>
+        </>
+      ) : (
+        <form 
+          onSubmit={handleSearch}
+          className="flex flex-col md:flex-row bg-white border rounded-[20px] md:rounded-full border-gray-200 w-full max-w-md md:max-w-2xl p-[6px] shadow-sm hover:shadow-md transition-shadow items-center gap-2 md:gap-0"
+        >
+          {renderSearchFields(false)}
+        </form>
+      )}
     </div>
   );
 }

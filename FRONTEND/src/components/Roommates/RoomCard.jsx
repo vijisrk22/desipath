@@ -1,83 +1,75 @@
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import ButtonRight from "../ButtonRight";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import api from "../../utils/api";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { generateRandomSuffix } from "../../utils/urlHelper";
+import LazyImage from "../LazyImage";
+import { getStateCode } from "../../utils/locationHelper";
 
 export default function RoomCard({ room }) {
   const [isFavorited, setIsFavorited] = useState(false);
+
   return (
-    <Card
-      sx={{ minHeight: 450, maxWidth: 350, p: 1, borderRadius: 5 }}
-      className="relative"
+    <Link
+      to={`/services/roommates/${room.id}-${generateRandomSuffix(room.id)}`}
+      className="group block bg-white rounded-[30px] shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 overflow-hidden h-full flex flex-col w-full relative"
+      style={{ minHeight: "450px", maxWidth: "350px" }}
     >
       <button
-        onClick={() => setIsFavorited(!isFavorited)}
-        className="absolute top-3 right-4  flex items-center justify-center bg-white/40 p-2 rounded-full shadow-md"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsFavorited(!isFavorited);
+        }}
+        className="absolute z-10 top-3 right-4 flex items-center justify-center bg-white/40 p-2 rounded-full shadow-md hover:bg-white/60 transition-colors"
       >
         {isFavorited ? (
-          <FavoriteIcon
-            sx={{ width: "1.5rem", height: "1.5rem", color: "red" }}
-          />
+          <FavoriteIcon sx={{ width: "1.5rem", height: "1.5rem", color: "red" }} />
         ) : (
-          <img
-            src={isFavorited ? "/heartFilled.svg" : "/heart.svg"}
-            alt="heart"
-            className="w-6 h-6"
-          />
+          <img src="/heart.svg" alt="heart" className="w-6 h-6" />
         )}
       </button>
-      <CardMedia
-        component="img"
-        image={
-          room?.photos && room.photos.length > 0
-            ? `${api.defaults.baseURL}/${room.photos[0]}`
-            : "https://via.placeholder.com/167"
-        }
-        title="room"
-        onError={(e) => {
-          e.currentTarget.onerror = null;
-          e.currentTarget.src = "https://via.placeholder.com/167";
-        }}
-        sx={{
-          height: 270,
-          objectFit: "cover", // optional, looks better
-          borderRadius: "8px", // optional, if you want rounded corners
-        }}
-      />
 
-      <CardContent>
-        <div className="text-gray-800 text-[26px] font-medium font-dmsans">
-          {room.type || "Single Room"}
+      <div className="w-full h-[270px] p-2 overflow-hidden shrink-0">
+        <LazyImage
+          src={
+            room?.photos && room.photos.length > 0
+              ? `${api.defaults.baseURL}/${room.photos[0]}`
+              : "https://via.placeholder.com/167"
+          }
+          alt={room.type || "room"}
+          className="w-full h-full object-cover rounded-[20px] group-hover:scale-105 transition-transform duration-700"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "https://via.placeholder.com/167";
+          }}
+        />
+      </div>
+
+      <div className="px-5 py-4 flex flex-col flex-grow bg-white">
+        <div className="text-gray-800 text-2xl font-bold font-dmsans mb-2 group-hover:text-blue-700 transition-colors">
+          {typeof room?.type === 'object' ? room.type.name : (room.type || "Single Room")}
         </div>
-        <div className="justify-start items-center gap-2 inline-flex">
-          <img src="/location.svg" className="w-[24px] h-[24px]" />
-          <div className="text-gray-500 text-[22px] max-w-[300px] font-normal font-dmsans truncate">
-            {room.location_city}, {room.location_state}, {room.location_zipcode}
+
+        <div className="flex items-center gap-2 mb-4 min-h-[20px]">
+          <img src="/location.svg" className="w-4 h-4 opacity-60" alt="location" />
+          <div className="text-gray-500 text-xs font-medium font-dmsans truncate">
+            {typeof room.location_city === 'object' ? (room.location_city?.name || "") : room.location_city}, {getStateCode(typeof room.location_state === 'object' ? room.location_state?.name : room.location_state)}
           </div>
         </div>
-      </CardContent>
-      <CardActions>
-        <div className=" flex justify-between items-center flex-1">
+
+        <div className="mt-auto pt-4 border-t border-gray-50 flex justify-between items-center">
           <div>
-            <span className="text-gray-800 text-xl font-semibold font-dmsans">
-              $ {room.rent}
+            <span className="text-blue-700 text-2xl font-bold font-dmsans">
+              ${room.rent}
             </span>
-            <span className="text-gray-500 text-base font-normal font-dmsans">
-              /{room.rent_frequency}
+            <span className="text-gray-400 text-sm font-normal font-dmsans ml-1">
+              /{room.rent_frequency || 'month'}
             </span>
           </div>
-          <ButtonRight
-            text="Details"
-            path={`/services/roommates/${room.id}`}
-            textClass="text-base"
-            paddingClass="px-[25px] py-[18px]"
-          />
         </div>
-      </CardActions>
-    </Card>
+      </div>
+    </Link>
   );
 }
+

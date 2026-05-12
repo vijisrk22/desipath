@@ -10,6 +10,7 @@ import {
   Paper,
   IconButton
 } from '@mui/material';
+import { useSelector } from 'react-redux';
 import { 
   FlightTakeoff, 
   FlightLand, 
@@ -30,7 +31,42 @@ import { useNavigate } from 'react-router-dom';
 
 const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal = false }) => {
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.user);
   const [showDetails, setShowDetails] = React.useState(false);
+
+  const handleMessage = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    if (!user) {
+      navigate("/login", { state: { from: { pathname: window.location.pathname } } });
+      return;
+    }
+
+    if (isOwner) return;
+
+    const chatPartnerInfo = {
+      chatPartnerId: post.user?.id,
+      chatPartnerName: post.user?.name,
+      chatPartnerLocation: post.route_legs?.[0]?.city || "",
+    };
+
+    const defaultMsg = "Hello, I am looking for a travel companion, can we discuss ?";
+
+    try {
+      navigate(
+        `/inbox?adType=travel_companion&adId=${
+          post.id
+        }&chatPartnerInfo=${encodeURIComponent(
+          JSON.stringify(chatPartnerInfo)
+        )}&initialMessage=${encodeURIComponent(defaultMsg)}`
+      );
+    } catch (err) {
+      console.log("Chat navigation error:", err);
+    }
+  };
   const isVolunteer = type === 'volunteer';
   const legs = post.route_legs || [];
   const departure = legs.find(l => l.leg_type === 'departure');
@@ -165,9 +201,11 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
               fullWidth 
               variant="contained" 
               startIcon={<Message />}
+              onClick={handleMessage}
+              disabled={isOwner}
               sx={{ bgcolor: '#2563eb', py: 2, borderRadius: '16px', fontWeight: 800, textTransform: 'none' }}
             >
-              Message {post.user?.name?.split(' ')[0]}
+              {isOwner ? 'Your Post' : `Message ${post.user?.name?.split(' ')[0]}`}
             </Button>
           </div>
         </div>
@@ -179,32 +217,40 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
     return (
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col md:flex-row items-stretch min-h-[180px]">
         {/* User & Info Section (Left/Side) */}
-        <div className="p-6 border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/30 flex flex-col justify-center min-w-[220px]">
-          <div className="flex items-center gap-3 mb-4">
+        <div className={`p-6 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col justify-center min-w-[220px] ${isVolunteer ? 'bg-[#0f172a]/60' : 'bg-[#1e1b4b]/60'} relative`}>
+          <div className="flex items-center gap-3 mb-4 relative z-10">
             <Avatar 
               src={post.user?.profile_photo} 
-              sx={{ bgcolor: '#2563eb', width: 44, height: 44, fontWeight: 700 }}
+              sx={{ 
+                bgcolor: isVolunteer ? '#3b82f6' : '#6366f1', 
+                width: 44, 
+                height: 44, 
+                fontWeight: 900,
+                border: '2px solid rgba(255,255,255,0.1)'
+              }}
             >
               {post.user?.name?.[0]}
             </Avatar>
             <div>
-              <Typography variant="subtitle2" fontWeight={800} sx={{ lineHeight: 1.2 }}>
+              <Typography variant="subtitle2" fontWeight={800} sx={{ color: 'white', lineHeight: 1.2 }}>
                 {post.user?.name || 'Anonymous'}
               </Typography>
-              <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+              <Typography variant="caption" sx={{ color: isVolunteer ? '#93c5fd' : '#c7d2fe', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
                 {isVolunteer ? 'Volunteer' : 'Seeker'}
               </Typography>
             </div>
           </div>
-          <div className="mt-auto">
-            <Typography variant="h6" fontWeight={900} sx={{ color: '#2563eb' }}>
+          <div className="mt-auto relative z-10">
+            <Typography variant="h6" fontWeight={900} sx={{ color: '#fbbf24' }}>
               {post.gift_card_offer && post.gift_card_offer !== '0' ? `$${post.gift_card_offer}` : 
                post.gift_card_preference && post.gift_card_preference !== 'free' ? `$${post.gift_card_preference}` : 'FREE'}
             </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '0.65rem' }}>
+            <Typography variant="caption" sx={{ color: 'white', opacity: 0.7, fontWeight: 700, fontSize: '0.65rem' }}>
               Amazon Gift Card
             </Typography>
           </div>
+          {/* Subtle accent line */}
+          <div className={`absolute right-0 top-0 w-1 h-full ${isVolunteer ? 'bg-blue-500/30' : 'bg-indigo-500/30'}`}></div>
         </div>
 
         {/* Route Section (Middle) */}
@@ -258,8 +304,17 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
             variant="contained"
             fullWidth
             onClick={() => setShowDetails(true)}
-            endIcon={<ArrowForward sx={{ color: 'white' }} />} 
-            sx={{ bgcolor: '#166534', '&:hover': { bgcolor: '#14532d' }, color: 'white !important', fontWeight: 800, textTransform: 'none', borderRadius: '14px', py: 1, '& .MuiButton-endIcon': { color: 'white' } }}
+            endIcon={<ArrowForward sx={{ color: '#1e3a8a' }} />} 
+            sx={{ 
+              bgcolor: '#eff6ff', 
+              '&:hover': { bgcolor: '#dbeafe' }, 
+              color: '#1e3a8a !important', 
+              fontWeight: 800, 
+              textTransform: 'none', 
+              borderRadius: '14px', 
+              py: 1, 
+              '& .MuiButton-endIcon': { color: '#1e3a8a' } 
+            }}
           >
             Details
           </Button>
@@ -275,6 +330,7 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
           )}
           <Button 
             fullWidth
+            onClick={!isOwner ? handleMessage : undefined}
             sx={{ color: isOwner ? '#ef4444' : '#6b7280', fontWeight: 800, textTransform: 'none', borderRadius: '14px', py: 1 }}
           >
             {isOwner ? 'Remove' : 'Message'}
@@ -287,34 +343,42 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full">
       {/* Card Header: User Info & Match Status */}
-      <div className="p-6 pb-2">
-        <div className="flex items-center justify-between mb-4">
+      <div className={`p-6 pb-5 ${isVolunteer ? 'bg-[#0f172a]/60' : 'bg-[#1e1b4b]/60'} relative`}>
+        <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-3">
             <Avatar 
               src={post.user?.profile_photo} 
-              sx={{ bgcolor: '#2563eb', width: 48, height: 48, fontWeight: 700 }}
+              sx={{ 
+                bgcolor: isVolunteer ? '#3b82f6' : '#6366f1', 
+                width: 48, 
+                height: 48, 
+                fontWeight: 900,
+                border: '2px solid rgba(255,255,255,0.1)'
+              }}
             >
               {post.user?.name?.[0]}
             </Avatar>
             <div>
-              <Typography variant="subtitle1" fontWeight={800} sx={{ lineHeight: 1.2 }}>
+              <Typography variant="subtitle1" fontWeight={800} sx={{ color: 'white', lineHeight: 1.2 }}>
                 {post.user?.name || 'Anonymous'}
               </Typography>
-              <Typography variant="caption" color="text.secondary" fontWeight={600}>
+              <Typography variant="caption" sx={{ color: isVolunteer ? '#93c5fd' : '#c7d2fe', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
                 {isVolunteer ? 'Offering Help' : 'Seeking Help'}
               </Typography>
             </div>
           </div>
           <div className="text-right">
-             <Typography variant="h6" fontWeight={900} sx={{ color: '#2563eb' }}>
+             <Typography variant="h6" fontWeight={900} sx={{ color: '#fbbf24' }}>
                {post.gift_card_offer && post.gift_card_offer !== '0' ? `$${post.gift_card_offer}` : 
                 post.gift_card_preference && post.gift_card_preference !== 'free' ? `$${post.gift_card_preference}` : 'FREE'}
              </Typography>
-             <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+             <Typography variant="caption" sx={{ color: 'white', opacity: 0.7, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.6rem' }}>
                Amazon Gift Card
              </Typography>
           </div>
         </div>
+        {/* Subtle accent line */}
+        <div className={`absolute bottom-0 left-0 h-1 w-full ${isVolunteer ? 'bg-blue-500/30' : 'bg-indigo-500/30'}`}></div>
       </div>
 
       {/* Main Content: Route */}
@@ -369,6 +433,7 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
          <div className="flex items-center gap-2">
             <Button 
               startIcon={isOwner ? null : <Message />} 
+              onClick={!isOwner ? handleMessage : undefined}
               sx={{ color: isOwner ? '#ef4444' : '#1f2937', fontWeight: 800, textTransform: 'none', borderRadius: '12px' }}
             >
               {isOwner ? 'Remove' : 'Message'}
@@ -384,10 +449,21 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
             )}
          </div>
         <Button 
-          endIcon={<ArrowForward sx={{ color: 'white' }} />} 
+          endIcon={<ArrowForward sx={{ color: '#1e3a8a' }} />} 
           variant="contained"
           onClick={() => setShowDetails(true)}
-          sx={{ bgcolor: '#166534', '&:hover': { bgcolor: '#14532d' }, color: 'white !important', fontWeight: 800, textTransform: 'none', borderRadius: '12px', px: 3, '& .MuiButton-endIcon': { color: 'white' } }}
+          sx={{ 
+            bgcolor: '#eff6ff', 
+            '&:hover': { bgcolor: '#dbeafe' }, 
+            color: '#1e3a8a !important', 
+            fontWeight: 800, 
+            textTransform: 'none', 
+            borderRadius: '12px', 
+            px: 3, 
+            '& .MuiButton-endIcon': { color: '#1e3a8a' },
+            boxShadow: 'none',
+            border: '1px solid #dbeafe'
+          }}
         >
           Details
         </Button>

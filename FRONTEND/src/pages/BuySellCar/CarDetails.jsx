@@ -24,7 +24,8 @@ function CarDetails() {
   ];
 
   const { action, carId: carIdParam } = useParams();
-  const carId = carIdParam || action;
+  const rawId = carIdParam || action;
+  const carId = rawId ? rawId.split('-')[0] : null;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
@@ -122,7 +123,7 @@ function CarDetails() {
               : "Loading..."}
           </div>
           <div className="text-gray-800 text-[22px] md:text-[26px] font-bold font-dmsans mb-1">
-            {carDetails?.make} {carDetails?.model} - {carDetails?.year}
+            {typeof carDetails?.make === 'object' && carDetails?.make !== null ? (carDetails.make?.name || JSON.stringify(carDetails.make)) : (carDetails?.make || "")} {typeof carDetails?.model === 'object' && carDetails?.model !== null ? (carDetails.model?.name || JSON.stringify(carDetails.model)) : (carDetails?.model || "")} - {typeof carDetails?.year === 'object' && carDetails?.year !== null ? (carDetails.year?.name || JSON.stringify(carDetails.year)) : (carDetails?.year || "")}
           </div>
           <div className="text-gray-500 font-medium flex items-center gap-1 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

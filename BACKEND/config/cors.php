@@ -14,8 +14,10 @@ return [
     // 'allowed_origins' => ['http://localhost:3000'],
     'allowed_origins' => [
         'http://localhost:3000',
+        'http://localhost:3001',
         'http://localhost:8000',
         'http://localhost:5173',
+        'http://localhost:4173',
         'https://jolly-island-01b6ff91e.1.azurestaticapps.net',
         'https://happy-pebble-0f4bc7310.6.azurestaticapps.net',
     ],

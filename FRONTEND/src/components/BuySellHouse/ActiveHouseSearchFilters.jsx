@@ -75,10 +75,12 @@ function ActiveHouseSearchFilters() {
     }
 
     if (lastSearchQuery.priceMin !== undefined || lastSearchQuery.priceMax !== undefined) {
+        const min = typeof lastSearchQuery.priceMin === 'object' ? 0 : (lastSearchQuery.priceMin || 0);
+        const max = typeof lastSearchQuery.priceMax === 'object' ? 'Any' : (lastSearchQuery.priceMax || 'Any');
         chips.push(
             <Chip
                 key="price"
-                label={`Price: $${lastSearchQuery.priceMin || 0} - $${lastSearchQuery.priceMax || 'Any'}`}
+                label={`Price: $${min} - $${max}`}
                 onDelete={() => handleRemove("price")}
                 variant="outlined"
                 sx={chipStyle}
@@ -107,7 +109,7 @@ function ActiveHouseSearchFilters() {
     if (chips.length === 0) return null;
 
     return (
-        <div className="py-2 flex flex-wrap items-center gap-3">
+        <div className="py-2 hidden md:flex flex-wrap items-center gap-3">
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 {chips}
             </Stack>

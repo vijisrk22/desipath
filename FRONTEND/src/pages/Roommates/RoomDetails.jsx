@@ -25,7 +25,8 @@ function RoomDetails() {
   const navigate = useNavigate();
 
   const { action, roomId: roomIdParam } = useParams();
-  const roomId = roomIdParam || action;
+  const rawId = roomIdParam || action;
+  const roomId = rawId ? rawId.split('-')[0] : null;
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);

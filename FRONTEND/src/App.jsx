@@ -1,65 +1,66 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./Layout";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LandingPage from "./pages/LandingPage";
-import Roommates from "./pages/Roommates/Roommates";
-import RoomDetails from "./pages/Roommates/RoomDetails";
-import Chat from "./components/Chat/Chat";
-import BuySellHouse from "./pages/BuySellHouse/BuySellHouse";
-import HouseDetails from "./pages/BuySellHouse/HouseDetails";
-import RentalHome from "./pages/RentalHome/RentalHome";
-import RentalHomeDetails from "./pages/RentalHome/RentalHomeDetails";
-import BuySellCar from "./pages/BuySellCar/BuySellCar";
-import CarDetails from "./pages/BuySellCar/CarDetails";
-import TravelCompanionLanding from "./pages/TravelCompanion/TravelCompanionLanding";
-import TravelCompanionWizard from "./pages/TravelCompanion/TravelCompanionWizard";
-import PostSuccess from "./pages/TravelCompanion/PostSuccess";
-import ITTrainings from "./pages/ITTrainings/ITTrainings";
-import CourseDetailsPage from "./pages/ITTrainings/CourseDetailsPage";
-import EventsLanding from "./pages/Events/EventsLanding";
-import EventDetails from "./pages/Events/EventDetails";
-import ViewProfile from "./components/User/ViewProfile";
+const Roommates = lazy(() => import("./pages/Roommates/Roommates"));
+const RoomDetails = lazy(() => import("./pages/Roommates/RoomDetails"));
+const Chat = lazy(() => import("./components/Chat/Chat"));
+const BuySellHouse = lazy(() => import("./pages/BuySellHouse/BuySellHouse"));
+const HouseDetails = lazy(() => import("./pages/BuySellHouse/HouseDetails"));
+const RentalHome = lazy(() => import("./pages/RentalHome/RentalHome"));
+const RentalHomeDetails = lazy(() => import("./pages/RentalHome/RentalHomeDetails"));
+const BuySellCar = lazy(() => import("./pages/BuySellCar/BuySellCar"));
+const CarDetails = lazy(() => import("./pages/BuySellCar/CarDetails"));
+const TravelCompanionLanding = lazy(() => import("./pages/TravelCompanion/TravelCompanionLanding"));
+const TravelCompanionWizard = lazy(() => import("./pages/TravelCompanion/TravelCompanionWizard"));
+const PostSuccess = lazy(() => import("./pages/TravelCompanion/PostSuccess"));
+const ITTrainings = lazy(() => import("./pages/ITTrainings/ITTrainings"));
+const CourseDetailsPage = lazy(() => import("./pages/ITTrainings/CourseDetailsPage"));
+const EventsLanding = lazy(() => import("./pages/Events/EventsLanding"));
+const EventDetails = lazy(() => import("./pages/Events/EventDetails"));
+const ViewProfile = lazy(() => import("./components/User/ViewProfile"));
 import PrivateRoute from "./components/PrivateRoute";
-import AstrologyAds from "./pages/AstrologyAds/AstrologyAds";
-import ClassesForKids from "./pages/ClassesForKids/ClassesForKids";
-import EditProfile from "./components/User/EditProfile";
-import MyListings from "./components/User/MyListings";
+const AstrologyAds = lazy(() => import("./pages/AstrologyAds/AstrologyAds"));
+const ClassesForKids = lazy(() => import("./pages/ClassesForKids/ClassesForKids"));
+const EditProfile = lazy(() => import("./components/User/EditProfile"));
+const MyListings = lazy(() => import("./components/User/MyListings"));
 import ProfileLayout from "./components/User/ProfileLayout";
-import ProfileSuccess from "./components/User/ProfileSuccess";
-import KidsClassLanding from "./pages/KidsClass/KidsClassLanding";
-import KidsClassSubcategory from "./pages/KidsClass/KidsClassSubcategory";
-import KidsClassDetails from "./pages/KidsClass/KidsClassDetails";
-import InstructorPortal from "./pages/KidsClass/InstructorPortal/InstructorPortal";
-import InstructorSuccess from "./pages/KidsClass/InstructorPortal/InstructorSuccess";
-import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
-import KidsClassAdmin from "./pages/AdminDashboard/KidsClassAdmin";
-import ListingAdmin from "./pages/AdminDashboard/ListingAdmin";
-import PostAdPage from "./pages/PostAdPage";
-import AboutUs from "./pages/AboutUs";
-import Contact from "./pages/Contact";
-import UsersAdmin from "./pages/AdminDashboard/UsersAdmin";
-import AdminUsersAdmin from "./pages/AdminDashboard/AdminUsersAdmin";
-import ZipcodesAdmin from "./pages/AdminDashboard/ZipcodesAdmin";
-import LocalAdsAdmin from "./pages/AdminDashboard/LocalAdsAdmin";
-import Localdeals from "./pages/Localdeals/Localdeals";
-import ItTrainingLanding from "./pages/ItTraining/ItTrainingLanding";
-import ItTrainingSubcategory from "./pages/ItTraining/ItTrainingSubcategory";
-import ItTrainingDetails from "./pages/ItTraining/ItTrainingDetails";
-import ItInstructorPortal from "./pages/ItTraining/InstructorPortal/InstructorPortal";
-import ItInstructorSuccess from "./pages/ItTraining/InstructorPortal/InstructorSuccess";
-import MarketplaceCategories from "./pages/AdminDashboard/MarketplaceCategories";
-import LocalAdPortal from "./pages/Localdeals/Portal/LocalAdPortal";
-import LocalAdSuccess from "./pages/Localdeals/Portal/LocalAdSuccess";
-import ItTrainingLeadsAdmin from "./pages/AdminDashboard/ItTrainingLeadsAdmin";
-import PhotographyAdmin from "./pages/AdminDashboard/PhotographyAdmin";
-import PhotographySearch from "./pages/Photography/PhotographySearch";
-import PhotographerDetails from "./pages/Photography/PhotographerDetails";
-import PhotographyPortal from "./pages/Photography/PhotographyPortal";
-import PhotographySuccess from "./pages/Photography/PhotographySuccess";
-import ForumAdmin from "./pages/AdminDashboard/ForumAdmin";
-import InstructorProfile from "./pages/InstructorProfile";
-import { lazy, Suspense } from 'react';
+const ProfileSuccess = lazy(() => import("./components/User/ProfileSuccess"));
+const KidsClassLanding = lazy(() => import("./pages/KidsClass/KidsClassLanding"));
+const KidsClassSubcategory = lazy(() => import("./pages/KidsClass/KidsClassSubcategory"));
+const KidsClassDetails = lazy(() => import("./pages/KidsClass/KidsClassDetails"));
+const InstructorPortal = lazy(() => import("./pages/KidsClass/InstructorPortal/InstructorPortal"));
+const InstructorSuccess = lazy(() => import("./pages/KidsClass/InstructorPortal/InstructorSuccess"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard/AdminDashboard"));
+const KidsClassAdmin = lazy(() => import("./pages/AdminDashboard/KidsClassAdmin"));
+const ListingAdmin = lazy(() => import("./pages/AdminDashboard/ListingAdmin"));
+const PostAdPage = lazy(() => import("./pages/PostAdPage"));
+const AboutUs = lazy(() => import("./pages/AboutUs"));
+const Contact = lazy(() => import("./pages/Contact"));
+const UsersAdmin = lazy(() => import("./pages/AdminDashboard/UsersAdmin"));
+const AdminUsersAdmin = lazy(() => import("./pages/AdminDashboard/AdminUsersAdmin"));
+const ZipcodesAdmin = lazy(() => import("./pages/AdminDashboard/ZipcodesAdmin"));
+const LocalAdsAdmin = lazy(() => import("./pages/AdminDashboard/LocalAdsAdmin"));
+const Localdeals = lazy(() => import("./pages/Localdeals/Localdeals"));
+const ItTrainingLanding = lazy(() => import("./pages/ItTraining/ItTrainingLanding"));
+const ItTrainingSubcategory = lazy(() => import("./pages/ItTraining/ItTrainingSubcategory"));
+const ItTrainingDetails = lazy(() => import("./pages/ItTraining/ItTrainingDetails"));
+const ItInstructorPortal = lazy(() => import("./pages/ItTraining/InstructorPortal/InstructorPortal"));
+const ItInstructorSuccess = lazy(() => import("./pages/ItTraining/InstructorPortal/InstructorSuccess"));
+const MarketplaceCategories = lazy(() => import("./pages/AdminDashboard/MarketplaceCategories"));
+const LocalAdPortal = lazy(() => import("./pages/Localdeals/Portal/LocalAdPortal"));
+const LocalAdSuccess = lazy(() => import("./pages/Localdeals/Portal/LocalAdSuccess"));
+const ItTrainingLeadsAdmin = lazy(() => import("./pages/AdminDashboard/ItTrainingLeadsAdmin"));
+const PhotographyAdmin = lazy(() => import("./pages/AdminDashboard/PhotographyAdmin"));
+const PhotographySearch = lazy(() => import("./pages/Photography/PhotographySearch"));
+const PhotographerDetails = lazy(() => import("./pages/Photography/PhotographerDetails"));
+const PhotographyPortal = lazy(() => import("./pages/Photography/PhotographyPortal"));
+const PhotographySuccess = lazy(() => import("./pages/Photography/PhotographySuccess"));
+const ForumAdmin = lazy(() => import("./pages/AdminDashboard/ForumAdmin"));
+const InstructorProfile = lazy(() => import("./pages/InstructorProfile"));
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -70,6 +71,7 @@ function App() {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+      <Suspense fallback={<div className="min-h-screen bg-white flex flex-col items-center justify-center"><div className="w-16 h-16 border-4 border-[#0857d0] border-t-transparent rounded-full animate-spin"></div><div className="mt-4 font-bold text-gray-500">Loading...</div></div>}>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/home" element={<Navigate to="/" replace />} />
@@ -189,17 +191,13 @@ function App() {
           <Route 
             path="/forum" 
             element={
-              <Suspense fallback={<div className="min-h-screen bg-[#dae0e6] flex items-center justify-center font-bold text-gray-400">Loading Community...</div>}>
-                <ForumLanding />
-              </Suspense>
+              <ForumLanding />
             } 
           />
           <Route 
             path="/forum/post/:id" 
             element={
-              <Suspense fallback={<div className="min-h-screen bg-[#dae0e6] flex items-center justify-center font-bold text-gray-400">Loading Discussion...</div>}>
-                <ForumPostDetail />
-              </Suspense>
+              <ForumPostDetail />
             } 
           />
 
@@ -257,6 +255,7 @@ function App() {
 
         </Route>
       </Routes>
+      </Suspense>
     </>
   );
 }

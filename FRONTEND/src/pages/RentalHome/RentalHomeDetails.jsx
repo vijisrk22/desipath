@@ -25,8 +25,9 @@ function RentalHomeDetails() {
 
   const navigate = useNavigate();
 
-  const { action, homeId } = useParams();
-  const rentalHomeId = homeId || action;
+  const { action, homeId: homeIdParam } = useParams();
+  const rawId = homeIdParam || action;
+  const rentalHomeId = rawId ? rawId.split('-')[0] : null;
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);

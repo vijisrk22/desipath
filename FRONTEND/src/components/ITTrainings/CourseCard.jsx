@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import ButtonRight from "../ButtonRight";
 import StarRating from "../Rating/StarRating";
+import { generateRandomSuffix } from "../../utils/urlHelper";
 import { getFullImageUrl } from "../../utils/imageHelper";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ScheduleIcon from '@mui/icons-material/Schedule';
@@ -11,7 +12,7 @@ function CourseCard({ result }) {
   const navigate = useNavigate();
 
   function handleClick() {
-    navigate(`/services/itTrainings/course/${result?.id}`);
+    navigate(`/services/itTrainings/course/${result?.id}-${generateRandomSuffix(result?.id)}`);
   }
 
   return (
@@ -80,9 +81,6 @@ function CourseCard({ result }) {
             <span className="text-gray-400 text-[10px] font-black uppercase tracking-tighter">
               ({result.numOfReviews || 24})
             </span>
-          </div>
-          <div className="text-blue-600 text-xs font-black uppercase tracking-widest flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-            View Details <span>→</span>
           </div>
         </div>
       </div>

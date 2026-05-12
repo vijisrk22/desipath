@@ -6,7 +6,8 @@ import api from "../../utils/api";
 import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function ItTrainingDetails() {
-  const { id } = useParams();
+  const { id: idParam } = useParams();
+  const id = idParam ? idParam.split('-')[0] : null;
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enquiryParams, setEnquiryParams] = useState({ name: '', email: '', phone: '', message: '' });

@@ -28,7 +28,7 @@ export default function MinimumDistanceSlider({
           <span>Price </span>
         </div>
         <div className="relative text-gray-800 text-[15px] md:text-[10px] lg:text-[9px] xl:text-base font-normal font-dmsans">
-          ${value[0]} - ${value[1]}
+          ${(value[0] || 0).toLocaleString()} - ${(value[1] || 0).toLocaleString()}
         </div>
       </div>
       <Slider

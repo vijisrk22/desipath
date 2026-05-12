@@ -13,7 +13,7 @@ function ReviewPostContent({ contents, type = "reviewPost" }) {
           </div>
           {content.text != "Photos" ? (
             <div className="text-gray-800 text-base sm:text-[17px] font-semibold sm:font-medium font-dmsans leading-tight">
-              {content.value}
+              {typeof content.value === 'object' && content.value !== null ? (content.value.name || content.value.title || JSON.stringify(content.value)) : (content.value || "N/A")}
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
