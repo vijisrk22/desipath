@@ -108,10 +108,10 @@ export default function ItTrainingDetails() {
       <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-8 py-10 font-dmsans">
         
         {/* Modern Header Section */}
-        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-blue-900/5 border border-gray-100 flex flex-col md:flex-row gap-10 mb-10 relative overflow-hidden">
+        <div className="bg-white rounded-[2rem] p-6 md:p-8 shadow-2xl shadow-blue-900/5 border border-gray-100 flex flex-col md:flex-row gap-8 mb-10 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full -mr-32 -mt-32 opacity-50"></div>
           
-          <div className="w-32 h-32 md:w-48 md:h-48 rounded-3xl shadow-2xl border-4 border-white shrink-0 overflow-hidden bg-slate-100 flex items-center justify-center mx-auto md:mx-0 relative z-10">
+          <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl shadow-xl border-4 border-white shrink-0 overflow-hidden bg-slate-100 flex items-center justify-center mx-auto md:mx-0 relative z-10">
             {instructor.profile_photo_url ? (
                <img 
                  src={getFullImageUrl(instructor.profile_photo_url)} 
@@ -128,20 +128,20 @@ export default function ItTrainingDetails() {
                <span className="px-4 py-1.5 bg-blue-900 text-white text-xs font-bold rounded-xl uppercase tracking-widest">{classBasic.category}</span>
                <span className="px-4 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl uppercase tracking-widest border border-blue-100">{classBasic.subcategory}</span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-black text-blue-900 mb-3 leading-tight tracking-tight">{classBasic.title}</h1>
-            <div className="flex items-center gap-2 justify-center md:justify-start text-xl font-bold mb-6">
+            <h1 className="text-2xl md:text-3xl font-black text-blue-900 mb-3 leading-tight tracking-tight">{classBasic.title}</h1>
+            <div className="flex items-center gap-2 justify-center md:justify-start text-lg font-bold mb-4">
               <span className="text-gray-400">Led by</span>
-              <span className="text-blue-600 underline decoration-blue-200 underline-offset-4">{instructor.name}</span>
+              <Link to={`/it-instructor/${instructor.slug}`} className="text-blue-600 underline decoration-blue-200 underline-offset-4 hover:text-blue-800 transition-colors">{instructor.name}</Link>
             </div>
             <p className="text-gray-600 text-lg max-w-3xl font-medium leading-relaxed italic border-l-4 border-blue-100 pl-6">{classBasic.short_description}</p>
           </div>
           
-          <div className="flex flex-col items-center justify-center bg-slate-50 rounded-3xl p-8 border border-slate-100 shrink-0 text-center shadow-inner min-w-[240px] relative z-10">
-            <p className="text-gray-400 uppercase font-black text-[10px] tracking-widest mb-2">Investment</p>
-            <h2 className="text-5xl font-black text-blue-900 mb-1 flex items-start">
-              <span className="text-2xl mt-2 mr-1 opacity-50">$</span>{pricing?.fee_amount || 'Custom'}
+          <div className="flex flex-col items-center justify-center bg-slate-50 rounded-2xl p-6 border border-slate-100 shrink-0 text-center shadow-inner min-w-[200px] relative z-10">
+            <p className="text-gray-400 uppercase font-black text-[10px] tracking-widest mb-1">Investment</p>
+            <h2 className="text-3xl md:text-4xl font-black text-blue-900 mb-1 flex items-start">
+              <span className="text-lg mt-1 mr-1 opacity-60 font-bold">{pricing?.currency === 'USD' ? '$' : pricing?.currency}</span>{pricing?.fee_amount || 'Custom'}
             </h2>
-            <p className="text-gray-400 font-bold text-xs mb-8 uppercase tracking-tighter">/{pricing?.fee_type?.replace('_', ' ') || 'Program'}</p>
+            <p className="text-gray-400 font-bold text-xs mb-6 uppercase tracking-tighter">/{pricing?.fee_type?.replace('_', ' ') || 'Program'}</p>
             <button 
               onClick={() => document.getElementById('enquiry-form').scrollIntoView({ behavior: 'smooth' })}
               className="w-full px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white shadow-xl shadow-blue-500/20 rounded-2xl font-bold transition-all hover:-translate-y-1 active:scale-95"
@@ -256,13 +256,13 @@ export default function ItTrainingDetails() {
                  </div>
                  <div className="flex justify-between items-center border-b border-slate-50 pb-4">
                    <span className="text-gray-500 font-bold text-xs uppercase tracking-tight">Session Timing</span>
-                   <span className="font-black text-blue-900">{schedule?.time_start ? `${schedule.time_start} - ${schedule.time_end}` : 'Flexible'}</span>
+                   <span className="font-black text-blue-900">{schedule?.time_start ? `${schedule.time_start} - ${schedule.time_end} ${schedule.timezone || ''}` : 'Flexible'}</span>
                  </div>
                  <div className="space-y-3">
                    <span className="text-gray-500 font-bold text-xs uppercase tracking-tight block">Training Schedule</span>
                    <div className="flex flex-wrap gap-2">
                      {schedule?.days_of_week?.map(day => (
-                        <span key={day} className="w-10 h-10 bg-blue-900 text-white rounded-xl flex items-center justify-center font-bold text-xs shadow-lg shadow-blue-900/20">{day}</span>
+                        <span key={day} className="w-10 h-10 bg-blue-900 text-white rounded-xl flex items-center justify-center font-bold text-[10px] shadow-lg shadow-blue-900/20">{day.substring(0, 3)}</span>
                      ))}
                    </div>
                  </div>

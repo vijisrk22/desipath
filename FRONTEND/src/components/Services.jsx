@@ -5,77 +5,77 @@ import LazyImage from "./LazyImage";
 const services = [
   {
     name: "Rental home",
-    image: "/img/rentalHomes/rentalHome1.png",
+    image: "/img/services/Desipath_rental_home.jpeg",
     path: "/services/rentalhomes",
   },
   {
     name: "Buy/Sell Cars",
-    image: "/img/cars/carThumbnail.png",
+    image: "/img/services/buysellcar_Desipath.jpeg",
     path: "/services/cars",
   },
   {
     name: "Kids class",
-    image: "/img/kidsClass/kidsClass.png",
+    image: "/img/services/Desipath_KidsClass.jpeg",
     path: "/kids-class",
   },
   {
     name: "Buy Sell Home",
-    image: "/img/houses/buy_sell_house_icon.png",
+    image: "/img/services/BuysellHome_Desipath.jpeg",
     path: "/services/BuyHome",
   },
   {
     name: "Travel Companion",
-    image: "/img/travelCompanion/travelCompanionIcon.jpg",
+    image: "/img/services/Desipath_Travelcompanion.jpeg",
     path: "/travel-companion",
   },
   {
     name: "Events",
-    image: "/img/events/Desipath_Events.png",
+    image: "/img/services/Desipath_Events.jpeg",
     path: "/services/events",
   },
   {
     name: "Roommates",
-    image: "/img/roommates/Desipath_Roommates.png",
+    image: "/img/services/Roommates_Desipath.jpeg",
     path: "/services/roommates",
   },
   {
     name: "IT Trainings",
-    image: "/img/itTrainings/Desipath_ITTraining.png",
+    image: "/img/services/ITTraining_Desipath.jpeg",
     path: "/it-training",
   },
   {
     name: "Lawyers",
-    image: "/img/lawyers/Attorney.png",
+    image: "/img/services/Attorney_Desipath.jpeg",
     path: "",
   },
   {
     name: "Doctors",
-    image: "/img/doctors/Desipath_Doctors.png",
+    image: "/img/services/Doctors_Desipath.jpeg",
     path: "",
   },
   {
     name: "Astrology",
-    image: "/img/astrology/Desipath_Astrologers.png",
+    image: "/img/services/Desipath_Astrologers.jpeg",
     path: "/services/astrologyAds",
   },
   {
     name: "Local Deals",
-    image: "/img/localAds/Desipath_Local_Ads.png",
+    image: "/img/services/Desipath_LocalAds.jpeg",
     path: "/services/Localdeals",
   },
   {
     name: "Photography",
-    image: "/img/photography/Desipath_Photography.png",
+    image: "/img/services/Desipath_Photography.jpeg",
     path: "/services/photography",
   },
   {
     name: "Immigration",
-    image: "/img/immigration/Desipath_Immigration.png",
+    image: "/img/services/Immigration_Desipath.jpeg",
     path: "",
   },
   {
     name: "Jobs",
-    image: "/img/jobs/Desipath_jobs.png",
+    image: "/img/services/Desipath_jobs.jpeg",
     path: "",
   },
 ];

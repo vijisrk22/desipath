@@ -52,6 +52,9 @@ export default function ForumLanding() {
   const [subforums, setSubforums] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [isTagFilterOpen, setIsTagFilterOpen] = useState(false);
+  const [tagSearchTerm, setTagSearchTerm] = useState("");
   const { user } = useSelector((state) => state.user);
   const {
     register,
@@ -148,6 +151,38 @@ export default function ForumLanding() {
     }
     return "";
   };
+  
+  const tagData = [
+    { tag: '#DesiATLSouth', states: 'al, ga, ms' },
+    { tag: '#DesiPacificNW', states: 'ak, id, mt, or, wa' },
+    { tag: '#DesiAZ', states: 'az' },
+    { tag: '#DesiNWA', states: 'ar' },
+    { tag: '#DesiCA', states: 'ca, hi' },
+    { tag: '#DesiDenverUtahWyoming', states: 'co, ut, wy' },
+    { tag: '#DesiMACTNewEngland', states: 'ct, me, ma, ri, vt' },
+    { tag: '#DesiPhillyDEWV', states: 'de, pa, wv' },
+    { tag: '#DesiDMVArea', states: 'dc, md, va' },
+    { tag: '#DesiFL', states: 'fl' },
+    { tag: '#DesiChicagoIL', states: 'il' },
+    { tag: '#DesiIndy', states: 'in' },
+    { tag: '#DesiWisconsinIO', states: 'ia, wi' },
+    { tag: '#DesiMOKS', states: 'ks, mo' },
+    { tag: '#DesiLouisville', states: 'ky' },
+    { tag: '#DesiLouisiana', states: 'la' },
+    { tag: '#DesiMichigan', states: 'mi' },
+    { tag: '#DesiMinnesotaNDSD', states: 'mn, nd, sd' },
+    { tag: '#DesiOmaha', states: 'ne' },
+    { tag: '#DesiLasVegas', states: 'nv' },
+    { tag: '#DesiCTMANewEngland', states: 'nh' },
+    { tag: '#DesiNYNJ', states: 'nj, ny' },
+    { tag: '#DesiOKNM', states: 'nm, ok' },
+    { tag: '#DesiCarolinas', states: 'nc, sc' },
+    { tag: '#DesiOhio', states: 'oh' },
+    { tag: '#DesiNashville', states: 'tn' },
+    { tag: '#DesiTX', states: 'tx' },
+    { tag: '#DesiGTA', states: 'on' },
+    { tag: '#DesiVancouver', states: 'bc' }
+  ].sort((a, b) => a.tag.localeCompare(b.tag));
 
   // Sync auto tag when location changes in form
   React.useEffect(() => {
@@ -174,11 +209,12 @@ export default function ForumLanding() {
   React.useEffect(() => {
     setPage(1);
     fetchPosts(1, false);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, selectedTags]);
 
   const fetchPosts = (currentPage = 1, append = false) => {
     setLoading(true);
-    api.get(`/api/forum/posts?search=${searchTerm}&category=${selectedCategory}&page=${currentPage}`)
+    const tagsParam = selectedTags.length > 0 ? `&tags=${selectedTags.join(',')}` : '';
+    api.get(`/api/forum/posts?search=${searchTerm}&category=${selectedCategory}&page=${currentPage}${tagsParam}`)
       .then(res => {
         if (res.data.success) {
           const newPosts = res.data.data.data || res.data.data;
@@ -371,14 +407,138 @@ export default function ForumLanding() {
             </div>
           )}
 
-          {/* Filter Bar */}
+          {/* Tag Filter Popup Modal */}
+          {isTagFilterOpen && (
+            <div className="fixed inset-0 z-[600] flex items-center justify-center bg-black/60 p-4">
+              <div className="bg-white rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+                <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-blue-600 text-white">
+                  <div className="flex-grow">
+                    <h3 className="font-bold text-lg">Filter by Location Tag</h3>
+                    <p className="text-[10px] opacity-80 uppercase tracking-widest font-bold">Select one or more regions</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="relative group">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 group-focus-within:text-white transition-colors">🔍</span>
+                      <input 
+                        type="text" 
+                        placeholder="Search State (e.g. NY)"
+                        value={tagSearchTerm}
+                        onChange={(e) => setTagSearchTerm(e.target.value)}
+                        className="bg-white/20 border border-white/30 rounded-full pl-9 pr-4 py-1.5 text-xs text-white placeholder:text-white/60 outline-none focus:bg-white/30 focus:border-white/50 transition-all w-48 sm:w-64"
+                      />
+                      {tagSearchTerm && (
+                        <button 
+                          onClick={() => setTagSearchTerm("")}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"
+                        >✕</button>
+                      )}
+                    </div>
+                    <button onClick={() => { setIsTagFilterOpen(false); setTagSearchTerm(""); }} className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition">✕</button>
+                  </div>
+                </div>
+                
+                <div className="p-6 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-3 no-scrollbar min-h-[300px]">
+                  {tagData
+                    .filter(({ states, tag }) => 
+                      states.toLowerCase().includes(tagSearchTerm.toLowerCase()) ||
+                      tag.toLowerCase().includes(tagSearchTerm.toLowerCase())
+                    ).length === 0 && (
+                      <div className="col-span-full py-12 text-center text-gray-400 font-bold italic">
+                        No regional tags found for "{tagSearchTerm}"
+                      </div>
+                    )}
+                  {tagData
+                    .filter(({ states, tag }) => 
+                      states.toLowerCase().includes(tagSearchTerm.toLowerCase()) ||
+                      tag.toLowerCase().includes(tagSearchTerm.toLowerCase())
+                    )
+                    .map(({ tag, states }) => {
+                    const isActive = selectedTags.includes(tag);
+                    return (
+                      <div 
+                        key={tag}
+                        onClick={() => {
+                          setSelectedTags(prev => 
+                            isActive ? prev.filter(t => t !== tag) : [...prev, tag]
+                          );
+                        }}
+                        className={`cursor-pointer p-3 rounded-xl border-2 transition-all flex flex-col gap-1 group ${
+                          isActive 
+                            ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' 
+                            : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className={`text-[11px] font-black ${isActive ? 'scale-105' : ''} transition-transform`}>{tag}</span>
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
+                            isActive ? 'bg-blue-600 border-blue-600' : 'border-gray-300'
+                          }`}>
+                            {isActive && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
+                          </div>
+                        </div>
+                        <div className={`text-[9px] font-bold uppercase tracking-wider ${isActive ? 'text-blue-500' : 'text-gray-400'}`}>
+                          {states}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-gray-50">
+                  <span className="text-[11px] font-bold text-gray-500">{selectedTags.length} tags selected</span>
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={() => setSelectedTags([])}
+                      className="px-6 py-2 text-gray-500 font-bold text-xs hover:underline"
+                    >Reset</button>
+                    <button 
+                      onClick={() => setIsTagFilterOpen(false)}
+                      className="px-8 py-2 bg-blue-600 text-white font-black rounded-full text-xs shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition"
+                    >Apply Filter</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="bg-white p-3 rounded-md border border-gray-300 flex items-center gap-4 sm:gap-6 shadow-sm overflow-x-auto no-scrollbar">
+            <button 
+              onClick={() => setIsTagFilterOpen(true)}
+              className={`p-2 rounded-full transition flex items-center gap-2 hover:bg-gray-100 ${selectedTags.length > 0 ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
+              title="Filter by Location Tag"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+              </svg>
+              {selectedTags.length > 0 && <span className="text-xs font-bold">{selectedTags.length}</span>}
+            </button>
+            <div className="h-6 w-px bg-gray-200"></div>
             {['🔥 Hot', '✨ New', '🏆 Top', '📈 Rising'].map((tag, i) => (
               <button key={i} className={`px-4 py-1.5 rounded-full font-bold text-sm whitespace-nowrap transition ${i === 0 ? 'bg-gray-100 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>
                 {tag}
               </button>
             ))}
           </div>
+
+          {/* Active Tags Display */}
+          {selectedTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 items-center px-1">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mr-2">Filtered by:</span>
+              {selectedTags.map(tag => (
+                <div key={tag} className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1 rounded-full text-[11px] font-bold shadow-sm">
+                  {tag}
+                  <button 
+                    onClick={() => setSelectedTags(prev => prev.filter(t => t !== tag))}
+                    className="hover:text-blue-200 transition-colors"
+                  >✕</button>
+                </div>
+              ))}
+              <button 
+                onClick={() => setSelectedTags([])}
+                className="text-[10px] font-bold text-blue-600 hover:underline ml-2"
+              >Clear All</button>
+            </div>
+          )}
 
           {/* Posts List */}
           <div className="space-y-4">
@@ -404,12 +564,6 @@ export default function ForumLanding() {
                       <span className="text-gray-900 font-bold hover:underline break-all">d/{post.category || 'General'}</span>
                       <span>•</span>
                       <span className="truncate">{new Date(post.created_at).toLocaleDateString()}</span>
-                      {post.location && (
-                        <>
-                          <span>•</span>
-                          <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">📍 {post.location}</span>
-                        </>
-                      )}
                       {post.location_tag && (
                         <>
                           <span>•</span>

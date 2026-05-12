@@ -105,10 +105,12 @@ export default function Step1Profile({ data, update, instructorId, setInstructor
       {/* Form Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="font-semibold text-gray-700">Full Name <span className="text-red-500">*</span></label>
+          <label className="font-semibold text-gray-700">
+            {data.accountType === 'individual' ? 'Full Name' : 'Institution Name'} <span className="text-red-500">*</span>
+          </label>
           <input 
             type="text" 
-            placeholder="John Doe"
+            placeholder={data.accountType === 'individual' ? "John Doe" : "IT Solutions Academy"}
             value={data.name}
             onChange={(e) => update({ name: e.target.value })}
             className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
@@ -158,6 +160,32 @@ export default function Step1Profile({ data, update, instructorId, setInstructor
             className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.bio ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
           ></textarea>
           {errors.bio && <p className="text-xs text-red-500 font-medium">{errors.bio}</p>}
+        </div>
+
+        {/* Profile Slug URL */}
+        <div className="col-span-1 md:col-span-2 space-y-2">
+          <label className="font-semibold text-gray-700">Profile Slug URL <span className="text-red-500">*</span></label>
+          <div className="flex items-stretch shadow-sm">
+            <div className="bg-gray-100 border border-r-0 border-gray-300 rounded-l-xl px-4 flex items-center text-gray-500 text-sm font-medium whitespace-nowrap">
+              desipath.com/it-instructor/
+            </div>
+            <input 
+              type="text" 
+              maxLength={30}
+              placeholder="your-name-123"
+              value={data.slug || ''}
+              onChange={(e) => {
+                const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                update({ slug: val });
+              }}
+              className={`flex-grow p-3 rounded-r-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.slug ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+            />
+          </div>
+          <div className="flex justify-between items-center px-1">
+            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Max 30 characters. Letters, numbers and hyphens only.</p>
+            {data.slug && <p className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">{data.slug.length}/30</p>}
+          </div>
+          {errors.slug && <p className="text-xs text-red-500 font-medium">{errors.slug}</p>}
         </div>
       </div>
 

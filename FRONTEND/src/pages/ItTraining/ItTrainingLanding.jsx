@@ -48,8 +48,17 @@ export default function ItTrainingLanding() {
     return { ...category, subcategories: filteredSubs };
   }).filter((category) => (category.subcategories || []).length > 0);
 
+  const bgColors = [
+    'bg-indigo-100/70 border-indigo-200',
+    'bg-emerald-100/70 border-emerald-200',
+    'bg-amber-100/70 border-amber-200',
+    'bg-rose-100/70 border-rose-200',
+    'bg-blue-100/70 border-blue-200',
+    'bg-purple-100/70 border-purple-200'
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
       <LocationSelectorModal 
         open={showLocationModal}
@@ -59,7 +68,7 @@ export default function ItTrainingLanding() {
       />
 
       {/* Hero / Banner Section */}
-      <div className="bg-gradient-to-r from-blue-100 via-[#e0f2fe] to-indigo-100 py-12 px-[7%] relative overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-100 via-[#e0f2fe] to-indigo-100 py-4 md:py-6 px-[7%] relative overflow-hidden">
         <div className="absolute top-4 right-[7%] z-20 hidden md:block">
           <Link 
             to="/it-training/instructor-portal"
@@ -70,11 +79,11 @@ export default function ItTrainingLanding() {
           </Link>
         </div>
 
-        <div className="flex flex-col items-center text-center relative z-10 py-4">
-          <h1 className="text-3xl md:text-5xl font-black text-[#003d4d] font-dmsans mb-5 leading-tight">
+        <div className="flex flex-col items-center text-center relative z-10 py-1">
+          <h1 className="text-2xl md:text-4xl font-black text-[#003d4d] font-dmsans mb-2 leading-tight">
             Master Next-Gen IT Skills 💻🚀
           </h1>
-          <p className="text-base md:text-xl text-gray-700 font-medium mb-10 max-w-3xl leading-relaxed">
+          <p className="text-sm md:text-lg text-gray-700 font-medium mb-4 max-w-3xl leading-relaxed">
             From Cloud Computing and AI to Cybersecurity and DevOps. Find expert-led training to accelerate your tech career.
           </p>
 
@@ -85,7 +94,7 @@ export default function ItTrainingLanding() {
                 placeholder="Search for AWS, Python, Cybersecurity, React..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full py-4 pl-14 pr-8 rounded-full border-2 border-white shadow-2xl focus:outline-none focus:border-blue-500 text-lg font-dmsans transition-all group-hover:shadow-blue-200"
+                className="w-full py-3 pl-14 pr-8 rounded-full border-2 border-white shadow-xl focus:outline-none focus:border-blue-500 text-base md:text-lg font-dmsans transition-all group-hover:shadow-blue-200"
               />
               <span className="absolute left-5 top-1/2 transform -translate-y-1/2 text-2xl group-hover:scale-110 transition-transform">
                 🔍
@@ -108,30 +117,30 @@ export default function ItTrainingLanding() {
         ) : filteredCategories.length > 0 ? (
           <div className="space-y-12">
             {filteredCategories.map((category, idx) => (
-              <div key={idx} className={`p-8 md:p-10 rounded-[2.5rem] ${category.color || 'bg-white border-gray-100'} shadow-sm border`}>
-                <div className="flex items-center gap-5 mb-8">
-                  <div className={`text-2xl md:text-4xl w-16 h-16 rounded-2xl flex items-center justify-center ${category.accent || 'bg-gray-100'} shadow-inner`}>
+              <div key={idx} className={`p-5 md:p-6 rounded-2xl ${bgColors[idx % bgColors.length]} shadow-sm border`}>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className={`text-xl md:text-2xl w-10 h-10 rounded-xl flex items-center justify-center ${category.accent || 'bg-gray-100'} shadow-inner`}>
                     {category.icon || '📘'}
                   </div>
                   <div>
-                    <h2 className="text-2xl md:text-4xl font-black font-dmsans tracking-tight text-gray-900">
+                    <h2 className="text-xl md:text-2xl font-black font-dmsans tracking-tight text-gray-900">
                       {category.name}
                     </h2>
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1 opacity-60">Featured Specializations</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {(category.subcategories || []).map((sub, jdx) => (
                     <Link
                       key={jdx}
                       to={`/it-training/${category.slug}/${sub.slug}`}
-                      className="bg-white hover:bg-blue-50 flex items-center gap-4 p-5 rounded-3xl shadow-sm border border-black/5 hover:shadow-2xl transition-all transform hover:-translate-y-2 group"
+                      className="bg-white hover:bg-blue-50 flex items-center gap-3 p-3 rounded-xl shadow-sm border border-black/5 hover:shadow-lg transition-all transform hover:-translate-y-1 group"
                     >
-                      <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl group-hover:bg-white group-hover:scale-110 transition-all shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-base group-hover:bg-white group-hover:scale-110 transition-all shrink-0">
                         {sub.icon || '🔹'}
                       </div>
-                      <span className="font-bold text-gray-800 text-sm md:text-base font-dmsans leading-tight">
+                      <span className="font-normal text-gray-800 text-xs md:text-sm font-dmsans leading-tight">
                         {sub.name}
                       </span>
                     </Link>

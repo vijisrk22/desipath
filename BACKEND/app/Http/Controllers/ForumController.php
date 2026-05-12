@@ -23,6 +23,11 @@ class ForumController extends Controller
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
+        if ($request->filled('tags')) {
+            $tags = explode(',', $request->tags);
+            $query->whereIn('location_tag', $tags);
+        }
+
         $posts = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return response()->json([

@@ -31,6 +31,7 @@ export default function InstructorPortal() {
       name: '',
       photoUrl: null,
       bio: '',
+      slug: '',
       yearsExperience: '',
       qualifications: [],
       languages: [],
@@ -73,6 +74,7 @@ export default function InstructorPortal() {
                 name: instructor?.name || '',
                 photoUrl: instructor?.profile_photo_url || null,
                 bio: instructor?.bio || '',
+                slug: instructor?.slug || '',
                 yearsExperience: instructor?.years_experience || '',
                 city: '', state: '', email: instructor?.email || '', phone: instructor?.phone || ''
               },
@@ -154,6 +156,14 @@ export default function InstructorPortal() {
       if (!info.email?.trim()) errors.email = 'Email is required';
       else if (!/\S+@\S+\.\S+/.test(info.email)) errors.email = 'Invalid email format';
       if (!info.phone?.trim()) errors.phone = 'Phone Number is required';
+      
+      if (!info.slug?.trim()) {
+        errors.slug = 'Profile Slug URL is required';
+      } else if (info.slug.length > 30) {
+        errors.slug = 'Slug cannot exceed 30 characters';
+      } else if (!/^[a-z0-9-]+$/.test(info.slug)) {
+        errors.slug = 'Only letters, numbers, and hyphens allowed';
+      }
     }
     // Step 2... 5 could be added here later
     setValidationErrors(errors);

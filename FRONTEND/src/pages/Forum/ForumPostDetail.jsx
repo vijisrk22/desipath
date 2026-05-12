@@ -267,12 +267,6 @@ export default function ForumPostDetail() {
                     <span>•</span>
                     <span>Posted by u/{post.user?.name || 'Anonymous'}</span>
                     <span>{new Date(post.created_at).toLocaleDateString()}</span>
-                    {post.location && (
-                      <>
-                        <span>•</span>
-                        <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">📍 {post.location}</span>
-                      </>
-                    )}
                     {post.location_tag && (
                       <>
                         <span>•</span>

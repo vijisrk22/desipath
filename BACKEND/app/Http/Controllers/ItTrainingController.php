@@ -16,6 +16,36 @@ class ItTrainingController extends Controller
     {
         $payload = $request->all();
         $now = Carbon::now();
+        $instructorData = $payload['instructorInfo'] ?? [];
+        $slug = $instructorData['slug'] ?? null;
+
+        if ($slug) {
+            if (strlen($slug) > 30) {
+                return response()->json(['success' => false, 'message' => 'Slug cannot exceed 30 characters.'], 422);
+            }
+            if (!preg_match('/^[a-z0-9\-]+$/i', $slug)) {
+                return response()->json(['success' => false, 'message' => 'Slug can only contain letters, numbers, and hyphens.'], 422);
+            }
+            
+            // Basic offensive words check
+            $offensive = ['porn', 'sex', 'gambling', 'nude', 'viagra', 'casino', 'fuck', 'shit', 'asshole'];
+            foreach ($offensive as $word) {
+                if (stripos($slug, $word) !== false) {
+                    return response()->json(['success' => false, 'message' => 'Slug contains inappropriate content.'], 422);
+                }
+            }
+
+            // Uniqueness check
+            $currentInstructorId = $payload['instructorId'] !== 'new' ? $payload['instructorId'] : null;
+            $exists = DB::table('it_instructors')->where('slug', $slug)
+                ->when($currentInstructorId, function($q) use ($currentInstructorId) {
+                    return $q->where('id', '!=', $currentInstructorId);
+                })
+                ->exists();
+            if ($exists) {
+                return response()->json(['success' => false, 'message' => 'This slug URL is already taken.'], 422);
+            }
+        }
 
         DB::beginTransaction();
         try {
@@ -40,6 +70,7 @@ class ItTrainingController extends Controller
                 [
                     'account_type' => $instructorData['accountType'] ?? 'individual',
                     'name' => $instructorData['name'] ?? 'Unknown',
+                    'slug' => $slug,
                     'email' => $instructorEmail,
                     'phone' => $instructorData['phone'] ?? null,
                     'bio' => $instructorData['bio'] ?? null,
@@ -85,7 +116,8 @@ class ItTrainingController extends Controller
                 'time_end' => !empty($schedule['timeEnd']) ? $schedule['timeEnd'] : null,
                 'batch_start_date' => !empty($schedule['startDate']) ? $schedule['startDate'] : null,
                 'location_address' => $schedule['location'] ?? null,
-                'online_platform' => $schedule['platform'] ?? null,
+                'online_platform' => $schedule['onlinePlatform'] ?? null,
+                'timezone' => $schedule['timezone'] ?? null,
                 'max_students' => $schedule['maxStudents'] ?? null,
                 'trial_available' => $schedule['trialAvailable'] ?? false,
                 'schedule_category' => $schedule['scheduleCategory'] ?? 'Weekend',
@@ -140,7 +172,7 @@ class ItTrainingController extends Controller
                 'id' => Str::orderedUuid()->toString(),
                 'class_id' => $classId,
                 'fee_amount' => $pricing['feeAmount'] ?? 0,
-                'fee_currency' => 'USD',
+                'fee_currency' => $pricing['currency'] ?? 'USD',
                 'fee_type' => !empty($pricing['feeType']) ? $pricing['feeType'] : 'per_month',
                 'discount_label' => $pricing['discountLabel'] ?? null,
                 'certificate_provided' => $pricing['certificateProvided'] ?? false,
@@ -187,17 +219,24 @@ class ItTrainingController extends Controller
         }
 
         $trainings = $query->select(
+            'it_training_classes.id',
+            'it_training_classes.title',
+            'it_training_classes.category',
+            'it_training_classes.subcategory',
+            'it_training_classes.level',
+            'it_training_classes.format',
             'it_training_classes.thumbnail_url',
             'it_training_classes.training_covers',
-            'it_training_classes.start_date',
             'it_instructors.name as instructorName',
             'it_instructors.profile_photo_url as photoUrl',
             'it_training_pricing.fee_amount',
+            'it_training_pricing.currency',
             'it_training_pricing.fee_type',
             'it_training_schedules.duration_label',
             'it_training_schedules.days_of_week',
             'it_training_schedules.batch_start_date as start_date',
-            'it_training_schedules.schedule_category'
+            'it_training_schedules.schedule_category',
+            'it_training_schedules.timezone'
         )->get();
 
         // If slugs are provided, filter in PHP (more robust for sluggified matches)
@@ -286,5 +325,40 @@ class ItTrainingController extends Controller
             ->get();
 
         return response()->json(['success' => true, 'data' => $leads]);
+    }
+
+    public function getBySlug($slug)
+    {
+        $instructor = DB::table('it_instructors')->where('slug', $slug)->first();
+        if (!$instructor) {
+            return response()->json(['success' => false, 'message' => 'Instructor not found'], 404);
+        }
+
+        $classes = DB::table('it_training_classes')
+            ->leftJoin('it_training_pricing', 'it_training_classes.id', '=', 'it_training_pricing.class_id')
+            ->leftJoin('it_training_schedules', 'it_training_classes.id', '=', 'it_training_schedules.class_id')
+            ->where('it_training_classes.instructor_id', $instructor->id)
+            ->where('it_training_classes.status', 'active')
+            ->select(
+                'it_training_classes.*',
+                'it_training_pricing.fee_amount',
+                'it_training_pricing.fee_type',
+                'it_training_schedules.duration_label',
+                'it_training_schedules.batch_start_date'
+            )
+            ->get();
+
+        foreach ($classes as $c) {
+            $c->level = json_decode($c->level) ?: [];
+            $c->format = json_decode($c->format) ?: [];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'instructor' => $instructor,
+                'classes' => $classes
+            ]
+        ]);
     }
 }

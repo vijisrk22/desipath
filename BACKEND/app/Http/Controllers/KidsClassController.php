@@ -16,6 +16,36 @@ class KidsClassController extends Controller
     {
         $payload = $request->all();
         $now = Carbon::now();
+        $instructorData = $payload['instructorInfo'] ?? [];
+        $slug = $instructorData['slug'] ?? null;
+
+        if ($slug) {
+            if (strlen($slug) > 30) {
+                return response()->json(['success' => false, 'message' => 'Slug cannot exceed 30 characters.'], 422);
+            }
+            if (!preg_match('/^[a-z0-9\-]+$/i', $slug)) {
+                return response()->json(['success' => false, 'message' => 'Slug can only contain letters, numbers, and hyphens.'], 422);
+            }
+            
+            // Basic offensive words check
+            $offensive = ['porn', 'sex', 'gambling', 'nude', 'viagra', 'casino', 'fuck', 'shit', 'asshole'];
+            foreach ($offensive as $word) {
+                if (stripos($slug, $word) !== false) {
+                    return response()->json(['success' => false, 'message' => 'Slug contains inappropriate content.'], 422);
+                }
+            }
+
+            // Uniqueness check
+            $currentInstructorId = $payload['instructorId'] !== 'new' ? $payload['instructorId'] : null;
+            $exists = DB::table('instructors')->where('slug', $slug)
+                ->when($currentInstructorId, function($q) use ($currentInstructorId) {
+                    return $q->where('id', '!=', $currentInstructorId);
+                })
+                ->exists();
+            if ($exists) {
+                return response()->json(['success' => false, 'message' => 'This slug URL is already taken.'], 422);
+            }
+        }
 
         DB::beginTransaction();
         try {
@@ -42,6 +72,7 @@ class KidsClassController extends Controller
                 [
                     'account_type' => $instructorData['accountType'] ?? 'individual',
                     'name' => $instructorData['name'] ?? 'Unknown',
+                    'slug' => $slug,
                     'email' => $instructorEmail,
                     'phone' => $instructorData['phone'] ?? null,
                     'bio' => $instructorData['bio'] ?? null,
@@ -425,9 +456,22 @@ class KidsClassController extends Controller
         try {
             // Update Instructor (only if data provided)
             if (!empty($instructorData)) {
+                $slug = $instructorData['slug'] ?? null;
+                if ($slug) {
+                    // Re-validate slug on update
+                    if (strlen($slug) > 30 || !preg_match('/^[a-z0-9\-]+$/i', $slug)) {
+                        return response()->json(['success' => false, 'message' => 'Invalid slug format.'], 422);
+                    }
+                    $exists = DB::table('instructors')->where('slug', $slug)->where('id', '!=', $instructorId)->exists();
+                    if ($exists) {
+                        return response()->json(['success' => false, 'message' => 'Slug already taken.'], 422);
+                    }
+                }
+
                 DB::table('instructors')->where('id', $instructorId)->update([
                     'account_type' => $instructorData['accountType'] ?? 'individual',
                     'name' => $instructorData['name'] ?? 'Unknown',
+                    'slug' => $slug,
                     'email' => $instructorData['email'] ?? null,
                     'phone' => $instructorData['phone'] ?? null,
                     'bio' => $instructorData['bio'] ?? null,
@@ -677,5 +721,39 @@ class KidsClassController extends Controller
         });
 
         return response()->json(['success' => true, 'data' => $mapped]);
+    }
+
+    public function getBySlug($slug)
+    {
+        $instructor = DB::table('instructors')->where('slug', $slug)->first();
+        if (!$instructor) {
+            return response()->json(['success' => false, 'message' => 'Instructor not found'], 404);
+        }
+
+        $classes = DB::table('kids_classes')
+            ->leftJoin('class_pricing', 'kids_classes.id', '=', 'class_pricing.class_id')
+            ->leftJoin('class_schedules', 'kids_classes.id', '=', 'class_schedules.class_id')
+            ->where('kids_classes.instructor_id', $instructor->id)
+            ->where('kids_classes.status', 'active')
+            ->select(
+                'kids_classes.*',
+                'class_pricing.fee_amount',
+                'class_pricing.fee_type',
+                'class_schedules.duration_label'
+            )
+            ->get();
+
+        foreach ($classes as $c) {
+            $c->level = json_decode($c->level) ?: [];
+            $c->format = json_decode($c->format) ?: [];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'instructor' => $instructor,
+                'classes' => $classes
+            ]
+        ]);
     }
 }

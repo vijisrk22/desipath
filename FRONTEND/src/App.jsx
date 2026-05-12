@@ -58,6 +58,7 @@ import PhotographerDetails from "./pages/Photography/PhotographerDetails";
 import PhotographyPortal from "./pages/Photography/PhotographyPortal";
 import PhotographySuccess from "./pages/Photography/PhotographySuccess";
 import ForumAdmin from "./pages/AdminDashboard/ForumAdmin";
+import InstructorProfile from "./pages/InstructorProfile";
 import { lazy, Suspense } from 'react';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -153,6 +154,8 @@ function App() {
           <Route path="/travel-companion/guidelines" element={<TravelCompanionWizard type="guidelines" />} />
 
           <Route path="/kids-class" element={<KidsClassLanding />} />
+          <Route path="/instructor/:slug" element={<InstructorProfile type="kids" />} />
+          <Route path="/it-instructor/:slug" element={<InstructorProfile type="it" />} />
           
           {/* IT Training Routes */}
           <Route path="/it-training" element={<ItTrainingLanding />} />

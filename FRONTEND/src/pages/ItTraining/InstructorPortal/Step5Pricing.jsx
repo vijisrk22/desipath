@@ -20,12 +20,21 @@ export default function Step5Pricing({ data, update }) {
           <div className="space-y-2">
             <label className="font-bold text-gray-700 uppercase text-xs tracking-widest">Training Fee</label>
             <div className="flex border-2 border-gray-100 rounded-2xl overflow-hidden focus-within:border-blue-500 transition-all bg-white shadow-sm">
-              <span className="bg-gray-50 px-5 py-4 text-gray-400 font-bold border-r border-gray-100">$</span>
+              <select
+                value={data.currency || 'USD'}
+                onChange={(e) => update({ currency: e.target.value })}
+                className="bg-gray-50 px-3 py-4 text-gray-700 font-bold border-r border-gray-100 outline-none cursor-pointer"
+              >
+                <option value="USD">USD ($)</option>
+                <option value="INR">INR (₹)</option>
+                <option value="AED">AED (د.إ)</option>
+                <option value="SGD">SGD (S$)</option>
+              </select>
               <input 
                 type="number" 
                 placeholder="e.g. 499"
                 value={data.feeAmount || ''}
-                onChange={(e) => update({ feeAmount: e.target.value, feeCurrency: 'USD' })}
+                onChange={(e) => update({ feeAmount: e.target.value })}
                 className="w-full p-4 outline-none font-bold text-gray-800 text-lg"
               />
             </div>

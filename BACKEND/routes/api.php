@@ -263,6 +263,7 @@ Route::middleware([])->group(function () {
     Route::get('/kids-classes/public/details/{id}', [KidsClassController::class, 'getPublicDetails']);
     Route::get('/kids-classes/keywords', [KidsClassController::class, 'getKeywords']);
     Route::get('/kids-classes/search', [KidsClassController::class, 'search']);
+    Route::get('/kids-classes/instructor/{slug}', [KidsClassController::class, 'getBySlug']);
 });
 
 // Photography Routes
@@ -303,6 +304,7 @@ Route::middleware([])->group(function () {
     Route::get('/it-training/{id}', [ItTrainingController::class, 'show']);
     Route::post('/it-training/leads', [ItTrainingController::class, 'submitLead']);
     Route::get('/it-training/admin/leads', [ItTrainingController::class, 'getLeads']);
+    Route::get('/it-training/instructor/{slug}', [ItTrainingController::class, 'getBySlug']);
 });
 
 // --- Forum Routes ---

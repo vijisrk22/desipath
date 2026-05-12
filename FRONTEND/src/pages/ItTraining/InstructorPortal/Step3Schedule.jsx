@@ -64,23 +64,35 @@ export default function Step3Schedule({ data, update }) {
           </div>
         </div>
 
-        {/* Timing */}
-        <div className="space-y-2">
-          <label className="font-semibold text-gray-700">Time Slot</label>
-          <div className="flex items-center gap-2">
+        {/* Timing & Timezone */}
+        <div className="col-span-1 md:col-span-2 space-y-2">
+          <label className="font-semibold text-gray-700">Session Time & Timezone</label>
+          <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
             <input 
               type="time" 
               value={data.timeStart || ''}
               onChange={(e) => update({ timeStart: e.target.value })}
-              className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="flex-1 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none min-w-[120px]"
             />
             <span className="text-gray-500 font-medium">to</span>
             <input 
               type="time" 
               value={data.timeEnd || ''}
               onChange={(e) => update({ timeEnd: e.target.value })}
-              className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="flex-1 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none min-w-[120px]"
             />
+            <select
+              value={data.timezone || ''}
+              onChange={(e) => update({ timezone: e.target.value })}
+              className="flex-1 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 bg-white min-w-[100px]"
+            >
+              <option value="">Timezone</option>
+              <option value="IST">IST</option>
+              <option value="EST">EST</option>
+              <option value="CST">CST</option>
+              <option value="PST">PST</option>
+              <option value="MST">MST</option>
+            </select>
           </div>
         </div>
 
