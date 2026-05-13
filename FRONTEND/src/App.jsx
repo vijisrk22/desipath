@@ -60,6 +60,9 @@ const PhotographyPortal = lazy(() => import("./pages/Photography/PhotographyPort
 const PhotographySuccess = lazy(() => import("./pages/Photography/PhotographySuccess"));
 const ForumAdmin = lazy(() => import("./pages/AdminDashboard/ForumAdmin"));
 const InstructorProfile = lazy(() => import("./pages/InstructorProfile"));
+const FindProperties = lazy(() => import("./pages/RealEstate/FindProperties"));
+const PostProperty = lazy(() => import("./pages/RealEstate/PostProperty"));
+const PropertyDetails = lazy(() => import("./pages/RealEstate/PropertyDetails"));
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -129,8 +132,8 @@ function App() {
               path="itTrainings/:action/:courseId"
               element={<CourseDetailsPage />}
             />
-            <Route path="astrologyAds/:action?" element={<AstrologyAds />} />
             <Route path="classesForKids/:action?" element={<ClassesForKids />} />
+            
             <Route path="Localdeals" element={<Localdeals />} />
             <Route path="Localdeals/post" element={<PrivateRoute><LocalAdPortal /></PrivateRoute>} />
             <Route path="Localdeals/edit/:id" element={<PrivateRoute><LocalAdPortal /></PrivateRoute>} />
@@ -144,6 +147,10 @@ function App() {
             <Route path="photography/success" element={<PrivateRoute><PhotographySuccess /></PrivateRoute>} />
           </Route>
 
+          {/* Astrology - Top Level */}
+          <Route path="/astrologer/:action?" element={<AstrologyAds />} />
+          <Route path="/astrologer/profile/:idOrSlug" element={<AstrologyAds actionType="profile" />} />
+
 
           {/* Travel Companion V2 Routes */}
           <Route path="/travel-companion" element={<TravelCompanionLanding />} />
@@ -154,6 +161,11 @@ function App() {
           <Route path="/travel-companion/my-posts" element={<PrivateRoute><TravelCompanionWizard type="my-posts" /></PrivateRoute>} />
           <Route path="/travel-companion/post-success" element={<PrivateRoute><PostSuccess /></PrivateRoute>} />
           <Route path="/travel-companion/guidelines" element={<TravelCompanionWizard type="guidelines" />} />
+
+          {/* Real Estate - India/Dubai */}
+          <Route path="/real-estate/find" element={<FindProperties />} />
+          <Route path="/real-estate/post" element={<PrivateRoute><PostProperty /></PrivateRoute>} />
+          <Route path="/real-estate/details/:idOrSlug" element={<PropertyDetails />} />
 
           <Route path="/kids-class" element={<KidsClassLanding />} />
           <Route path="/instructor/:slug" element={<InstructorProfile type="kids" />} />
@@ -219,6 +231,7 @@ function App() {
             <Route path="travel" element={<ListingAdmin endpoint="/api/travelcompanions" title="Travel Companion" categoryIcon="✈️" customBasePath="travelCompanion" />} />
             <Route path="trainings" element={<ListingAdmin endpoint="/api/trainingads" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
             <Route path="local-ads" element={<LocalAdsAdmin />} />
+            <Route path="real-estate" element={<ListingAdmin endpoint="/api/realestate" title="Real Estate" categoryIcon="🏡" customBasePath="real-estate/details" />} />
             <Route path="photography" element={<PhotographyAdmin />} />
             <Route path="zipcodes" element={<ZipcodesAdmin />} />
             <Route path="it-training-leads" element={<ItTrainingLeadsAdmin />} />

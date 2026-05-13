@@ -25,6 +25,7 @@ use App\Http\Controllers\TravelCompanionController;
 use App\Http\Controllers\LocalAdsController;
 use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\PhotographerController;
+use App\Http\Controllers\RealEstateController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -117,6 +118,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/local-ads/my-count', [LocalAdsController::class, 'getMyAdCount']);
     Route::get('/kids-classes/my-count', [KidsClassController::class, 'getMyAdCount']);
     Route::get('/kids-classes/my-listings', [KidsClassController::class, 'getMyListings']);
+    Route::get('/realestate/my-count', [RealEstateController::class, 'getMyAdCount']);
 });
 
 // Public car read routes (no auth required — anyone can browse listings)
@@ -195,6 +197,13 @@ Route::prefix('astrologyads')->group(function () {
     Route::get('/{id}', [AstrologyAdsController::class, 'show']);
 });
 
+// --- Public Real Estate Routes ---
+Route::prefix('realestate')->group(function () {
+    Route::get('/', [RealEstateController::class, 'index']);
+    Route::get('/exchange-rates', [RealEstateController::class, 'getExchangeRates']);
+    Route::get('/{id}', [RealEstateController::class, 'show']);
+});
+
 // --- Public Classes For Kids Ads (Legacy) Routes ---
 Route::prefix('classesforkidsads')->group(function () {
     Route::get('/', [ClassesforKidsAdsController::class, 'index']);
@@ -217,22 +226,29 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/trainingads/dummy-insert', [TrainingAdsController::class, 'dummyInsert']);
 
     // Astrology Ads
+    Route::post('/astrologyads/dummy-insert', [AstrologyAdsController::class, 'dummyInsert']);
+    Route::get('/astrologyads/my-listings', [AstrologyAdsController::class, 'getMyListings']);
     Route::post('/astrologyads', [AstrologyAdsController::class, 'store']);
     Route::put('/astrologyads/{id}', [AstrologyAdsController::class, 'update']);
     Route::delete('/astrologyads/{id}', [AstrologyAdsController::class, 'destroy']);
-    Route::post('/astrologyads/dummy-insert', [AstrologyAdsController::class, 'dummyInsert']);
 
     // Classes For Kids Ads (Legacy)
+    Route::post('/classesforkidsads/dummy-insert', [ClassesforKidsAdsController::class, 'dummyInsert']);
     Route::post('/classesforkidsads', [ClassesforKidsAdsController::class, 'store']);
     Route::put('/classesforkidsads/{id}', [ClassesforKidsAdsController::class, 'update']);
     Route::delete('/classesforkidsads/{id}', [ClassesforKidsAdsController::class, 'destroy']);
-    Route::post('/classesforkidsads/dummy-insert', [ClassesforKidsAdsController::class, 'dummyInsert']);
 
     // Travel Companions
+    Route::post('/travelcompanions/dummy-insert', [TravelCompanionsController::class, 'dummyInsert']);
     Route::post('/travelcompanions', [TravelCompanionsController::class, 'store']);
     Route::put('/travelcompanions/{id}', [TravelCompanionsController::class, 'update']);
     Route::delete('/travelcompanions/{id}', [TravelCompanionsController::class, 'destroy']);
-    Route::post('/travelcompanions/dummy-insert', [TravelCompanionsController::class, 'dummyInsert']);
+
+    // Real Estate
+    Route::post('/realestate', [RealEstateController::class, 'store']);
+    Route::put('/realestate/{id}', [RealEstateController::class, 'update']);
+    Route::delete('/realestate/{id}', [RealEstateController::class, 'destroy']);
+    Route::get('/realestate/my-listings', [RealEstateController::class, 'getMyListings']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {

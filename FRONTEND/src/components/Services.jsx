@@ -56,7 +56,7 @@ const services = [
   {
     name: "Astrology",
     image: "/img/services/Desipath_Astrologers.jpeg",
-    path: "/services/astrologyAds",
+    path: "/astrologer/find",
   },
   {
     name: "Local Deals",
@@ -67,6 +67,11 @@ const services = [
     name: "Photography",
     image: "/img/services/Desipath_Photography.jpeg",
     path: "/services/photography",
+  },
+  {
+    name: "Real Estate (Dubai/India)",
+    image: "/img/services/RealEstate_Desipath.png",
+    path: "/real-estate/find",
   },
   {
     name: "Immigration",

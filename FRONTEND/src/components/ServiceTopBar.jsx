@@ -13,19 +13,26 @@ function ServiceTopBar({ inputs = [], title, paths, form, plainBg = false }) {
     if (title === "Buy a Car") return "url('/img/cars/backgroundCarImg.png')";
     if (title === "Rent a Home" || title === "Buy a home") return "url('/img/rentalHomes/rentalBanner.png')";
     if (title === "Photography & Videography") return "url('/img/photography/photographyBanner.png')";
+    if (title === "Discover Top Astrologers") return "url('/img/astrology/hero.png')";
+    if (title === "Find Your Dream Property") return "url('/img/realestate/realEstateBanner.png')";
     return "url('/img/roommates/roommates-bg.png')";
   };
+
+  const isAstrology = title === "Discover Top Astrologers";
+  const heightClass = isAstrology 
+    ? "h-[100px] sm:h-[120px] md:h-[150px] lg:h-[180px]" // Reduced to ~60% of original
+    : "h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px]";
 
   return (
     <div className="px-[7%] relative  w-full">
       {!plainBg && (
         <div>
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px]" 
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat ${heightClass}`}
             style={{ backgroundImage: getBgImage() }}
           />
           {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-black opacity-60 h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px]" />
+          <div className={`absolute inset-0 bg-black opacity-60 ${heightClass}`} />
         </div>
       )}
 

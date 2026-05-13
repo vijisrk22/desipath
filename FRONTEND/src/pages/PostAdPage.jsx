@@ -19,6 +19,7 @@ const categories = [
     { id: 'Trainings', label: "List my IT Trainings", icon: "💻", postPath: "/it-training/instructor-portal", viewPath: "/profile/myListings", description: "Share your expertise and train the next generation.", countPath: "/api/trainingads/my-count" },
     { id: 'Events', label: "List my Event", icon: "🎟️", postPath: "/services/events/postEvent", viewPath: "/profile/myListings", description: "Promote your events and sell tickets easily.", countPath: "/api/events/my-count" },
     { id: 'KidsClass', label: "Kids Class", icon: "🎨", postPath: "/kids-class/instructor-portal", viewPath: "/profile/myListings", description: "Inspire the next generation with your classes.", countPath: "/api/kids-classes/my-count" },
+    { id: 'RealEstate', label: "Real Estate (India/Dubai)", icon: "🏢", postPath: "/real-estate/post", viewPath: "/profile/myListings", description: "List premium residential or commercial properties in India and Dubai.", countPath: "/api/realestate/my-count" },
     { id: 'Photography', label: "Photography & Video", icon: "📸", postPath: "/services/photography/post", viewPath: "/profile/myListings", description: "List your photography or videography services.", countPath: "/api/photography/my-count" },
     { id: 'LocalAds', label: "Post Local Deal", icon: "🏷️", postPath: "/services/Localdeals/post", viewPath: "/profile/myListings", description: "Create a vibrant deal for your local business.", countPath: "/api/local-ads/my-count" },
 ];
@@ -29,6 +30,7 @@ const PostAdPage = () => {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.user);
     const { counts, lastFetched, loading } = useSelector((state) => state.stats);
+    const [expandedId, setExpandedId] = useState(null);
 
     useEffect(() => {
         if (user?.id) {
@@ -62,60 +64,89 @@ const PostAdPage = () => {
             </div>
             
             {/* Main Categories Section */}
-            <div className="px-[7%] -mt-8 relative z-20 pb-20">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {categories.map((cat, idx) => (
-                        <div key={idx} className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 group">
-                            <div>
-                                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-blue-100 transition-colors">
-                                    {cat.icon}
+            <div className="px-[7%] -mt-8 relative z-20 pb-20 max-w-5xl mx-auto">
+                <div className="flex flex-col gap-3">
+                    {categories.map((cat, idx) => {
+                        const isExpanded = expandedId === cat.id;
+                        return (
+                            <div 
+                                key={idx} 
+                                className={`bg-white rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden transition-all duration-300 ${isExpanded ? 'shadow-[0_8px_30px_rgb(0,0,0,0.08)] scale-[1.01]' : 'hover:bg-gray-50/50 cursor-pointer'}`}
+                                onClick={() => !cat.comingSoon && setExpandedId(isExpanded ? null : cat.id)}
+                            >
+                                {/* Horizontal Bar Header */}
+                                <div className="p-5 flex items-center justify-between">
+                                    <div className="flex items-center gap-5">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl transition-colors ${isExpanded ? 'bg-blue-100 text-blue-600' : 'bg-gray-50 text-gray-500'}`}>
+                                            {cat.icon}
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-gray-900 font-dmsans">{cat.label}</h3>
+                                            {!isExpanded && !cat.comingSoon && user && (
+                                                <div className="flex items-center gap-1.5 mt-0.5">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                        {counts[cat.id] || 0} ACTIVE
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {cat.comingSoon && (
+                                                <span className="text-[9px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full uppercase font-bold tracking-widest border border-amber-100">
+                                                    Coming Soon
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    {!cat.comingSoon && (
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 ${isExpanded ? 'rotate-180 bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-400'}`}>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    )}
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2 font-dmsans">{cat.label}</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed mb-4">{cat.description}</p>
-                                {cat.comingSoon && (
-                                    <span className="inline-block text-[10px] bg-amber-50 text-amber-600 px-3 py-1 rounded-full uppercase font-bold tracking-widest border border-amber-100">
-                                        Coming Soon
-                                    </span>
-                                )}
-                            </div>
-                            
-                            <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                                {!cat.comingSoon ? (
-                                    <>
-                                        <Link 
-                                            to={cat.postPath} 
-                                            className="flex-1 bg-[#ffa41c] text-center text-gray-900 font-bold py-3 rounded-xl text-sm hover:bg-[#ff9900] transition-all hover:shadow-md active:scale-95"
-                                        >
-                                            Post New Ad
-                                        </Link>
-                                        <Link 
-                                            to={cat.viewPath} 
-                                            className="flex-1 bg-white border border-gray-200 text-center text-gray-700 font-bold py-3 rounded-xl text-sm hover:bg-gray-50 transition-all active:scale-95"
-                                        >
-                                            Manage Ads
-                                        </Link>
-                                    </>
-                                ) : (
-                                    <button 
-                                        disabled 
-                                        className="w-full bg-gray-50 text-gray-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed border border-dashed border-gray-200"
-                                    >
-                                        Notify Me
-                                    </button>
-                                )}
-                            </div>
-                            
-                            {/* Active Ads Count */}
-                            {!cat.comingSoon && user && (
-                                <div className="mt-4 flex items-center justify-center gap-2 py-2 border-t border-gray-50 group-hover:border-gray-100 transition-colors">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                                        {counts[cat.id] || 0} Active Ads
-                                    </span>
+
+                                {/* Collapsible Content */}
+                                <div 
+                                    className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+                                    onClick={(e) => e.stopPropagation()} // Prevent collapse when clicking buttons
+                                >
+                                    <div className="px-5 pb-6 pt-2 ml-16 border-t border-gray-50">
+                                        <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-xl">
+                                            {cat.description}
+                                        </p>
+                                        
+                                        <div className="flex flex-col sm:flex-row gap-3">
+                                            <Link 
+                                                to={cat.postPath} 
+                                                className="px-8 bg-[#ffa41c] text-center text-gray-900 font-bold py-3 rounded-xl text-sm hover:bg-[#ff9900] transition-all hover:shadow-md active:scale-95"
+                                            >
+                                                Post New Ad
+                                            </Link>
+                                            <Link 
+                                                to={cat.viewPath} 
+                                                className="px-8 bg-white border border-gray-200 text-center text-gray-700 font-bold py-3 rounded-xl text-sm hover:bg-gray-50 transition-all active:scale-95"
+                                            >
+                                                Manage My Listings
+                                            </Link>
+                                            
+                                            {user && (
+                                                <div className="flex-1 flex items-center justify-end px-4">
+                                                    <div className="bg-green-50 text-green-700 px-4 py-2 rounded-2xl flex items-center gap-3">
+                                                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                                        <span className="text-xs font-bold uppercase tracking-wider">
+                                                            {counts[cat.id] || 0} Active Advertisements
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    ))}
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {/* Dashboard / Manage Section */}

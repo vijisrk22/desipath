@@ -27,6 +27,7 @@ export default function AdminDashboard() {
     { name: 'Travel Companion', path: '/admindashboard/travel', icon: '✈️' },
     { name: 'IT Trainings', path: '/admindashboard/trainings', icon: '💻' },
     {name: 'Local Deals', path: '/admindashboard/local-ads', icon: '📢' },
+    { name: 'Real Estate', path: '/admindashboard/real-estate', icon: '🏙️' },
     { name: 'Photography', path: '/admindashboard/photography', icon: '📸' },
     { name: 'Forum', path: '/admindashboard/forum', icon: '💬' },
     { name: 'IT Training Leads', path: '/admindashboard/it-training-leads', icon: '📈' },

@@ -22,7 +22,7 @@ const categories = [
   { label: "IT Trainings", path: "/services/itTrainings" },
   { label: "Lawyers", path: "/services/lawyers" },
   { label: "Doctors", path: "/services/doctors" },
-  { label: "Astrology", path: "/services/astrologyAds" },
+  { label: "Astrology", path: "/astrologer/find" },
   { label: "Local Deals", path: "/services/Localdeals" },
   { label: "Photography", path: "/services/photography" },
   { label: "Immigration", path: "/services/immigration" },
