@@ -10,6 +10,39 @@ use Illuminate\Support\Str;
 
 class RealEstateController extends Controller
 {
+    public function adminIndex(Request $request)
+    {
+        $query = RealEstateAd::with('galleryImages');
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('city', 'like', "%{$search}%")
+                  ->orWhere('agent_name', 'like', "%{$search}%")
+                  ->orWhere('agent_company', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('country') && $request->country) {
+            $query->where('country', $request->country);
+        }
+
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        return response()->json($query->orderBy('created_at', 'desc')->paginate(20));
+    }
+
+    public function adminToggleStatus(Request $request, $id)
+    {
+        $property = RealEstateAd::findOrFail($id);
+        $property->status = $property->status === 'approved' ? 'pending' : 'approved';
+        $property->save();
+        return response()->json(['success' => true, 'status' => $property->status]);
+    }
+
     public function index(Request $request)
     {
         $query = RealEstateAd::with('galleryImages');

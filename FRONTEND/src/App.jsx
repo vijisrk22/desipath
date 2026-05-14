@@ -43,6 +43,7 @@ const UsersAdmin = lazy(() => import("./pages/AdminDashboard/UsersAdmin"));
 const AdminUsersAdmin = lazy(() => import("./pages/AdminDashboard/AdminUsersAdmin"));
 const ZipcodesAdmin = lazy(() => import("./pages/AdminDashboard/ZipcodesAdmin"));
 const LocalAdsAdmin = lazy(() => import("./pages/AdminDashboard/LocalAdsAdmin"));
+const RealEstateAdmin = lazy(() => import("./pages/AdminDashboard/RealEstateAdmin"));
 const Localdeals = lazy(() => import("./pages/Localdeals/Localdeals"));
 const ItTrainingLanding = lazy(() => import("./pages/ItTraining/ItTrainingLanding"));
 const ItTrainingSubcategory = lazy(() => import("./pages/ItTraining/ItTrainingSubcategory"));
@@ -231,7 +232,7 @@ function App() {
             <Route path="travel" element={<ListingAdmin endpoint="/api/travelcompanions" title="Travel Companion" categoryIcon="✈️" customBasePath="travelCompanion" />} />
             <Route path="trainings" element={<ListingAdmin endpoint="/api/trainingads" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
             <Route path="local-ads" element={<LocalAdsAdmin />} />
-            <Route path="real-estate" element={<ListingAdmin endpoint="/api/realestate" title="Real Estate" categoryIcon="🏡" customBasePath="real-estate/details" />} />
+            <Route path="real-estate" element={<RealEstateAdmin />} />
             <Route path="photography" element={<PhotographyAdmin />} />
             <Route path="zipcodes" element={<ZipcodesAdmin />} />
             <Route path="it-training-leads" element={<ItTrainingLeadsAdmin />} />

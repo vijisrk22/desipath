@@ -30,7 +30,8 @@ import {
   CheckCircle as FeatureIcon,
   Phone,
   Email,
-  PlayCircleOutline as VideoIcon
+  PlayCircleOutline as VideoIcon,
+  CalendarMonth as CalendarMonthIcon
 } from '@mui/icons-material';
 
 const CURRENCIES = [
@@ -192,6 +193,16 @@ export default function PropertyDetails() {
                     <Typography variant="h6" fontWeight={600} color="#1e293b" sx={{ fontSize: '1.1rem' }}>{property.area_sqft}</Typography>
                     <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>Sq. Ft.</Typography>
                   </div>
+                  {property.possession_starts && (
+                    <>
+                      <Divider orientation="vertical" flexItem />
+                      <div className="text-center">
+                        <CalendarMonthIcon sx={{ color: '#94a3b8', mb: 0.5, fontSize: 20 }} />
+                        <Typography variant="h6" fontWeight={600} color="#1e293b" sx={{ fontSize: '1.1rem' }}>{property.possession_starts}</Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>Possession</Typography>
+                      </div>
+                    </>
+                  )}
                 </Paper>
               </Box>
 

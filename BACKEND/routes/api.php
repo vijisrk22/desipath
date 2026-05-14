@@ -249,6 +249,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/realestate/{id}', [RealEstateController::class, 'update']);
     Route::delete('/realestate/{id}', [RealEstateController::class, 'destroy']);
     Route::get('/realestate/my-listings', [RealEstateController::class, 'getMyListings']);
+    // Admin routes
+    Route::get('/realestate-admin', [RealEstateController::class, 'adminIndex']);
+    Route::post('/realestate/{id}/toggle-status', [RealEstateController::class, 'adminToggleStatus']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
