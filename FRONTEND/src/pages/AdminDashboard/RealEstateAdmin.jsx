@@ -185,6 +185,7 @@ export default function RealEstateAdmin() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-xs uppercase tracking-wider text-gray-400 font-bold">
@@ -192,7 +193,6 @@ export default function RealEstateAdmin() {
                 <th className="px-6 py-4">Type</th>
                 <th className="px-6 py-4">Location</th>
                 <th className="px-6 py-4">Price</th>
-                <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -219,85 +219,66 @@ export default function RealEstateAdmin() {
                   </td>
 
                   <td className="px-6 py-4">
-                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase">
+                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase whitespace-nowrap">
                       {item.property_type}
                     </span>
                   </td>
 
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-800">{item.city}</div>
+                    <div className="text-sm font-medium text-gray-800 whitespace-nowrap">{item.city}</div>
                     <div className="text-xs text-gray-400">{item.country}</div>
                   </td>
 
-                  <td className="px-6 py-4 text-sm font-bold text-gray-800">
+                  <td className="px-6 py-4 text-sm font-bold text-gray-800 whitespace-nowrap">
                     {formatPrice(item.price, item.currency)}
                   </td>
 
+                  {/* Actions — icon buttons + one primary labeled button */}
                   <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${STATUS_PILL[item.status] || STATUS_PILL.pending}`}>
-                      {item.status}
-                    </span>
-                  </td>
+                    <div className="flex justify-end items-center gap-2 flex-nowrap">
+                      {/* Icon-only secondary actions */}
+                      <a href={`/real-estate/details/${item.slug}`} target="_blank" rel="noreferrer"
+                        title="View listing"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors text-base">👁️</a>
 
-                  {/* Contextual action buttons per tab */}
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end items-center gap-1">
-                      {/* View */}
-                      <a
-                        href={`/real-estate/details/${item.slug}`}
-                        target="_blank" rel="noreferrer"
-                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors" title="View"
-                      >👁️</a>
+                      <Link to={`/real-estate/edit/${item.id}`} title="Edit listing"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-amber-500 hover:bg-amber-50 transition-colors text-base">✏️</Link>
 
-                      {/* Edit */}
-                      <Link
-                        to={`/real-estate/edit/${item.id}`}
-                        className="p-2 text-gray-400 hover:text-amber-500 transition-colors" title="Edit"
-                      >✏️</Link>
+                      <button onClick={() => handleDelete(item.id)} title="Delete listing"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors text-base">🗑️</button>
 
-                      {/* TAB-SPECIFIC ACTIONS */}
+                      {/* Primary labeled action — changes by tab */}
                       {activeTab === 'pending' && (
                         <>
-                          <button
-                            onClick={() => changeStatus(item, 'approved')}
-                            className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-colors"
-                            title="Approve & publish"
-                          >✓ Approve</button>
-                          <button
-                            onClick={() => changeStatus(item, 'rejected')}
-                            className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors"
-                            title="Reject listing"
-                          >✗ Reject</button>
+                          <button onClick={() => changeStatus(item, 'approved')}
+                            className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap">
+                            ✓ Approve
+                          </button>
+                          <button onClick={() => changeStatus(item, 'rejected')}
+                            className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap">
+                            ✗ Reject
+                          </button>
                         </>
                       )}
-
                       {activeTab === 'approved' && (
-                        <button
-                          onClick={() => changeStatus(item, 'pending')}
-                          className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors"
-                          title="Revoke approval — moves back to Pending"
-                        >↩ Revoke</button>
+                        <button onClick={() => changeStatus(item, 'pending')}
+                          className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap">
+                          ↩ Revoke
+                        </button>
                       )}
-
                       {activeTab === 'rejected' && (
-                        <button
-                          onClick={() => changeStatus(item, 'approved')}
-                          className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-colors"
-                          title="Re-approve this listing"
-                        >↑ Re-approve</button>
+                        <button onClick={() => changeStatus(item, 'approved')}
+                          className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap">
+                          ↑ Re-approve
+                        </button>
                       )}
-
-                      {/* Delete */}
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Delete"
-                      >🗑️</button>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
 
           {/* Pagination */}
           {meta && meta.last_page > 1 && (
