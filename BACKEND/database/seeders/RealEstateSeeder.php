@@ -26,7 +26,7 @@ class RealEstateSeeder extends Seeder
                 'bathrooms' => 3,
                 'agent_name' => 'Rajesh Sharma',
                 'agent_company' => 'Mumbai Realty Experts',
-                'main_image' => '/storage/realestate/mumbai_apt.png',
+                'main_image' => 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80',
                 'features' => json_encode(['Sea View', 'Gym', 'Parking', '24/7 Security']),
                 'status' => 'approved',
             ],
@@ -38,14 +38,14 @@ class RealEstateSeeder extends Seeder
                 'country' => 'Dubai',
                 'city' => 'Dubai',
                 'state' => 'Dubai',
-                'price' => 4500000, // 4.5M AED
+                'price' => 4500000,
                 'currency' => 'AED',
                 'area_sqft' => 6500,
                 'bedrooms' => 5,
                 'bathrooms' => 6,
                 'agent_name' => 'Michael Scott',
                 'agent_company' => 'Dubai Gold Estates',
-                'main_image' => '/storage/realestate/dubai_villa.png',
+                'main_image' => 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80',
                 'features' => json_encode(['Private Pool', 'Beach Access', 'Smart Home', 'Home Theater']),
                 'status' => 'approved',
             ],
@@ -57,14 +57,14 @@ class RealEstateSeeder extends Seeder
                 'country' => 'India',
                 'city' => 'Bangalore',
                 'state' => 'Karnataka',
-                'price' => 35000000, // 3.5 Cr
+                'price' => 35000000,
                 'currency' => 'INR',
                 'area_sqft' => 3200,
                 'bedrooms' => 4,
                 'bathrooms' => 4,
                 'agent_name' => 'Suresh Kumar',
                 'agent_company' => 'Garden City Homes',
-                'main_image' => '/storage/realestate/mumbai_apt.png', // Reusing for placeholder
+                'main_image' => 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
                 'features' => json_encode(['Private Garden', 'Terrace', 'Solar Power']),
                 'status' => 'approved',
             ],
@@ -76,16 +76,17 @@ class RealEstateSeeder extends Seeder
                 'country' => 'Dubai',
                 'city' => 'Dubai',
                 'state' => 'Dubai',
-                'price' => 2800000, // 2.8M AED
+                'price' => 2800000,
                 'currency' => 'AED',
                 'area_sqft' => 1800,
                 'bedrooms' => 2,
                 'bathrooms' => 2,
                 'agent_name' => 'Sarah Connor',
                 'agent_company' => 'Prime Dubai Properties',
-                'main_image' => '/storage/realestate/mumbai_apt.png', // Reusing
+                'main_image' => 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
                 'features' => json_encode(['City View', 'Pool', 'Concierge']),
                 'status' => 'approved',
+
             ]
         ];
 
