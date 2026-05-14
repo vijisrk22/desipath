@@ -262,7 +262,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('events')->group(function () {
     Route::get('/', [EventsController::class, 'index']);
     Route::post('/search', [EventsController::class, 'search']);
-    Route::post('/dummy-insert', [EventsController::class, 'dummyInsert']);
+    Route::get('/dummy-insert', [EventsController::class, 'dummyInsert']);
     Route::get('/{id}', [EventsController::class, 'show']);
 });
 

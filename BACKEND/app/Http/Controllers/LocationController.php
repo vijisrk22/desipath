@@ -145,6 +145,9 @@ class LocationController extends Controller
             // Then try the full seeder
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'Database\Seeders\UsaZipcodeSeeder', '--force' => true]);
 
+            // Run the main DatabaseSeeder to populate all marketplace modules
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+
             // Sync coordinates for all listings
             $listings = \App\Models\RentalHome::all();
             foreach ($listings as $listing) {

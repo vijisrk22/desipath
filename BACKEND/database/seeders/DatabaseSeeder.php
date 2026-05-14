@@ -33,7 +33,8 @@ class DatabaseSeeder extends Seeder
             TrainingAdsSeeder::class,
             TravelCompanionsSeeder::class,
             UsaZipcodeSeeder::class,
-            LanguageClassesSeeder::class
+            LanguageClassesSeeder::class,
+            RealEstateSeeder::class
         ]);
     }
 }
