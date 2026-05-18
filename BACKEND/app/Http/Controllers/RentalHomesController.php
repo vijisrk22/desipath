@@ -47,6 +47,44 @@ class RentalHomesController extends Controller
      *     @OA\Response(response=200, description="List of rental homes")
      * )
      */
+    public function adminIndex(Request $request)
+    {
+        $query = RentalHome::query();
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('address', 'like', "%{$search}%")
+                  ->orWhere('community_name', 'like', "%{$search}%")
+                  ->orWhere('location_city', 'like', "%{$search}%")
+                  ->orWhere('owner_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $results = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $results->getCollection()->transform(function ($item) {
+            if (is_string($item->images) && !empty($item->images)) {
+                $item->images = json_decode($item->images, true);
+            }
+            return $item;
+        });
+
+        return response()->json($results);
+    }
+
+    public function adminToggleStatus(Request $request, $id)
+    {
+        $item = RentalHome::findOrFail($id);
+        $item->status = ($item->status === 'active' || $item->status === 'approved') ? 'pending' : 'active';
+        $item->save();
+        return response()->json(['success' => true, 'status' => $item->status]);
+    }
+
     public function index(Request $request)
     {
         $perPage = 15;

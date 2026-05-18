@@ -65,6 +65,45 @@ class HomesController extends Controller
      *     @OA\Response(response=200, description="List of homes")
      * )
      */
+    public function adminIndex(Request $request)
+    {
+        $query = BuySellHome::query();
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('location_city', 'like', "%{$search}%")
+                  ->orWhere('location_state', 'like', "%{$search}%")
+                  ->orWhere('home_type', 'like', "%{$search}%")
+                  ->orWhere('seller_name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $results = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $results->getCollection()->transform(function ($item) {
+            if (is_string($item->images) && !empty($item->images)) {
+                $item->images = json_decode($item->images, true);
+            }
+            return $item;
+        });
+
+        return response()->json($results);
+    }
+
+    public function adminToggleStatus(Request $request, $id)
+    {
+        $item = BuySellHome::findOrFail($id);
+        $item->status = ($item->status === 'active' || $item->status === 'approved') ? 'pending' : 'active';
+        $item->save();
+        return response()->json(['success' => true, 'status' => $item->status]);
+    }
+
     public function index(Request $request)
     {
         // Removed repairServerPaths as it causes the API to hang on Azure Production

@@ -168,6 +168,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/rentalhomes/dummy-insert', [RentalHomesController::class, 'dummyInsert']);
     Route::put('/rentalhomes/{id}', [RentalHomesController::class, 'update'])->where('id', '[0-9]+');
     Route::delete('/rentalhomes/{id}', [RentalHomesController::class, 'destroy'])->where('id', '[0-9]+');
+    Route::get('/rentalhomes-admin', [RentalHomesController::class, 'adminIndex']);
+    Route::post('/rentalhomes/{id}/toggle-status', [RentalHomesController::class, 'adminToggleStatus']);
 
     // Admin Zipcodes
     Route::get('/admin/zipcodes', [LocationController::class, 'getAdminZipcodes']);
@@ -177,12 +179,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/roommates/dummy-insert', [RoomMatesController::class, 'dummyInsert']);
     Route::put('/roommates/{id}', [RoomMatesController::class, 'update']);
     Route::delete('/roommates/{id}', [RoomMatesController::class, 'destroy']);
+    Route::get('/roommates-admin', [RoomMatesController::class, 'adminIndex']);
+    Route::post('/roommates/{id}/toggle-status', [RoomMatesController::class, 'adminToggleStatus']);
 
     // Houses/Homes
     Route::post('/homes', [HomesController::class, 'store']);
     Route::post('/homes/dummy-insert', [HomesController::class, 'dummyInsert']);
     Route::put('/homes/{id}', [HomesController::class, 'update']);
     Route::delete('/homes/{id}', [HomesController::class, 'destroy']);
+    Route::get('/homes-admin', [HomesController::class, 'adminIndex']);
+    Route::post('/homes/{id}/toggle-status', [HomesController::class, 'adminToggleStatus']);
 });
 
 // --- Public Training Ads Routes ---
@@ -224,6 +230,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/trainingads/{id}', [TrainingAdsController::class, 'update']);
     Route::delete('/trainingads/{id}', [TrainingAdsController::class, 'destroy']);
     Route::post('/trainingads/dummy-insert', [TrainingAdsController::class, 'dummyInsert']);
+    Route::get('/trainingads-admin', [TrainingAdsController::class, 'adminIndex']);
+    Route::post('/trainingads/{id}/toggle-status', [TrainingAdsController::class, 'adminToggleStatus']);
 
     // Astrology Ads
     Route::post('/astrologyads/dummy-insert', [AstrologyAdsController::class, 'dummyInsert']);
@@ -243,12 +251,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/travelcompanions', [TravelCompanionsController::class, 'store']);
     Route::put('/travelcompanions/{id}', [TravelCompanionsController::class, 'update']);
     Route::delete('/travelcompanions/{id}', [TravelCompanionsController::class, 'destroy']);
+    Route::get('/travelcompanions-admin', [TravelCompanionsController::class, 'adminIndex']);
+    Route::post('/travelcompanions/{id}/toggle-status', [TravelCompanionsController::class, 'adminToggleStatus']);
 
     // Real Estate
     Route::post('/realestate', [RealEstateController::class, 'store']);
     Route::put('/realestate/{id}', [RealEstateController::class, 'update']);
     Route::delete('/realestate/{id}', [RealEstateController::class, 'destroy']);
     Route::get('/realestate/my-listings', [RealEstateController::class, 'getMyListings']);
+    
+    // Cars
+    Route::get('/cars-admin', [CarController::class, 'adminIndex']);
+    Route::post('/cars/{id}/toggle-status', [CarController::class, 'adminToggleStatus']);
+
+    // Events Admin
+    Route::get('/events-admin', [EventsController::class, 'adminIndex']);
+    Route::post('/events/{id}/toggle-status', [EventsController::class, 'adminToggleStatus']);
+
     // Admin routes
     Route::get('/realestate-admin', [RealEstateController::class, 'adminIndex']);
     Route::post('/realestate/{id}/toggle-status', [RealEstateController::class, 'adminToggleStatus']);
@@ -296,6 +315,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/photography/update/{id}', [PhotographerController::class, 'update']);
     Route::delete('/photography/delete/{id}', [PhotographerController::class, 'destroy']);
     Route::post('/photography/toggle-status/{id}', [PhotographerController::class, 'toggleStatus']);
+    Route::get('/photography-admin', [PhotographerController::class, 'adminIndex']);
+    Route::post('/photography/{id}/toggle-status', [PhotographerController::class, 'adminToggleStatus']);
 });
 Route::get('/fix-general', function() {
     \DB::table('kids_classes')->where('subcategory', 'General')->update(['subcategory' => 'Keyboard']);
@@ -324,6 +345,8 @@ Route::middleware([])->group(function () {
     Route::post('/it-training/leads', [ItTrainingController::class, 'submitLead']);
     Route::get('/it-training/admin/leads', [ItTrainingController::class, 'getLeads']);
     Route::get('/it-training/instructor/{slug}', [ItTrainingController::class, 'getBySlug']);
+    Route::get('/it-training-admin', [ItTrainingController::class, 'adminIndex']);
+    Route::post('/it-training/{id}/toggle-status', [ItTrainingController::class, 'adminToggleStatus']);
 });
 
 // --- Forum Routes ---

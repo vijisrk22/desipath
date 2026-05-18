@@ -56,6 +56,44 @@ class RoomMatesController extends Controller
         return view('rooms.rooms'); // The path corresponds to resources/views/room-share/index.blade.php
     }
 
+    public function adminIndex(Request $request)
+    {
+        $query = RoomMate::query();
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('location_city', 'like', "%{$search}%")
+                  ->orWhere('location_state', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('poster_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $results = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $results->getCollection()->transform(function ($item) {
+            if (is_string($item->photos) && !empty($item->photos)) {
+                $item->photos = json_decode($item->photos, true);
+            }
+            return $item;
+        });
+
+        return response()->json($results);
+    }
+
+    public function adminToggleStatus(Request $request, $id)
+    {
+        $item = RoomMate::findOrFail($id);
+        $item->status = ($item->status === 'active' || $item->status === 'approved') ? 'pending' : 'active';
+        $item->save();
+        return response()->json(['success' => true, 'status' => $item->status]);
+    }
+
     public function index(Request $request)
     {
         $query = RoomMate::query()->where('status', 'active');

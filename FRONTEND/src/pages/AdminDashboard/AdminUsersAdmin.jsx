@@ -20,7 +20,8 @@ export default function AdminUsersAdmin() {
   const fetchAdmins = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/api/admin/users?role=admin');
+      // Fetching all admin-level users (backend now defaults to admin/super_admin)
+      const res = await api.get('/api/admin/users');
       setAdmins(res.data || []);
     } catch (err) {
       console.error('Error fetching admins:', err);
@@ -59,12 +60,12 @@ export default function AdminUsersAdmin() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this admin?')) return;
+    if (!window.confirm('Are you sure you want to delete this administrative user?')) return;
     try {
       await api.delete(`/api/admin/users/${id}`);
       fetchAdmins();
     } catch (err) {
-      alert('Error deleting admin');
+      alert(err.response?.data?.message || 'Error deleting admin');
     }
   };
 
@@ -80,16 +81,16 @@ export default function AdminUsersAdmin() {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900">Admin Users</h1>
-          <p className="text-gray-500 font-medium mt-1">Manage users with administrative access.</p>
+          <h1 className="text-3xl font-extrabold text-gray-900">Admin Management</h1>
+          <p className="text-gray-500 font-medium mt-1">Maintain and assign Admin or Super Admin roles.</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-200 flex items-center gap-2"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-blue-100 flex items-center gap-2"
         >
-          <span>➕</span> Add New Admin
+          <span className="text-xl">➕</span> Add Admin User
         </button>
       </div>
 
@@ -100,16 +101,17 @@ export default function AdminUsersAdmin() {
       ) : admins.length === 0 ? (
         <div className="bg-white rounded-3xl p-16 text-center shadow-sm border border-gray-200">
           <span className="text-6xl block mb-4">👮</span>
-          <h2 className="text-2xl font-bold text-gray-800">No Admins Found</h2>
-          <p className="text-gray-500">You haven't added any secondary administrators yet.</p>
+          <h2 className="text-2xl font-bold text-gray-800">No Administrative Users</h2>
+          <p className="text-gray-500">There are currently no administrative users in the system.</p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-6 py-4 font-bold text-gray-400 uppercase text-xs tracking-wider">Admin Name</th>
-                <th className="px-6 py-4 font-bold text-gray-400 uppercase text-xs tracking-wider">Email</th>
+                <th className="px-6 py-4 font-bold text-gray-400 uppercase text-xs tracking-wider">User Profile</th>
+                <th className="px-6 py-4 font-bold text-gray-400 uppercase text-xs tracking-wider">Email Address</th>
+                <th className="px-6 py-4 font-bold text-gray-400 uppercase text-xs tracking-wider">Access Role</th>
                 <th className="px-6 py-4 font-bold text-gray-400 uppercase text-xs tracking-wider text-right">Actions</th>
               </tr>
             </thead>
@@ -117,25 +119,40 @@ export default function AdminUsersAdmin() {
               {admins.map((admin) => (
                 <tr key={admin.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${admin.role === 'super_admin' ? 'bg-indigo-600 shadow-lg shadow-indigo-100' : 'bg-slate-400'}`}>
                         {admin.name?.charAt(0).toUpperCase()}
                       </div>
-                      <div className="font-bold text-gray-900">{admin.name}</div>
+                      <div>
+                        <div className="font-bold text-gray-900">{admin.name}</div>
+                        {admin.id === user.id && <span className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">You</span>}
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-700">{admin.email}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-600">{admin.email}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-widest ${
+                      admin.role === 'super_admin' 
+                        ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' 
+                        : 'bg-slate-50 text-slate-600 border border-slate-100'
+                    }`}>
+                      {admin.role?.replace('_', ' ')}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button 
                         onClick={() => handleOpenModal(admin)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Edit User"
                       >
                         ✏️
                       </button>
                       <button 
                         onClick={() => handleDelete(admin.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        disabled={admin.id === user.id}
+                        className={`p-2 rounded-lg transition-colors ${admin.id === user.id ? 'text-gray-200 cursor-not-allowed' : 'text-gray-400 hover:text-red-600 hover:bg-red-50'}`}
+                        title={admin.id === user.id ? "Cannot delete yourself" : "Delete User"}
                       >
                         🗑️
                       </button>
@@ -153,7 +170,7 @@ export default function AdminUsersAdmin() {
           <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-pop-in">
             <div className="p-6 border-b border-gray-100 flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">
-                {editingAdmin ? 'Edit Admin' : 'Add New Admin'}
+                {editingAdmin ? 'Edit Admin Account' : 'Add New Admin Account'}
               </h2>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
             </div>
@@ -163,7 +180,8 @@ export default function AdminUsersAdmin() {
                 <input 
                   type="text" 
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                  placeholder="e.g. John Doe"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all font-medium"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                 />
@@ -173,19 +191,33 @@ export default function AdminUsersAdmin() {
                 <input 
                   type="email" 
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                  placeholder="admin@desipath.com"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all font-medium"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
               </div>
               <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Assigned Role</label>
+                <select 
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all font-bold text-gray-700"
+                  value={formData.role}
+                  onChange={(e) => setFormData({...formData, role: e.target.value})}
+                >
+                  <option value="admin">Standard Admin</option>
+                  <option value="super_admin">Super Admin (Full Control)</option>
+                </select>
+                <p className="text-[10px] text-gray-400 mt-1 px-1">Super Admins can manage other administrative users.</p>
+              </div>
+              <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">
-                  Password {editingAdmin && <span className="text-gray-400 font-normal">(Leave blank to keep same)</span>}
+                  Access Password {editingAdmin && <span className="text-gray-400 font-normal italic">(Leave blank to keep same)</span>}
                 </label>
                 <input 
                   type="password" 
                   required={!editingAdmin}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all font-medium"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                 />
@@ -194,7 +226,7 @@ export default function AdminUsersAdmin() {
                 <button 
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-6 py-3 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="flex-1 px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition-colors border border-gray-100"
                 >
                   Cancel
                 </button>
@@ -203,7 +235,7 @@ export default function AdminUsersAdmin() {
                   disabled={saving}
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-200 disabled:opacity-50"
                 >
-                  {saving ? 'Saving...' : 'Save Admin'}
+                  {saving ? 'Saving...' : editingAdmin ? 'Update Account' : 'Create Account'}
                 </button>
               </div>
             </form>

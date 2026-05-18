@@ -22,6 +22,9 @@ class AdminManagementController extends Controller
 
         if ($request->has('role')) {
             $query->where('role', $request->role);
+        } else {
+            // Default to showing all administrative users
+            $query->whereIn('role', ['admin', 'super_admin']);
         }
 
         return response()->json($query->get());
@@ -40,7 +43,7 @@ class AdminManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'role' => 'required|string|in:admin,user,business'
+            'role' => 'required|string|in:admin,super_admin,user,business'
         ]);
 
         $user = User::create([
@@ -68,7 +71,7 @@ class AdminManagementController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'role' => 'required|string|in:admin,user,business'
+            'role' => 'required|string|in:admin,super_admin,user,business'
         ]);
 
         $user->name = $request->name;

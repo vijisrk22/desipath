@@ -361,4 +361,58 @@ class ItTrainingController extends Controller
             ]
         ]);
     }
+
+    public function adminIndex(Request $request)
+    {
+        $query = DB::table('it_training_classes')
+            ->join('it_instructors', 'it_training_classes.instructor_id', '=', 'it_instructors.id')
+            ->leftJoin('it_training_pricing', 'it_training_classes.id', '=', 'it_training_pricing.class_id');
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('it_training_classes.title', 'like', "%{$search}%")
+                  ->orWhere('it_training_classes.category', 'like', "%{$search}%")
+                  ->orWhere('it_instructors.name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status) {
+            $status = $request->status;
+            if ($status === 'pending') {
+                $query->whereIn('it_training_classes.status', ['pending_review', 'draft']);
+            } else {
+                $query->where('it_training_classes.status', $status);
+            }
+        }
+
+        $results = $query->select(
+            'it_training_classes.*',
+            'it_instructors.name as instructorName',
+            'it_training_pricing.fee_amount as price',
+            'it_training_pricing.fee_currency as currency'
+        )->orderBy('it_training_classes.created_at', 'desc')->paginate(20);
+
+        return response()->json($results);
+    }
+
+    public function adminToggleStatus(Request $request, $id)
+    {
+        $item = DB::table('it_training_classes')->where('id', $id)->first();
+        if (!$item) return response()->json(['success' => false, 'message' => 'Not found'], 404);
+
+        $newStatus = $request->status;
+        
+        if (!$newStatus) {
+            $newStatus = ($item->status === 'active' || $item->status === 'approved') ? 'pending_review' : 'active';
+        }
+
+        // Map frontend statuses to backend
+        if ($newStatus === 'pending') $newStatus = 'pending_review';
+        if ($newStatus === 'approved') $newStatus = 'active';
+        
+        DB::table('it_training_classes')->where('id', $id)->update(['status' => $newStatus]);
+        
+        return response()->json(['success' => true, 'status' => $newStatus]);
+    }
 }

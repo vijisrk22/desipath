@@ -22,6 +22,7 @@ const EventsLanding = lazy(() => import("./pages/Events/EventsLanding"));
 const EventDetails = lazy(() => import("./pages/Events/EventDetails"));
 const ViewProfile = lazy(() => import("./components/User/ViewProfile"));
 import PrivateRoute from "./components/PrivateRoute";
+import AdminRoute from "./components/AdminRoute";
 const AstrologyAds = lazy(() => import("./pages/AstrologyAds/AstrologyAds"));
 const ClassesForKids = lazy(() => import("./pages/ClassesForKids/ClassesForKids"));
 const EditProfile = lazy(() => import("./components/User/EditProfile"));
@@ -215,7 +216,7 @@ function App() {
           />
 
           {/* Unified Admin Dashboard */}
-          <Route path="/admindashboard" element={<AdminDashboard />}>
+          <Route path="/admindashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>}>
             <Route index element={<div className="p-10 font-bold text-gray-500 text-xl text-center">
               <div className="text-6xl mb-4">👑</div>
               Welcome to Desipath Master Control.<br/>Select a module from the left to manage the marketplace.
@@ -230,10 +231,10 @@ function App() {
             <Route path="houses" element={<ListingAdmin endpoint="/api/homes" title="Buy/Sell House" categoryIcon="🏡" customBasePath="BuyHome" />} />
             <Route path="events" element={<ListingAdmin endpoint="/api/events" title="Events" categoryIcon="🎟️" />} />
             <Route path="travel" element={<ListingAdmin endpoint="/api/travelcompanions" title="Travel Companion" categoryIcon="✈️" customBasePath="travelCompanion" />} />
-            <Route path="trainings" element={<ListingAdmin endpoint="/api/trainingads" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
+            <Route path="trainings" element={<ListingAdmin endpoint="/api/it-training" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
             <Route path="local-ads" element={<LocalAdsAdmin />} />
             <Route path="real-estate" element={<RealEstateAdmin />} />
-            <Route path="photography" element={<PhotographyAdmin />} />
+            <Route path="photography" element={<ListingAdmin endpoint="/api/photography" title="Photography" categoryIcon="📸" />} />
             <Route path="zipcodes" element={<ZipcodesAdmin />} />
             <Route path="it-training-leads" element={<ItTrainingLeadsAdmin />} />
             <Route path="forum" element={<ForumAdmin />} />

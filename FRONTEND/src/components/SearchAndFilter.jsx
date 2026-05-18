@@ -43,11 +43,7 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  useEffect(() => {
-    if (isMobile) {
-      setIsModalOpen(true);
-    }
-  }, [isMobile]);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
