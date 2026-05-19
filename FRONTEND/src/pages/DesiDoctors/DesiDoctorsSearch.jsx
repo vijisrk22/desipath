@@ -107,12 +107,9 @@ export default function DesiDoctorsSearch() {
               Desipath Health Directory
             </span>
           </div>
-          <h1 className="text-4xl font-extrabold mb-2 tracking-tight font-dmsans">
+          <h1 className="text-4xl font-extrabold mb-8 tracking-tight font-dmsans">
             Find Top Desi Doctors & Group Practices
           </h1>
-          <p className="text-sky-100/90 mb-8 max-w-xl text-base font-light">
-            Search certified South Asian physicians specializing in South Asian diabetes, vegetarian nutrition, festival fasting adjustment, and parent care proxy services.
-          </p>
 
           {/* Search Inputs Console */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 bg-white p-3 rounded-2xl lg:rounded-full shadow-xl items-center text-gray-800">
