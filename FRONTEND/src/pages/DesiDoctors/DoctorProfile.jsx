@@ -242,21 +242,21 @@ export default function DoctorProfile() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Primary Detail Column */}
               <div className="flex flex-col gap-4">
-                <div className="flex justify-between items-center py-2.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-400 font-bold uppercase">Practice Type</span>
-                  <span className="text-sm text-slate-800 font-bold uppercase">{doctor.practice_type} Practice</span>
+                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
+                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Practice Type</span>
+                  <span className="text-sm text-slate-800 font-bold uppercase text-right">{doctor.practice_type} Practice</span>
                 </div>
-                <div className="flex justify-between items-center py-2.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-400 font-bold uppercase">NPI Number</span>
-                  <span className="text-sm text-sky-700 font-bold font-mono">{doctor.npi_number || 'N/A'}</span>
+                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
+                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">NPI Number</span>
+                  <span className="text-sm text-sky-700 font-bold font-mono text-right">{doctor.npi_number || 'N/A'}</span>
                 </div>
-                <div className="flex justify-between items-center py-2.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-400 font-bold uppercase">Gender</span>
-                  <span className="text-sm text-slate-800 font-bold uppercase">{doctor.gender}</span>
+                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
+                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Gender</span>
+                  <span className="text-sm text-slate-800 font-bold uppercase text-right">{doctor.gender}</span>
                 </div>
-                <div className="flex justify-between items-center py-2.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-400 font-bold uppercase">Languages Spoken</span>
-                  <span className="text-sm text-slate-800 font-bold">
+                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
+                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Languages Spoken</span>
+                  <span className="text-sm text-slate-800 font-bold text-right">
                     {doctor.languages_json ? doctor.languages_json.map(l => l.language).join(', ') : 'English'}
                   </span>
                 </div>
@@ -264,27 +264,23 @@ export default function DoctorProfile() {
 
               {/* Status and Badges Column */}
               <div className="flex flex-col gap-4">
-                <div className="flex justify-between items-center py-2.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-400 font-bold uppercase">Status</span>
-                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-extrabold px-3 py-1 rounded-md">
+                <div className="flex justify-between items-center py-2.5 border-b border-slate-100 gap-4">
+                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Status</span>
+                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-extrabold px-3 py-1 rounded-md text-right shrink-0">
                     Accepting New Patients
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-400 font-bold uppercase">Same-Day Availability</span>
-                  <span className={`text-sm font-bold ${doctor.same_day_available ? 'text-emerald-600' : 'text-slate-400'}`}>
-                    {doctor.same_day_available ? '✓ Available' : '✗ No same-day slots'}
-                  </span>
+                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
+                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Same-Day Availability</span>
+                  <span className={`text-sm font-bold text-right ${doctor.same_day_available ? 'text-emerald-600' : 'text-slate-400'}`}>{doctor.same_day_available ? '✓ Available' : '✗ No same-day slots'}</span>
                 </div>
-                <div className="flex justify-between items-center py-2.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-400 font-bold uppercase">Visiting Parents Friendly</span>
-                  <span className="text-sm text-orange-600 font-bold">
-                    {doctor.visiting_parents_care ? '✓ Supported' : '✗ Contact clinic'}
-                  </span>
+                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
+                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Visiting Parents Friendly</span>
+                  <span className="text-sm text-orange-600 font-bold text-right">{doctor.visiting_parents_care ? '✓ Supported' : '✗ Contact clinic'}</span>
                 </div>
-                <div className="flex justify-between items-center py-2.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-400 font-bold uppercase">Ayurveda Integration</span>
-                  <span className="text-sm text-sky-600 font-bold">Supported</span>
+                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
+                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Ayurveda Integration</span>
+                  <span className="text-sm text-sky-600 font-bold text-right">Supported</span>
                 </div>
               </div>
             </div>
