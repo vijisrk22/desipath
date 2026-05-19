@@ -14,8 +14,9 @@ class AdminManagementController extends Controller
      */
     public function index(Request $request)
     {
-        if (Auth::user()->role !== 'super_admin') {
-            return response()->json(['message' => 'Unauthorized. Super Admin access required.'], 403);
+        $userRole = Auth::user()->role;
+        if ($userRole !== 'super_admin' && $userRole !== 'admin') {
+            return response()->json(['message' => 'Unauthorized. Admin access required.'], 403);
         }
 
         $query = User::query();

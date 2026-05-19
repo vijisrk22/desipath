@@ -5,6 +5,7 @@ import api from '../../utils/api';
 export default function AdminUsersAdmin() {
   const user = useSelector((state) => state.user.user);
   const isSuperAdmin = user?.role === 'super_admin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,12 +70,12 @@ export default function AdminUsersAdmin() {
     }
   };
 
-  if (!isSuperAdmin) {
+  if (!isAdmin) {
     return (
       <div className="bg-white rounded-3xl p-16 text-center shadow-sm border border-gray-200">
         <span className="text-6xl block mb-4">🚫</span>
         <h2 className="text-2xl font-bold text-gray-800">Access Denied</h2>
-        <p className="text-gray-500">Super Admin access is required to manage administrative users.</p>
+        <p className="text-gray-500">Admin access is required to view administrative users.</p>
       </div>
     );
   }

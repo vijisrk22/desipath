@@ -9,12 +9,15 @@ export default function AdminDashboard() {
 
   const user = useSelector((state) => state.user.user);
   const isSuperAdmin = user?.role === 'super_admin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
   const navItems = [
     { name: 'Dashboard Home', path: '/admindashboard', icon: '🏠' },
     { name: 'Registered Users', path: '/admindashboard/users', icon: '👤' },
+    ...(isAdmin ? [
+      { name: 'Admin Users', path: '/admindashboard/admins', icon: '👮' }
+    ] : []),
     ...(isSuperAdmin ? [
-      { name: 'Admin Users', path: '/admindashboard/admins', icon: '👮' },
       { name: 'Category Management', path: '/admindashboard/categories', icon: '📁' },
       { name: 'Zipcodes', path: '/admindashboard/zipcodes', icon: '📍' }
     ] : []),
@@ -26,7 +29,8 @@ export default function AdminDashboard() {
     { name: 'Events', path: '/admindashboard/events', icon: '🎟️' },
     { name: 'Travel Companion', path: '/admindashboard/travel', icon: '✈️' },
     { name: 'IT Trainings', path: '/admindashboard/trainings', icon: '💻' },
-    {name: 'Local Deals', path: '/admindashboard/local-ads', icon: '📢' },
+    { name: 'Desi Doctors', path: '/admindashboard/doctors', icon: '🩺' },
+    { name: 'Local Deals', path: '/admindashboard/local-ads', icon: '📢' },
     { name: 'Real Estate', path: '/admindashboard/real-estate', icon: '🏙️' },
     { name: 'Photography', path: '/admindashboard/photography', icon: '📸' },
     { name: 'Forum', path: '/admindashboard/forum', icon: '💬' },

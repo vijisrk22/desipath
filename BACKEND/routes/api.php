@@ -26,6 +26,7 @@ use App\Http\Controllers\LocalAdsController;
 use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\RealEstateController;
+use App\Http\Controllers\DoctorController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -441,7 +442,7 @@ Route::get('/sync-marketplace-coords', function() {
 });
 
 Route::get('/users', function() {
-    return User::all();
+    return User::orderBy('id', 'asc')->paginate(100);
 });
 
 // Travel Companion V2 Routes
@@ -480,4 +481,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/users', [AdminManagementController::class, 'store']);
     Route::put('/admin/users/{id}', [AdminManagementController::class, 'update']);
     Route::delete('/admin/users/{id}', [AdminManagementController::class, 'destroy']);
+
+    // Protected Doctor Routes
+    Route::post('/doctors', [DoctorController::class, 'store']);
+    Route::put('/doctors/{id}', [DoctorController::class, 'update'])->where('id', '[0-9]+');
+    Route::delete('/doctors/{id}', [DoctorController::class, 'destroy'])->where('id', '[0-9]+');
+
+    // Admin Doctor Moderation
+    Route::get('/admin/doctors', [DoctorController::class, 'adminIndex']);
+    Route::post('/admin/doctors/{id}/toggle-approval', [DoctorController::class, 'adminToggleApproval'])->where('id', '[0-9]+');
 });
+
+// Public Doctor Directory Routes
+Route::get('/doctors', [DoctorController::class, 'index']);
+Route::get('/doctors/{slug}', [DoctorController::class, 'show']);

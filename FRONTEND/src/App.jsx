@@ -66,6 +66,11 @@ const FindProperties = lazy(() => import("./pages/RealEstate/FindProperties"));
 const PostProperty = lazy(() => import("./pages/RealEstate/PostProperty"));
 const PropertyDetails = lazy(() => import("./pages/RealEstate/PropertyDetails"));
 
+const DesiDoctorsSearch = lazy(() => import("./pages/DesiDoctors/DesiDoctorsSearch"));
+const DoctorProfile = lazy(() => import("./pages/DesiDoctors/DoctorProfile"));
+const DoctorAdPortal = lazy(() => import("./pages/DesiDoctors/DoctorAdPortal"));
+const DoctorAdmin = lazy(() => import("./pages/AdminDashboard/DoctorAdmin"));
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -169,6 +174,12 @@ function App() {
           <Route path="/real-estate/post" element={<PrivateRoute><PostProperty /></PrivateRoute>} />
           <Route path="/real-estate/details/:idOrSlug" element={<PropertyDetails />} />
 
+          {/* Desi Doctors */}
+          <Route path="/desi-doctors" element={<DesiDoctorsSearch />} />
+          <Route path="/doctors/:slug" element={<DoctorProfile />} />
+          <Route path="/desi-doctors/post" element={<PrivateRoute><DoctorAdPortal /></PrivateRoute>} />
+          <Route path="/desi-doctors/edit/:id" element={<PrivateRoute><DoctorAdPortal /></PrivateRoute>} />
+
           <Route path="/kids-class" element={<KidsClassLanding />} />
           <Route path="/instructor/:slug" element={<InstructorProfile type="kids" />} />
           <Route path="/it-instructor/:slug" element={<InstructorProfile type="it" />} />
@@ -234,6 +245,7 @@ function App() {
             <Route path="trainings" element={<ListingAdmin endpoint="/api/it-training" title="IT Trainings" categoryIcon="💻" customBasePath="itTrainings" />} />
             <Route path="local-ads" element={<LocalAdsAdmin />} />
             <Route path="real-estate" element={<RealEstateAdmin />} />
+            <Route path="doctors" element={<DoctorAdmin />} />
             <Route path="photography" element={<ListingAdmin endpoint="/api/photography" title="Photography" categoryIcon="📸" />} />
             <Route path="zipcodes" element={<ZipcodesAdmin />} />
             <Route path="it-training-leads" element={<ItTrainingLeadsAdmin />} />

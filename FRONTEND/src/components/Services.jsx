@@ -51,7 +51,7 @@ const services = [
   {
     name: "Doctors",
     image: "/img/services/Doctors_Desipath.jpeg",
-    path: "",
+    path: "/desi-doctors",
   },
   {
     name: "Astrology",
