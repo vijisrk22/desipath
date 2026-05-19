@@ -55,6 +55,7 @@ const MyListings = () => {
         { id: 'LocalAds', label: 'Local Deals', icon: '📢', listPath: '/api/local-ads/my-listings', del: deleteLocalAd, upd: updateLocalAd, redirect: '/services/Localdeals/edit' },
         { id: 'KidsClass', label: 'Kids Class', icon: '🎨', listPath: '/api/kids-classes/my-listings', del: deleteKidsClass, upd: updateKidsClass, redirect: '/kids-class/instructor-portal/edit' },
         { id: 'Photography', label: 'Photography', icon: '📸', listPath: '/api/photography/my-listings', del: deletePhotographer, upd: updatePhotographer, redirect: '/services/photography/edit' },
+        { id: 'Attorneys', label: 'Desi Attorneys', icon: '⚖️', listPath: '/api/attorneys/my-listings', redirect: '/desi-attorneys/edit' },
     ];
 
     const fetchCategoryData = async (catId) => {
@@ -70,6 +71,8 @@ const MyListings = () => {
             // Backend returns already filtered list
             const formatted = data.map(item => ({
                 ...item,
+                id: item.id || item.attorney_id || item.doctor_id,
+                status: item.status || item.profile_status || 'pending',
                 _categoryType: cat.label,
                 _catId: cat.id,
                 _config: cat
@@ -103,8 +106,19 @@ const MyListings = () => {
 
     const handleDelete = async (item) => {
         if (window.confirm("Are you sure you want to delete this listing?")) {
-            await dispatch(item._config.del(item.id));
-            fetchCategoryData(item._catId); // Refresh only this tab
+            if (item._catId === 'Attorneys') {
+                try {
+                    await api.delete(`/api/attorneys/${item.id}`);
+                    showToast('Listing deleted successfully', 'success');
+                    fetchCategoryData(item._catId);
+                } catch (err) {
+                    console.error("Failed to delete attorney:", err);
+                    showToast('Failed to delete listing', 'error');
+                }
+            } else {
+                await dispatch(item._config.del(item.id));
+                fetchCategoryData(item._catId); // Refresh only this tab
+            }
         }
     };
 
@@ -119,31 +133,38 @@ const MyListings = () => {
         setTabData(prev => ({ ...prev, [activeTab]: updatedData }));
 
         try {
-            const idKey = item._catId.toLowerCase() === 'houses' ? 'houseId' : 
-                         item._catId.toLowerCase() === 'cars' ? 'carId' :
-                         item._catId.toLowerCase() === 'rooms' ? 'roomId' :
-                         item._catId.toLowerCase() === 'rental' ? 'rentalHomeId' :
-                         item._catId.toLowerCase() === 'travel' ? 'companionId' :
-                         item._catId.toLowerCase() === 'events' ? 'eventId' :
-                         item._catId.toLowerCase() === 'localads' ? 'id' :
-                         item._catId.toLowerCase() === 'kidsclass' ? 'id' :
-                         item._catId.toLowerCase() === 'trainings' ? 'trainingId' : 'id';
-            
-            const dataKey = item._catId.toLowerCase() === 'houses' ? 'houseData' :
-                           item._catId.toLowerCase() === 'cars' ? 'carData' :
-                           item._catId.toLowerCase() === 'rooms' ? 'roomData' :
-                           item._catId.toLowerCase() === 'rental' ? 'rentalHomeData' :
-                           item._catId.toLowerCase() === 'travel' ? 'companionData' :
-                           item._catId.toLowerCase() === 'events' ? 'eventData' :
-                           item._catId.toLowerCase() === 'localads' ? 'data' :
-                           item._catId.toLowerCase() === 'kidsclass' ? 'data' :
-                           item._catId.toLowerCase() === 'trainings' ? 'trainingData' : 'data';
+            if (item._catId === 'Attorneys') {
+                await api.put(`/api/attorneys/${item.id}`, {
+                    profile_status: newStatus
+                });
+                showToast('Listing updated', 'success');
+            } else {
+                const idKey = item._catId.toLowerCase() === 'houses' ? 'houseId' : 
+                             item._catId.toLowerCase() === 'cars' ? 'carId' :
+                             item._catId.toLowerCase() === 'rooms' ? 'roomId' :
+                             item._catId.toLowerCase() === 'rental' ? 'rentalHomeId' :
+                             item._catId.toLowerCase() === 'travel' ? 'companionId' :
+                             item._catId.toLowerCase() === 'events' ? 'eventId' :
+                             item._catId.toLowerCase() === 'localads' ? 'id' :
+                             item._catId.toLowerCase() === 'kidsclass' ? 'id' :
+                             item._catId.toLowerCase() === 'trainings' ? 'trainingId' : 'id';
+                
+                const dataKey = item._catId.toLowerCase() === 'houses' ? 'houseData' :
+                               item._catId.toLowerCase() === 'cars' ? 'carData' :
+                               item._catId.toLowerCase() === 'rooms' ? 'roomData' :
+                               item._catId.toLowerCase() === 'rental' ? 'rentalHomeData' :
+                               item._catId.toLowerCase() === 'travel' ? 'companionData' :
+                               item._catId.toLowerCase() === 'events' ? 'eventData' :
+                               item._catId.toLowerCase() === 'localads' ? 'data' :
+                               item._catId.toLowerCase() === 'kidsclass' ? 'data' :
+                               item._catId.toLowerCase() === 'trainings' ? 'trainingData' : 'data';
 
-            await dispatch(item._config.upd({ 
-                [idKey]: item.id, 
-                [dataKey]: { status: newStatus } 
-            }));
-            showToast('Listing updated', 'success');
+                await dispatch(item._config.upd({ 
+                    [idKey]: item.id, 
+                    [dataKey]: { status: newStatus } 
+                }));
+                showToast('Listing updated', 'success');
+            }
             // We don't call fetchCategoryData here to keep the experience smooth and flicker-free
         } catch (error) {
             // Revert on failure

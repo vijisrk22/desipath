@@ -111,12 +111,13 @@ class DoctorController extends Controller
 
         $user = $request->user();
 
-        // Autogenerate slug: {city}-{first-name}-{last-name}-{npi-last6}
-        $citySlug = Str::slug($request->primary_address_city ?: 'city');
+        // Autogenerate slug: {first-name}-{last-name}-{city}-{state}-{zipcode}
         $fnSlug = Str::slug($request->first_name);
         $lnSlug = Str::slug($request->last_name);
-        $npiSuffix = $request->npi_number ? substr($request->npi_number, -6) : rand(100000, 999999);
-        $slug = "{$citySlug}-{$fnSlug}-{$lnSlug}-{$npiSuffix}";
+        $citySlug = Str::slug($request->primary_address_city ?: 'city');
+        $stateSlug = Str::slug($request->primary_address_state ?: 'state');
+        $zipSlug = Str::slug($request->primary_address_zip ?: 'zip');
+        $slug = "{$fnSlug}-{$lnSlug}-{$citySlug}-{$stateSlug}-{$zipSlug}";
 
         // Ensure unique slug
         $originalSlug = $slug;
@@ -177,6 +178,7 @@ class DoctorController extends Controller
             'procedures_json' => $request->procedures ? json_decode($request->procedures, true) : [],
             'indian_health_specialisations_json' => $request->indian_health_specialisations ? json_decode($request->indian_health_specialisations, true) : [],
             'insurance_plans_json' => $request->insurance_plans ? json_decode($request->insurance_plans, true) : [],
+            'additional_locations_json' => $request->additional_locations ? json_decode($request->additional_locations, true) : [],
             'languages_json' => $request->languages ? json_decode($request->languages, true) : [['language' => 'English', 'proficiency' => 'Fluent']],
             'office_hours_json' => $request->office_hours ? json_decode($request->office_hours, true) : [
                 ['day' => 'Monday', 'open_time' => '09:00 AM', 'close_time' => '05:00 PM', 'closed' => false],
@@ -332,7 +334,38 @@ class DoctorController extends Controller
         if ($request->has('office_hours')) {
             $doctor->office_hours_json = json_decode($request->office_hours, true);
         }
+        if ($request->has('additional_locations')) {
+            $doctor->additional_locations_json = json_decode($request->additional_locations, true);
+        }
         $doctor->save();
+
+        if ($request->has('awards')) {
+            $doctor->awards()->delete();
+            $awards = json_decode($request->awards, true) ?: [];
+            foreach ($awards as $aw) {
+                DoctorAward::create([
+                    'doctor_id' => $doctor->doctor_id,
+                    'award_name' => $aw['award_name'],
+                    'awarding_org' => $aw['awarding_org'],
+                    'years_json' => $aw['years_json'] ?: [date('Y')]
+                ]);
+            }
+        }
+
+        if ($request->has('affiliations')) {
+            $doctor->affiliations()->delete();
+            $affs = json_decode($request->affiliations, true) ?: [];
+            foreach ($affs as $aff) {
+                DoctorAffiliation::create([
+                    'doctor_id' => $doctor->doctor_id,
+                    'facility_name' => $aff['facility_name'],
+                    'facility_type' => $aff['facility_type'] ?? 'hospital',
+                    'affiliation_type' => $aff['affiliation_type'] ?? 'affiliated',
+                    'cms_star_rating' => $aff['cms_star_rating'] ?? 4.0,
+                    'phone' => $aff['phone'] ?? $doctor->phone
+                ]);
+            }
+        }
 
         return response()->json([
             'success' => true,

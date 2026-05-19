@@ -7,7 +7,7 @@ const AboutUs = () => {
         { title: "Home & Roommates", icon: "🏠", desc: "Finding the right place to live is the first step in building a life in a new home." },
         { title: "Cars & Transport", icon: "🚗", desc: "Buy or sell vehicles within the community with trust and transparency." },
         { title: "Events & Culture", icon: "🎉", desc: "Never miss a community gathering, concert, or festival happening near you." },
-        { title: "Professional Services", icon: "💼", desc: "Connect with Desi doctors, lawyers, and IT trainers who understand your needs." },
+        { title: "Professional Services", icon: "💼", desc: "Connect with Desi doctors, attorneys, and IT trainers who understand your needs." },
         { title: "Travel Companions", icon: "✈️", desc: "Traveling back home? Find friends and companions to share the journey with." },
         { title: "Kids Education", icon: "🎓", desc: "Preserve our heritage with classes for kids focusing on language, music, and arts." }
     ];

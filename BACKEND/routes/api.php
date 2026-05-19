@@ -27,6 +27,7 @@ use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\RealEstateController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\AttorneyController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -120,6 +121,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/kids-classes/my-count', [KidsClassController::class, 'getMyAdCount']);
     Route::get('/kids-classes/my-listings', [KidsClassController::class, 'getMyListings']);
     Route::get('/realestate/my-count', [RealEstateController::class, 'getMyAdCount']);
+    Route::get('/attorneys/my-listings', [AttorneyController::class, 'getMyListings']);
+    Route::get('/attorneys/my-count', [AttorneyController::class, 'getMyAdCount']);
 });
 
 // Public car read routes (no auth required — anyone can browse listings)
@@ -490,8 +493,22 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Doctor Moderation
     Route::get('/admin/doctors', [DoctorController::class, 'adminIndex']);
     Route::post('/admin/doctors/{id}/toggle-approval', [DoctorController::class, 'adminToggleApproval'])->where('id', '[0-9]+');
+
+    // Protected Attorney Routes
+    Route::post('/attorneys', [AttorneyController::class, 'store']);
+    Route::put('/attorneys/{id}', [AttorneyController::class, 'update'])->where('id', '[0-9]+');
+    Route::delete('/attorneys/{id}', [AttorneyController::class, 'destroy'])->where('id', '[0-9]+');
+
+    // Admin Attorney Moderation
+    Route::get('/admin/attorneys', [AttorneyController::class, 'adminIndex']);
+    Route::post('/admin/attorneys/{id}/toggle-approval', [AttorneyController::class, 'adminToggleApproval'])->where('id', '[0-9]+');
+    Route::post('/admin/attorneys/{id}/verify-legal-plan', [AttorneyController::class, 'adminVerifyLegalPlan'])->where('id', '[0-9]+');
 });
 
 // Public Doctor Directory Routes
 Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/doctors/{slug}', [DoctorController::class, 'show']);
+
+// Public Attorney Directory Routes
+Route::get('/attorneys', [AttorneyController::class, 'index']);
+Route::get('/attorneys/{slug}', [AttorneyController::class, 'show']);

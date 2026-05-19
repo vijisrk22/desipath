@@ -20,7 +20,7 @@ const categories = [
   { label: "Events", path: "/services/events" },
   { label: "Roommates", path: "/services/roommates" },
   { label: "IT Trainings", path: "/services/itTrainings" },
-  { label: "Lawyers", path: "/services/lawyers" },
+  { label: "Desi Attorneys", path: "/services/lawyers" },
   { label: "Doctors", path: "/services/doctors" },
   { label: "Astrology", path: "/astrologer/find" },
   { label: "Local Deals", path: "/services/Localdeals" },

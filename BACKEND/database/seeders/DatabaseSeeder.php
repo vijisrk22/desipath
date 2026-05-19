@@ -35,7 +35,9 @@ class DatabaseSeeder extends Seeder
             UsaZipcodeSeeder::class,
             LanguageClassesSeeder::class,
             RealEstateSeeder::class,
-            DoctorSeeder::class
+            DoctorSeeder::class,
+            TwentyDoctorsSeeder::class,
+            TwentyAttorneysSeeder::class
         ]);
     }
 }

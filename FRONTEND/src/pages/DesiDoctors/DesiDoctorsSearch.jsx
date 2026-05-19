@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import api from "../../utils/api";
+import { getFullImageUrl } from "../../utils/imageHelper";
 import { 
   CircularProgress, 
   Slider, 
@@ -14,14 +15,30 @@ import {
 
 const SPECIALTIES = [
   "All Specialties",
-  "Family Practice",
-  "Internal Medicine",
-  "Pediatrics",
+  "Addiction Medicine",
+  "Allergy/Immunology and Asthma",
+  "Audiology",
+  "Behavioral Health",
   "Cardiology",
-  "Obstetrics & Gynecology",
-  "Psychiatry",
+  "Colon & Rectal Surgery",
+  "Dermatology",
+  "Ear Nose & Throat",
+  "Endocrinology",
+  "Family Medicine",
   "Gastroenterology",
-  "Dermatology"
+  "General Surgery",
+  "Internal Medicine",
+  "Nephrology",
+  "Neurology",
+  "Nutrition",
+  "Ob/Gyn",
+  "Ophthalmology",
+  "Orthopedics",
+  "Pain Management",
+  "Pediatrics",
+  "Physical Medicine & Rehabilitation",
+  "Podiatry",
+  "Psychiatry"
 ];
 
 const INDIAN_HEALTH_SPECIALISATIONS = [
@@ -97,13 +114,22 @@ export default function DesiDoctorsSearch() {
     <div className="flex flex-col min-h-screen bg-slate-50">
       <Navbar />
 
+      {/* Breadcrumbs */}
+      <div className="bg-slate-100 border-b border-slate-200/60 py-3 px-[7%] text-xs text-slate-500 font-medium">
+        <div className="max-w-6xl mx-auto flex items-center gap-2">
+          <Link to="/" className="hover:text-sky-700 transition-colors">Home</Link>
+          <span className="text-slate-300">/</span>
+          <span className="text-slate-700 font-semibold">Doctors Directory</span>
+        </div>
+      </div>
+
       {/* Elegant Hero Search Panel */}
       <div className="bg-gradient-to-br from-[#0c4a6e] via-[#0284c7] to-[#0369a1] py-12 px-[7%] text-white shadow-md relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-3xl">🩺</span>
-            <span className="bg-orange-500/20 text-orange-200 border border-orange-500/30 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+            <span className="bg-orange-700/20 text-orange-200 border border-orange-700/30 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
               Desipath Health Directory
             </span>
           </div>
@@ -202,37 +228,7 @@ export default function DesiDoctorsSearch() {
             </div>
           </div>
 
-          {/* Indian Health Specialisation Pills */}
-          <div className="mt-8 flex flex-col gap-2">
-            <span className="text-xs font-bold text-sky-200 uppercase tracking-wider">
-              Filter by South Asian Specialties:
-            </span>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setSelectedIndianHealth("")}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
-                  selectedIndianHealth === ""
-                    ? "bg-white text-sky-800 border-white shadow-sm"
-                    : "bg-sky-900/40 text-sky-100 border-sky-700/50 hover:bg-sky-800/40"
-                }`}
-              >
-                ✨ Show All
-              </button>
-              {INDIAN_HEALTH_SPECIALISATIONS.map((ih) => (
-                <button
-                  key={ih}
-                  onClick={() => setSelectedIndianHealth(ih)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
-                    selectedIndianHealth === ih
-                      ? "bg-orange-500 text-white border-orange-500 shadow-sm"
-                      : "bg-sky-900/40 text-sky-100 border-sky-700/50 hover:bg-sky-800/40"
-                  }`}
-                >
-                  {ih}
-                </button>
-              ))}
-            </div>
-          </div>
+
         </div>
       </div>
 
@@ -242,12 +238,7 @@ export default function DesiDoctorsSearch() {
           <h2 className="text-lg font-bold text-slate-800 font-dmsans">
             {loading ? "Searching..." : `Showing ${results.length} Desi Doctors`}
           </h2>
-          <Link
-            to="/postad"
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-sm transition-all flex items-center gap-1.5"
-          >
-            <span>➕</span> List Your Medical Practice
-          </Link>
+
         </div>
 
         {loading ? (
@@ -260,7 +251,7 @@ export default function DesiDoctorsSearch() {
         ) : results.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {results.map((doctor) => {
-              const imageSrc = doctor.profile_photo_url || 
+              const imageSrc = doctor.profile_photo_url ? getFullImageUrl(doctor.profile_photo_url) : 
                 (doctor.gender === 'female' ? '/img/placeholder_female_doc.png' : '/img/placeholder_male_doc.png');
               return (
                 <div 

@@ -71,6 +71,11 @@ const DoctorProfile = lazy(() => import("./pages/DesiDoctors/DoctorProfile"));
 const DoctorAdPortal = lazy(() => import("./pages/DesiDoctors/DoctorAdPortal"));
 const DoctorAdmin = lazy(() => import("./pages/AdminDashboard/DoctorAdmin"));
 
+const DesiAttorneysSearch = lazy(() => import("./pages/DesiAttorneys/DesiAttorneysSearch"));
+const AttorneyProfile = lazy(() => import("./pages/DesiAttorneys/AttorneyProfile"));
+const AttorneyAdPortal = lazy(() => import("./pages/DesiAttorneys/AttorneyAdPortal"));
+const AttorneyAdmin = lazy(() => import("./pages/AdminDashboard/AttorneyAdmin"));
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -180,6 +185,12 @@ function App() {
           <Route path="/desi-doctors/post" element={<PrivateRoute><DoctorAdPortal /></PrivateRoute>} />
           <Route path="/desi-doctors/edit/:id" element={<PrivateRoute><DoctorAdPortal /></PrivateRoute>} />
 
+          {/* Desi Attorneys */}
+          <Route path="/desi-attorneys" element={<DesiAttorneysSearch />} />
+          <Route path="/attorneys/:slug" element={<AttorneyProfile />} />
+          <Route path="/desi-attorneys/post" element={<PrivateRoute><AttorneyAdPortal /></PrivateRoute>} />
+          <Route path="/desi-attorneys/edit/:id" element={<PrivateRoute><AttorneyAdPortal /></PrivateRoute>} />
+
           <Route path="/kids-class" element={<KidsClassLanding />} />
           <Route path="/instructor/:slug" element={<InstructorProfile type="kids" />} />
           <Route path="/it-instructor/:slug" element={<InstructorProfile type="it" />} />
@@ -246,6 +257,7 @@ function App() {
             <Route path="local-ads" element={<LocalAdsAdmin />} />
             <Route path="real-estate" element={<RealEstateAdmin />} />
             <Route path="doctors" element={<DoctorAdmin />} />
+            <Route path="attorneys" element={<AttorneyAdmin />} />
             <Route path="photography" element={<ListingAdmin endpoint="/api/photography" title="Photography" categoryIcon="📸" />} />
             <Route path="zipcodes" element={<ZipcodesAdmin />} />
             <Route path="it-training-leads" element={<ItTrainingLeadsAdmin />} />

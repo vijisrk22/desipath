@@ -12,7 +12,7 @@ const services = [
   { title: "Home & Roommates",    icon: "🏠", desc: "Find the right place to live with people who understand your lifestyle." },
   { title: "Cars & Transport",    icon: "🚗", desc: "Buy or sell vehicles within the community with trust and transparency." },
   { title: "Events & Culture",    icon: "🎉", desc: "Never miss a community gathering, concert, or festival near you." },
-  { title: "Professional Services", icon: "💼", desc: "Connect with Desi doctors, lawyers, and IT trainers who understand your needs." },
+  { title: "Professional Services", icon: "💼", desc: "Connect with Desi doctors, attorneys, and IT trainers who understand your needs." },
   { title: "Travel Companions",   icon: "✈️", desc: "Traveling back home? Find friends and companions to share the journey." },
   { title: "Kids Education",      icon: "🎓", desc: "Preserve heritage with classes focusing on language, music, and arts." },
 ];

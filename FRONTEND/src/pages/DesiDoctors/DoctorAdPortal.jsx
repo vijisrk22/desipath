@@ -7,13 +7,22 @@ import { toast } from "react-toastify";
 import { CircularProgress } from "@mui/material";
 
 const INSURANCE_OPTIONS = [
-  "Blue Cross Blue Shield",
-  "Aetna",
-  "Cigna",
   "UnitedHealthcare",
-  "Medicare",
+  "Elevance Health (Anthem)",
+  "Aetna (CVS Health)",
+  "Centene Corporation",
+  "Kaiser Permanente",
   "Humana",
-  "Kaiser Permanente"
+  "HCSC (Health Care Service Corporation)",
+  "Cigna",
+  "Molina Healthcare",
+  "Blue Cross Blue Shield (BCBS)",
+  "Highmark",
+  "GuideWell (Florida Blue)",
+  "Oscar Health",
+  "CareSource",
+  "Bright Health",
+  "Medicare"
 ];
 
 const INDIAN_HEALTH_OPTIONS = [
@@ -41,6 +50,7 @@ export default function DoctorAdPortal() {
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [profileSlug, setProfileSlug] = useState("");
 
   // Form Fields
   const [formData, setFormData] = useState({
@@ -71,10 +81,26 @@ export default function DoctorAdPortal() {
     medical_proxy_assistance: false,
     nri_specialist: false,
     accepting_new_patients: true,
+    board_certifications_input: "",
+    conditions_treated_input: "",
+    procedures_performed_input: "",
+    awards_input: "",
+    affiliations_input: "",
+    additional_locations_input: "",
+    profile_photo_url: "",
   });
 
   const [selectedInsurances, setSelectedInsurances] = useState([]);
   const [selectedIndianHealth, setSelectedIndianHealth] = useState([]);
+  const [customInsurance, setCustomInsurance] = useState("");
+
+  const handleAddCustomInsurance = () => {
+    const trimmed = customInsurance.trim();
+    if (trimmed && !selectedInsurances.includes(trimmed)) {
+      setSelectedInsurances(prev => [...prev, trimmed]);
+      setCustomInsurance("");
+    }
+  };
 
   // Fetch for Edit Mode
   useEffect(() => {
@@ -85,8 +111,13 @@ export default function DoctorAdPortal() {
           // Admin index or regular route can get it. Let's try regular show endpoint or query standard details.
           const res = await api.get(`/api/doctors`);
           if (res.data.success) {
-            const doc = res.data.data.find(d => d.doctor_id === parseInt(id));
+            let doc = res.data.data.find(d => d.doctor_id === parseInt(id));
             if (doc) {
+              // Fetch detailed profile to get relations like awards and affiliations
+              const detailRes = await api.get(`/api/doctors/${doc.slug}`);
+              if (detailRes.data.success) {
+                doc = detailRes.data.data;
+              }
               setFormData({
                 first_name: doc.first_name || "",
                 last_name: doc.last_name || "",
@@ -115,9 +146,24 @@ export default function DoctorAdPortal() {
                 medical_proxy_assistance: !!doc.medical_proxy_assistance,
                 nri_specialist: !!doc.nri_specialist,
                 accepting_new_patients: !!doc.accepting_new_patients,
+                board_certifications_input: doc.board_certifications_json ? doc.board_certifications_json.map(c => `${c.board} - ${c.specialty} (${c.year_certified})`).join('\n') : "",
+                conditions_treated_input: doc.conditions_treated_json ? doc.conditions_treated_json.join(', ') : "",
+                procedures_performed_input: doc.procedures_json ? doc.procedures_json.join(', ') : "",
+                awards_input: doc.awards ? doc.awards.map(aw => {
+                  const years = aw.years_json ? aw.years_json.join(', ') : '';
+                  return `${aw.award_name} - ${aw.awarding_org} (${years})`;
+                }).join('\n') : "",
+                affiliations_input: doc.affiliations ? doc.affiliations.map(aff => {
+                  return `${aff.facility_name} - ${aff.facility_type} | ${aff.affiliation_type} (${aff.cms_star_rating})`;
+                }).join('\n') : "",
+                additional_locations_input: doc.additional_locations_json ? doc.additional_locations_json.map(loc => {
+                  return `${loc.practice_name} - ${loc.street}, ${loc.city}, ${loc.state} ${loc.zip} (${loc.phone || ''})`;
+                }).join('\n') : "",
+                profile_photo_url: doc.profile_photo_url || "",
               });
               setSelectedInsurances(doc.insurance_plans_json || []);
               setSelectedIndianHealth(doc.indian_health_specialisations_json || []);
+              setProfileSlug(doc.slug || "");
             }
           }
         } catch (err) {
@@ -156,10 +202,99 @@ export default function DoctorAdPortal() {
     setLoading(true);
 
     try {
+      const parsedBoardCerts = formData.board_certifications_input ? formData.board_certifications_input.split('\n').map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return null;
+        const dashParts = trimmed.split('-');
+        if (dashParts.length >= 2) {
+          const board = dashParts[0].trim();
+          const rest = dashParts.slice(1).join('-').trim();
+          const yearMatch = rest.match(/\((\d{4})\)/);
+          const year = yearMatch ? yearMatch[1] : new Date().getFullYear().toString();
+          const specialty = rest.replace(/\(\d{4}\)/, '').trim();
+          return { board, specialty, year_certified: year };
+        }
+        return { board: trimmed, specialty: "Clinical Practice", year_certified: new Date().getFullYear().toString() };
+      }).filter(Boolean) : [];
+
+      const parsedConditions = formData.conditions_treated_input ? formData.conditions_treated_input.split(',').map(c => c.trim()).filter(Boolean) : [];
+      const parsedProcedures = formData.procedures_performed_input ? formData.procedures_performed_input.split(',').map(p => p.trim()).filter(Boolean) : [];
+      
+      const parsedAwards = formData.awards_input ? formData.awards_input.split('\n').map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return null;
+        const dashParts = trimmed.split('-');
+        if (dashParts.length >= 2) {
+          const award_name = dashParts[0].trim();
+          const rest = dashParts.slice(1).join('-').trim();
+          const yearMatch = rest.match(/\(([^)]+)\)/);
+          const yearsStr = yearMatch ? yearMatch[1] : new Date().getFullYear().toString();
+          const awarding_org = rest.replace(/\([^)]+\)/, '').trim();
+          const years_json = yearsStr.split(',').map(y => y.trim()).filter(Boolean);
+          return { award_name, awarding_org, years_json };
+        }
+        return { award_name: trimmed, awarding_org: "Healthcare Association", years_json: [new Date().getFullYear().toString()] };
+      }).filter(Boolean) : [];
+
+      const parsedAffiliations = formData.affiliations_input ? formData.affiliations_input.split('\n').map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return null;
+        const dashParts = trimmed.split('-');
+        if (dashParts.length >= 2) {
+          const facility_name = dashParts[0].trim();
+          const rest = dashParts.slice(1).join('-').trim();
+          const starMatch = rest.match(/\(([^)]+)\)/);
+          const cms_star_rating = starMatch ? parseFloat(starMatch[1]) : 4.0;
+          const details = rest.replace(/\([^)]+\)/, '').trim().split('|');
+          const facility_type = details[0] ? details[0].trim() : 'hospital';
+          const affiliation_type = details[1] ? details[1].trim() : 'admitting';
+          return { facility_name, facility_type, affiliation_type, cms_star_rating, phone: formData.phone };
+        }
+        return { facility_name: trimmed, facility_type: "hospital", affiliation_type: "affiliated", cms_star_rating: 4.0, phone: formData.phone };
+      }).filter(Boolean) : [];
+      
+      const parsedAdditionalLocations = formData.additional_locations_input ? formData.additional_locations_input.split('\n').map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return null;
+        const dashParts = trimmed.split('-');
+        if (dashParts.length >= 2) {
+          const practice_name = dashParts[0].trim();
+          const rest = dashParts.slice(1).join('-').trim();
+          const phoneMatch = rest.match(/\(([^)]+)\)$/);
+          const phone = phoneMatch ? phoneMatch[1].trim() : '';
+          const addressPart = rest.replace(/\(([^)]+)\)$/, '').trim();
+          
+          const addressParts = addressPart.split(',').map(p => p.trim());
+          let street = addressPart;
+          let city = '';
+          let state = '';
+          let zip = '';
+          if (addressParts.length >= 3) {
+            street = addressParts.slice(0, addressParts.length - 2).join(', ');
+            city = addressParts[addressParts.length - 2];
+            const stateZip = addressParts[addressParts.length - 1].split(' ').map(p => p.trim()).filter(Boolean);
+            if (stateZip.length >= 2) {
+              state = stateZip[0];
+              zip = stateZip.slice(1).join(' ');
+            } else if (stateZip.length === 1) {
+              state = stateZip[0];
+            }
+          }
+          return { practice_name, street, city, state, zip, phone };
+        }
+        return { practice_name: trimmed, street: '', city: '', state: '', zip: '', phone: '' };
+      }).filter(Boolean) : [];
+
       const payload = {
         ...formData,
+        board_certifications: JSON.stringify(parsedBoardCerts),
+        conditions_treated: JSON.stringify(parsedConditions),
+        procedures: JSON.stringify(parsedProcedures),
+        awards: JSON.stringify(parsedAwards),
+        affiliations: JSON.stringify(parsedAffiliations),
         insurance_plans: JSON.stringify(selectedInsurances),
-        indian_health_specialisations: JSON.stringify(selectedIndianHealth)
+        indian_health_specialisations: JSON.stringify(selectedIndianHealth),
+        additional_locations: JSON.stringify(parsedAdditionalLocations)
       };
 
       let res;
@@ -288,6 +423,46 @@ export default function DoctorAdPortal() {
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-sky-500"
                 />
               </div>
+
+              <div className="mt-2 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div className="md:col-span-2">
+                  <label className="text-xs font-bold text-gray-500 block mb-1">Profile Photo URL</label>
+                  <input 
+                    type="text" name="profile_photo_url" value={formData.profile_photo_url} onChange={handleChange}
+                    placeholder="Paste photo URL (e.g. https://images.unsplash.com/...)"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-sky-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 block mb-1">Upload Photo (Simulated)</label>
+                  <label className="flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl p-2 bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer select-none min-h-[38px]">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          const localUrl = URL.createObjectURL(e.target.files[0]);
+                          setFormData(prev => ({ ...prev, profile_photo_url: localUrl }));
+                        }
+                      }}
+                      className="hidden"
+                    />
+                    <span className="text-base">📷</span>
+                    <span className="text-xs font-bold text-slate-600">Choose Image</span>
+                  </label>
+                </div>
+                {formData.profile_photo_url && (
+                  <div className="flex items-center gap-2 border border-slate-100 rounded-xl p-1 bg-slate-50 max-w-[120px] max-h-[38px] overflow-hidden">
+                    <img 
+                      src={formData.profile_photo_url} 
+                      alt="Preview" 
+                      className="w-8 h-8 rounded-lg object-cover" 
+                      onError={(e) => e.currentTarget.style.display = 'none'}
+                    />
+                    <span className="text-[10px] font-bold text-emerald-600 truncate">Loaded</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -378,6 +553,16 @@ export default function DoctorAdPortal() {
                 />
               </div>
             </div>
+
+            <div className="mt-4">
+              <label className="text-xs font-bold text-gray-500 block mb-1">Additional Practice Locations (One per line)</label>
+              <textarea 
+                name="additional_locations_input" rows="3" value={formData.additional_locations_input} onChange={handleChange}
+                placeholder="Valley Care Clinic - 456 Oak St, Fremont, CA 94539 (510-555-0199)"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-sky-500"
+              />
+              <span className="text-[10px] text-gray-400 font-semibold block mt-1">Format: Practice Name - Street, City, State Zip (Phone). Insert one entry per line.</span>
+            </div>
           </div>
 
           {/* Section 3: NRI Features & Cultural Background */}
@@ -400,7 +585,7 @@ export default function DoctorAdPortal() {
                       onClick={() => handleIndianHealthToggle(opt)}
                       className={`p-3 rounded-xl border text-xs font-bold text-left transition-all ${
                         active 
-                          ? "bg-orange-500 text-white border-orange-500 shadow-sm"
+                          ? "bg-orange-700 text-white border-orange-700 shadow-sm"
                           : "bg-slate-50 text-gray-700 border-slate-200 hover:bg-slate-100"
                       }`}
                     >
@@ -481,22 +666,108 @@ export default function DoctorAdPortal() {
               4. Insurance Support
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {INSURANCE_OPTIONS.map((plan) => {
-                const active = selectedInsurances.includes(plan);
-                return (
-                  <button
-                    key={plan} type="button"
-                    onClick={() => handleInsuranceToggle(plan)}
-                    className={`p-2.5 rounded-xl border text-xs font-bold text-left transition-all ${
-                      active 
-                        ? "bg-[#0284c7] text-white border-[#0284c7] shadow-sm"
-                        : "bg-slate-50 text-gray-700 border-slate-200 hover:bg-slate-100"
-                    }`}
-                  >
-                    {active ? "✓ " : "+ "} {plan}
-                  </button>
-                );
-              })}
+              {(() => {
+                const displayInsurances = [...INSURANCE_OPTIONS];
+                selectedInsurances.forEach(plan => {
+                  if (!displayInsurances.includes(plan)) {
+                    displayInsurances.push(plan);
+                  }
+                });
+                return displayInsurances.map((plan) => {
+                  const active = selectedInsurances.includes(plan);
+                  return (
+                    <button
+                      key={plan} type="button"
+                      onClick={() => handleInsuranceToggle(plan)}
+                      className={`p-2.5 rounded-xl border text-xs font-bold text-left transition-all ${
+                        active 
+                          ? "bg-[#0284c7] text-white border-[#0284c7] shadow-sm"
+                          : "bg-slate-50 text-gray-700 border-slate-200 hover:bg-slate-100"
+                      }`}
+                    >
+                      {active ? "✓ " : "+ "} {plan}
+                    </button>
+                  );
+                });
+              })()}
+            </div>
+
+            <div className="mt-4 flex items-center gap-2 max-w-md">
+              <input
+                type="text"
+                placeholder="Enter custom insurance name..."
+                value={customInsurance}
+                onChange={(e) => setCustomInsurance(e.target.value)}
+                className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-medium outline-none focus:border-sky-500"
+              />
+              <button
+                type="button"
+                onClick={handleAddCustomInsurance}
+                className="bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-xs py-2 px-4 rounded-xl transition-all shadow-sm active:scale-95"
+              >
+                + Add Custom
+              </button>
+            </div>
+          </div>
+
+          {/* Section 5: Clinical Expertise */}
+          <div>
+            <h3 className="text-base font-extrabold text-sky-800 uppercase tracking-widest mb-4 pb-2 border-b border-slate-100">
+              5. Board Certifications, Conditions & Procedures
+            </h3>
+            <div className="flex flex-col gap-5 text-gray-800">
+              <div>
+                <label className="text-xs font-bold text-gray-500 block mb-1">Board Certifications (One per line)</label>
+                <textarea 
+                  name="board_certifications_input" rows="3" value={formData.board_certifications_input} onChange={handleChange}
+                  placeholder="American Board of Internal Medicine - Cardiovascular Disease (2010)"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-sky-500"
+                />
+                <span className="text-[10px] text-gray-400 font-semibold block mt-1">Format: Board Name - Specialty Name (Year Certified). Insert one entry per line.</span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 block mb-1">Conditions Treated (Comma separated)</label>
+                  <textarea 
+                    name="conditions_treated_input" rows="3" value={formData.conditions_treated_input} onChange={handleChange}
+                    placeholder="Coronary Artery Disease, Heart Failure, Arrhythmia, Hyperlipidemia"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-sky-500"
+                  />
+                  <span className="text-[10px] text-gray-400 font-semibold block mt-1">Enter conditions treated, separated by commas.</span>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-gray-500 block mb-1">Procedures Performed (Comma separated)</label>
+                  <textarea 
+                    name="procedures_performed_input" rows="3" value={formData.procedures_performed_input} onChange={handleChange}
+                    placeholder="Stress Echocardiogram, Holter Monitor, Cardiac Stress Test"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-sky-500"
+                  />
+                  <span className="text-[10px] text-gray-400 font-semibold block mt-1">Enter clinical procedures performed, separated by commas.</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-gray-500 block mb-1">Awards & Certifications (One per line)</label>
+                <textarea 
+                  name="awards_input" rows="3" value={formData.awards_input} onChange={handleChange}
+                  placeholder="Bay Area Super Doctor - Super Doctors (2022, 2023, 2024)"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-sky-500"
+                />
+                <span className="text-[10px] text-gray-400 font-semibold block mt-1">Format: Award Name - Awarding Organization (Years, comma separated). Insert one entry per line.</span>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-gray-500 block mb-1">Hospital & Medical Group Affiliations (One per line)</label>
+                <textarea 
+                  name="affiliations_input" rows="3" value={formData.affiliations_input} onChange={handleChange}
+                  placeholder="Washington Hospital Healthcare System - hospital | admitting (4.5)"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-sky-500"
+                />
+                <span className="text-[10px] text-gray-400 font-semibold block mt-1">Format: Facility Name - Facility Type | Affiliation Type (CMS Star Rating). Insert one entry per line.</span>
+              </div>
+
             </div>
           </div>
 
@@ -508,19 +779,30 @@ export default function DoctorAdPortal() {
             >
               Cancel & Exit
             </Link>
-            <button
-              type="submit" disabled={loading}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm py-3 px-8 rounded-xl transition-all shadow-md active:scale-95 disabled:bg-slate-300"
-            >
-              {loading ? (
-                <div className="flex items-center gap-1.5 justify-center">
-                  <CircularProgress size={16} sx={{ color: 'white' }} />
-                  <span>Saving Listing...</span>
-                </div>
-              ) : (
-                isEdit ? "Update Doctor Listing" : "Submit Listing for Approval"
+            <div className="flex items-center gap-4">
+              {isEdit && profileSlug && (
+                <Link
+                  to={`/doctors/${profileSlug}`}
+                  target="_blank"
+                  className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-extrabold text-sm py-3 px-6 rounded-xl transition-all shadow-sm flex items-center gap-2"
+                >
+                  <span>👁️</span> Preview Profile
+                </Link>
               )}
-            </button>
+              <button
+                type="submit" disabled={loading}
+                className="bg-orange-700 hover:bg-orange-800 text-white font-extrabold text-sm py-3 px-8 rounded-xl transition-all shadow-md active:scale-95 disabled:bg-slate-300"
+              >
+                {loading ? (
+                  <div className="flex items-center gap-1.5 justify-center">
+                    <CircularProgress size={16} sx={{ color: 'white' }} />
+                    <span>Saving Listing...</span>
+                  </div>
+                ) : (
+                  isEdit ? "Update Doctor Listing" : "Submit Listing for Approval"
+                )}
+              </button>
+            </div>
           </div>
 
         </form>

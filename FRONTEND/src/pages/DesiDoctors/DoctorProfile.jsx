@@ -4,6 +4,7 @@ import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import api from "../../utils/api";
 import { CircularProgress } from "@mui/material";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 const TAB_SECTIONS = [
   { id: "section-highlights", label: "Highlights" },
@@ -107,7 +108,7 @@ export default function DoctorProfile() {
     );
   }
 
-  const imageSrc = doctor.profile_photo_url || 
+  const imageSrc = doctor.profile_photo_url ? getFullImageUrl(doctor.profile_photo_url) : 
     (doctor.gender === 'female' ? '/img/placeholder_female_doc.png' : '/img/placeholder_male_doc.png');
 
   // Filter insurance plans
@@ -117,9 +118,22 @@ export default function DoctorProfile() {
 
   const displayPlans = plansExpanded ? filteredPlans : filteredPlans.slice(0, 6);
 
+  const hasAyurveda = doctor.indian_health_specialisations_json && doctor.indian_health_specialisations_json.includes("Ayurvedic Integration");
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 text-slate-800">
       <Navbar />
+
+      {/* Breadcrumbs */}
+      <div className="bg-slate-100 border-b border-slate-200/60 py-3 px-[7%] text-xs text-slate-500 font-medium">
+        <div className="max-w-6xl mx-auto flex items-center gap-2">
+          <Link to="/" className="hover:text-sky-700 transition-colors">Home</Link>
+          <span className="text-slate-300">/</span>
+          <Link to="/desi-doctors" className="hover:text-sky-700 transition-colors">Doctors</Link>
+          <span className="text-slate-300">/</span>
+          <span className="text-slate-700 font-semibold">Dr. {doctor.first_name} {doctor.last_name}</span>
+        </div>
+      </div>
 
       {/* Modern Profile Header */}
       <div className="bg-gradient-to-br from-[#0c4a6e] to-[#0369a1] text-white py-12 px-[7%] relative overflow-hidden">
@@ -140,7 +154,7 @@ export default function DoctorProfile() {
           {/* Core Info Column */}
           <div className="flex-grow text-center md:text-left">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 mb-2">
-              <span className="bg-orange-500 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+              <span className="bg-orange-700 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
                 Desi Doctor Verified
               </span>
               {doctor.npi_verified && (
@@ -182,7 +196,7 @@ export default function DoctorProfile() {
               href={doctor.appointment_booking_url || `tel:${doctor.phone}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm py-3 px-6 rounded-xl transition-all shadow-md inline-block"
+              className="bg-orange-700 hover:bg-orange-800 text-white font-extrabold text-sm py-3 px-6 rounded-xl transition-all shadow-md inline-block animate-pulse-subtle"
             >
               🗓️ Book Appointment
             </a>
@@ -224,8 +238,8 @@ export default function DoctorProfile() {
 
           {/* NRI Statement Highlight Callout Box (Spec enforced) */}
           {doctor.nri_specialist_statement && (
-            <div className="bg-gradient-to-r from-orange-50/50 to-amber-50/20 border-l-4 border-orange-500 p-6 rounded-r-2xl shadow-sm">
-              <h4 className="text-sm font-extrabold text-orange-800 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+            <div className="bg-gradient-to-r from-orange-50/30 to-amber-50/10 border-l-4 border-orange-700 p-6 rounded-r-2xl shadow-sm">
+              <h4 className="text-sm font-extrabold text-orange-950 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                 <span>🧡</span> NRI Speciality Patient Statement
               </h4>
               <p className="text-slate-700 leading-relaxed text-sm italic font-medium">
@@ -236,51 +250,89 @@ export default function DoctorProfile() {
 
           {/* Section 1: Highlights */}
           <section id="section-highlights" className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm scroll-mt-28">
-            <h2 className="text-xl font-bold text-slate-800 mb-4 font-dmsans flex items-center gap-2">
+            <h2 className="text-xl font-bold text-slate-800 mb-6 font-dmsans flex items-center gap-2">
               <span>🌟</span> Provider Highlights
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Primary Detail Column */}
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
-                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Practice Type</span>
-                  <span className="text-sm text-slate-800 font-bold uppercase text-right">{doctor.practice_type} Practice</span>
-                </div>
-                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
-                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">NPI Number</span>
-                  <span className="text-sm text-sky-700 font-bold font-mono text-right">{doctor.npi_number || 'N/A'}</span>
-                </div>
-                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
-                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Gender</span>
-                  <span className="text-sm text-slate-800 font-bold uppercase text-right">{doctor.gender}</span>
-                </div>
-                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
-                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Languages Spoken</span>
-                  <span className="text-sm text-slate-800 font-bold text-right">
-                    {doctor.languages_json ? doctor.languages_json.map(l => l.language).join(', ') : 'English'}
-                  </span>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Left Column: Practice Information */}
+              <div>
+                <h3 className="text-xs font-extrabold text-sky-800 uppercase tracking-wider mb-3">Practice Details</h3>
+                <div className="bg-slate-50/60 rounded-2xl p-5 space-y-3.5 border border-slate-100">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500 font-semibold">Practice Type</span>
+                    <span className="text-slate-800 font-bold capitalize">{doctor.practice_type} Practice</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500 font-semibold">NPI Number</span>
+                    <span className="text-sky-700 font-bold font-mono">{doctor.npi_number || 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500 font-semibold">Gender</span>
+                    <span className="text-slate-800 font-bold capitalize">{doctor.gender}</span>
+                  </div>
+                  <div className="flex justify-between items-start text-sm gap-4">
+                    <span className="text-slate-500 font-semibold shrink-0">Languages Spoken</span>
+                    <span className="text-slate-800 font-bold text-right">
+                      {doctor.languages_json ? doctor.languages_json.map(l => l.language).join(', ') : 'English'}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* Status and Badges Column */}
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-between items-center py-2.5 border-b border-slate-100 gap-4">
-                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Status</span>
-                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-extrabold px-3 py-1 rounded-md text-right shrink-0">
-                    Accepting New Patients
-                  </span>
-                </div>
-                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
-                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Same-Day Availability</span>
-                  <span className={`text-sm font-bold text-right ${doctor.same_day_available ? 'text-emerald-600' : 'text-slate-400'}`}>{doctor.same_day_available ? '✓ Available' : '✗ No same-day slots'}</span>
-                </div>
-                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
-                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Visiting Parents Friendly</span>
-                  <span className="text-sm text-orange-600 font-bold text-right">{doctor.visiting_parents_care ? '✓ Supported' : '✗ Contact clinic'}</span>
-                </div>
-                <div className="flex justify-between items-start py-2.5 border-b border-slate-100 gap-4">
-                  <span className="text-sm text-slate-400 font-bold uppercase shrink-0">Ayurveda Integration</span>
-                  <span className="text-sm text-sky-600 font-bold text-right">Supported</span>
+              {/* Right Column: Highlights Checkboxes */}
+              <div>
+                <h3 className="text-xs font-extrabold text-sky-800 uppercase tracking-wider mb-3">highlights & credentials</h3>
+                <div className="grid grid-cols-1 gap-2.5">
+                  {/* Accepting Patients */}
+                  <div className="flex items-center justify-between p-3 bg-slate-50/60 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
+                    <span className="text-sm font-semibold text-slate-700">Accepting New Patients</span>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${doctor.accepting_new_patients !== false ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400'}`}>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Telehealth Available */}
+                  <div className="flex items-center justify-between p-3 bg-slate-50/60 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
+                    <span className="text-sm font-semibold text-slate-700">Telehealth Available</span>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${doctor.telehealth_available ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400'}`}>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Visiting Parents Care */}
+                  <div className="flex items-center justify-between p-3 bg-slate-50/60 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
+                    <span className="text-sm font-semibold text-slate-700">Parent Visa / Visiting Parents Friendly</span>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${doctor.visiting_parents_care ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400'}`}>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Same-day availability */}
+                  <div className="flex items-center justify-between p-3 bg-slate-50/60 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
+                    <span className="text-sm font-semibold text-slate-700">Same-Day Availability</span>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${doctor.same_day_available ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400'}`}>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Ayurveda Integration */}
+                  <div className="flex items-center justify-between p-3 bg-slate-50/60 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
+                    <span className="text-sm font-semibold text-slate-700">Ayurveda / Alternate Medicine Integration</span>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasAyurveda ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400'}`}>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -563,6 +615,46 @@ export default function DoctorProfile() {
                     </a>
                   </div>
                 </div>
+
+                {/* Additional locations */}
+                {doctor.additional_locations_json && doctor.additional_locations_json.length > 0 && (
+                  <div className="flex flex-col gap-4 mt-6">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Additional Office Address(es)</h4>
+                    {doctor.additional_locations_json.map((loc, idx) => (
+                      <div key={idx} className="bg-slate-50 border border-slate-100 p-5 rounded-2xl flex flex-col gap-3">
+                        <span className="text-2xl">📍</span>
+                        <div>
+                          <h5 className="text-sm font-bold text-slate-800">{loc.practice_name || 'Medical Clinic'}</h5>
+                          <p className="text-xs text-slate-500 leading-relaxed mt-1">
+                            {loc.street}<br />
+                            {loc.city}, {loc.state} {loc.zip}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5 mt-2 border-t border-slate-200/60 pt-3">
+                          <a 
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                              `${loc.practice_name} ${loc.street} ${loc.city}`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-bold text-sky-600 hover:text-sky-700 underline flex items-center gap-1"
+                          >
+                            🗺️ Get Google Maps Directions
+                          </a>
+                          {loc.phone && (
+                            <a 
+                              href={`tel:${loc.phone}`}
+                              className="text-xs font-bold text-slate-600 flex items-center gap-1"
+                            >
+                              📞 Phone: {loc.phone}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Telehealth support */}
                 {doctor.telehealth_available && (

@@ -21,7 +21,7 @@ class DoctorSeeder extends Seeder
         // Doctor 1: Dr. Priya Krishnamurthy in Edison, NJ
         $d1 = Doctor::create([
             'user_id' => $user->id,
-            'slug' => 'edison-priya-krishnamurthy-128459',
+            'slug' => 'priya-krishnamurthy-edison-nj-08817',
             'first_name' => 'Priya',
             'last_name' => 'Krishnamurthy',
             'credential' => 'MD',
@@ -115,7 +115,7 @@ class DoctorSeeder extends Seeder
         // Doctor 2: Dr. Rajesh Patel in Fremont, CA
         $d2 = Doctor::create([
             'user_id' => $user->id,
-            'slug' => 'fremont-rajesh-patel-034521',
+            'slug' => 'rajesh-patel-fremont-ca-94536',
             'first_name' => 'Rajesh',
             'last_name' => 'Patel',
             'credential' => 'MD',
@@ -198,7 +198,7 @@ class DoctorSeeder extends Seeder
         // Doctor 3: Dr. Suresh Kumar Reddy in Sugar Land, TX
         $d3 = Doctor::create([
             'user_id' => $user->id,
-            'slug' => 'sugar-land-suresh-kumar-reddy-987623',
+            'slug' => 'suresh-kumar-reddy-sugar-land-tx-77479',
             'first_name' => 'Suresh Kumar',
             'last_name' => 'Reddy',
             'credential' => 'MD',

@@ -44,9 +44,9 @@ const services = [
     path: "/it-training",
   },
   {
-    name: "Lawyers",
+    name: "Desi Attorneys",
     image: "/img/services/Attorney_Desipath.jpeg",
-    path: "",
+    path: "/desi-attorneys",
   },
   {
     name: "Doctors",
