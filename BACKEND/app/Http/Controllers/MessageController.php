@@ -271,6 +271,14 @@ class MessageController extends Controller
                 $r = User::find($chat->receiver_id);
                 $chat->receiver_name = $r ? $r->name : 'Unknown';
             }
+
+            // Calculate unread count (messages sent by the partner to the auth user, which are not yet read)
+            $chat->unread_count = Message::where('sender_id', $partnerId)
+                ->where('receiver_id', $userId)
+                ->where('ad_id', $chat->ad_id)
+                ->where('ad_type', $chat->ad_type)
+                ->where('is_read', false)
+                ->count();
         }
 
         return response()->json($conversations);
@@ -352,11 +360,38 @@ class MessageController extends Controller
                 'ad_id' => $request->ad_id,
                 'ad_type' => $request->ad_type,
                 'message' => $request->message,
+                'is_read' => false,
             ]);
         } else {
             // Handle case where user is not found
             return response()->json(['error' => 'Receiver not found'], 404);
         }
         return response()->json($message, 201);
+    }
+
+    /**
+     * Mark messages in a conversation as read
+     */
+    public function markAsRead(Request $request)
+    {
+        $request->validate([
+            'sender_id' => 'required|integer',
+            'ad_id' => 'required|integer',
+            'ad_type' => 'required|string',
+        ]);
+
+        $authUserId = Auth::id();
+        $senderId = $request->sender_id;
+        $adId = $request->ad_id;
+        $adType = $request->ad_type;
+
+        Message::where('sender_id', $senderId)
+            ->where('receiver_id', $authUserId)
+            ->where('ad_id', $adId)
+            ->where('ad_type', $adType)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['success' => true]);
     }
 }

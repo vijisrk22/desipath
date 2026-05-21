@@ -2,46 +2,53 @@ import React from 'react';
 import { 
   Typography, 
   Avatar, 
-  Chip, 
-  Button,
-  Rating
+  Button
 } from '@mui/material';
 import { 
-  LocationOn, 
-  Work, 
   Translate, 
   Phone, 
   VideoCall, 
   Chat, 
-  Article,
-  Person,
   Verified
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 const AstrologyCard = ({ ad }) => {
   const navigate = useNavigate();
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const services = ad.services_json || [];
   const modes = ad.consultation_modes || [];
-  const languages = ad.languages_json || [];
 
-  const getModeIcon = (mode) => {
-    switch(mode.toLowerCase()) {
-      case 'phone': return <Phone sx={{ fontSize: 16 }} />;
-      case 'video': return <VideoCall sx={{ fontSize: 16 }} />;
-      case 'chat': return <Chat sx={{ fontSize: 16 }} />;
-      case 'report': return <Article sx={{ fontSize: 16 }} />;
-      case 'in-person': return <Person sx={{ fontSize: 16 }} />;
-      default: return null;
-    }
+  const themeColor = '#db2777'; // Brand Pink/Magenta from the mockup
+  const themeHoverColor = '#be185d';
+  const themeShadow = 'rgba(219, 39, 119, 0.15)';
+
+  const handleConsultNow = () => {
+    const chatPartnerInfo = {
+      chatPartnerId: ad.user_id,
+      chatPartnerName: ad.display_name,
+    };
+    navigate(
+      `/inbox?adType=astrologyad&adId=${ad.id}&chatPartnerInfo=${encodeURIComponent(
+        JSON.stringify(chatPartnerInfo)
+      )}`
+    );
   };
 
   return (
-    <div className="bg-white rounded-[32px] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-200 hover:shadow-[0_30px_60px_rgba(124,58,237,0.1)] transition-all duration-500 overflow-hidden flex flex-col h-full group relative" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div 
+      className="bg-white rounded-[32px] border border-slate-200 transition-all duration-500 overflow-hidden flex flex-col h-full group relative" 
+      style={{ 
+        fontFamily: "'Inter', sans-serif",
+        boxShadow: isHovered ? `0 30px 60px ${themeShadow}` : '0 10px 40px rgba(0,0,0,0.03)'
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       
       {/* Main Content Area */}
-      <div className="p-8 pb-4 flex-grow">
+      <div className="p-8 pb-3 flex-grow">
         <div className="flex flex-col items-start gap-6">
           {/* Profile Header */}
           <div className="flex items-center gap-5 w-full">
@@ -50,84 +57,181 @@ const AstrologyCard = ({ ad }) => {
               sx={{ 
                 width: 84, 
                 height: 84, 
-                bgcolor: '#f5f3ff', 
-                color: '#7c3aed',
+                bgcolor: '#fff0f6', 
+                color: themeColor,
                 fontWeight: 500,
                 fontSize: '1.75rem',
-                border: '3px solid #f1f5f9',
+                border: '3px solid #fff',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.04)'
               }}
             >
               {ad.display_name?.[0]}
             </Avatar>
-            <div className="flex-grow min-w-0">
-              <Typography variant="h5" fontWeight={500} sx={{ color: '#0f172a', lineHeight: 1, letterSpacing: '-0.03em', mb: 1, fontFamily: "'Outfit', sans-serif" }}>
+            
+            <div className="flex flex-col gap-1.5 min-w-0">
+              <Typography 
+                variant="h5" 
+                fontWeight={600} 
+                sx={{ 
+                  color: '#0f172a', 
+                  lineHeight: 1.1, 
+                  letterSpacing: '-0.02em', 
+                  fontFamily: "'Outfit', sans-serif" 
+                }}
+              >
                 {ad.display_name}
               </Typography>
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="px-2.5 py-0.5 bg-violet-600 text-white rounded-md text-[10px] font-medium uppercase tracking-wider">
-                  {ad.astrologer_type} Expert
-                </div>
-                <div className="flex items-center gap-1 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
-                  <Verified sx={{ fontSize: 10 }} />
-                  <span className="text-[9px] font-medium uppercase tracking-tighter">Verified</span>
-                </div>
+              <div>
+                <span className="inline-block px-3 py-1 bg-[#db2777] text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                  {ad.astrologer_type || 'EXPERT'} EXPERT
+                </span>
+              </div>
+              <div>
+                <span className="inline-flex items-center gap-1 text-[#2563eb] bg-[#eff6ff] border border-[#dbeafe] px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tighter">
+                  <Verified sx={{ fontSize: 10, color: '#2563eb' }} /> VERIFIED
+                </span>
               </div>
             </div>
           </div>
 
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-3 gap-2 w-full">
-            <div className="bg-slate-50/50 p-4 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center">
-                <Typography variant="caption" display="block" sx={{ color: '#94a3b8', fontWeight: 500, textTransform: 'uppercase', fontSize: '0.5rem', mb: 0.5, letterSpacing: '0.05em' }}>Location</Typography>
-                <Typography variant="caption" noWrap fontWeight={400} sx={{ color: '#334155', fontSize: '0.85rem', fontFamily: "'Outfit', sans-serif" }}>{ad.city}</Typography>
+          <div className="grid grid-cols-3 gap-2.5 w-full">
+            {/* Location */}
+            <div className="bg-[#f0f9ff] p-4 rounded-[20px] border border-[#e0f2fe] flex flex-col items-center justify-center text-center">
+              <Typography 
+                variant="caption" 
+                display="block" 
+                sx={{ 
+                  color: '#0284c7', 
+                  fontWeight: 700, 
+                  textTransform: 'uppercase', 
+                  fontSize: '0.6rem', 
+                  mb: 0.5, 
+                  letterSpacing: '0.05em' 
+                }}
+              >
+                Location
+              </Typography>
+              <Typography 
+                variant="caption" 
+                noWrap 
+                fontWeight={500} 
+                sx={{ 
+                  color: '#0c4a6e', 
+                  fontSize: '0.875rem', 
+                  fontFamily: "'Outfit', sans-serif" 
+                }}
+              >
+                {ad.city}
+              </Typography>
             </div>
-            <div className="bg-slate-50/50 p-4 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center">
-                <Typography variant="caption" display="block" sx={{ color: '#94a3b8', fontWeight: 500, textTransform: 'uppercase', fontSize: '0.5rem', mb: 0.5, letterSpacing: '0.05em' }}>Experience</Typography>
-                <Typography variant="caption" noWrap fontWeight={400} sx={{ color: '#334155', fontSize: '0.85rem', fontFamily: "'Outfit', sans-serif" }}>{ad.experience_years} Yrs</Typography>
+
+            {/* Experience */}
+            <div className="bg-[#faf5ff] p-4 rounded-[20px] border border-[#f3e8ff] flex flex-col items-center justify-center text-center">
+              <Typography 
+                variant="caption" 
+                display="block" 
+                sx={{ 
+                  color: '#7c3aed', 
+                  fontWeight: 700, 
+                  textTransform: 'uppercase', 
+                  fontSize: '0.6rem', 
+                  mb: 0.5, 
+                  letterSpacing: '0.05em' 
+                }}
+              >
+                Experience
+              </Typography>
+              <Typography 
+                variant="caption" 
+                noWrap 
+                fontWeight={500} 
+                sx={{ 
+                  color: '#1e1b4b', 
+                  fontSize: '0.875rem', 
+                  fontFamily: "'Outfit', sans-serif" 
+                }}
+              >
+                {ad.experience_years} Yrs
+              </Typography>
             </div>
-            <div className="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200 flex flex-col items-center justify-center text-center">
-                <Typography variant="caption" display="block" sx={{ color: '#10b981', fontWeight: 500, textTransform: 'uppercase', fontSize: '0.5rem', mb: 0.5, letterSpacing: '0.05em' }}>Session Fee</Typography>
-                <Typography variant="caption" noWrap fontWeight={500} sx={{ color: '#065f46', fontSize: '0.9rem', fontFamily: "'Outfit', sans-serif" }}>${ad.price}+</Typography>
+
+            {/* Session Fee */}
+            <div className="bg-[#f0fdf4] p-4 rounded-[20px] border border-[#dcfce7] flex flex-col items-center justify-center text-center">
+              <Typography 
+                variant="caption" 
+                display="block" 
+                sx={{ 
+                  color: '#10b981', 
+                  fontWeight: 700, 
+                  textTransform: 'uppercase', 
+                  fontSize: '0.6rem', 
+                  mb: 0.5, 
+                  letterSpacing: '0.05em' 
+                }}
+              >
+                Session Fee
+              </Typography>
+              <Typography 
+                variant="caption" 
+                noWrap 
+                fontWeight={600} 
+                sx={{ 
+                  color: '#064e3b', 
+                  fontSize: '0.9rem', 
+                  fontFamily: "'Outfit', sans-serif" 
+                }}
+              >
+                ${ad.price}+
+              </Typography>
             </div>
           </div>
 
-          {/* Services */}
-          <div className="flex flex-wrap gap-1.5 w-full">
-            {services.slice(0, 3).map((service, idx) => (
-              <div key={idx} className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-[0.65rem] font-medium text-slate-500">
-                {service}
-              </div>
-            ))}
+          {/* Services / Tags */}
+          <div className="flex flex-wrap gap-2 w-full mt-1">
+            {services.slice(0, 3).map((service, idx) => {
+              const chipColors = [
+                "bg-[#eef2ff] border-[#e0e7ff] text-[#4f46e5]",
+                "bg-[#fffbeb] border-[#fef3c7] text-[#b45309]",
+                "bg-[#fdf2f8] border-[#fce7f3] text-[#db2777]"
+              ];
+              const colorClass = chipColors[idx % chipColors.length];
+              return (
+                <div 
+                  key={idx} 
+                  className={`px-4 py-1.5 border rounded-full text-[0.75rem] font-semibold tracking-wide ${colorClass}`}
+                >
+                  {service}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
+      {/* Divider */}
+      <div className="border-t border-slate-100 w-full my-1" />
+
       {/* Languages & Modes Bar */}
-      <div className="px-8 py-4 bg-white border-y border-slate-200 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Translate sx={{ fontSize: 14, color: '#94a3b8' }} />
-          <Typography variant="caption" fontWeight={400} sx={{ color: '#64748b', fontSize: '0.7rem' }}>
-            {languages.slice(0, 2).join(" • ")}
-          </Typography>
+      <div className="px-8 py-3 flex justify-between items-center bg-white">
+        <div className="text-slate-400 flex items-center">
+          <Translate sx={{ fontSize: 20 }} />
         </div>
-        <div className="flex gap-4">
-          {modes.slice(0, 3).map((mode, idx) => (
-            <div key={idx} className="text-slate-300 hover:text-violet-600 transition-all scale-110" title={mode}>
-              {getModeIcon(mode)}
-            </div>
-          ))}
+        <div className="flex gap-5 text-slate-300">
+          <Phone sx={{ fontSize: 20, color: '#94a3b8' }} />
+          <VideoCall sx={{ fontSize: 22, color: '#94a3b8' }} />
+          <Chat sx={{ fontSize: 20, color: '#94a3b8' }} />
         </div>
       </div>
 
       {/* Footer Actions */}
-      <div className="p-8 pt-4 flex gap-4">
+      <div className="p-8 pt-2 flex gap-4">
         <Button 
           fullWidth 
           variant="outlined"
           onClick={() => navigate(`/astrologer/profile/${ad.slug || ad.id}`)}
           sx={{ 
-            borderRadius: '20px', 
+            borderRadius: '24px', 
             textTransform: 'none', 
             fontWeight: 500, 
             py: 1.5,
@@ -135,7 +239,8 @@ const AstrologyCard = ({ ad }) => {
             borderColor: '#e2e8f0',
             color: '#64748b',
             bgcolor: '#f8fafc',
-            '&:hover': { borderColor: '#7c3aed', color: '#7c3aed', bgcolor: '#f5f3ff' }
+            transition: 'all 0.3s',
+            '&:hover': { borderColor: themeColor, color: themeColor, bgcolor: '#fff0f6' }
           }}
         >
           View Profile
@@ -143,15 +248,16 @@ const AstrologyCard = ({ ad }) => {
         <Button 
           fullWidth 
           variant="contained"
+          onClick={handleConsultNow}
           sx={{ 
-            borderRadius: '20px', 
+            borderRadius: '24px', 
             textTransform: 'none', 
             fontWeight: 500, 
             py: 1.5,
             fontSize: '0.875rem',
-            bgcolor: '#7c3aed',
-            boxShadow: '0 10px 20px -5px rgba(124, 58, 237, 0.3)',
-            '&:hover': { bgcolor: '#6d28d9', transform: 'translateY(-1px)' },
+            bgcolor: themeColor,
+            boxShadow: `0 10px 20px -5px ${themeShadow}`,
+            '&:hover': { bgcolor: themeHoverColor, transform: 'translateY(-1px)' },
             transition: 'all 0.3s'
           }}
         >

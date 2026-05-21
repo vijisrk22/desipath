@@ -17,7 +17,7 @@ import { format, isToday, isYesterday } from "date-fns";
 import SendIcon from "@mui/icons-material/Send";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
-import { fetchChatMessages, sendMessage } from "../../store/ChatSlice";
+import { fetchChatMessages, sendMessage, markMessagesAsRead } from "../../store/ChatSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 function ChatScreen({ loggedInUser, chatPartner, adId, adType }) {
@@ -72,9 +72,11 @@ function ChatScreen({ loggedInUser, chatPartner, adId, adType }) {
     const userId = chatPartner;
     // Initial fetch
     dispatch(fetchChatMessages({ adType, adId, userId }));
+    dispatch(markMessagesAsRead({ sender_id: userId, adId, adType }));
 
     const interval = setInterval(() => {
       dispatch(fetchChatMessages({ adType, adId, userId }));
+      dispatch(markMessagesAsRead({ sender_id: userId, adId, adType }));
     }, 30000); // 30s polling as requested
 
     return () => clearInterval(interval);
@@ -95,6 +97,9 @@ function ChatScreen({ loggedInUser, chatPartner, adId, adType }) {
       message: message,
       ad_id: adId,
       ad_type: adType,
+      sender_id: loggedInUser,
+      created_at: new Date().toISOString(),
+      optimistic: true,
     };
 
     dispatch(sendMessage(newMessage));
@@ -200,17 +205,26 @@ function ChatScreen({ loggedInUser, chatPartner, adId, adType }) {
                       >
                         {msg?.message}
                       </Box>
-                      <Typography
-                        sx={{
-                          fontSize: "0.7rem",
-                          color: "#9ca3af",
-                          mt: 0.5,
-                          mx: 1,
-                          fontWeight: "500"
-                        }}
-                      >
-                        {formatTime(msg?.created_at)}
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, mx: 1 }}>
+                        <Typography
+                          sx={{
+                            fontSize: "0.7rem",
+                            color: "#9ca3af",
+                            fontWeight: "500"
+                          }}
+                        >
+                          {formatTime(msg?.created_at)}
+                        </Typography>
+                        {isLoggedInUser && (
+                          <Box sx={{ ml: 0.5, display: 'flex', alignItems: 'center' }}>
+                            {msg.is_read ? (
+                              <Typography sx={{ fontSize: '0.85rem', color: '#3b82f6', lineHeight: 1, fontWeight: 'bold' }} title="Read">✓✓</Typography>
+                            ) : (
+                              <Typography sx={{ fontSize: '0.85rem', color: '#9ca3af', lineHeight: 1 }} title="Sent">✓</Typography>
+                            )}
+                          </Box>
+                        )}
+                      </Box>
                     </Box>
                   </Box>
                 );

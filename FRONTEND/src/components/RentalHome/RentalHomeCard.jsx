@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { generateRandomSuffix } from "../../utils/urlHelper";
 import LazyImage from "../LazyImage";
 import { getStateCode } from "../../utils/locationHelper";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function RentalHomeCard({ rentalHome }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -34,15 +35,11 @@ export default function RentalHomeCard({ rentalHome }) {
         <LazyImage
           src={
             rentalHome?.images && rentalHome.images.length > 0
-              ? `${api.defaults.baseURL}/${rentalHome.images[0]}`
-              : "https://via.placeholder.com/167"
+              ? getFullImageUrl(rentalHome.images[0])
+              : "/img/placeholder_property.jpg"
           }
           alt={rentalHome?.property_type || "rental home"}
           className="w-full h-full object-cover rounded-[20px] group-hover:scale-105 transition-transform duration-700"
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = "https://via.placeholder.com/167";
-          }}
         />
       </div>
 

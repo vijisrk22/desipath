@@ -46,6 +46,19 @@ export const sendMessage = createAsyncThunk(
   }
 );
 
+// Mark messages as read
+export const markMessagesAsRead = createAsyncThunk(
+  'chat/markMessagesAsRead',
+  async ({ sender_id, adId, adType }, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/api/messages/read', { sender_id, ad_id: adId, ad_type: adType });
+      return { sender_id, adId, adType, data: response.data };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to mark messages as read');
+    }
+  }
+);
+
 const chatSlice = createSlice({
   name: 'chat',
   initialState: {
@@ -84,7 +97,8 @@ const chatSlice = createSlice({
       })
       .addCase(fetchChatMessages.fulfilled, (state, action) => {
         state.loading = false;
-        state.conversation = action.payload
+        const optimisticMessages = state.conversation.filter(m => m.optimistic);
+        state.conversation = [...action.payload, ...optimisticMessages];
       })
       .addCase(fetchChatMessages.rejected, (state, action) => {
         state.loading = false;
@@ -95,12 +109,16 @@ const chatSlice = createSlice({
           state.error = action.payload?.message || 'Unknown error';
         }
       })
-      .addCase(sendMessage.pending, (state) => {
+      .addCase(sendMessage.pending, (state, action) => {
         state.loading = true;
+        if (action.meta && action.meta.arg && action.meta.arg.optimistic) {
+          state.conversation.push(action.meta.arg);
+        }
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.loading = false;
-        // Update current conversation
+        // Remove optimistic message and add the real one
+        state.conversation = state.conversation.filter(m => !m.optimistic);
         state.conversation.push(action.payload);
         
         // Update the conversation list (inbox) immediately
@@ -125,6 +143,29 @@ const chatSlice = createSlice({
       .addCase(sendMessage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || 'Failed to send message';
+      })
+      .addCase(markMessagesAsRead.fulfilled, (state, action) => {
+        const { sender_id, adId, adType } = action.meta.arg;
+        
+        // Mark all incoming messages in the active conversation as read
+        state.conversation = state.conversation.map(msg => {
+          if (Number(msg.sender_id) === Number(sender_id) && 
+              Number(msg.ad_id) === Number(adId) && 
+              msg.ad_type === adType) {
+            return { ...msg, is_read: true };
+          }
+          return msg;
+        });
+
+        // Set unread_count to 0 for this conversation in the inbox list
+        const index = state.userMessages.findIndex(m => {
+          const partnerId = Number(m.sender_id) === Number(sender_id) ? m.sender_id : m.receiver_id;
+          return Number(partnerId) === Number(sender_id) && Number(m.ad_id) === Number(adId) && m.ad_type === adType;
+        });
+
+        if (index !== -1) {
+          state.userMessages[index].unread_count = 0;
+        }
       });
   },
 });

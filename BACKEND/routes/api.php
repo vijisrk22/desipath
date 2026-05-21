@@ -93,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function () { // Need to uncomment if t
     Route::get('/messages/sent', [MessageController::class, 'getMessagesBySender']);
     Route::get('/messages/{userId}', [MessageController::class, 'index']);
     
+    Route::post('/messages/read', [MessageController::class, 'markAsRead']);
     // Send a message
     Route::post('/messages', [MessageController::class, 'store']);
 });

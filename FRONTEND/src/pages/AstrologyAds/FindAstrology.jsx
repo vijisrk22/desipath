@@ -80,13 +80,13 @@ export default function FindAstrology() {
           
           {/* Keyword Search */}
           <div className="w-full md:flex-[1.5] relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#1d4ed8]">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4f46e5]">
               <SearchIcon sx={{ fontSize: 20 }} />
             </div>
             <input 
               type="text"
               placeholder="Search name, expertise or keyword..."
-              className="w-full pl-12 pr-4 py-3 bg-slate-50/50 border-none rounded-full focus:ring-2 focus:ring-[#1d4ed8]/10 transition-all text-sm font-normal"
+              className="w-full pl-12 pr-4 py-3 bg-slate-50/50 border-none rounded-full focus:ring-2 focus:ring-[#4f46e5]/10 transition-all text-sm font-normal"
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
             />
@@ -155,11 +155,11 @@ export default function FindAstrology() {
                 borderRadius: '100px', 
                 px: 5, 
                 py: 1.5, 
-                bgcolor: '#1d4ed8', 
+                bgcolor: '#4f46e5', 
                 fontWeight: 500,
                 textTransform: 'none',
-                boxShadow: '0 10px 15px -3px rgba(29, 78, 216, 0.3)',
-                '&:hover': { bgcolor: '#1e40af', transform: 'translateY(-1px)' },
+                boxShadow: '0 10px 15px -3px rgba(79, 70, 229, 0.3)',
+                '&:hover': { bgcolor: '#4338ca', transform: 'translateY(-1px)' },
                 transition: 'all 0.3s',
                 fontFamily: "'Outfit', sans-serif"
               }}
@@ -192,8 +192,8 @@ export default function FindAstrology() {
                    bgcolor: 'white',
                    fontFamily: "'Outfit', sans-serif",
                    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' },
-                   '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#1d4ed8' },
-                   '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1d4ed8' }
+                   '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#4f46e5' },
+                   '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#4f46e5' }
                  }}
                >
                  <MenuItem value="newest">Newest First</MenuItem>
@@ -210,7 +210,7 @@ export default function FindAstrology() {
         <div className="mt-10">
           {loading ? (
             <div className="flex justify-center py-20">
-              <CircularProgress sx={{ color: '#1d4ed8' }} />
+              <CircularProgress sx={{ color: '#4f46e5' }} />
             </div>
           ) : (
             <>

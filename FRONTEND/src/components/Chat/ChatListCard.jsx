@@ -7,10 +7,12 @@ import {
   parseISO,
 } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function ChatListCard({ chat }) {
   const lastMessageDate = chat?.created_at ? parseISO(chat.created_at) : new Date();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.user);
 
   let displayDate;
   if (isToday(lastMessageDate)) {
@@ -37,8 +39,9 @@ function ChatListCard({ chat }) {
 
   const senderFirstName = chat?.chatPartner?.name ? chat.chatPartner.name.split(' ')[0] : 'User';
   
-  // Hardcoding unread to match the exact LinkedIn mockup visually
-  const isUnread = true; 
+  const unreadCount = Number(chat?.unread_count) || 0;
+  const isUnread = unreadCount > 0;
+  const isLastMessageFromMe = Number(chat?.sender_id) === Number(user?.id);
 
   return (
     <Box
@@ -88,7 +91,7 @@ function ChatListCard({ chat }) {
           </Typography>
           <Typography
             sx={{
-              color: isUnread ? "#0a66c2" : "rgba(0,0,0,0.6)",
+              color: isUnread ? "#2563eb" : "rgba(0,0,0,0.6)",
               fontSize: "0.85rem",
               fontWeight: isUnread ? "600" : "400",
               ml: 1,
@@ -115,7 +118,7 @@ function ChatListCard({ chat }) {
               pr: 2
             }}
           >
-            {senderFirstName}: {chat.message}
+            {isLastMessageFromMe ? "You" : senderFirstName}: {chat.message}
           </Typography>
           
           {isUnread && (
@@ -124,7 +127,7 @@ function ChatListCard({ chat }) {
                 width: 18, 
                 height: 18, 
                 borderRadius: "50%", 
-                backgroundColor: "#0a66c2", 
+                backgroundColor: "#2563eb", 
                 color: "white",
                 display: "flex",
                 alignItems: "center",
@@ -134,7 +137,7 @@ function ChatListCard({ chat }) {
                 flexShrink: 0
               }}
             >
-              1
+              {unreadCount}
             </Box>
           )}
         </Box>

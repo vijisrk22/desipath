@@ -42,31 +42,31 @@ class RentalHome extends Model
     }
 
     // Handle images - decode JSON or return as array
-    // public function getImagesAttribute($value)
-    // {
-    //     if (empty($value)) {
-    //         return [];
-    //     }
+    public function getImagesAttribute($value)
+    {
+        if (empty($value)) {
+            return [];
+        }
         
-    //     // If it's already an array (from cast), return it
-    //     if (is_array($value)) {
-    //         return $value;
-    //     }
+        // If it's already an array (from cast), return it
+        if (is_array($value)) {
+            return $value;
+        }
         
-    //     // Try to decode JSON
-    //     $decoded = json_decode($value, true);
-    //     if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-    //         return $decoded;
-    //     }
+        // Try to decode JSON
+        $decoded = json_decode($value, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return $decoded;
+        }
         
-    //     // If it's a comma-separated string, split it
-    //     if (is_string($value) && strpos($value, ',') !== false) {
-    //         return array_map('trim', explode(',', $value));
-    //     }
+        // If it's a comma-separated string, split it
+        if (is_string($value) && strpos($value, ',') !== false) {
+            return array_map('trim', explode(',', $value));
+        }
         
-    //     // Otherwise return as single-item array
-    //     return [$value];
-    // }
+        // Otherwise return as single-item array
+        return [$value];
+    }
 
     public function owner()
     {

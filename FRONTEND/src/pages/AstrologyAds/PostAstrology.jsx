@@ -350,11 +350,11 @@ export default function PostAstrology() {
             <Box sx={{ mt: 8, display: 'flex', justifyContent: 'space-between' }}>
               <Button disabled={activeStep === 0} onClick={handleBack} sx={{ fontWeight: 800 }}>Back</Button>
               {activeStep === STEPS.length - 1 ? (
-                <Button type="submit" variant="contained" size="large" sx={{ bgcolor: '#7c3aed', px: 6, borderRadius: '12px', fontWeight: 900 }}>
+                <Button type="submit" variant="contained" size="large" sx={{ bgcolor: '#4f46e5', px: 6, borderRadius: '12px', fontWeight: 900 }}>
                   Publish My Profile 🔮
                 </Button>
               ) : (
-                <Button variant="contained" onClick={handleNext} sx={{ bgcolor: '#7c3aed', px: 6, borderRadius: '12px', fontWeight: 900 }}>
+                <Button variant="contained" onClick={handleNext} sx={{ bgcolor: '#4f46e5', px: 6, borderRadius: '12px', fontWeight: 900 }}>
                   Continue
                 </Button>
               )}

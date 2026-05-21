@@ -52,7 +52,7 @@ const AstrologerProfile = ({ idOrSlug }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <CircularProgress sx={{ color: '#7c3aed' }} />
+        <CircularProgress sx={{ color: '#4f46e5' }} />
       </div>
     );
   }
@@ -78,9 +78,9 @@ const AstrologerProfile = ({ idOrSlug }) => {
   };
 
   return (
-    <div className="bg-[#fcfaff] min-h-screen pb-20" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="bg-[#fafbff] min-h-screen pb-20" style={{ fontFamily: "'Inter', sans-serif" }}>
       {/* Header Banner */}
-      <div className="relative h-32 md:h-40 bg-gradient-to-r from-[#7c3aed] to-[#3b82f6] overflow-hidden">
+      <div className="relative h-32 md:h-40 bg-gradient-to-r from-[#4f46e5] to-[#3b82f6] overflow-hidden">
         {ad.cover_img_url ? (
           <img src={ad.cover_img_url} className="w-full h-full object-cover opacity-60" alt="cover" />
         ) : (
@@ -111,7 +111,7 @@ const AstrologerProfile = ({ idOrSlug }) => {
                     mt: -8, 
                     border: '4px solid white', 
                     boxShadow: '0 8px 12px -3px rgb(0 0 0 / 0.08)',
-                    bgcolor: '#7c3aed',
+                    bgcolor: '#4f46e5',
                     fontSize: '2.5rem',
                     fontWeight: 500
                   }}
@@ -126,7 +126,7 @@ const AstrologerProfile = ({ idOrSlug }) => {
                   <Verified sx={{ color: '#3b82f6', fontSize: 16 }} />
                 </div>
                 
-                <Typography variant="body2" fontWeight={400} sx={{ color: '#7c3aed', mt: 0.25, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+                <Typography variant="body2" fontWeight={400} sx={{ color: '#4f46e5', mt: 0.25, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
                   {ad.astrologer_type} Specialist
                 </Typography>
 
@@ -165,9 +165,9 @@ const AstrologerProfile = ({ idOrSlug }) => {
                     textTransform: 'none', 
                     fontWeight: 500, 
                     fontSize: '0.85rem',
-                    bgcolor: '#7c3aed',
-                    boxShadow: '0 8px 16px -4px rgba(124, 58, 237, 0.4)',
-                    '&:hover': { bgcolor: '#6d28d9' }
+                    bgcolor: '#4f46e5',
+                    boxShadow: '0 8px 16px -4px rgba(79, 70, 229, 0.4)',
+                    '&:hover': { bgcolor: '#4338ca' }
                   }}
                 >
                   Message Now
@@ -179,8 +179,8 @@ const AstrologerProfile = ({ idOrSlug }) => {
                  {['Phone', 'Video', 'Chat', 'Report', 'In-Person'].map(mode => {
                     const active = ad.consultation_modes?.includes(mode);
                     return (
-                      <div key={mode} className={`flex flex-col items-center gap-1.5 ${active ? 'text-[#7c3aed]' : 'text-slate-200'}`}>
-                         <div className={`p-2.5 rounded-xl ${active ? 'bg-violet-50' : 'bg-slate-50'}`}>
+                      <div key={mode} className={`flex flex-col items-center gap-1.5 ${active ? 'text-[#4f46e5]' : 'text-slate-200'}`}>
+                         <div className={`p-2.5 rounded-xl ${active ? 'bg-indigo-50' : 'bg-slate-50'}`}>
                             {React.cloneElement(getModeIcon(mode), { sx: { fontSize: 18 } })}
                          </div>
                          <Typography variant="caption" fontWeight={400} sx={{ fontSize: '0.65rem' }}>{mode}</Typography>
@@ -201,8 +201,8 @@ const AstrologerProfile = ({ idOrSlug }) => {
               </Typography>
               
               {ad.certifications && (
-                <Box sx={{ mt: 3, p: 2.5, bgcolor: '#f8fafc', borderRadius: '16px', borderLeft: '3px solid #7c3aed', border: '1px solid #e2e8f0' }}>
-                  <Typography variant="caption" fontWeight={500} color="#7c3aed" mb={0.5} display="block" sx={{ textTransform: 'uppercase' }}>Certifications & Expertise</Typography>
+                <Box sx={{ mt: 3, p: 2.5, bgcolor: '#f8fafc', borderRadius: '16px', borderLeft: '3px solid #4f46e5', border: '1px solid #e2e8f0' }}>
+                  <Typography variant="caption" fontWeight={500} color="#4f46e5" mb={0.5} display="block" sx={{ textTransform: 'uppercase' }}>Certifications & Expertise</Typography>
                   <Typography variant="caption" fontWeight={400} color="#64748b" display="block">{ad.certifications}</Typography>
                 </Box>
               )}
@@ -213,7 +213,7 @@ const AstrologerProfile = ({ idOrSlug }) => {
               <Typography variant="subtitle1" fontWeight={500} mb={2} sx={{ fontFamily: "'Outfit', sans-serif", letterSpacing: '-0.02em', color: '#0f172a' }}>Specializations</Typography>
               <div className="flex flex-wrap gap-2">
                 {ad.services_json?.map((service, idx) => {
-                  const colors = ['#7c3aed', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+                  const colors = ['#4f46e5', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
                   const color = colors[idx % colors.length];
                   return (
                     <Chip 
@@ -247,20 +247,20 @@ const AstrologerProfile = ({ idOrSlug }) => {
                         p: 3, 
                         height: '100%', 
                         borderRadius: '24px', 
-                        border: pkg.is_popular ? '2px solid #7c3aed' : '1px solid #e2e8f0',
+                        border: pkg.is_popular ? '2px solid #4f46e5' : '1px solid #e2e8f0',
                         position: 'relative',
                         transition: 'transform 0.3s',
                         '&:hover': { transform: 'translateY(-4px)' }
                       }}
                     >
                       {pkg.is_popular && (
-                        <div className="absolute top-3 right-3 bg-[#7c3aed] text-white px-2 py-0.5 rounded-lg text-[8px] font-medium uppercase tracking-wider">
+                        <div className="absolute top-3 right-3 bg-[#4f46e5] text-white px-2 py-0.5 rounded-lg text-[8px] font-medium uppercase tracking-wider">
                           Popular
                         </div>
                       )}
                       <Typography variant="subtitle1" fontWeight={500} color="#0f172a" sx={{ fontFamily: "'Outfit', sans-serif", lineHeight: 1.2 }}>{pkg.name}</Typography>
                       <div className="flex items-baseline gap-1 mt-1 mb-3">
-                        <Typography variant="h6" fontWeight={500} color="#7c3aed" sx={{ fontFamily: "'Outfit', sans-serif" }}>${pkg.price}</Typography>
+                        <Typography variant="h6" fontWeight={500} color="#4f46e5" sx={{ fontFamily: "'Outfit', sans-serif" }}>${pkg.price}</Typography>
                         <Typography variant="caption" fontWeight={400} color="text.secondary">/ {pkg.duration}</Typography>
                       </div>
                       <Typography variant="caption" color="text.secondary" sx={{ mb: 3, minHeight: 40, display: 'block', lineHeight: 1.5 }}>
@@ -275,9 +275,9 @@ const AstrologerProfile = ({ idOrSlug }) => {
                           fontWeight: 500, 
                           textTransform: 'none',
                           fontSize: '0.8rem',
-                          bgcolor: pkg.is_popular ? '#7c3aed' : 'transparent',
-                          color: pkg.is_popular ? 'white' : '#7c3aed',
-                          borderColor: '#7c3aed'
+                          bgcolor: pkg.is_popular ? '#4f46e5' : 'transparent',
+                          color: pkg.is_popular ? 'white' : '#4f46e5',
+                          borderColor: '#4f46e5'
                         }}
                       >
                         Book Session
@@ -294,7 +294,7 @@ const AstrologerProfile = ({ idOrSlug }) => {
                   <Grid item xs={12} sm={6} key={i}>
                     <div className="aspect-video bg-slate-50 rounded-2xl flex items-center justify-center relative overflow-hidden group cursor-pointer border border-slate-200 shadow-sm">
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-[#7c3aed] group-hover:scale-110 transition-transform duration-300 z-10">
+                      <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-[#4f46e5] group-hover:scale-110 transition-transform duration-300 z-10">
                         <PlayArrow sx={{ fontSize: 24 }} />
                       </div>
                       <div className="absolute bottom-3 left-4 right-4 z-10 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 opacity-0 group-hover:opacity-100">

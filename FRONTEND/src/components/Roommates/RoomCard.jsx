@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { generateRandomSuffix } from "../../utils/urlHelper";
 import LazyImage from "../LazyImage";
 import { getStateCode } from "../../utils/locationHelper";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function RoomCard({ room }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -34,15 +35,11 @@ export default function RoomCard({ room }) {
         <LazyImage
           src={
             room?.photos && room.photos.length > 0
-              ? `${api.defaults.baseURL}/${room.photos[0]}`
-              : "https://via.placeholder.com/167"
+              ? getFullImageUrl(room.photos[0])
+              : "/img/placeholder_property.jpg"
           }
           alt={room.type || "room"}
           className="w-full h-full object-cover rounded-[20px] group-hover:scale-105 transition-transform duration-700"
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = "https://via.placeholder.com/167";
-          }}
         />
       </div>
 
