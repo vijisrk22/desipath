@@ -41,7 +41,7 @@ function Events({ title = "Events in your Location" }) {
 
   return (
     <div className="flex flex-col justify-start items-center gap-[24px]">
-      <SectionHeadings heading={title} link="/services/events" />
+      <SectionHeadings heading={title} link="/events" />
 
       <div className="w-full h-full mt-4">
         {loadingList && events.length === 0 ? (

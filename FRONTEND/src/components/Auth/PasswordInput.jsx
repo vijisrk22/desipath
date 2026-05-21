@@ -19,12 +19,12 @@ function PasswordInput({ register, errors, noFlag = false }) {
         })}
         type="password"
         placeholder="Your password"
-        className="p-4 bg-neutral-50 rounded-xl text-gray-800 text-sm font-dmsans outline-none w-full"
+        className="w-full px-4 py-2 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-dmsans transition-all outline-none"
       />
 
-      <span className={`text-[#6c7174] text-xs ${noFlag ? "hidden" : ""}`}>
+      <p className={`text-[#6c7174] text-xs mt-1.5 ml-2 ${noFlag ? "hidden" : ""}`}>
         Use at least one letter, one numeral, and seven characters.
-      </span>
+      </p>
 
       {errors.password && (
         <div className="text-red-500 text-xs mt-1">

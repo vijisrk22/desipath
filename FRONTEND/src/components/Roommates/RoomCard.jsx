@@ -58,7 +58,7 @@ export default function RoomCard({ room }) {
         <div className="mt-auto pt-4 border-t border-gray-50 flex justify-between items-center">
           <div>
             <span className="text-blue-700 text-2xl font-bold font-dmsans">
-              ${room.rent}
+              ${room.rent ? Math.round(Number(room.rent)).toLocaleString("en-US") : '0'}
             </span>
             <span className="text-gray-400 text-sm font-normal font-dmsans ml-1">
               /{room.rent_frequency || 'month'}

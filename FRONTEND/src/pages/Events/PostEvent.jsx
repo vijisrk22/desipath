@@ -4,8 +4,8 @@ import ServiceTopBar from "../../components/ServiceTopBar";
 function PostEvent() {
   const paths = [
     { text: "Home", eP: "/" },
-    { text: "Events", eP: "/services/events" },
-    { text: "Post an Event", eP: "/services/events/postEvent" },
+    { text: "Events", eP: "/events" },
+    { text: "Post an Event", eP: "/events/postEvent" },
   ];
 
   return (

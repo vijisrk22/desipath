@@ -31,7 +31,7 @@ const services = [
   {
     name: "Events",
     image: "/img/services/Desipath_Events.jpeg",
-    path: "/services/events",
+    path: "/events",
   },
   {
     name: "Roommates",

@@ -3,8 +3,8 @@ import DisplayPath from "../DisplayPath";
 function EventsHeader({ paths }) {
   const defaultPaths = [
     { text: "Home", eP: "/" },
-    { text: "Events", eP: "/services/events" },
-    { text: "Find Event", eP: "/services/events/findEvent" },
+    { text: "Events", eP: "/events" },
+    { text: "Find Event", eP: "/events/findEvent" },
   ];
 
   const breadcrumbs = paths || defaultPaths;
@@ -20,7 +20,7 @@ function EventsHeader({ paths }) {
         />
       </div>
       <a
-        href="/services/events/postEvent"
+        href="/events/postEvent"
         className="hidden md:inline-flex px-6 py-2.5 bg-[#ffa41c] hover:bg-[#ff9900] transition-colors rounded-[57px] text-gray-800 text-sm font-bold font-dmsans whitespace-nowrap shadow-sm mb-2"
       >
         Post An Event

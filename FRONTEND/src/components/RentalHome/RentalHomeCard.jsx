@@ -47,7 +47,7 @@ export default function RentalHomeCard({ rentalHome }) {
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
             <span className="text-blue-700 text-2xl font-bold font-dmsans">
-              ${rentalHome.deposit_rent}
+              ${rentalHome.deposit_rent ? Math.round(Number(rentalHome.deposit_rent)).toLocaleString("en-US") : '0'}
             </span>
             <span className="text-gray-400 text-sm font-medium font-dmsans ml-1">
               /mo

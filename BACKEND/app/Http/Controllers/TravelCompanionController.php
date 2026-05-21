@@ -143,7 +143,7 @@ class TravelCompanionController extends Controller
             $query->where('route_legs', 'like', '%"iata_code":"' . $iata . '"%');
         }
 
-        return response()->json($query->orderBy('created_at', 'desc')->paginate(10));
+        return response()->json($query->orderBy('created_at', 'desc')->paginate(12));
     }
 
     /**
@@ -179,7 +179,7 @@ class TravelCompanionController extends Controller
             $query->where('route_legs', 'like', '%"iata_code":"' . $iata . '"%');
         }
 
-        return response()->json($query->orderBy('created_at', 'desc')->paginate(10));
+        return response()->json($query->orderBy('created_at', 'desc')->paginate(12));
     }
 
     /**

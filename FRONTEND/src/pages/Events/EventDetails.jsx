@@ -24,8 +24,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 function EventDetails() {
   const paths = [
     { text: "Home", eP: "/" },
-    { text: "Events", eP: "/services/events" },
-    { text: "Find Events", eP: "/services/events/findEvent" },
+    { text: "Events", eP: "/events" },
+    { text: "Find Events", eP: "/events/findEvent" },
   ];
 
   const { eventId: eventIdParam } = useParams();

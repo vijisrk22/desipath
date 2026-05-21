@@ -21,7 +21,7 @@ function PostConfirmation({
 
   const defaultPaths = [
     { text: "Home", eP: "/" },
-    { text: "Events", eP: "/services/events" },
+    { text: "Events", eP: "/events" },
     { text: "Confirmation", eP: "" },
   ];
 

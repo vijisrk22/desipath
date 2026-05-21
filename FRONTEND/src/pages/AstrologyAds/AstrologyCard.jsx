@@ -12,6 +12,7 @@ import {
   Verified
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { getFullImageUrl } from '../../utils/imageHelper';
 
 const AstrologyCard = ({ ad }) => {
   const navigate = useNavigate();
@@ -20,9 +21,9 @@ const AstrologyCard = ({ ad }) => {
   const services = ad.services_json || [];
   const modes = ad.consultation_modes || [];
 
-  const themeColor = '#db2777'; // Brand Pink/Magenta from the mockup
-  const themeHoverColor = '#be185d';
-  const themeShadow = 'rgba(219, 39, 119, 0.15)';
+  const themeColor = '#2563eb'; // Radiant Blue
+  const themeHoverColor = '#1d4ed8'; // Darker blue for hover
+  const themeShadow = 'rgba(37, 99, 235, 0.2)';
 
   const handleConsultNow = () => {
     const chatPartnerInfo = {
@@ -53,7 +54,7 @@ const AstrologyCard = ({ ad }) => {
           {/* Profile Header */}
           <div className="flex items-center gap-5 w-full">
             <Avatar 
-              src={ad.profile_pic_url} 
+              src={ad.profile_pic_url ? getFullImageUrl(ad.profile_pic_url) : ''} 
               sx={{ 
                 width: 84, 
                 height: 84, 
@@ -81,11 +82,7 @@ const AstrologyCard = ({ ad }) => {
               >
                 {ad.display_name}
               </Typography>
-              <div>
-                <span className="inline-block px-3 py-1 bg-[#db2777] text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                  {ad.astrologer_type || 'EXPERT'} EXPERT
-                </span>
-              </div>
+
               <div>
                 <span className="inline-flex items-center gap-1 text-[#2563eb] bg-[#eff6ff] border border-[#dbeafe] px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tighter">
                   <Verified sx={{ fontSize: 10, color: '#2563eb' }} /> VERIFIED

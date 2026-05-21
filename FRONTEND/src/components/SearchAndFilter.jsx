@@ -17,7 +17,7 @@ const categories = [
   { label: "Kids class", path: "/kids-class" },
   { label: "Buy Sell Home", path: "/services/BuyHome" },
   { label: "Travel Companion", path: "/travel-companion" },
-  { label: "Events", path: "/services/events" },
+  { label: "Events", path: "/events" },
   { label: "Roommates", path: "/services/roommates" },
   { label: "IT Trainings", path: "/services/itTrainings" },
   { label: "Desi Attorneys", path: "/services/lawyers" },

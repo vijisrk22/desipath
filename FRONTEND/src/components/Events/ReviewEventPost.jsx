@@ -149,7 +149,7 @@ function ReviewEventPost({ open, onClose, formDetails }) {
         await dispatch(postEvent(payload)).unwrap();
       }
       
-      navigate("/services/events/postConfirmation");
+      navigate("/events/postConfirmation");
     } catch (err) {
       console.error("Failed to post event:", err);
     }

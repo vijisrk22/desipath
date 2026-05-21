@@ -8,6 +8,7 @@ import { clearError, registerUser } from "../store/UserSlice";
 import TwoRadioInput from "../components/InputTemplate/TwoRadioInput";
 import { useState } from "react";
 import api from "../utils/api";
+import { privacyPolicy, termsOfUse } from "../utils/legalTexts";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -18,8 +19,14 @@ function RegisterPage() {
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
+
+  const selectedRole = watch("role", "user");
+  const passwordVal = watch("password", "");
+
+  const [legalModal, setLegalModal] = useState({ open: false, title: "", content: "" });
 
   const [showOtp, setShowOtp] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
@@ -32,7 +39,11 @@ function RegisterPage() {
       name: `${data.firstName} ${data.lastName}`,
       email: data.email,
       password: data.password,
+      password_confirmation: data.password_confirmation,
       role: data.role,
+      business_name: data.business_name,
+      business_phone: data.business_phone,
+      business_location: data.business_location,
     };
 
     try {
@@ -74,11 +85,11 @@ function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] flex items-center justify-center p-4 md:p-8 font-dmsans">
-      <div className="bg-white w-full max-w-[1000px] min-h-[700px] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-gray-100 transform transition-all duration-500 hover:shadow-blue-100/50">
+    <div className="min-h-screen w-full bg-[#f8fafc] flex items-center justify-center p-4 md:p-6 font-dmsans">
+      <div className="bg-white w-full max-w-[1000px] min-h-[550px] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-gray-100 transform transition-all duration-500 hover:shadow-blue-100/50">
         
         {/* Visual/Branding Side (Preserving AuthPageLeft content) */}
-        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#0857d0] to-[#2e61b1] p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden">
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#0857d0] to-[#2e61b1] p-6 md:p-8 flex flex-col justify-between text-white relative overflow-hidden">
           {/* Background Decorative Element */}
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white opacity-5 rounded-full"></div>
           <div className="absolute top-10 -right-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
@@ -90,11 +101,11 @@ function RegisterPage() {
           </div>
 
           <div className="relative z-10 mt-12 md:mt-0">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-poppins leading-[1.2] mb-6">
-              New generation classifieds for Desi!
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-normal font-dmsans text-[#39FF14] leading-[1.2] mb-6">
+              Desi Life, Made Simple.
             </h2>
             <p className="text-blue-100 text-base md:text-lg font-light leading-relaxed max-w-md">
-              The easiest way to interact with the Desi community. Post ads, find services, and connect with people.
+              The easiest way to connect, discover, and thrive within your community. Find a travel companion, hire a tutor, buy or sell a car, rent a home, connect with trusted professionals, or grab the best local deals — all in one beautifully simple platform built just for you.
             </p>
           </div>
 
@@ -107,7 +118,7 @@ function RegisterPage() {
         </div>
 
         {/* Form Side */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-white overflow-y-auto">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-center bg-white overflow-y-auto">
           <div className="max-w-md mx-auto w-full">
             
             {showOtp ? (
@@ -201,13 +212,13 @@ function RegisterPage() {
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                   {/* Name Fields */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <input
                         {...register("firstName", { required: "Required" })}
-                        className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-medium transition-all outline-none"
+                        className="w-full px-4 py-2 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-medium transition-all outline-none"
                         placeholder="First Name"
                         onChange={() => dispatch(clearError())}
                       />
@@ -216,19 +227,36 @@ function RegisterPage() {
                     <div className="space-y-1">
                       <input
                         {...register("lastName", { required: "Required" })}
-                        className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-medium transition-all outline-none"
+                        className="w-full px-4 py-2 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-medium transition-all outline-none"
                         placeholder="Last Name"
                       />
                       {errors.lastName && <p className="text-red-500 text-[10px] ml-1">{errors.lastName.message}</p>}
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     <EmailInput register={register} errors={errors} />
                     <PasswordInput register={register} errors={errors} />
+                    
+                    <div>
+                      <input
+                        {...register("password_confirmation", {
+                          required: "Please confirm your password",
+                          validate: value => value === passwordVal || "Passwords do not match"
+                        })}
+                        type="password"
+                        placeholder="Confirm password"
+                        className="w-full px-4 py-2 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-dmsans transition-all outline-none"
+                      />
+                      {errors.password_confirmation && (
+                        <div className="text-red-500 text-xs mt-1">
+                          {errors.password_confirmation.message}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-center justify-between">
+                  <div className="p-3 bg-blue-50 rounded-2xl border border-blue-100 flex items-center justify-between">
                     <TwoRadioInput
                       name="role"
                       text="Identify yourself as:"
@@ -237,6 +265,33 @@ function RegisterPage() {
                       control={control}
                     />
                   </div>
+
+                  {selectedRole === "business" && (
+                    <div className="space-y-3 animate-fade-in bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                      <p className="text-sm font-bold text-[#0857d0]">Business Details (Optional)</p>
+                      <div>
+                        <input
+                          {...register("business_name")}
+                          placeholder="Business Name"
+                          className="w-full px-4 py-2 bg-white border border-gray-200 focus:border-[#0857d0] rounded-xl text-gray-800 text-sm outline-none"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          {...register("business_phone")}
+                          placeholder="Business Phone Number"
+                          className="w-full px-4 py-2 bg-white border border-gray-200 focus:border-[#0857d0] rounded-xl text-gray-800 text-sm outline-none"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          {...register("business_location")}
+                          placeholder="Business Location"
+                          className="w-full px-4 py-2 bg-white border border-gray-200 focus:border-[#0857d0] rounded-xl text-gray-800 text-sm outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex items-start">
                     <label className="flex items-start group cursor-pointer">
@@ -251,7 +306,7 @@ function RegisterPage() {
                         </svg>
                       </div>
                       <span className="ml-3 text-xs text-gray-600 font-medium leading-relaxed">
-                        I agree with the <span className="text-gray-900 font-bold hover:underline">Privacy Policy</span> and <span className="text-gray-900 font-bold hover:underline">Terms of Use</span>.
+                        I agree with the <span className="text-gray-900 font-bold hover:underline cursor-pointer" onClick={(e) => { e.preventDefault(); setLegalModal({ open: true, title: "Privacy Policy", content: privacyPolicy }); }}>Privacy Policy</span> and <span className="text-gray-900 font-bold hover:underline cursor-pointer" onClick={(e) => { e.preventDefault(); setLegalModal({ open: true, title: "Terms of Use", content: termsOfUse }); }}>Terms of Use</span>.
                       </span>
                     </label>
                   </div>
@@ -285,6 +340,35 @@ function RegisterPage() {
           </div>
         </div>
       </div>
+
+      {/* Legal Modal */}
+      {legalModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white w-full max-w-2xl max-h-[80vh] rounded-2xl shadow-xl flex flex-col overflow-hidden">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+              <h3 className="text-xl font-bold text-gray-800">{legalModal.title}</h3>
+              <button 
+                onClick={() => setLegalModal({ open: false, title: "", content: "" })}
+                className="text-gray-400 hover:text-gray-600 font-bold text-xl leading-none"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto whitespace-pre-wrap text-sm text-gray-600 leading-relaxed font-dmsans">
+              {legalModal.content}
+            </div>
+            <div className="p-4 border-t border-gray-100 flex justify-end bg-gray-50">
+              <button
+                type="button"
+                onClick={() => setLegalModal({ open: false, title: "", content: "" })}
+                className="px-6 py-2 bg-[#0857d0] hover:bg-[#0746a8] text-white font-bold rounded-xl transition-colors text-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -430,7 +430,7 @@ export default function DesiAttorneysSearch() {
                                 {attorney.first_name} {attorney.last_name}
                               </Link>
                             </h3>
-                            <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">
+                            <p className="text-slate-400 text-[10px] font-semibold capitalize mt-1">
                               🎓 {attorney.law_school || 'Law Faculty'}
                             </p>
                           </div>

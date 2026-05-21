@@ -51,7 +51,7 @@ const MyListings = () => {
         { id: 'Rental', label: 'Rental Homes', icon: '🏠', listPath: '/api/rentalhomes/my-listings', del: deleteRentalHome, upd: updateRentalHome, modal: EditRentalHomePostModal },
         { id: 'Travel', label: 'Travel', icon: '✈️', listPath: '/api/travelcompanions/my-listings', del: deleteTravelCompanion, upd: updateTravelCompanion },
         { id: 'Trainings', label: 'Trainings', icon: '💻', listPath: '/api/trainingads/my-listings', del: deleteTraining, upd: updateTraining, modal: EditTrainingPostModal },
-        { id: 'Events', label: 'Events', icon: '🎟️', listPath: '/api/events/my-listings', del: deleteEvent, upd: updateEvent, redirect: '/services/events/edit' },
+        { id: 'Events', label: 'Events', icon: '🎟️', listPath: '/api/events/my-listings', del: deleteEvent, upd: updateEvent, redirect: '/events/edit' },
         { id: 'LocalAds', label: 'Local Deals', icon: '📢', listPath: '/api/local-ads/my-listings', del: deleteLocalAd, upd: updateLocalAd, redirect: '/services/Localdeals/edit' },
         { id: 'KidsClass', label: 'Kids Class', icon: '🎨', listPath: '/api/kids-classes/my-listings', del: deleteKidsClass, upd: updateKidsClass, redirect: '/kids-class/instructor-portal/edit' },
         { id: 'Photography', label: 'Photography', icon: '📸', listPath: '/api/photography/my-listings', del: deletePhotographer, upd: updatePhotographer, redirect: '/services/photography/edit' },

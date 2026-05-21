@@ -23,7 +23,7 @@ function TwoRadioInput({ name, text, op1 = "Yes", op2 = "No", control, defaultVa
         sx={{ 
           fontSize: "0.875rem", 
           fontWeight: 600, 
-          color: "grey.800",
+          color: "#0857d0 !important",
           mb: 1.5,
           fontFamily: "DM Sans, sans-serif"
         }}
@@ -45,14 +45,14 @@ function TwoRadioInput({ name, text, op1 = "Yes", op2 = "No", control, defaultVa
                   <Radio 
                     size="small" 
                     sx={{
-                      color: "#ffa41c",
+                      color: "#0857d0",
                       "&.Mui-checked": {
-                        color: "#ffa41c",
+                        color: "#0857d0",
                       },
                     }}
                   />
                 }
-                label={<span className="text-sm font-dmsans text-gray-700">{op1}</span>}
+                label={<span className="text-sm font-dmsans text-gray-700 capitalize">{op1}</span>}
               />
               <FormControlLabel
                 value={op2}
@@ -60,14 +60,14 @@ function TwoRadioInput({ name, text, op1 = "Yes", op2 = "No", control, defaultVa
                   <Radio 
                     size="small" 
                     sx={{
-                      color: "#ffa41c",
+                      color: "#0857d0",
                       "&.Mui-checked": {
-                        color: "#ffa41c",
+                        color: "#0857d0",
                       },
                     }}
                   />
                 }
-                label={<span className="text-sm font-dmsans text-gray-700">{op2}</span>}
+                label={<span className="text-sm font-dmsans text-gray-700 capitalize">{op2}</span>}
               />
             </RadioGroup>
             {fieldState?.error && (

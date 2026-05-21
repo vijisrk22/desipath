@@ -129,8 +129,11 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6|confirmed',
             'role' => 'required|in:user,business',
+            'business_name' => 'nullable|string|max:255',
+            'business_phone' => 'nullable|string|max:20',
+            'business_location' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -157,6 +160,9 @@ class AuthController extends Controller
             'status' => 'Pending',
             'otp' => $otp,
             'otp_expires_at' => now()->addMinutes(15),
+            'business_name' => $request->business_name,
+            'business_phone' => $request->business_phone,
+            'business_location' => $request->business_location,
         ]);
 
         // MOCK EMAIL SENDING: Log the OTP to laravel.log

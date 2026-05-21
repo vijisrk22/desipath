@@ -38,7 +38,7 @@ function EventsLanding() {
         <PostEvent />
       ) : action === "postConfirmation" ? (
         <PostConfirmation 
-          redirectTo="/services/events/findEvent" 
+          redirectTo="/events/findEvent" 
           message="Thanks for using Desipath. Your event is live!" 
         />
       ) : (

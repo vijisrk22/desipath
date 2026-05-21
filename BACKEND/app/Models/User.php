@@ -36,6 +36,9 @@ class User extends Authenticatable
         'otp_expires_at',
         'location',
         'last_login_at',
+        'business_name',
+        'business_phone',
+        'business_location',
     ];
 
     /**

@@ -171,12 +171,24 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
               {isVolunteer ? 'Can Help With' : 'Assistance Needed'}
             </Typography>
             <div className="grid grid-cols-2 gap-3 mt-3">
-              {(isVolunteer ? post.comfortable_helping : post.special_needs || []).map(item => (
-                <div key={item} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                  <Typography variant="caption" fontWeight={700} color="text.primary">{item}</Typography>
-                </div>
-              ))}
+              {(() => {
+                const data = isVolunteer ? post.comfortable_helping : post.special_needs;
+                let list = [];
+                if (Array.isArray(data)) list = data;
+                else if (typeof data === 'string') {
+                  try { const parsed = JSON.parse(data); list = Array.isArray(parsed) ? parsed : [data]; }
+                  catch(e) { list = [data]; }
+                }
+                else if (typeof data === 'boolean') list = data ? ['General Assistance'] : [];
+                else if (data) list = [String(data)];
+                
+                return list.map(item => (
+                  <div key={item} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+                    <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                    <Typography variant="caption" fontWeight={700} color="text.primary">{item}</Typography>
+                  </div>
+                ));
+              })()}
             </div>
           </section>
 
@@ -217,7 +229,7 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
     return (
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col md:flex-row items-stretch min-h-[180px]">
         {/* User & Info Section (Left/Side) */}
-        <div className={`p-6 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col justify-center min-w-[220px] ${isVolunteer ? 'bg-[#0f172a]/60' : 'bg-[#1e1b4b]/60'} relative`}>
+        <div className={`p-6 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col justify-center min-w-[220px] ${isVolunteer ? 'bg-black' : 'bg-[#111111]'} relative`}>
           <div className="flex items-center gap-3 mb-4 relative z-10">
             <Avatar 
               src={post.user?.profile_photo} 
@@ -231,8 +243,8 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
             >
               {post.user?.name?.[0]}
             </Avatar>
-            <div>
-              <Typography variant="subtitle2" fontWeight={800} sx={{ color: 'white', lineHeight: 1.2 }}>
+            <div className="overflow-hidden">
+              <Typography variant="subtitle2" fontWeight={800} noWrap sx={{ color: 'white', lineHeight: 1.2, maxWidth: 140 }}>
                 {post.user?.name || 'Anonymous'}
               </Typography>
               <Typography variant="caption" sx={{ color: isVolunteer ? '#93c5fd' : '#c7d2fe', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
@@ -343,7 +355,7 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full">
       {/* Card Header: User Info & Match Status */}
-      <div className={`p-6 pb-5 ${isVolunteer ? 'bg-[#0f172a]/60' : 'bg-[#1e1b4b]/60'} relative`}>
+      <div className={`p-6 pb-5 ${isVolunteer ? 'bg-black' : 'bg-[#111111]'} relative`}>
         <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-3">
             <Avatar 
@@ -358,8 +370,8 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
             >
               {post.user?.name?.[0]}
             </Avatar>
-            <div>
-              <Typography variant="subtitle1" fontWeight={800} sx={{ color: 'white', lineHeight: 1.2 }}>
+            <div className="overflow-hidden">
+              <Typography variant="subtitle1" fontWeight={800} noWrap sx={{ color: 'white', lineHeight: 1.2, maxWidth: 150 }}>
                 {post.user?.name || 'Anonymous'}
               </Typography>
               <Typography variant="caption" sx={{ color: isVolunteer ? '#93c5fd' : '#c7d2fe', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em' }}>

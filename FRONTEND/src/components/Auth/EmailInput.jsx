@@ -9,7 +9,7 @@ function EmailInput({ register, errors, onChange }) {
             message: "Enter a valid email address",
           },
         })}
-        className="p-4 bg-neutral-50 rounded-xl text-gray-800 text-sm font-dmsans outline-none w-full"
+        className="w-full px-4 py-2 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-dmsans transition-all outline-none"
         placeholder="Your email address"
         type="email"
         onChange={onChange}

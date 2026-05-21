@@ -112,7 +112,7 @@ export default function MobileBottomNav() {
   const isOnForum    = isMatch(location.pathname, "/forum");
   const activeHome   = isMatch(location.pathname, "/") || isOnForum;
   const activeAds    = isMatch(location.pathname, "/services/Localdeals");
-  const activeEvents = isMatch(location.pathname, "/services/events/findEvent");
+  const activeEvents = isMatch(location.pathname, "/events/findEvent");
   const activeChat   = isMatch(location.pathname, "/inbox");
   const activeUser   = isMatch(location.pathname, "/profile") || isMatch(location.pathname, "/postad");
 
@@ -231,7 +231,7 @@ export default function MobileBottomNav() {
 
             {/* 3 — Events */}
             <Link
-              to="/services/events/findEvent"
+              to="/events/findEvent"
               className="flex flex-col items-center gap-0.5 flex-1 py-1 group"
               aria-label="Events"
             >

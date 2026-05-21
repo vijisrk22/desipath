@@ -135,9 +135,6 @@ function App() {
             <Route path="cars/:action?" element={<BuySellCar />} />
             <Route path="cars/:action/:carId" element={<BuySellCar />} />
             
-            {/* Events */}
-            <Route path="events/:action?" element={<EventsLanding />} />
-            <Route path="events/:action/:eventId" element={<EventsLanding />} />
 
             <Route path="itTrainings/:action?" element={<ITTrainings />} />
             <Route
@@ -159,6 +156,9 @@ function App() {
             <Route path="photography/success" element={<PrivateRoute><PhotographySuccess /></PrivateRoute>} />
           </Route>
 
+          {/* Events */}
+          <Route path="/events/:action?" element={<EventsLanding />} />
+          <Route path="/events/:action/:eventId" element={<EventsLanding />} />
           {/* Astrology - Top Level */}
           <Route path="/astrologer/:action?" element={<AstrologyAds />} />
           <Route path="/astrologer/profile/:idOrSlug" element={<AstrologyAds actionType="profile" />} />

@@ -19,7 +19,7 @@ export default function EventCard({ event }) {
   const mainImage = event?.image ? getFullImageUrl(event.image) : "/img/events/eventSmpl1.png";
 
   const handleCardClick = () => {
-    navigate(`/services/events/findEvent/${event.id}-${generateRandomSuffix(event.id)}`);
+    navigate(`/events/findEvent/${event.id}-${generateRandomSuffix(event.id)}`);
   };
 
   return (
@@ -66,12 +66,18 @@ export default function EventCard({ event }) {
 
         <div className="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between">
           <div className="text-gray-800 text-2xl font-bold font-dmsans">
-            {event.ticketPrice === 0 ? "Free" : `$${event.ticketPrice}`}
+            {event.ticketPrice === 0 || String(event.ticketPrice).toLowerCase() === 'free' 
+              ? "Free" 
+              : (!event.ticketPrice 
+                  ? "$0" 
+                  : (isNaN(Number(event.ticketPrice)) 
+                      ? event.ticketPrice 
+                      : `$${Math.round(Number(event.ticketPrice)).toLocaleString("en-US")}`))}
           </div>
           
           <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
             <ShareButton
-              url={`${window.location.origin}/services/events/findEvent/${event.id}-${generateRandomSuffix(event.id)}`}
+              url={`${window.location.origin}/events/findEvent/${event.id}-${generateRandomSuffix(event.id)}`}
               IconComponent={ShareIcon}
               iconProps={{ sx: { color: "#0857d0", fontSize: "1.2rem" } }}
               buttonClass="relative bg-white shadow-md w-9 h-9 border border-gray-100 flex items-center justify-center rounded-full hover:bg-blue-50 transition-colors"

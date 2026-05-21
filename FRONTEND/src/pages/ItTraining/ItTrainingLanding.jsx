@@ -12,11 +12,7 @@ export default function ItTrainingLanding() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const savedLocation = localStorage.getItem('user_location');
-    if (!savedLocation) {
-      setShowLocationModal(true);
-    }
-    
+    // Location modal disabled for IT Training
     const fetchCats = async () => {
       setLoading(true);
       try {
@@ -60,12 +56,6 @@ export default function ItTrainingLanding() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
-      <LocationSelectorModal 
-        open={showLocationModal}
-        onClose={() => setShowLocationModal(false)}
-        onSelectLocation={handleLocationSelect}
-        onShowAll={() => setShowLocationModal(false)}
-      />
 
       {/* Hero / Banner Section */}
       <div className="bg-gradient-to-r from-blue-100 via-[#e0f2fe] to-indigo-100 py-4 md:py-6 px-[7%] relative overflow-hidden">

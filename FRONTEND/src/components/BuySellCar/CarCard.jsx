@@ -91,7 +91,7 @@ export default function CarCard({ car }) {
 
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
           <div className="text-gray-800 text-xl font-bold font-dmsans">
-            ${String(car?.price && typeof car.price === 'object' ? (car.price.name || JSON.stringify(car.price)) : (car?.price ? car.price.toLocaleString() : "0"))}
+            ${String(car?.price && typeof car.price === 'object' ? (car.price.name || JSON.stringify(car.price)) : (car?.price ? Math.round(Number(car.price)).toLocaleString("en-US") : "0"))}
           </div>
         </div>
       </div>
