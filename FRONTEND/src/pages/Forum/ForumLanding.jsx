@@ -4,6 +4,22 @@ import { useSelector } from 'react-redux';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 
+const US_STATES = [
+  { name: 'Alabama', abbr: 'AL' }, { name: 'Alaska', abbr: 'AK' }, { name: 'Arizona', abbr: 'AZ' }, { name: 'Arkansas', abbr: 'AR' },
+  { name: 'California', abbr: 'CA' }, { name: 'Colorado', abbr: 'CO' }, { name: 'Connecticut', abbr: 'CT' }, { name: 'Delaware', abbr: 'DE' },
+  { name: 'Florida', abbr: 'FL' }, { name: 'Georgia', abbr: 'GA' }, { name: 'Hawaii', abbr: 'HI' }, { name: 'Idaho', abbr: 'ID' },
+  { name: 'Illinois', abbr: 'IL' }, { name: 'Indiana', abbr: 'IN' }, { name: 'Iowa', abbr: 'IA' }, { name: 'Kansas', abbr: 'KS' },
+  { name: 'Kentucky', abbr: 'KY' }, { name: 'Louisiana', abbr: 'LA' }, { name: 'Maine', abbr: 'ME' }, { name: 'Maryland', abbr: 'MD' },
+  { name: 'Massachusetts', abbr: 'MA' }, { name: 'Michigan', abbr: 'MI' }, { name: 'Minnesota', abbr: 'MN' }, { name: 'Mississippi', abbr: 'MS' },
+  { name: 'Missouri', abbr: 'MO' }, { name: 'Montana', abbr: 'MT' }, { name: 'Nebraska', abbr: 'NE' }, { name: 'Nevada', abbr: 'NV' },
+  { name: 'New Hampshire', abbr: 'NH' }, { name: 'New Jersey', abbr: 'NJ' }, { name: 'New Mexico', abbr: 'NM' }, { name: 'New York', abbr: 'NY' },
+  { name: 'North Carolina', abbr: 'NC' }, { name: 'North Dakota', abbr: 'ND' }, { name: 'Ohio', abbr: 'OH' }, { name: 'Oklahoma', abbr: 'OK' },
+  { name: 'Oregon', abbr: 'OR' }, { name: 'Pennsylvania', abbr: 'PA' }, { name: 'Rhode Island', abbr: 'RI' }, { name: 'South Carolina', abbr: 'SC' },
+  { name: 'South Dakota', abbr: 'SD' }, { name: 'Tennessee', abbr: 'TN' }, { name: 'Texas', abbr: 'TX' }, { name: 'Utah', abbr: 'UT' },
+  { name: 'Vermont', abbr: 'VT' }, { name: 'Virginia', abbr: 'VA' }, { name: 'Washington', abbr: 'WA' }, { name: 'West Virginia', abbr: 'WV' },
+  { name: 'Wisconsin', abbr: 'WI' }, { name: 'Wyoming', abbr: 'WY' }
+];
+
 const MOCK_POSTS = [
   {
     id: 1,
@@ -55,6 +71,7 @@ export default function ForumLanding() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [isTagFilterOpen, setIsTagFilterOpen] = useState(false);
   const [tagSearchTerm, setTagSearchTerm] = useState("");
+  const [forumState, setForumState] = useState("");
   const { user } = useSelector((state) => state.user);
   const {
     register,
@@ -203,18 +220,35 @@ export default function ForumLanding() {
   };
 
   React.useEffect(() => {
+    if (user?.location) {
+      const locationUpper = user.location.toUpperCase();
+      let foundState = US_STATES.find(s => locationUpper.includes(s.name.toUpperCase()));
+      
+      if (!foundState) {
+        const parts = locationUpper.split(/[\s,]+/);
+        foundState = US_STATES.find(s => parts.includes(s.abbr));
+      }
+
+      if (foundState) {
+        setForumState(foundState.abbr);
+      }
+    }
+  }, [user]);
+
+  React.useEffect(() => {
     fetchSubforums();
   }, []);
 
   React.useEffect(() => {
     setPage(1);
     fetchPosts(1, false);
-  }, [searchTerm, selectedCategory, selectedTags]);
+  }, [searchTerm, selectedCategory, selectedTags, forumState]);
 
   const fetchPosts = (currentPage = 1, append = false) => {
     setLoading(true);
     const tagsParam = selectedTags.length > 0 ? `&tags=${selectedTags.join(',')}` : '';
-    api.get(`/api/forum/posts?search=${searchTerm}&category=${selectedCategory}&page=${currentPage}${tagsParam}`)
+    const stateParam = forumState ? `&state=${forumState}` : '';
+    api.get(`/api/forum/posts?search=${searchTerm}&category=${selectedCategory}&page=${currentPage}${tagsParam}${stateParam}`)
       .then(res => {
         if (res.data.success) {
           const newPosts = res.data.data.data || res.data.data;
@@ -513,7 +547,24 @@ export default function ForumLanding() {
               {selectedTags.length > 0 && <span className="text-xs font-bold">{selectedTags.length}</span>}
             </button>
             <div className="h-6 w-px bg-gray-200"></div>
-            {['🔥 Hot', '✨ New', '🏆 Top', '📈 Rising'].map((tag, i) => (
+            
+            <div className="flex items-center gap-2 border border-gray-200 rounded-full px-3 py-1.5 hover:bg-gray-50 transition min-w-max">
+              <span className="text-gray-500 text-sm">📍</span>
+              <select 
+                value={forumState}
+                onChange={(e) => setForumState(e.target.value)}
+                className="bg-transparent text-sm font-bold text-gray-700 outline-none cursor-pointer appearance-none pr-4 relative"
+                style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right .2rem top 50%', backgroundSize: '.65rem auto' }}
+              >
+                <option value="">All States</option>
+                {US_STATES.map(s => (
+                  <option key={s.abbr} value={s.abbr}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="h-6 w-px bg-gray-200"></div>
+
+            {['🔥 Hot', '✨ New'].map((tag, i) => (
               <button key={i} className={`px-4 py-1.5 rounded-full font-bold text-sm whitespace-nowrap transition ${i === 0 ? 'bg-gray-100 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>
                 {tag}
               </button>

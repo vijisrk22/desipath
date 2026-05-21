@@ -26,7 +26,7 @@ function GradientCourseCard({ result, index = 0 }) {
   return (
     <div
       onClick={handleClick}
-      className={`w-full max-w-[400px] h-full min-h-[260px] flex flex-col rounded-[2rem] shadow-md border border-gray-100 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl cursor-pointer group ${gradientClass} text-white relative`}
+      className={`w-full max-w-[400px] h-[270px] flex flex-col rounded-[2rem] shadow-md border border-gray-100 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl cursor-pointer group ${gradientClass} text-white relative`}
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10 pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-24 h-24 bg-black opacity-10 rounded-full -ml-8 -mb-8 pointer-events-none"></div>
@@ -44,7 +44,7 @@ function GradientCourseCard({ result, index = 0 }) {
           </div>
         </div>
 
-        <div className="text-white text-lg font-black font-dmsans line-clamp-2 mb-2 group-hover:text-blue-100 transition-colors leading-snug">
+        <div className="text-white text-lg font-black font-dmsans line-clamp-2 mb-2 group-hover:text-blue-100 transition-colors leading-snug h-[3.25rem]">
           {result?.title || result?.course}
         </div>
         
@@ -52,7 +52,7 @@ function GradientCourseCard({ result, index = 0 }) {
           Covers: {result?.training_covers || 'Full Stack, Cloud, DevOps'}
         </div>
 
-        <div className="text-white/90 text-xs font-medium font-dmsans line-clamp-2 mb-4 leading-relaxed">
+        <div className="text-white/90 text-xs font-medium font-dmsans line-clamp-2 mb-4 leading-relaxed h-[2.5rem]">
           {result?.short_description || result?.description}
         </div>
 

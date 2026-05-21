@@ -83,6 +83,21 @@ const services = [
     image: "/img/services/Desipath_jobs.jpeg",
     path: "",
   },
+  {
+    name: "Forum",
+    image: "/img/services/Desipath_Forum.png",
+    path: "/forum",
+  },
+  {
+    name: "Buy/Sell Used Items",
+    image: "/img/services/Desipath_UsedItems.png",
+    path: "",
+  },
+  {
+    name: "Ride Share",
+    image: "/img/services/Desipath_RideShare.png",
+    path: "",
+  },
 ];
 
 // generate a circular SVG placeholder with initials as a data URL
