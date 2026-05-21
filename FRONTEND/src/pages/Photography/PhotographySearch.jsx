@@ -96,7 +96,7 @@ export default function PhotographySearch() {
       <Navbar />
 
       {/* Hero Search Section */}
-      <div className="bg-gradient-to-br from-[#6366f1] via-[#a855f7] to-[#d946ef] py-6 px-[7%] text-white shadow-lg">
+      <div className="bg-gradient-to-br from-indigo-950 via-purple-900 to-fuchsia-900 py-6 px-[7%] text-white shadow-lg">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-black mb-1 font-dmsans">Find Professional Photographers</h1>
           <p className="text-blue-100 mb-4 font-medium">Capture your best moments with top-rated photographers and videographers.</p>

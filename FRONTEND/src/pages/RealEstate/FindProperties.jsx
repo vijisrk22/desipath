@@ -109,7 +109,7 @@ export default function FindProperties() {
   ];
 
   return (
-    <main>
+    <main style={{ zoom: "0.9" }} className="overflow-x-hidden w-full">
       <Navbar />
       <div className="bg-[#f8fafc] min-h-screen pb-20" style={{ fontFamily: "'Inter', sans-serif" }}>
         <ServiceTopBar 
@@ -136,7 +136,7 @@ export default function FindProperties() {
           </Button>
         </ServiceTopBar>
 
-        <div className="max-w-[1440px] mx-auto px-[7%] mt-[-45px] relative z-20">
+        <div className="max-w-6xl mx-auto px-[7%] lg:px-8 mt-[-10px] relative z-20">
           {/* Unified Search Section */}
           <Paper elevation={0} sx={{ p: 2, borderRadius: '32px', shadow: '0 20px 25px -5px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', bgcolor: 'white' }}>
             <div className="flex flex-col lg:flex-row gap-4 items-center">
@@ -149,7 +149,7 @@ export default function FindProperties() {
                 <input 
                   type="text"
                   placeholder="Search city, area or project name..."
-                  className="w-full pl-12 pr-4 py-3 bg-slate-50/50 border-none rounded-full focus:ring-2 focus:ring-[#1d4ed8]/10 transition-all text-sm font-normal"
+                  className="w-full pl-12 pr-4 py-3 bg-slate-50/50 border border-slate-200 rounded-full focus:ring-2 focus:ring-[#1d4ed8]/10 focus:border-[#1d4ed8]/30 transition-all text-sm font-normal"
                   value={filters.search}
                   onChange={(e) => handleFilterChange('search', e.target.value)}
                 />
@@ -169,7 +169,9 @@ export default function FindProperties() {
                       fontWeight: 500,
                       fontSize: '0.875rem',
                       fontFamily: "'Outfit', sans-serif",
-                      '& .MuiOutlinedInput-notchedOutline': { border: 'none' }
+                      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0', borderWidth: '1px' },
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#cbd5e1' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1d4ed8', borderWidth: '1px' }
                     }}
                     startAdornment={<LocationOn sx={{ color: '#64748b', fontSize: 18, mr: 1 }} />}
                   >
@@ -190,7 +192,9 @@ export default function FindProperties() {
                       fontWeight: 500,
                       fontSize: '0.875rem',
                       fontFamily: "'Outfit', sans-serif",
-                      '& .MuiOutlinedInput-notchedOutline': { border: 'none' }
+                      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0', borderWidth: '1px' },
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#cbd5e1' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1d4ed8', borderWidth: '1px' }
                     }}
                     startAdornment={<HomeIcon sx={{ color: '#64748b', fontSize: 18, mr: 1 }} />}
                   >

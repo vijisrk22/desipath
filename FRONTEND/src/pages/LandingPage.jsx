@@ -13,6 +13,7 @@ const TravelCompanionCarousel = lazy(() => import("../components/TravelCompanion
 const Events = lazy(() => import("../components/Events"));
 const Homes = lazy(() => import("../components/Homes"));
 const RentalHomesCarousel = lazy(() => import("../components/RentalHomesCarousel"));
+const ITTrainingsCarousel = lazy(() => import("../components/ITTrainings/ITTrainingsCarousel"));
 
 function LandingPage() {
   const [showLocationModal, setShowLocationModal] = useState(false);
@@ -46,7 +47,7 @@ function LandingPage() {
   };
 
   return (
-    <main>
+    <main style={{ zoom: "0.9" }} className="overflow-x-hidden w-full">
       <Navbar />
       <LocationSelectorModal 
         open={showLocationModal}
@@ -93,6 +94,12 @@ function LandingPage() {
           <LazySection height="400px">
             <div className="mt-[50px] pb-[30px]">
               <KidsClassCarousel />
+            </div>
+          </LazySection>
+
+          <LazySection height="400px">
+            <div className="mt-[50px] pb-[30px]">
+              <ITTrainingsCarousel />
             </div>
           </LazySection>
         </Suspense>

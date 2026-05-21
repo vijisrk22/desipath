@@ -36,7 +36,7 @@ function ServiceTopBar({ inputs = [], title, paths, form, plainBg = false }) {
         </div>
       )}
 
-      <div className="relative z-20 flex justify-between items-center w-full">
+      <div className={`relative z-20 flex justify-between items-center w-full ${title === 'Find Your Dream Property' ? 'max-w-6xl mx-auto lg:px-8' : ''}`}>
         <div className="">
           {plainBg ? (
             <DisplayPath paths={paths} color="gray-500" />
@@ -83,8 +83,8 @@ function ServiceTopBar({ inputs = [], title, paths, form, plainBg = false }) {
            </div>
         )}
       </div>
-       <div className="mt-[10px] md:mt-[15px] lg:mt-[20px]">
-        <div className="inline-flex h-[35px] md:h-[52px] px-8 md:px-10 relative rounded-t-2xl bg-white items-center shadow-sm">
+       <div className={`mt-[10px] md:mt-[15px] lg:mt-[20px] ${title === 'Find Your Dream Property' ? 'max-w-6xl mx-auto lg:px-8 w-full' : ''}`}>
+        <div className="inline-flex h-[35px] md:h-[52px] px-8 md:px-10 relative rounded-t-2xl bg-white items-center shadow-sm ml-4 lg:ml-8">
           <div className="relative text-center text-[#007185] text-[12px] md:text-[15px] lg:text-[17px] xl:text-[18px] font-semibold font-dmsans">
             {title}
           </div>

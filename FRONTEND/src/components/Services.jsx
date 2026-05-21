@@ -108,13 +108,13 @@ export default function ServicesSection() {
   return (
     <div className="flex flex-col justify-start items-center gap-[24px]">
       {/* Services heading removed as per user request */}
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8 lg:gap-12 xl:gap-16">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8 lg:gap-10 xl:gap-12 max-w-6xl mx-auto px-4 md:px-8 w-full justify-items-center">
         {services.map((service, index) => (
           <div key={index} className="flex flex-col items-center gap-3">
             <Link
               to={service.path}
               // ensure a fixed circular container so images render with the expected size
-              className="rounded-full overflow-hidden flex justify-center items-center cursor-pointer w-[84px] h-[84px] md:w-[98px] md:h-[98px] lg:w-[116px] lg:h-[116px]"
+              className="rounded-full overflow-hidden flex justify-center items-center cursor-pointer w-[72px] h-[72px] md:w-[84px] md:h-[84px] lg:w-[100px] lg:h-[100px] hover:shadow-lg transition-all"
             >
               <LazyImage
                 className="w-full h-full object-cover"

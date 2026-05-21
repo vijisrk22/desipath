@@ -20,8 +20,8 @@ function Navbar() {
   let currentPath = location.pathname;
 
   return (
-    <nav className="flex flex-col relative z-50 bg-white">
-      <div className="px-[7%] pt-4 pb-2 flex justify-between items-center">
+    <nav className="flex flex-col relative z-50 bg-white w-full border-b border-gray-100">
+      <div className="max-w-6xl mx-auto w-full px-[7%] lg:px-8 pt-4 pb-2 flex justify-between items-center">
         <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-xl lg:text-2xl font-normal font-fredoka hover:cursor-pointer">
           Desipath
         </Link>

@@ -30,8 +30,8 @@ const categories = [
 ];
 
 const phrases = [
-  <>Connecting desi hearts across{" "}<span className="mx-1.5 border-b-4 border-[#ffa41c]">every</span>{" "}zip code</>,
-  <>Built{" "}<span className="mx-1.5 border-b-4 border-[#0857d0]">by</span>{" "}desis,{" "}<span className="mx-1.5 border-b-4 border-[#0857d0]">for</span>{" "}desis</>
+  <>Connecting desi hearts across <span className="mx-1.5 font-semibold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">every</span> zip code</>,
+  <>Built <span className="mx-1.5 font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">by</span> desis, <span className="mx-1.5 font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">for</span> desis</>
 ];
 
 function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation }) {
@@ -156,8 +156,8 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
   return (
     <div className=" py-4 max-w-4xl flex-col justify-start items-center gap-6 flex w-full mx-auto px-4 sm:px-0">
       <div
-        className={`text-center text-gray-800 text-[15px] sm:text-[18px] md:text-[22px] lg:text-[26px] font-medium leading-snug tracking-wide min-h-[52px] flex items-center justify-center flex-wrap gap-x-0 transition-opacity duration-1000 ${fade ? 'opacity-100' : 'opacity-0'}`}
-        style={{ fontFamily: "'Poppins', sans-serif" }}
+        className={`text-center text-gray-900 text-[20px] sm:text-[24px] md:text-[30px] lg:text-[36px] font-semibold leading-tight tracking-tight min-h-[56px] flex items-center justify-center flex-wrap gap-x-1 transition-opacity duration-1000 mb-2 ${fade ? 'opacity-100' : 'opacity-0'}`}
+        style={{ fontFamily: "'Outfit', sans-serif" }}
       >
         {phrases[phraseIndex]}
       </div>
@@ -195,7 +195,7 @@ function SearchAndFilter({ initialLocation = "", onEditLocation, onClearLocation
       ) : (
         <form 
           onSubmit={handleSearch}
-          className="flex flex-col md:flex-row bg-white border rounded-[20px] md:rounded-full border-gray-200 w-full max-w-md md:max-w-2xl p-[6px] shadow-sm hover:shadow-md transition-shadow items-center gap-2 md:gap-0"
+          className="flex flex-col md:flex-row bg-white border border-gray-200 rounded-[24px] md:rounded-full w-full max-w-md md:max-w-3xl p-2 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 items-center gap-2 md:gap-0"
         >
           {renderSearchFields(false)}
         </form>

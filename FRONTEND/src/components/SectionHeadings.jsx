@@ -7,7 +7,7 @@ function SectionHeadings({ heading, link }) {
         {heading}
       </div>
       {link && (
-        <Link to={link}>
+        <Link to={link} className="mr-6">
           <button className="h-8 lg:px-3 lg:py-1.5 px-2 py-0.5 rounded-[30px] border border-gray-500 flex items-center hover:bg-gray-100 transition-colors">
             <span className="text-center text-gray-500 text-[10px] md:text-[12px] font-medium font-dmsans">
               View All

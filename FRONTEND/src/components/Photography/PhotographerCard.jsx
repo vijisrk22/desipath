@@ -34,16 +34,18 @@ export default function PhotographerCard({ photographer }) {
         className="flex flex-col h-full"
       >
         {/* Backdrop Section */}
-        <div className="relative h-28 overflow-hidden shrink-0">
-          <img 
-            src={backdropImage} 
-            alt="Backdrop" 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="relative h-28 shrink-0">
+          <div className="absolute inset-0 overflow-hidden">
+            <img 
+              src={backdropImage} 
+              alt="Backdrop" 
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          </div>
           
-          <div className="absolute -bottom-10 left-6 p-1 bg-white rounded-full shadow-lg z-10">
-            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white">
+          <div className="absolute -bottom-12 left-6 p-1 bg-white rounded-full shadow-lg z-10">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white">
               <img 
                 src={mainImage} 
                 alt={photographer.title} 
@@ -64,7 +66,7 @@ export default function PhotographerCard({ photographer }) {
           </div>
         </div>
 
-        <div className="px-5 pt-12 pb-4 flex flex-col flex-grow bg-white">
+        <div className="px-5 pt-16 pb-4 flex flex-col flex-grow bg-white">
           <div className="mb-3">
              <Tooltip title={photographer.title} arrow placement="top">
                 <h3 className="text-lg font-bold text-[#0857d0] line-clamp-1 cursor-help group-hover:text-blue-600 transition-colors font-dmsans">
