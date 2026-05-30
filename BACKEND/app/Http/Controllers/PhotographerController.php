@@ -75,9 +75,14 @@ class PhotographerController extends Controller
                 $lat = $zipData->lat;
                 $lng = $zipData->lng;
 
-                // Haversine formula for radius in miles
+                // Haversine formula for radius in miles with bounding box optimization
                 $query->whereHas('locations', function ($q) use ($lat, $lng, $radius) {
-                    $q->whereRaw("(3959 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat)))) <= ?", [
+                    $latRange = $radius / 69;
+                    $lngRange = $radius / (69 * cos(deg2rad($lat)));
+
+                    $q->whereBetween('lat', [$lat - $latRange, $lat + $latRange])
+                      ->whereBetween('lng', [$lng - $lngRange, $lng + $lngRange])
+                      ->whereRaw("(3959 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat)))) <= ?", [
                         $lat, $lng, $lat, $radius
                     ]);
                 });

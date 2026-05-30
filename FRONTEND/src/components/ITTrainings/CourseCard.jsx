@@ -12,7 +12,7 @@ function CourseCard({ result }) {
   const navigate = useNavigate();
 
   function handleClick() {
-    navigate(`/services/itTrainings/course/${result?.id}-${generateRandomSuffix(result?.id)}`);
+    navigate(`/services/itTrainings/course/${result?.id}`);
   }
 
   return (

@@ -7,7 +7,7 @@ import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function ItTrainingDetails() {
   const { id: idParam } = useParams();
-  const id = idParam ? idParam.split('-')[0] : null;
+  const id = idParam;
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enquiryParams, setEnquiryParams] = useState({ name: '', email: '', phone: '', message: '' });

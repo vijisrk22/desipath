@@ -11,7 +11,7 @@ import CourseContentAccordion from "../../components/ITTrainings/CourseDetailsCo
 
 function CourseDetailsPage() {
   const { courseId: courseIdParam } = useParams();
-  const courseId = courseIdParam ? courseIdParam.split('-')[0] : null;
+  const courseId = courseIdParam;
   const dispatch = useDispatch();
   const { loading, error, courseDetails } = useSelector(
     (state) => state.itTrainings

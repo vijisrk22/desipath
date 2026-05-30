@@ -18,7 +18,7 @@ function GradientCourseCard({ result, index = 0 }) {
   const navigate = useNavigate();
 
   function handleClick() {
-    navigate(`/services/itTrainings/course/${result?.id}-${generateRandomSuffix(result?.id)}`);
+    navigate(`/services/itTrainings/course/${result?.id}`);
   }
 
   const gradientClass = gradients[index % gradients.length];
@@ -33,7 +33,7 @@ function GradientCourseCard({ result, index = 0 }) {
       
       <div className="p-5 flex flex-col flex-grow z-10">
         <div className="flex justify-between items-start mb-4">
-          <div className="bg-white/20 backdrop-blur-md text-white text-[9px] font-bold px-2 py-1 rounded-lg uppercase tracking-widest border border-white/20 line-clamp-1 max-w-[60%]">
+          <div className="bg-white/20 backdrop-blur-md text-white text-[9px] font-bold px-2 py-1 rounded-lg uppercase tracking-widest border border-white/20 truncate max-w-[60%]">
             {result.category || 'Tech Training'}
           </div>
           <div className="bg-white/95 backdrop-blur-md px-2 py-1 rounded-lg shadow-lg border border-gray-100 flex items-center gap-1 shrink-0">

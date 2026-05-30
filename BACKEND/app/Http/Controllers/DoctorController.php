@@ -57,6 +57,13 @@ class DoctorController extends Controller
                 $lat = $zipData->lat;
                 $lng = $zipData->lng;
 
+                // Bounding box optimization to reduce rows before expensive distance calculation
+                $latRange = $radius / 69;
+                $lngRange = $radius / (69 * cos(deg2rad($lat)));
+
+                $query->whereBetween('primary_address_lat', [$lat - $latRange, $lat + $latRange])
+                      ->whereBetween('primary_address_lng', [$lng - $lngRange, $lng + $lngRange]);
+
                 // Haversine formula (3959 miles = radius of Earth in miles)
                 $query->whereRaw(
                     "(3959 * acos(cos(radians(?)) * cos(radians(primary_address_lat)) * cos(radians(primary_address_lng) - radians(?)) + sin(radians(?)) * sin(radians(primary_address_lat)))) <= ?",

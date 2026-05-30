@@ -411,6 +411,13 @@ class RoomMatesController extends Controller
             $lng = $centerPoint->lng;
             $searchZip = $centerPoint->zip;
 
+            // Bounding box optimization to reduce rows before expensive distance calculation
+            $latRange = $radius / 69;
+            $lngRange = $radius / (69 * cos(deg2rad($lat)));
+
+            $query->whereBetween('latitude', [$lat - $latRange, $lat + $latRange])
+                  ->whereBetween('longitude', [$lng - $lngRange, $lng + $lngRange]);
+
             $query->select('*')
                 ->selectRaw("(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
                 ->having('distance', '<=', $radius);

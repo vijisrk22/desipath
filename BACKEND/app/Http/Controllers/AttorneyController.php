@@ -135,6 +135,13 @@ class AttorneyController extends Controller
                 $lat = $zipData->lat;
                 $lng = $zipData->lng;
 
+                // Bounding box optimization to reduce rows before expensive distance calculation
+                $latRange = $radius / 69;
+                $lngRange = $radius / (69 * cos(deg2rad($lat)));
+
+                $query->whereBetween('office_address_lat', [$lat - $latRange, $lat + $latRange])
+                      ->whereBetween('office_address_lng', [$lng - $lngRange, $lng + $lngRange]);
+
                 // Haversine formula
                 $query->whereRaw(
                     "(3959 * acos(cos(radians(?)) * cos(radians(office_address_lat)) * cos(radians(office_address_lng) - radians(?)) + sin(radians(?)) * sin(radians(office_address_lat)))) <= ?",
