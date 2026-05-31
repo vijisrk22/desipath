@@ -341,7 +341,7 @@ class MessageController extends Controller
             'receiver_id' => 'required|exists:users,id',
             'message' => 'required|string|max:1000',
             'ad_id' => 'required|integer', // Validate ad ID
-            'ad_type' => 'required|string|in:roommate,car,rentalhome,buysellhome,travelcompanion,astrologyad,classesforkid,trainingad',
+            'ad_type' => 'required|string|in:roommate,car,rentalhome,buysellhome,travelcompanion,astrologyad,classesforkid,trainingad,localjob,jobreferral,itjob',
         ]);
 
         $authUser = Auth::user();

@@ -513,3 +513,39 @@ Route::get('/doctors/{slug}', [DoctorController::class, 'show']);
 // Public Attorney Directory Routes
 Route::get('/attorneys', [AttorneyController::class, 'index']);
 Route::get('/attorneys/{slug}', [AttorneyController::class, 'show']);
+
+// --- Buy/Sell Items Routes ---
+use App\Http\Controllers\BuySellItemController;
+
+Route::prefix('buy-sell-items')->group(function () {
+    Route::get('/', [BuySellItemController::class, 'index']);
+    Route::get('/{id}', [BuySellItemController::class, 'show'])->where('id', '[0-9]+');
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/buy-sell-items', [BuySellItemController::class, 'store']);
+    Route::put('/buy-sell-items/{id}', [BuySellItemController::class, 'update'])->where('id', '[0-9]+');
+    Route::delete('/buy-sell-items/{id}', [BuySellItemController::class, 'destroy'])->where('id', '[0-9]+');
+});
+
+// --- Jobs Module Routes ---
+use App\Http\Controllers\JobReferralController;
+use App\Http\Controllers\LocalJobController;
+use App\Http\Controllers\ItJobController;
+
+Route::prefix('jobs')->group(function () {
+    Route::get('/referrals', [JobReferralController::class, 'index']);
+    Route::get('/referrals/{id}', [JobReferralController::class, 'show'])->where('id', '[0-9]+');
+    
+    Route::get('/local', [LocalJobController::class, 'index']);
+    Route::get('/local/{id}', [LocalJobController::class, 'show'])->where('id', '[0-9]+');
+    
+    Route::get('/it', [ItJobController::class, 'index']);
+    Route::get('/it/{id}', [ItJobController::class, 'show'])->where('id', '[0-9]+');
+});
+
+Route::middleware('auth:sanctum')->prefix('jobs')->group(function () {
+    Route::post('/referrals', [JobReferralController::class, 'store']);
+    Route::post('/local', [LocalJobController::class, 'store']);
+    Route::post('/it', [ItJobController::class, 'store']);
+});

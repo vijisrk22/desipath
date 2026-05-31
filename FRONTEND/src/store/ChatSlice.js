@@ -137,7 +137,14 @@ const chatSlice = createSlice({
           state.userMessages.unshift(updatedConv);
         } else {
           // New conversation
-          state.userMessages.unshift(sentMsg);
+          const newConv = {
+            ...sentMsg,
+            chatPartner: {
+              id: sentMsg.receiver_id,
+              name: sentMsg.receiver_name
+            }
+          };
+          state.userMessages.unshift(newConv);
         }
       })
       .addCase(sendMessage.rejected, (state, action) => {

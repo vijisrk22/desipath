@@ -4,13 +4,15 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-use App\Http\Controllers\ForumController;
-use Illuminate\Http\Request;
+$request = Illuminate\Http\Request::create('/api/buy-sell-items', 'GET', [
+    'city' => 'Edison',
+    'zipcode' => '08817',
+    'min_price' => '0',
+    'max_price' => '10000',
+    'category' => 'All Categories'
+]);
 
-$controller = new ForumController();
-$request = new Request();
+$controller = new App\Http\Controllers\BuySellItemController();
 $response = $controller->index($request);
 
-echo "Status Code: " . $response->getStatusCode() . "\n";
-echo "Response Data:\n";
-print_r($response->getData(true));
+echo $response->getContent();

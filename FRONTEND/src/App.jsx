@@ -66,6 +66,19 @@ const FindProperties = lazy(() => import("./pages/RealEstate/FindProperties"));
 const PostProperty = lazy(() => import("./pages/RealEstate/PostProperty"));
 const PropertyDetails = lazy(() => import("./pages/RealEstate/PropertyDetails"));
 
+const BuySellItemsSearch = lazy(() => import("./pages/BuySellItems/BuySellItemsSearch"));
+const BuySellItemDetails = lazy(() => import("./pages/BuySellItems/BuySellItemDetails"));
+const BuySellItemPortal = lazy(() => import("./pages/BuySellItems/BuySellItemPortal"));
+const BuySellItemSuccess = lazy(() => import("./pages/BuySellItems/BuySellItemSuccess"));
+
+const JobsLanding = lazy(() => import("./pages/Jobs/JobsLanding"));
+const JobReferrals = lazy(() => import("./pages/Jobs/JobReferrals"));
+const JobReferralPortal = lazy(() => import("./pages/Jobs/JobReferralPortal"));
+const LocalJobs = lazy(() => import("./pages/Jobs/LocalJobs"));
+const LocalJobPortal = lazy(() => import("./pages/Jobs/LocalJobPortal"));
+const ItJobs = lazy(() => import("./pages/Jobs/ItJobs"));
+const ItJobPortal = lazy(() => import("./pages/Jobs/ItJobPortal"));
+
 const DesiDoctorsSearch = lazy(() => import("./pages/DesiDoctors/DesiDoctorsSearch"));
 const DoctorProfile = lazy(() => import("./pages/DesiDoctors/DoctorProfile"));
 const DoctorAdPortal = lazy(() => import("./pages/DesiDoctors/DoctorAdPortal"));
@@ -154,7 +167,24 @@ function App() {
             <Route path="photography/post" element={<PrivateRoute><PhotographyPortal /></PrivateRoute>} />
             <Route path="photography/edit/:id" element={<PrivateRoute><PhotographyPortal /></PrivateRoute>} />
             <Route path="photography/success" element={<PrivateRoute><PhotographySuccess /></PrivateRoute>} />
+
           </Route>
+
+          {/* Buy/Sell Items - Moved to top level */}
+          <Route path="/buy-sell-items" element={<BuySellItemsSearch />} />
+          <Route path="/buy-sell-items/details/:id" element={<BuySellItemDetails />} />
+          <Route path="/buy-sell-items/post" element={<PrivateRoute><BuySellItemPortal /></PrivateRoute>} />
+          <Route path="/buy-sell-items/edit/:id" element={<PrivateRoute><BuySellItemPortal /></PrivateRoute>} />
+          <Route path="/buy-sell-items/success" element={<PrivateRoute><BuySellItemSuccess /></PrivateRoute>} />
+
+          {/* Jobs */}
+          <Route path="/jobs" element={<JobsLanding />} />
+          <Route path="/jobs/referrals" element={<JobReferrals />} />
+          <Route path="/jobs/referrals/post" element={<PrivateRoute><JobReferralPortal /></PrivateRoute>} />
+          <Route path="/jobs/local" element={<LocalJobs />} />
+          <Route path="/jobs/local/post" element={<PrivateRoute><LocalJobPortal /></PrivateRoute>} />
+          <Route path="/jobs/it" element={<ItJobs />} />
+          <Route path="/jobs/it/post" element={<PrivateRoute><ItJobPortal /></PrivateRoute>} />
 
           {/* Events */}
           <Route path="/events/:action?" element={<EventsLanding />} />

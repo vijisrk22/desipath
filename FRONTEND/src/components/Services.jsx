@@ -81,7 +81,7 @@ const services = [
   {
     name: "Jobs",
     image: "/img/services/Desipath_jobs.jpeg",
-    path: "",
+    path: "/jobs",
   },
   {
     name: "Forum",
@@ -89,9 +89,9 @@ const services = [
     path: "/forum",
   },
   {
-    name: "Buy/Sell Used Items",
-    image: "/img/services/Desipath_UsedItems.png",
-    path: "",
+    name: "Buy/Sell Items",
+    image: "/img/services/Desipath_Buysell_items.png",
+    path: "/buy-sell-items",
   },
   {
     name: "Ride Share",

@@ -17,7 +17,7 @@ import { format, isToday, isYesterday } from "date-fns";
 import SendIcon from "@mui/icons-material/Send";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
-import { fetchChatMessages, sendMessage, markMessagesAsRead } from "../../store/ChatSlice";
+import { fetchChatMessages, sendMessage, markMessagesAsRead, clearSelectedChat } from "../../store/ChatSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 function ChatScreen({ loggedInUser, chatPartner, adId, adType }) {
@@ -69,6 +69,7 @@ function ChatScreen({ loggedInUser, chatPartner, adId, adType }) {
   }, [messages]);
 
   useEffect(() => {
+    dispatch(clearSelectedChat());
     const userId = chatPartner;
     // Initial fetch
     dispatch(fetchChatMessages({ adType, adId, userId }));
@@ -82,7 +83,9 @@ function ChatScreen({ loggedInUser, chatPartner, adId, adType }) {
     return () => clearInterval(interval);
   }, [dispatch, adId, chatPartner, adType]);
 
-  const groupedMessages = (messages || []).reduce((acc, msg) => {
+  const groupedMessages = (messages || [])
+    .filter(msg => String(msg.ad_id) === String(adId) && msg.ad_type === adType && (String(msg.sender_id) === String(chatPartner) || String(msg.receiver_id) === String(chatPartner)))
+    .reduce((acc, msg) => {
     const dayLabel = formatDayLabel(msg?.created_at) || "Recent";
     if (!acc[dayLabel]) acc[dayLabel] = [];
     acc[dayLabel].push(msg);
