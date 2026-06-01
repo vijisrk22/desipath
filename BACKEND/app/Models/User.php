@@ -31,6 +31,14 @@ class User extends Authenticatable
         'phone_number',
         'country_code',
         'status',
+        'profile_photo',
+        'otp',
+        'otp_expires_at',
+        'location',
+        'last_login_at',
+        'business_name',
+        'business_phone',
+        'business_location',
     ];
 
     /**
@@ -53,12 +61,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_login_at' => 'datetime',
         ];
     }
     
     public function isBusinessUser()
     {
         return $this->role === 'business';
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->role === 'super_admin';
     }
 
     public function isRegularUser()

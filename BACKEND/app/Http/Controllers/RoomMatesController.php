@@ -56,11 +56,63 @@ class RoomMatesController extends Controller
         return view('rooms.rooms'); // The path corresponds to resources/views/room-share/index.blade.php
     }
 
-    public function index()
+    public function adminIndex(Request $request)
     {
-        $roommates = RoomMate::all();
+        $query = RoomMate::query();
 
-        $roommates->transform(function ($roommate) {
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('location_city', 'like', "%{$search}%")
+                  ->orWhere('location_state', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('poster_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $results = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $results->getCollection()->transform(function ($item) {
+            if (is_string($item->photos) && !empty($item->photos)) {
+                $item->photos = json_decode($item->photos, true);
+            }
+            return $item;
+        });
+
+        return response()->json($results);
+    }
+
+    public function adminToggleStatus(Request $request, $id)
+    {
+        $item = RoomMate::findOrFail($id);
+        $item->status = ($item->status === 'active' || $item->status === 'approved') ? 'pending' : 'active';
+        $item->save();
+        return response()->json(['success' => true, 'status' => $item->status]);
+    }
+
+    public function index(Request $request)
+    {
+        $query = RoomMate::query()->where('status', 'active');
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('location_city', 'like', "%{$search}%")
+                  ->orWhere('location_state', 'like', "%{$search}%")
+                  ->orWhere('location_zipcode', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('poster_name', 'like', "%{$search}%");
+            });
+        }
+
+        $roommates = $query->paginate(15);
+
+        $roommates->getCollection()->transform(function ($roommate) {
             if (is_string($roommate->photos) && !empty($roommate->photos)) {
                 $roommate->photos = json_decode($roommate->photos, true);
             }
@@ -179,7 +231,7 @@ class RoomMatesController extends Controller
             'utilities_included' => 'nullable|boolean',
             'photos.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64 data URL for an image
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
 
@@ -197,6 +249,8 @@ class RoomMatesController extends Controller
             'food_preference' => 'nullable|in:Veg,Non Veg,Any',
             'washer_dryer' => 'nullable|boolean',
             'description' => 'nullable|string|max:1000',
+            'address' => 'nullable|string|max:255',
+            'is_furnished' => 'nullable|boolean',
             'poster_id' => 'nullable|exists:users,id'
         ]);
 
@@ -206,6 +260,16 @@ class RoomMatesController extends Controller
         }
         $data = $request->except('photos'); // get all fields except photos
         $data['poster_name'] = $receiver->name;
+        $data['status'] = 'active';
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
 
         if ($request->has('photos') && !empty($request->photos)) {
             $photos = [];
@@ -321,46 +385,66 @@ class RoomMatesController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $query = RoomMate::query();
+        $query = RoomMate::query()->where('status', 'active');
 
         $city = trim($request->city);
         $state = trim($request->state);
         $zipcode = trim($request->zipcode);
-        $priceMin = $request->priceMin;
-        $priceMax = $request->priceMax;
+        $radius = 40; // Miles
 
-        $query->where(function ($q) use ($city, $state, $zipcode, $priceMin, $priceMax, $request) {
-            $q->where(function ($query) use ($request) {
-                if ($request->filled('city')) {
-                    $query->where('location_city', '=', $request->city);
-                }
-                if ($request->filled('state')) {
-                    $query->where('location_state', '=', $request->state);
-                }
-                if ($request->filled('zipcode')) {
-                    $query->where('location_zipcode', '=', $request->zipcode);
-                }
+        $centerPoint = null;
 
-                if ($request->filled('priceMin')) {
-                    $query->where('rent', '>=', $request->priceMin);
-                }
+        // Try to get coordinates for the search center
+        if ($zipcode) {
+            $centerPoint = \DB::table('usa_zipcodes')->where('zip', $zipcode)->first();
+        } elseif ($city) {
+            $centerPoint = \DB::table('usa_zipcodes')
+                ->where('city', 'like', '%' . $city . '%')
+                ->when($state, function ($q) use ($state) {
+                    return $q->where('state_id', $state)->orWhere('state_name', $state);
+                })
+                ->first();
+        }
 
-                if ($request->filled('priceMax')) {
-                    $query->where('rent', '<=', $request->priceMax);
-                }
+        if ($centerPoint && $centerPoint->lat && $centerPoint->lng) {
+            $lat = $centerPoint->lat;
+            $lng = $centerPoint->lng;
+            $searchZip = $centerPoint->zip;
 
-                // if ($request->filled('priceMin') || $request->filled('priceMax')) {
-                //     $query->orWhere(function ($subQuery) use ($request) {
-                //         if ($request->filled('priceMin')) {
-                //             $subQuery->where('rent', '>=', $request->priceMin);
-                //         }
-                //         if ($request->filled('priceMax')) {
-                //             $subQuery->where('rent', '<=', $request->priceMax);
-                //         }
-                //     });
-                // }
-            });
-        });
+            // Bounding box optimization to reduce rows before expensive distance calculation
+            $latRange = $radius / 69;
+            $lngRange = $radius / (69 * cos(deg2rad($lat)));
+
+            $query->whereBetween('latitude', [$lat - $latRange, $lat + $latRange])
+                  ->whereBetween('longitude', [$lng - $lngRange, $lng + $lngRange]);
+
+            $query->select('*')
+                ->selectRaw("(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
+                ->having('distance', '<=', $radius);
+            
+            // Priority ordering: exact zip first, then by distance
+            $query->orderByRaw("CASE WHEN location_zipcode = ? THEN 0 ELSE 1 END ASC", [$searchZip])
+                  ->orderBy('distance', 'asc');
+        } else {
+            // Fallback to basic keyword matching if no coordinates found
+            if ($request->filled('city')) {
+                $query->where('location_city', 'like', '%' . $request->city . '%');
+            }
+            if ($request->filled('state')) {
+                $query->where('location_state', 'like', '%' . $request->state . '%');
+            }
+            if ($request->filled('zipcode')) {
+                $query->where('location_zipcode', 'like', '%' . $request->zipcode . '%');
+            }
+        }
+
+        if ($request->filled('priceMin')) {
+            $query->where('rent', '>=', $request->priceMin);
+        }
+
+        if ($request->filled('priceMax')) {
+            $query->where('rent', '<=', $request->priceMax);
+        }
 
         $roommates = $query->get();
         // dd($roommates);
@@ -400,17 +484,18 @@ class RoomMatesController extends Controller
         $validatedData = $request->validate([
             'owner' => 'nullable|boolean',
             'agent' => 'nullable|boolean',
+            'status' => 'nullable|in:active,inactive',
             'location_state' => 'nullable|string|max:100',
             'location_city' => 'nullable|string|max:100',
             'location_zipcode' => 'nullable|string|max:20',
-            'sharing_type' => 'required|in:Separate Room,Share the room with other person',
+            'sharing_type' => 'sometimes|in:Separate Room,Share the room with other person',
             'kitchen_available' => 'nullable|boolean',
             'shared_bathroom' => 'nullable|boolean',
             'rent' => 'nullable|numeric',
             'rent_frequency' => 'nullable|in:Monthly,Daily,Weekly',
             'utilities_included' => 'nullable|boolean',
             'newPhotos.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
 
@@ -427,15 +512,29 @@ class RoomMatesController extends Controller
             'food_preference' => 'nullable|in:Veg,Non Veg,Any',
             'washer_dryer' => 'nullable|boolean',
             'description' => 'nullable|string|max:1000',
+            'address' => 'nullable|string|max:255',
+            'is_furnished' => 'nullable|boolean',
             'poster_id' => 'nullable|exists:users,id'
         ]);
 
-        $receiver = User::find($request->poster_id);
-        if (!$receiver) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
         $data = $request->except(['photos', 'newPhotos', 'existingPhotos']);
-        $data['poster_name'] = $receiver->name;
+        
+        if ($request->has('poster_id')) {
+            $receiver = User::find($request->poster_id);
+            if (!$receiver) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+            $data['poster_name'] = $receiver->name;
+        }
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
 
         if ($request->has('existingPhotos') && !empty($request->existingPhotos)) {
             $existingPhotos = $request->existingPhotos;
@@ -467,7 +566,9 @@ class RoomMatesController extends Controller
         $roomMate->update($data);
 
         // Return photos as array in response
-        $roomMate->photos = json_decode($roomMate->photos, true);
+        if (is_string($roomMate->photos)) {
+            $roomMate->photos = json_decode($roomMate->photos, true);
+        }
 
         return response()->json([
             'message' => 'Room mate updated successfully',
@@ -496,5 +597,23 @@ class RoomMatesController extends Controller
         $roomMate->delete();
 
         return response()->json(['message' => 'Room mate deleted successfully']);
+    }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = RoomMate::where('poster_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = RoomMate::where('poster_id', $request->user()->id)->get();
+        $listings->transform(function ($item) {
+            if (is_string($item->photos) && !empty($item->photos)) {
+                $item->photos = json_decode($item->photos, true);
+            }
+            return $item;
+        });
+        return response()->json($listings);
     }
 }

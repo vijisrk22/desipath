@@ -12,6 +12,37 @@ use OpenApi\Annotations as OA;
  */
 class TravelCompanionsController extends Controller
 {
+    public function adminIndex(Request $request)
+    {
+        $query = TravelCompanion::query();
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('travellers', 'like', "%{$search}%")
+                  ->orWhere('from_location', 'like', "%{$search}%")
+                  ->orWhere('to_location', 'like', "%{$search}%")
+                  ->orWhere('language_spoken', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $results = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        return response()->json($results);
+    }
+
+    public function adminToggleStatus(Request $request, $id)
+    {
+        $item = TravelCompanion::findOrFail($id);
+        $item->status = ($item->status === 'active' || $item->status === 'approved') ? 'pending' : 'active';
+        $item->save();
+        return response()->json(['success' => true, 'status' => $item->status]);
+    }
+
     /**
      * @OA\Get(
      *     path="/api/travelcompanions",
@@ -21,9 +52,22 @@ class TravelCompanionsController extends Controller
      *     @OA\Response(response=200, description="List of travel companions")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return TravelCompanion::all();
+        $query = TravelCompanion::query()->where('status', 'active');
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('travellers', 'like', "%{$search}%")
+                  ->orWhere('from_location', 'like', "%{$search}%")
+                  ->orWhere('to_location', 'like', "%{$search}%")
+                  ->orWhere('language_spoken', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->orderBy('created_at', 'desc')->paginate(15);
     }
 
     /**
@@ -121,6 +165,7 @@ class TravelCompanionsController extends Controller
         $data['flexible_language'] = ($data['flexible_language'] ?? null) === 'Yes';
         $data['travel_finalized'] = ($data['travel_finalized'] ?? null) === 'Yes';
 
+        $data['status'] = 'active';
         $travelCompanion = TravelCompanion::create($data);
 
         return response()->json(['message' => 'Travel companion created successfully', 'data' => $travelCompanion], 201);
@@ -184,6 +229,7 @@ class TravelCompanionsController extends Controller
             'amazon_gift_card_value' => 'nullable|string|in:50$,100$',
             'willing_gift' => 'nullable|boolean',
             'gift_card_value' => 'nullable|string|in:50$,100$',
+            'status' => 'nullable|in:active,inactive',
             'poster_id' => 'nullable|exists:users,id'
         ]);
 
@@ -213,5 +259,17 @@ class TravelCompanionsController extends Controller
         $travelCompanion->delete();
 
         return response()->json(['message' => 'Travel companion deleted successfully']);
+    }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = TravelCompanion::where('poster_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = TravelCompanion::where('poster_id', $request->user()->id)->get();
+        return response()->json($listings);
     }
 }

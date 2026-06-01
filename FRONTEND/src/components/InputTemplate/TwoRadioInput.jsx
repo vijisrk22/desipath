@@ -8,61 +8,72 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
-function TwoRadioInput({ name, text, op1 = "Yes", op2 = "No", control }) {
+function TwoRadioInput({ name, text, op1 = "Yes", op2 = "No", control, defaultValue }) {
   return (
     <FormControl
+      fullWidth
       sx={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "1rem",
-        alignItems: "center",
-        width: "100%",
-        borderBottom: "1px solid ",
-        borderBottomColor: "grey.300",
-        py: "1rem",
+        py: "0.5rem",
+        borderBottom: "1px solid",
+        borderBottomColor: "grey.100",
+        mb: 2,
       }}
     >
-      <FormLabel id={name}>{text}</FormLabel>
+      <FormLabel 
+        sx={{ 
+          fontSize: "0.875rem", 
+          fontWeight: 600, 
+          color: "#0857d0 !important",
+          mb: 1.5,
+          fontFamily: "DM Sans, sans-serif"
+        }}
+      >
+        {text}
+      </FormLabel>
       <Controller
         name={name}
         control={control}
-        defaultValue={op1} // Set default value to the first option
-        rules={{
-          required: "This field is required", // Add the required rule
+        defaultValue={defaultValue || op1}        rules={{
+          required: "This field is required", 
         }}
         render={({ field, fieldState }) => (
           <>
             <RadioGroup row {...field}>
-              {op1 == "Yes" && op2 == "No" ? (
-                <>
-                  <FormControlLabel
-                    value={op1}
-                    control={<Radio />}
-                    label={op1}
+              <FormControlLabel
+                value={op1}
+                control={
+                  <Radio 
+                    size="small" 
+                    sx={{
+                      color: "#0857d0",
+                      "&.Mui-checked": {
+                        color: "#0857d0",
+                      },
+                    }}
                   />
-                  <FormControlLabel
-                    value={op2}
-                    control={<Radio />}
-                    label={op2}
+                }
+                label={<span className="text-sm font-dmsans text-gray-700 capitalize">{op1}</span>}
+              />
+              <FormControlLabel
+                value={op2}
+                control={
+                  <Radio 
+                    size="small" 
+                    sx={{
+                      color: "#0857d0",
+                      "&.Mui-checked": {
+                        color: "#0857d0",
+                      },
+                    }}
                   />
-                </>
-              ) : (
-                <>
-                  <FormControlLabel
-                    value={op1}
-                    control={<Radio />}
-                    label={op1}
-                  />
-                  <FormControlLabel
-                    value={op2}
-                    control={<Radio />}
-                    label={op2}
-                  />
-                </>
-              )}
+                }
+                label={<span className="text-sm font-dmsans text-gray-700 capitalize">{op2}</span>}
+              />
             </RadioGroup>
             {fieldState?.error && (
-              <FormHelperText error>{fieldState.error.message}</FormHelperText>
+              <FormHelperText error>
+                {fieldState.error.message}
+              </FormHelperText>
             )}
           </>
         )}

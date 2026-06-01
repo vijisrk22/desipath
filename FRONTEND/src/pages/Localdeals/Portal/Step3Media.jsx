@@ -1,0 +1,137 @@
+import React, { useState } from 'react';
+import { IoImageOutline, IoCloseCircle, IoCropOutline } from 'react-icons/io5';
+import { getFullImageUrl } from '../../../utils/imageHelper';
+import ImageCropModal from '../../../components/ImageCrop/ImageCropModal';
+import imageCompression from 'browser-image-compression';
+
+export default function Step3Media({ data, update, onNext, onBack }) {
+  const [previews, setPreviews] = useState(data.images || []);
+  const [croppingIndex, setCroppingIndex] = useState(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files);
+    if (previews.length + files.length > 5) {
+      alert("Max 5 images allowed");
+      return;
+    }
+
+    setIsCompressing(true);
+    try {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true
+      };
+
+      for (const file of files) {
+        const compressedFile = await imageCompression(file, options);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result;
+          setPreviews(prev => {
+            const newList = [...prev, base64];
+            update({ images: newList });
+            return newList;
+          });
+        };
+        reader.readAsDataURL(compressedFile);
+      }
+    } catch (error) {
+      console.error("Compression failed", error);
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  const removeImage = (idx) => {
+    const newList = previews.filter((_, i) => i !== idx);
+    setPreviews(newList);
+    update({ images: newList });
+  };
+
+  const handleCropComplete = (croppedBase64) => {
+    setPreviews(prev => {
+      const newList = [...prev];
+      newList[croppingIndex] = croppedBase64;
+      update({ images: newList });
+      return newList;
+    });
+    setCroppingIndex(null);
+  };
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Promotional Posters</h2>
+        <p className="text-gray-500">Upload up to 5 flyers or photos for your deal. These will appear in a slider.</p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {previews.map((src, idx) => (
+            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden group border-2 border-gray-100 bg-gray-50">
+              <img src={getFullImageUrl(src)} alt="Preview" className="w-full h-full object-contain" />
+              
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                <button 
+                  onClick={() => setCroppingIndex(idx)}
+                  className="p-2 bg-white text-blue-600 rounded-full shadow-lg transform hover:scale-110 transition-transform flex items-center justify-center"
+                  title="Crop Image"
+                >
+                  <IoCropOutline size={20} />
+                </button>
+                <button 
+                  onClick={() => removeImage(idx)}
+                  className="p-2 bg-white text-red-500 rounded-full shadow-lg transform hover:scale-110 transition-transform flex items-center justify-center"
+                  title="Remove Image"
+                >
+                  <IoCloseCircle size={20} />
+                </button>
+              </div>
+            </div>
+          ))}
+          
+          {previews.length < 5 && (
+            <label className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-blue-300 transition-all">
+              <IoImageOutline size={32} className="text-gray-400 mb-2" />
+              <span className="text-xs font-bold text-gray-500">Upload Image</span>
+              <input type="file" className="hidden" accept="image/*" multiple onChange={handleFileChange} />
+            </label>
+          )}
+        </div>
+
+        {croppingIndex !== null && (
+          <ImageCropModal 
+            imageSrc={previews[croppingIndex]}
+            onCropComplete={handleCropComplete}
+            onCancel={() => setCroppingIndex(null)}
+          />
+        )}
+
+        <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+          <p className="text-sm text-blue-700 leading-relaxed">
+            <strong>Tip:</strong> Use high-quality portrait or square images. These posters are the first thing users see, so make them eye-catching!
+          </p>
+        </div>
+      </div>
+
+      <div className="pt-6 flex justify-between">
+        <button 
+          type="button"
+          onClick={onBack}
+          className="px-8 py-4 font-bold text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          Back
+        </button>
+        <button 
+          onClick={onNext}
+          disabled={previews.length === 0}
+          className="px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Review Ad
+        </button>
+      </div>
+    </div>
+  );
+}

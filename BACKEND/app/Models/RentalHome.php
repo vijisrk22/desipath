@@ -13,7 +13,7 @@ class RentalHome extends Model
 
     protected $fillable = [
         'property_type', 'available_from', 'area', 'deposit_rent', 'bhk', 'address',
-        'community_name', 'amenities', 'pets', 'images', 'accommodates', 'smoking', 'owner_id', 'location_state', 'location_city', 'location_zipcode', 'owner_name', 'description', 'contact_no'
+        'community_name', 'amenities', 'pets', 'images', 'accommodates', 'smoking', 'owner_id', 'location_state', 'location_city', 'location_zipcode', 'latitude', 'longitude', 'owner_name', 'description', 'contact_no', 'status'
     ];
 
     protected $casts = [
@@ -25,16 +25,10 @@ class RentalHome extends Model
         'images' => 'array',
     ];
 
-    // Convert language array to a comma-separated string for SET type compatibility
+    // Convert language array to a comma-separated string for compatibility
     public function setAmenitiesAttribute($value)
     {
-        // $this->attributes['amenities'] = is_array($value) ? implode(',', $value) : $value;
-        // List of allowed values as per DB SET column
-        $allowed = ['Gym', 'Swimming Pool', 'Club House'];
-
         if (is_array($value)) {
-            // Keep only allowed values with exact match
-            $value = array_intersect($value, $allowed);
             $this->attributes['amenities'] = implode(',', $value);
         } else {
             $this->attributes['amenities'] = $value;
@@ -48,31 +42,31 @@ class RentalHome extends Model
     }
 
     // Handle images - decode JSON or return as array
-    // public function getImagesAttribute($value)
-    // {
-    //     if (empty($value)) {
-    //         return [];
-    //     }
+    public function getImagesAttribute($value)
+    {
+        if (empty($value)) {
+            return [];
+        }
         
-    //     // If it's already an array (from cast), return it
-    //     if (is_array($value)) {
-    //         return $value;
-    //     }
+        // If it's already an array (from cast), return it
+        if (is_array($value)) {
+            return $value;
+        }
         
-    //     // Try to decode JSON
-    //     $decoded = json_decode($value, true);
-    //     if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-    //         return $decoded;
-    //     }
+        // Try to decode JSON
+        $decoded = json_decode($value, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return $decoded;
+        }
         
-    //     // If it's a comma-separated string, split it
-    //     if (is_string($value) && strpos($value, ',') !== false) {
-    //         return array_map('trim', explode(',', $value));
-    //     }
+        // If it's a comma-separated string, split it
+        if (is_string($value) && strpos($value, ',') !== false) {
+            return array_map('trim', explode(',', $value));
+        }
         
-    //     // Otherwise return as single-item array
-    //     return [$value];
-    // }
+        // Otherwise return as single-item array
+        return [$value];
+    }
 
     public function owner()
     {

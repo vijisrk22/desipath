@@ -9,6 +9,10 @@ import travelCompanionReducer from "./TravelCompanionSlice"; // Import your trav
 import itTrainingsReducer from "./ITTrainingsSlice"
 import eventsReducer from "./EventsSlice"; // Import your events reducer
 import locationReducer from "./LocationSlice";
+import statsReducer from "./StatsSlice";
+import localAdsReducer from "./LocalAdsSlice";
+import kidsClassReducer from "./KidsClassSlice";
+import photographyReducer from "./PhotographySlice";
 
 const store = configureStore({
   reducer: {
@@ -23,6 +27,10 @@ const store = configureStore({
     itTrainings: itTrainingsReducer,
     events: eventsReducer,
     location: locationReducer,
+    stats: statsReducer,
+    localAds: localAdsReducer,
+    kidsClass: kidsClassReducer,
+    photography: photographyReducer,
   },
 });
 

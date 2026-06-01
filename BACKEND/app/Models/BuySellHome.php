@@ -12,11 +12,15 @@ class BuySellHome extends Model
     protected $table = 'BuySellHomes';
 
     protected $fillable = [
-        'user_type', 'home_type', 'price', 'built_area', 'lot_size', 'hoa_fees', 'year_built',
-        'under_construction', 'bedroom_total', 'half_bathroom_total', 'full_bathroom_total',
-        'basement_size', 'basement_status', 'laundry_in_house', 'home_level', 'pool',
-        'annual_tax_amount', 'images', 'description', 'kitchen_granite_countertop',
-        'fireplace_count', 'flooring', 'seller_id', 'location_state', 'location_city', 'location_zipcode', 'seller_name'
+        'user_type', 'home_type', 'price', 'price_per_sqft', 'built_area', 'lot_size', 'total_parking_spaces', 'attached_garage', 'hoa_fees', 'year_built',
+        'under_construction', 'bedroom_total', 'half_bathroom_total', 'full_bathroom_total', 'total_bathroom_total',
+        'basement_size', 'basement_status', 'laundry_in_house', 'home_level', 'pool', 'community_pool',
+        'annual_tax_amount', 'images', 'description', 'kitchen_granite_countertop', 'solar_setup',
+        'fireplace_count', 'flooring', 'seller_id', 'location_state', 'location_city', 'location_zipcode', 'latitude', 'longitude', 'seller_name', 'address', 'company_name', 'status'
+    ];
+
+    protected $casts = [
+        'images' => 'json',
     ];
 
     public function seller()

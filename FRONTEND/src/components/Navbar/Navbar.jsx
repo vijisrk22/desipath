@@ -1,50 +1,67 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import DrawerComp from "./DrawerComp";
 import SignInUp from "./SignInUp";
 import Profile from "./Profile";
+import Breadcrumbs from "../Common/Breadcrumbs";
 
 function Navbar() {
   const location = useLocation();
-  const navPages = ["Home", "Post Ad", "About Us", "Contact"];
+  const navigate = useNavigate();
+  const navItems = [
+    { label: "Home", path: "/" },
+    { label: "My Ads", path: "/postad" },
+    { label: "About Us", path: "/aboutus" },
+    { label: "Inbox", path: "/inbox" },
+    { label: "Forum", path: "/forum" },
+    { label: "Contact", path: "/contact" }
+  ];
   const user = JSON.parse(localStorage.getItem("user"));
 
-  let currentPath = location.pathname.replace("/", "").toLowerCase();
+  let currentPath = location.pathname;
 
   return (
-    <div className="px-[7%] pt-6 pb-2 flex justify-between items-center">
-      <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal font-fredoka hover:cursor-pointer">
-        Desipath
-      </Link>
+    <nav className="flex flex-col relative z-50 bg-white w-full border-b border-gray-100">
+      <div className="max-w-6xl mx-auto w-full px-[7%] lg:px-8 pt-4 pb-2 flex justify-between items-center">
+        <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-xl lg:text-2xl font-normal font-fredoka hover:cursor-pointer">
+          Desipath
+        </Link>
 
-      <div className="md:flex gap-6 md:gap-12 hidden">
-        {navPages.map((item, index) => {
-          const path = item.replace(" ", "").toLowerCase();
+        <div className="md:flex gap-4 md:gap-8 hidden">
+          {navItems.map((item, index) => {
+            const isActive = currentPath === item.path || (currentPath === "/" && item.path === "/");
+            return (
+              <Link
+                key={index}
+                to={item.path}
+                className={`${
+                  isActive ? "text-[#0857d0]" : "text-gray-600"
+                } text-sm sm:text-base md:text-sm lg:text-base font-bold font-dmsans`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
 
-          if (currentPath == "") {
-            currentPath = "home";
-          }
-          const isActive = path === currentPath;
-          return (
-            <Link
-              key={index}
-              to={`/${path}`}
-              className={`${
-                isActive ? "text-[#0857d0]" : "text-gray-400"
-              } text-base sm:text-lg md:text-base lg:text-xl font-bold font-dmsans`}
-            >
-              {item}
-            </Link>
-          );
-        })}
+        {user ? <Profile user={user} /> : <SignInUp />}
+
+        <div className="md:hidden flex">
+          <DrawerComp navItems={navItems} />
+        </div>
       </div>
 
-      {user ? <Profile user={user} /> : <SignInUp />}
-
-      {/* Hamburger Navbar on smaller screens*/}
-      <div className="md:hidden flex">
-        <DrawerComp navPages={navPages} />
-      </div>
-    </div>
+      {/* Mobile Back Button - Visible only on mobile below the header and not on home page */}
+      {currentPath !== "/" && (
+        <div className="md:hidden w-full px-[7%] py-2 bg-gray-50 border-b border-gray-100 flex items-center shadow-sm">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="flex items-center gap-1.5 text-[#0857d0] font-bold text-sm font-dmsans active:scale-95 transition-transform"
+          >
+            <span className="text-lg leading-none">&larr;</span> Back
+          </button>
+        </div>
+      )}
+    </nav>
   );
 }
 

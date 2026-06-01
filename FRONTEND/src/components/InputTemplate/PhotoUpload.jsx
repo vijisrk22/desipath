@@ -1,8 +1,13 @@
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CloseIcon from "@mui/icons-material/Close"; // Import CloseIcon
-import api from "../../utils/api";
+import { getFullImageUrl } from "../../utils/imageHelper";
+import { useState } from "react";
+import { IoCropOutline } from "react-icons/io5";
+import ImageCropModal from "../ImageCrop/ImageCropModal";
 
 function PhotoUpload({ images, setImages, title = "Upload Photos (Max 10)" }) {
+  const [croppingIndex, setCroppingIndex] = useState(null);
+
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     const imageFiles = files.filter((file) => file.type.startsWith("image/"));
@@ -22,6 +27,15 @@ function PhotoUpload({ images, setImages, title = "Upload Photos (Max 10)" }) {
 
   const handleRemoveImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index)); // Remove image by index
+  };
+
+  const handleCropComplete = (croppedBase64) => {
+    setImages((prev) => {
+      const newList = [...prev];
+      newList[croppingIndex] = croppedBase64;
+      return newList;
+    });
+    setCroppingIndex(null);
   };
 
   return (
@@ -63,29 +77,48 @@ function PhotoUpload({ images, setImages, title = "Upload Photos (Max 10)" }) {
       </div>
 
       {/* Image Previews */}
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 w-full">
         {images.map((image, index) => {
           const isFile = image instanceof File;
           const imageUrl = isFile
             ? URL.createObjectURL(image)
-            : `${api.defaults.baseURL}/${image}`;
+            : getFullImageUrl(image);
           return (
-            <div key={index} className="relative">
+            <div key={index} className="relative group aspect-square">
               <img
                 src={imageUrl}
                 alt="Uploaded"
-                className="w-40 h-40 object-cover rounded-lg shadow-md"
+                className="w-full h-full object-contain bg-gray-50 rounded-lg shadow-md border border-gray-100"
               />
-              <button
-                onClick={() => handleRemoveImage(index)}
-                className="absolute top-2 right-1 bg-black text-white rounded-full p-1"
-              >
-                <CloseIcon fontSize="small" />
-              </button>
+              
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => setCroppingIndex(index)}
+                  className="p-1.5 bg-white text-blue-600 rounded-full shadow-lg transform hover:scale-110 transition-transform"
+                >
+                  <IoCropOutline size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(index)}
+                  className="p-1.5 bg-white text-red-500 rounded-full shadow-lg transform hover:scale-110 transition-transform"
+                >
+                  <CloseIcon fontSize="small" />
+                </button>
+              </div>
             </div>
           );
         })}
       </div>
+
+      {croppingIndex !== null && (
+        <ImageCropModal 
+          imageSrc={images[croppingIndex] instanceof File ? URL.createObjectURL(images[croppingIndex]) : getFullImageUrl(images[croppingIndex])}
+          onCropComplete={handleCropComplete}
+          onCancel={() => setCroppingIndex(null)}
+        />
+      )}
     </div>
   );
 }

@@ -7,6 +7,7 @@ function ButtonRight({
   paddingClass = "",
   arrowVisible = true,
   disabled = false,
+  orangeArrow = false,
 }) {
   const navigate = useNavigate();
 
@@ -16,16 +17,20 @@ function ButtonRight({
     }
   };
 
+  const arrowFilter = orangeArrow 
+    ? "brightness(0) saturate(100%) invert(67%) sepia(91%) saturate(1450%) hue-rotate(3deg) brightness(103%) contrast(105%)" 
+    : "";
+
   return (
     <button
       onClick={handleClick}
       disabled={disabled}
-      className={`rounded-[30px] flex justify-center items-center gap-3.5 transition-all ${
+      className={`rounded-[30px] flex justify-center items-center gap-3.5 transition-all shadow-md ${
         paddingClass || "px-6 py-2 md:px-6 md:py-4"
       } ${
         disabled
-          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-          : "bg-[#ffa41c] text-gray-800 hover:brightness-110 cursor-pointer"
+          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+          : "bg-[#0857d0] text-white hover:bg-[#0746a8] cursor-pointer"
       }`}
     >
       <span
@@ -36,10 +41,11 @@ function ButtonRight({
         {text}
       </span>
       {arrowVisible && (
-        <div className="w-8 h-8 relative overflow-hidden">
+        <div className="w-8 h-8 relative overflow-hidden flex items-center justify-center">
           <img
             src="/caretRight.png"
-            className={`w-6 h-6 left-[4px] top-[4px] absolute ${
+            style={{ filter: arrowFilter }}
+            className={`w-6 h-6 absolute ${
               disabled ? "opacity-50" : ""
             }`}
           />

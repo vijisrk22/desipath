@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
@@ -11,6 +12,12 @@ import RoomDetails from "./RoomDetails";
 
 function Roommates() {
   const { action } = useParams();
+  const location = useLocation();
+  const { user } = useSelector((state) => state.user);
+
+  if ((action === "postRoom" || action === "edit") && !user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -25,11 +32,7 @@ function Roommates() {
     buttonText2: "Post An Add/Share My Room",
   };
 
-  const showNavbar =
-    action === undefined ||
-    action === "findRoom" ||
-    action === "postRoom" ||
-    action === "postConfirmation";
+  const showNavbar = true;
 
   return (
     <div className="flex flex-col min-h-screen overflow-y-auto ">
@@ -39,7 +42,11 @@ function Roommates() {
         <>
           {" "}
           <div className="flex-grow bg-[#f0f8ff]">
-            <ServiceHeroSection pageDetails={pageDetails} />
+            <ServiceHeroSection 
+              pageDetails={pageDetails} 
+              orangeArrow={true} 
+              bgImg="/img/roommates/Desipath_Roommates.png" 
+            />
           </div>
           <div className="bg-[#f0f8ff]">
             <Footer newsletter={"block"} />
@@ -47,7 +54,7 @@ function Roommates() {
         </>
       ) : action === "findRoom" ? (
         <FindRoom />
-      ) : action === "postRoom" ? (
+      ) : (action === "postRoom" || action === "edit") ? (
         <PostRoom />
       ) : action === "postConfirmation" ? (
         <PostConfirmation 

@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, Link } from "react-router-dom";
 import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
 
@@ -18,6 +18,11 @@ function TravelCompanion() {
         <>
           {" "}
           <div className="flex-grow bg-[#f3f5f7] pb-20">
+            <div className="max-w-[86%] mx-auto py-4">
+              <Link to="/" className="text-gray-500 hover:text-[#007185] text-sm font-medium font-dmsans">Home</Link>
+              <span className="text-gray-400 mx-2 text-sm font-medium font-dmsans">{">"}</span>
+              <span className="text-gray-900 text-sm font-bold font-dmsans">Travel Companion</span>
+            </div>
             <div className="bg-[#007185] text-white px-[7%] py-20 mb-12">
               <h1 className="text-4xl md:text-6xl font-extrabold font-dmsans mb-6">
                 Travel Companion

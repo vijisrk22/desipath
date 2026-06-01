@@ -36,12 +36,13 @@ class ProfileController extends Controller
 
         // Validate only the fields provided
         $rules = [
-            'first_name' => 'sometimes|string|max:100',
-            'last_name' => 'sometimes|string|max:100',
+            'first_name' => 'sometimes|nullable|string|max:100',
+            'last_name' => 'sometimes|nullable|string|max:100',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
-            'password' => 'sometimes|min:6',
-            'phone_number' => 'sometimes|string|max:20',
-            'country_code' => 'sometimes|string|max:10',
+            'password' => 'sometimes|nullable|min:6',
+            'phone_number' => 'sometimes|nullable|string|max:20',
+            'country_code' => 'sometimes|nullable|string|max:10',
+            'location' => 'sometimes|nullable|string|max:255',
         ];
 
         $validatedData = $request->validate($rules);
@@ -72,6 +73,18 @@ class ProfileController extends Controller
 
         if (isset($validatedData['password'])) {
             $validatedData['password'] = Hash::make($validatedData['password']);
+        }
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            $request->validate([
+                'photo' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            
+            $file = $request->file('photo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('profile_photos', $filename, 'public');
+            $validatedData['profile_photo'] = $path;
         }
 
         $user->update($validatedData);

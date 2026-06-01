@@ -26,7 +26,7 @@ function ActiveRoomSearchFilters() {
     const chips = [];
 
     // Location Chip
-    if (lastSearchQuery.location) {
+    if (lastSearchQuery.location && typeof lastSearchQuery.location === 'string') {
         chips.push(
             <Chip
                 key="location"
@@ -40,10 +40,12 @@ function ActiveRoomSearchFilters() {
 
     // Price Chip
     if (lastSearchQuery.priceMin !== undefined || lastSearchQuery.priceMax !== undefined) {
+        const min = typeof lastSearchQuery.priceMin === 'object' ? 0 : (lastSearchQuery.priceMin || 0);
+        const max = typeof lastSearchQuery.priceMax === 'object' ? 'Any' : (lastSearchQuery.priceMax || 'Any');
         chips.push(
             <Chip
                 key="price"
-                label={`Price: $${lastSearchQuery.priceMin || 0} - $${lastSearchQuery.priceMax || 'Any'}`}
+                label={`Price: $${min} - $${max}`}
                 onDelete={() => handleRemove("price")}
                 color="primary"
                 variant="outlined"
@@ -54,7 +56,7 @@ function ActiveRoomSearchFilters() {
     if (chips.length === 0) return null;
 
     return (
-        <div className="py-2">
+        <div className="py-2 hidden md:block">
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 {chips}
             </Stack>

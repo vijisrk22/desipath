@@ -16,6 +16,20 @@ export const fetchEvents = createAsyncThunk(
   }
 );
 
+export const fetchMyEvents = createAsyncThunk(
+  "events/fetchMyEvents",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/api/events/my-listings");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch your events"
+      );
+    }
+  }
+);
+
 export const fetchEventById = createAsyncThunk(
   "events/fetchEventById",
   async (eventId, { rejectWithValue }) => {
@@ -58,13 +72,44 @@ export const searchEvents = createAsyncThunk(
   }
 );      
 
+export const updateEvent = createAsyncThunk(
+  "events/updateEvent",
+  async ({ eventId, eventData }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/events/${eventId}`, eventData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to update event"
+      );
+    }
+  }
+);
+
+export const deleteEvent = createAsyncThunk(
+  "events/deleteEvent",
+  async (eventId, { rejectWithValue }) => {
+    try {
+      await api.delete(`/api/events/${eventId}`);
+      return eventId;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to delete event"
+      );
+    }
+  }
+);
+
 const eventsSlice = createSlice({
     name: "events", 
     initialState: {
         events: [],
+        myEvents: [],
         eventDetails: null,
         error: null,
-        loading: false,
+        loading: false, // Legacy fallback
+        loadingList: false,
+        loadingDetails: false,
     },
     reducers: {
         setEvents: (state, action) => {
@@ -80,26 +125,44 @@ const eventsSlice = createSlice({
     extraReducers: (builder) => {       
         builder
             .addCase(fetchEvents.pending, (state) => {
-                state.loading = true;
+                state.loadingList = true;
+                state.loading = true; // Sync for legacy components
                 state.error = null;
             })
             .addCase(fetchEvents.fulfilled, (state, action) => {
+                state.loadingList = false;
                 state.loading = false;
-                state.events = action.payload.events || [];
+                state.events = action.payload.data || [];
             })
             .addCase(fetchEvents.rejected, (state, action) => {
+                state.loadingList = false;
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch events";
             })
+            .addCase(fetchMyEvents.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyEvents.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myEvents = action.payload || [];
+            })
+            .addCase(fetchMyEvents.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch your events";
+            })
             .addCase(fetchEventById.pending, (state) => {
+                state.loadingDetails = true;
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchEventById.fulfilled, (state, action) => {
+                state.loadingDetails = false;
                 state.loading = false;
                 state.eventDetails = action.payload || null;
             })
             .addCase(fetchEventById.rejected, (state, action) => {
+                state.loadingDetails = false;
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch event details";
             })
@@ -117,21 +180,41 @@ const eventsSlice = createSlice({
                 state.error = action.payload || "Failed to post event";
             })
             .addCase(searchEvents.pending, (state) => {
+                state.loadingList = true;
                 state.loading = true;
                 state.error = null;
             })
             .addCase(searchEvents.fulfilled, (state, action) => {
+                state.loadingList = false;
                 state.loading = false;
                 state.events = action.payload.data || [];
             })
             .addCase(searchEvents.rejected, (state, action) => {
+                state.loadingList = false;
                 state.loading = false;
                 state.error = action.payload || "Search failed";
+            })
+            .addCase(updateEvent.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateEvent.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.events.findIndex(e => e.id === action.payload.event.id);
+                if (index !== -1) {
+                    state.events[index] = action.payload.event;
+                }
+            })
+            .addCase(updateEvent.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to update event";
+            })
+            .addCase(deleteEvent.fulfilled, (state, action) => {
+                state.events = state.events.filter(e => e.id !== action.payload);
+                state.myEvents = state.myEvents.filter(e => e.id !== action.payload);
             });
     }
 }); 
 
 export const { setEvents, clearEvents, clearEventDetails } = eventsSlice.actions;
 export default eventsSlice.reducer;
-
-

@@ -12,10 +12,20 @@ const queryClient = new QueryClient();
 
 const theme = createTheme({
   palette: {
-    primary: { main: "#FFA41C" },
-    secondary: { main: "#0857D0" },
-    green: { main: "#007185" },
-    gray: { main: "#9ca3af" },
+    primary: { main: "#FFA41C", contrastText: "#fff" },
+    secondary: { main: "#0857D0", contrastText: "#fff" },
+    blue: { main: "#2563eb", contrastText: "#fff" },
+    green: { main: "#007185", contrastText: "#fff" },
+    gray: { main: "#9ca3af", contrastText: "#fff" },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontWeight: 700,
+        },
+      },
+    },
   },
 });
 

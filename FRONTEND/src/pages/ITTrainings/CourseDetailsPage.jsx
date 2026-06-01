@@ -10,7 +10,8 @@ import TitledListSection from "../../components/ITTrainings/CourseDetailsCompone
 import CourseContentAccordion from "../../components/ITTrainings/CourseDetailsComponents/CourseContentAccordian";
 
 function CourseDetailsPage() {
-  const { courseId } = useParams();
+  const { courseId: courseIdParam } = useParams();
+  const courseId = courseIdParam;
   const dispatch = useDispatch();
   const { loading, error, courseDetails } = useSelector(
     (state) => state.itTrainings

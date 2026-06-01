@@ -6,9 +6,8 @@ function CheckBoxInput({ text, options, register, type = "", selected = [] }) {
   return (
     <>
       {type === "search" ? (
-        <FormControl sx={{ py: "1rem", width: "100%" }}>
-          <FormLabel>{text}</FormLabel>
-          <div className="flex gap-2 flex-wrap items-center">
+        <FormControl sx={{ py: "0.1rem", width: "100%", display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          <div className="flex gap-x-4 flex-wrap items-center">
             {options.map((option) => (
               <CheckType
                 key={option.name}
@@ -23,17 +22,24 @@ function CheckBoxInput({ text, options, register, type = "", selected = [] }) {
       ) : (
         <FormControl
           sx={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
             width: "100%",
-            gap: "1rem",
-            borderBottom: "1px solid",
-            borderBottomColor: "grey.300",
-            py: "1rem",
+            py: "0.75rem",
+            gap: "0.5rem",
           }}
         >
-          <FormLabel>{text}</FormLabel>
+          <FormLabel
+             sx={{ 
+              color: "gray.800", 
+              fontWeight: "bold", 
+              fontSize: "1rem",
+              fontFamily: "dmsans" 
+            }}
+          >
+            {text}
+          </FormLabel>
           <div className="flex flex-wrap items-center gap-2">
             {options.map((option) => (
               <CheckType

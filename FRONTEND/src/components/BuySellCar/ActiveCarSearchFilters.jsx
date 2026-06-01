@@ -30,27 +30,61 @@ function ActiveCarSearchFilters() {
 
     const chips = [];
 
+    // Robust sanitization helper to ensure no objects are rendered as children
+    const sanitizeValue = (val, fallback = "") => {
+        if (!val) return fallback;
+        if (typeof val === 'string' || typeof val === 'number') return val;
+        if (typeof val === 'object') {
+            // Priority list of common display properties
+            return val.name || val.make || val.model || val.title || val.text || JSON.stringify(val);
+        }
+        return fallback;
+    };
+
     // Location Chip
     if (lastSearchQuery.location) {
-        chips.push(
-            <Chip
-                key="location"
-                label={`Location: ${lastSearchQuery.location}`}
-                onDelete={() => handleRemove("location")}
-                color="primary"
-                variant="outlined"
-            />
-        );
+        const locLabel = sanitizeValue(lastSearchQuery.location);
+        if (locLabel) {
+            chips.push(
+                <Chip
+                    key="location"
+                    label={`Location: ${locLabel}`}
+                    onDelete={() => handleRemove("location")}
+                    sx={{
+                        borderColor: '#0857d0',
+                        color: '#0857d0',
+                        fontWeight: '500',
+                        '& .MuiChip-deleteIcon': {
+                            color: '#0857d0',
+                            opacity: 0.7,
+                            '&:hover': { opacity: 1 }
+                        }
+                    }}
+                    variant="outlined"
+                />
+            );
+        }
     }
 
     // Price Chip
     if (lastSearchQuery.priceMin !== undefined || lastSearchQuery.priceMax !== undefined) {
+        const min = sanitizeValue(lastSearchQuery.priceMin, 0);
+        const max = sanitizeValue(lastSearchQuery.priceMax, 'Any');
         chips.push(
             <Chip
                 key="price"
-                label={`Price: $${lastSearchQuery.priceMin || 0} - $${lastSearchQuery.priceMax || 'Any'}`}
+                label={`Price: $${min} - $${max}`}
                 onDelete={() => handleRemove("price")}
-                color="primary"
+                sx={{
+                    borderColor: '#0857d0',
+                    color: '#0857d0',
+                    fontWeight: '500',
+                    '& .MuiChip-deleteIcon': {
+                        color: '#0857d0',
+                        opacity: 0.7,
+                        '&:hover': { opacity: 1 }
+                    }
+                }}
                 variant="outlined"
             />
         )
@@ -58,37 +92,71 @@ function ActiveCarSearchFilters() {
 
     // Make Chip
     if (lastSearchQuery.carMake) {
-        chips.push(
-            <Chip
-                key="make"
-                label={`Make: ${lastSearchQuery.carMake}`}
-                onDelete={() => handleRemove("make")}
-                color="primary"
-                variant="outlined"
-            />
-        );
+        const makeLabel = sanitizeValue(lastSearchQuery.carMake);
+        if (makeLabel) {
+            chips.push(
+                <Chip
+                    key="make"
+                    label={`Make: ${makeLabel}`}
+                    onDelete={() => handleRemove("make")}
+                    sx={{
+                        borderColor: '#0857d0',
+                        color: '#0857d0',
+                        fontWeight: '500',
+                        '& .MuiChip-deleteIcon': {
+                            color: '#0857d0',
+                            opacity: 0.7,
+                            '&:hover': { opacity: 1 }
+                        }
+                    }}
+                    variant="outlined"
+                />
+            );
+        }
     }
 
     // Model Chip
     if (lastSearchQuery.carModel) {
-        chips.push(
-            <Chip
-                key="model"
-                label={`Model: ${lastSearchQuery.carModel}`}
-                onDelete={() => handleRemove("model")}
-                color="primary"
-                variant="outlined"
-            />
-        );
+        const modelLabel = sanitizeValue(lastSearchQuery.carModel);
+        if (modelLabel) {
+            chips.push(
+                <Chip
+                    key="model"
+                    label={`Model: ${modelLabel}`}
+                    onDelete={() => handleRemove("model")}
+                    sx={{
+                        borderColor: '#0857d0',
+                        color: '#0857d0',
+                        fontWeight: '500',
+                        '& .MuiChip-deleteIcon': {
+                            color: '#0857d0',
+                            opacity: 0.7,
+                            '&:hover': { opacity: 1 }
+                        }
+                    }}
+                    variant="outlined"
+                />
+            );
+        }
     }
 
     if (chips.length === 0) return null;
+    
+    const handleClearAll = () => {
+        dispatch(searchCar({}));
+    };
 
     return (
-        <div className="py-2">
+        <div className="py-2 hidden md:flex items-center flex-wrap gap-2">
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 {chips}
             </Stack>
+            <button 
+                onClick={handleClearAll}
+                className="text-[#0857d0] text-sm font-semibold hover:underline bg-transparent border-none p-0 cursor-pointer whitespace-nowrap ml-2 transition-all"
+            >
+                Clear All
+            </button>
         </div>
     );
 }

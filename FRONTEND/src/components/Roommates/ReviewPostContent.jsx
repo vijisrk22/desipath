@@ -1,4 +1,4 @@
-import api from "../../utils/api";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 function ReviewPostContent({ contents, type = "reviewPost" }) {
   return (
@@ -6,7 +6,7 @@ function ReviewPostContent({ contents, type = "reviewPost" }) {
       {contents?.map((content, index) => (
         <div
           key={index}
-          className="grid grid-cols-2 gap-4 border-b border-b-gray-300 py-2 "
+          className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 border-b border-b-gray-300 py-3 sm:py-2"
         >
           <div className="text-gray-500 text-base font-medium font-dmsans">
             {content.text}
@@ -21,12 +21,15 @@ function ReviewPostContent({ contents, type = "reviewPost" }) {
                 <div key={index} className="relative aspect-square w-full">
                   <img
                     src={
-                      type === "reviewPost"
+                      image instanceof File 
                         ? URL.createObjectURL(image)
-                        : `${api.defaults.baseURL}/${image}`
+                        : getFullImageUrl(image)
                     }
                     alt="Uploaded"
-                    className="w-full h-full object-cover rounded-lg shadow-md"
+                    className="w-full h-full object-cover rounded-lg shadow-md transition-opacity hover:opacity-90"
+                    onLoad={(e) => {
+                      if (image instanceof File) URL.revokeObjectURL(e.target.src);
+                    }}
                   />
                 </div>
               ))}

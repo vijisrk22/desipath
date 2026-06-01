@@ -19,4 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->withSchedule(function ($schedule) {
+        $schedule->command('currency:sync')->daily();
+    })
+    ->create();

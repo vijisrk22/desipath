@@ -12,16 +12,27 @@ function NRadioInput({ name, text, options, control }) {
   return (
     <FormControl
       sx={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
         width: "100%",
-        gap: "1rem",
+        py: "1rem",
         borderBottom: "1px solid",
-        borderBottomColor: "grey.300",
+        borderBottomColor: "grey.200",
       }}
     >
-      <FormLabel id={name}>{text}</FormLabel>
+      <FormLabel 
+        id={name}
+        sx={{
+          color: "grey.800",
+          fontWeight: 600,
+          fontSize: "0.875rem",
+          fontFamily: "'DM Sans', sans-serif",
+          mb: 1
+        }}
+      >
+        {text}
+      </FormLabel>
       <Controller
         name={name}
         defaultValue={options[0]?.value || ""}
@@ -30,8 +41,27 @@ function NRadioInput({ name, text, options, control }) {
           required: "This field is required",
         }}
         render={({ field, fieldState }) => (
-          <>
-            <RadioGroup row {...field}>
+          <div className="w-full">
+            <RadioGroup 
+              row 
+              {...field}
+              sx={{
+                "& .MuiFormControlLabel-root": {
+                  marginRight: 4,
+                  "& .MuiTypography-root": {
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.9rem",
+                    color: "grey.700"
+                  }
+                },
+                "& .MuiRadio-root": {
+                  color: "#ffa41c",
+                  "&.Mui-checked": {
+                    color: "#ffa41c",
+                  }
+                }
+              }}
+            >
               {options.map((option) => (
                 <FormControlLabel
                   key={option.value}
@@ -42,9 +72,9 @@ function NRadioInput({ name, text, options, control }) {
               ))}
             </RadioGroup>
             {fieldState?.error && (
-              <FormHelperText error>{fieldState.error.message}</FormHelperText>
+              <FormHelperText error sx={{ mt: 1 }}>{fieldState.error.message}</FormHelperText>
             )}
-          </>
+          </div>
         )}
       />
     </FormControl>

@@ -1,55 +1,101 @@
 import { Link } from "react-router-dom";
 import SectionHeadings from "./SectionHeadings";
+import LazyImage from "./LazyImage";
 
 const services = [
   {
     name: "Rental home",
-    image: "/img/rentalHomes/rentalHome1.png",
-    path: "/services/rentalHomes",
+    image: "/img/services/Desipath_rental_home.jpeg",
+    path: "/services/rentalhomes",
   },
   {
     name: "Buy/Sell Cars",
-    image: "/img/cars/carThumbnail.png",
+    image: "/img/services/buysellcar_Desipath.jpeg",
     path: "/services/cars",
   },
   {
     name: "Kids class",
-    image: "/img/kidsClass/kidsClass.png",
-    path: "",
+    image: "/img/services/Desipath_KidsClass.jpeg",
+    path: "/kids-class",
   },
   {
-    name: "Buy sell house",
-    image: "/img/houses/house1.png",
-    path: "/services/houses",
+    name: "Buy Sell Home",
+    image: "/img/services/BuysellHome_Desipath.jpeg",
+    path: "/services/BuyHome",
   },
   {
     name: "Travel Companion",
-    image: "/img/travelCompanion/companionCardThumbnail.png",
-    path: "/services/travelCompanion",
+    image: "/img/services/Desipath_Travelcompanion.jpeg",
+    path: "/travel-companion",
   },
   {
     name: "Events",
-    image: "/img/events/eventSmpl1.png",
-    path: "/services/events",
+    image: "/img/services/Desipath_Events.jpeg",
+    path: "/events",
   },
   {
     name: "Roommates",
-    image: "/img/roommates/roomThumb.png",
+    image: "/img/services/Roommates_Desipath.jpeg",
     path: "/services/roommates",
   },
   {
     name: "IT Trainings",
-    image: "/img/itTrainings/coursesThumbnail.png",
-    path: "/services/itTrainings",
+    image: "/img/services/ITTraining_Desipath.jpeg",
+    path: "/it-training",
   },
   {
-    name: "Lawyers",
-    image: "/img/lawyers/lawyers.png",
-    path: "",
+    name: "Desi Attorneys",
+    image: "/img/services/Attorney_Desipath.jpeg",
+    path: "/desi-attorneys",
   },
   {
     name: "Doctors",
-    image: "/img/doctors/doctors.png",
+    image: "/img/services/Doctors_Desipath.jpeg",
+    path: "/desi-doctors",
+  },
+  {
+    name: "Astrology",
+    image: "/img/services/Desipath_Astrologers.jpeg",
+    path: "/astrologer/find",
+  },
+  {
+    name: "Local Deals",
+    image: "/img/services/Desipath_LocalAds.jpeg",
+    path: "/services/Localdeals",
+  },
+  {
+    name: "Photography",
+    image: "/img/services/Desipath_Photography.jpeg",
+    path: "/services/photography",
+  },
+  {
+    name: "Real Estate (Dubai/India)",
+    image: "/img/services/RealEstate_Desipath.png",
+    path: "/real-estate/find",
+  },
+  {
+    name: "Immigration",
+    image: "/img/services/Immigration_Desipath.jpeg",
+    path: "",
+  },
+  {
+    name: "Jobs",
+    image: "/img/services/Desipath_jobs.jpeg",
+    path: "/jobs",
+  },
+  {
+    name: "Forum",
+    image: "/img/services/Desipath_Forum.png",
+    path: "/forum",
+  },
+  {
+    name: "Buy/Sell Items",
+    image: "/img/services/Desipath_Buysell_items.png",
+    path: "/buy-sell-items",
+  },
+  {
+    name: "Ride Share",
+    image: "/img/services/Desipath_RideShare.png",
     path: "",
   },
 ];
@@ -76,16 +122,16 @@ function makePlaceholder(text, size = 167) {
 export default function ServicesSection() {
   return (
     <div className="flex flex-col justify-start items-center gap-[24px]">
-      <SectionHeadings heading="Services" />
-      <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-12 xl:gap-16">
+      {/* Services heading removed as per user request */}
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8 lg:gap-10 xl:gap-12 max-w-6xl mx-auto px-4 md:px-8 w-full justify-items-center">
         {services.map((service, index) => (
           <div key={index} className="flex flex-col items-center gap-3">
             <Link
               to={service.path}
               // ensure a fixed circular container so images render with the expected size
-              className="rounded-full overflow-hidden flex justify-center items-center cursor-pointer w-[120px] h-[120px] md:w-[140px] md:h-[140px] lg:w-[167px] lg:h-[167px]"
+              className="rounded-full overflow-hidden flex justify-center items-center cursor-pointer w-[72px] h-[72px] md:w-[84px] md:h-[84px] lg:w-[100px] lg:h-[100px] hover:shadow-lg transition-all"
             >
-              <img
+              <LazyImage
                 className="w-full h-full object-cover"
                 src={service.image}
                 alt={service.name}
@@ -96,7 +142,7 @@ export default function ServicesSection() {
                 }}
               />
             </Link>
-            <div className="text-center text-gray-800 text-xl font-semibold font-dmsans">
+            <div className="text-center text-gray-800 text-sm md:text-base font-normal font-dmsans">
               {service.name}
             </div>
           </div>

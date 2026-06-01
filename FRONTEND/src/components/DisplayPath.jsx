@@ -4,7 +4,7 @@ function DisplayPath({ paths, color = "white", additionalStyles = "" }) {
   // console.log(paths);
   return (
     <div
-      className={`inline-flex justify-start items-center gap-1 text-${color} mt-8`}
+      className={`hidden md:inline-flex justify-start items-center gap-1 text-${color} mt-8`}
     >
       {paths.map((path, index) => (
         <Link

@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
@@ -7,13 +8,22 @@ import ServiceHeroSection from "../../components/ServiceHeroSection";
 import BuyCar from "./BuyCar";
 import SellCar from "./SellCar";
 import PostConfirmation from "../PostConfirmation";
+import CarDetails from "./CarDetails";
+
 
 function BuySellCar() {
-  const { action } = useParams();
+  const { action, carId } = useParams();
+  const location = useLocation();
+  const { user } = useSelector((state) => state.user);
+
+
+  if ((action === "sellCar" || action === "edit") && !user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [action]);
+  }, [action, carId]);
 
   const pageDetails = {
     path1: "buyCar",
@@ -24,33 +34,59 @@ function BuySellCar() {
     buttonText2: "Sell My Car",
   };
 
-  return (
-    <div className="flex flex-col min-h-screen overflow-y-auto ">
-      <Navbar />
+  const showNavbar = true;
 
-      {action === undefined && (
+  // Decision logic for which component to render
+  const renderContent = () => {
+    // 1. Form actions take absolute priority
+    if (action === "edit" || action === "sellCar") return <SellCar />;
+
+    // 2. Specific Item View takes second priority (handles buyCar/:carId or just /:carId)
+    if (carId) return <CarDetails />;
+
+    // 3. General action pages
+    if (action === "buyCar") return <BuyCar />;
+    if (action === "postConfirmation") {
+      return (
+        <PostConfirmation
+          redirectTo="/services/cars/buyCar"
+          message="Thanks for using Desipath. Your car listing is live!"
+          bgImg="/img/cars/backgroundCarImg.png"
+          paths={[
+            { text: "Home", eP: "/" },
+            { text: "Buy/Sell Cars", eP: "/services/cars" },
+            { text: "Confirmation", eP: "" },
+          ]}
+        />
+      );
+    }
+    
+    if (action === undefined) {
+      return (
         <>
-          {" "}
           <div className="flex-grow bg-[#f0f8ff]">
             <ServiceHeroSection
               pageDetails={pageDetails}
-              bgImg={"/img/cars/backgroundCarImg.png"}
+              bgImg={"/img/cars/buy_sell_cars_hero.png"}
+              orangeArrow={true}
             />
           </div>
           <div className="bg-[#f0f8ff]">
             <Footer newsletter={"block"} />
           </div>
         </>
-      )}
+      );
+    }
 
-      {action === "buyCar" && <BuyCar />}
-      {action === "sellCar" && <SellCar />}
-      {action === "postConfirmation" && (
-        <PostConfirmation
-          redirectTo="/services/cars/buyCar"
-          message="Thanks for using Desipath. Your car listing is live!"
-        />
-      )}
+    // Default to details if nothing else matches
+    return <CarDetails />;
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen overflow-y-auto ">
+      {showNavbar && <Navbar />}
+
+      {renderContent()}
     </div>
   );
 }

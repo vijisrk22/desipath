@@ -32,7 +32,12 @@ class DatabaseSeeder extends Seeder
             RoomMatesSeeder::class,
             TrainingAdsSeeder::class,
             TravelCompanionsSeeder::class,
-            UsaZipcodeSeeder::class
+            UsaZipcodeSeeder::class,
+            LanguageClassesSeeder::class,
+            RealEstateSeeder::class,
+            DoctorSeeder::class,
+            TwentyDoctorsSeeder::class,
+            TwentyAttorneysSeeder::class
         ]);
     }
 }

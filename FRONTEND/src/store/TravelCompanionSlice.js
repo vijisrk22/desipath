@@ -5,7 +5,7 @@ export const fetchTravelCompanions = createAsyncThunk(
     "travelCompanions/fetchTravelCompanions",
     async (_, {rejectWithValue}) => {
         try {
-            const response = await api.get("/api/travelCompanions/companion");
+            const response = await api.get("/api/travel-companion/volunteers");
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch travel companions");
@@ -13,9 +13,21 @@ export const fetchTravelCompanions = createAsyncThunk(
     }
 );
 
+export const fetchMyTravelCompanions = createAsyncThunk(
+    "travelCompanions/fetchMyTravelCompanions",
+    async (_, {rejectWithValue}) => {
+        try {
+            const response = await api.get("/api/travelcompanions/my-listings");
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch your travel posts");
+        }
+    }
+);
+
 export const postTravelCompanion = createAsyncThunk("travelCompanions/postTravelCompanion", async (travelCompanionData, {rejectWithValue}) => {
     try {
-        const response = await api.post("/api/travelcompanions", travelCompanionData);
+        const response = await api.post("/api/travel-companion/volunteer-posts", travelCompanionData);
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response?.data || "Failed to post travel companion");
@@ -26,7 +38,7 @@ export const fetchTravelers = createAsyncThunk(
     "travelCompanions/fetchTravelers",
     async (_, {rejectWithValue}) => {
         try {
-            const response = await api.get("/api/travelcompanions/traveler");
+            const response = await api.get("/api/travel-companion/requests");
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch travelers");
@@ -53,11 +65,36 @@ export const fetchFindCompanionLocation = createAsyncThunk("travelCompanions/fin
 });
 
 
+export const updateTravelCompanion = createAsyncThunk(
+    "travelCompanions/updateTravelCompanion",
+    async ({ companionId, companionData }, { rejectWithValue }) => {
+        try {
+            const response = await api.put(`/api/travelcompanions/${companionId}`, companionData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update travel companion");
+        }
+    }
+);
+
+export const deleteTravelCompanion = createAsyncThunk(
+    "travelCompanions/deleteTravelCompanion",
+    async (companionId, { rejectWithValue }) => {
+        try {
+            await api.delete(`/api/travelcompanions/${companionId}`);
+            return companionId;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to delete travel companion");
+        }
+    }
+);
+
 const travelCompanionsSlice = createSlice({ 
     name: "travelCompanion",
     initialState: {
         travelCompanions: [],
         travelers: [],
+        myTravelCompanions: [],
         error: null,
         loading: false,
     },
@@ -83,11 +120,24 @@ const travelCompanionsSlice = createSlice({
             })
             .addCase(fetchTravelCompanions.fulfilled, (state, action) => {
                 state.loading = false;
-                state.travelCompanions = action.payload.travelCompanions || [];
+                // Handle both paginated and non-paginated responses
+                state.travelCompanions = action.payload.data || action.payload.travelCompanions || action.payload || [];
             })      
             .addCase(fetchTravelCompanions.rejected, (state, action) => {   
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch travel companions";
+            })
+            .addCase(fetchMyTravelCompanions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyTravelCompanions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myTravelCompanions = action.payload || [];
+            })
+            .addCase(fetchMyTravelCompanions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch your travel posts";
             })
             .addCase(postTravelCompanion.pending, (state) => {
                 state.loading = true;
@@ -95,7 +145,8 @@ const travelCompanionsSlice = createSlice({
             })  
             .addCase(postTravelCompanion.fulfilled, (state, action) => {            
                 state.loading = false;
-                state.travelCompanions.push(action.payload.travelCompanions);
+                const newPost = action.payload.data || action.payload.travelCompanions || action.payload;
+                if (newPost) state.travelCompanions.push(newPost);
             })          
             .addCase(postTravelCompanion.rejected, (state, action) => {
                 state.loading = false;
@@ -107,7 +158,8 @@ const travelCompanionsSlice = createSlice({
             })
             .addCase(fetchTravelers.fulfilled, (state, action) => {
                 state.loading = false;
-                state.travelers = action.payload.travelers || [];
+                // Handle both paginated and non-paginated responses
+                state.travelers = action.payload.data || action.payload.travelers || action.payload || [];
             })      
             .addCase(fetchTravelers.rejected, (state, action) => {   
                 state.loading = false;
@@ -124,6 +176,11 @@ const travelCompanionsSlice = createSlice({
             .addCase(postTraveler.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to post traveler";
+            })
+            .addCase(deleteTravelCompanion.fulfilled, (state, action) => {
+                state.loading = false;
+                state.travelCompanions = state.travelCompanions.filter(c => c.id !== action.payload);
+                state.myTravelCompanions = state.myTravelCompanions.filter(c => c.id !== action.payload);
             });
     }
 });

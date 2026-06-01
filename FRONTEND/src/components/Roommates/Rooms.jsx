@@ -10,34 +10,32 @@ function Rooms() {
   // backend API endpoint /api/rooms
   // State for events
   const dispatch = useDispatch();
-  const { loading, error, rooms } = useSelector((state) => state.roommates);
-  const roomsPerPage = 9;
+  const { loading, error, rooms = [], lastSearchQuery } = useSelector((state) => state.roommates);
+  const safeRooms = Array.isArray(rooms) ? rooms : [];
+  const roomsPerPage = 15;
   const [page, setPage] = useState(1);
-  const [sortOption, setSortOption] = useState("");
+  const [sortOption, setSortOption] = useState("created_at-desc");
   // Set rooms on mount
   useEffect(() => {
-    dispatch(fetchRooms());
-  }, [dispatch]);
+    const savedLocation = localStorage.getItem('user_location');
+    if (!lastSearchQuery && !savedLocation) {
+      dispatch(fetchRooms());
+    }
+  }, [dispatch]); // Removed lastSearchQuery to avoid redundant calls
 
   console.log(rooms);
   const getSortedRooms = () => {
-    const roomsCopy = [...rooms];
+    const roomsCopy = [...safeRooms];
 
     switch (sortOption) {
       case "price-asc":
         return roomsCopy.sort((a, b) => a.rent - b.rent);
       case "price-desc":
         return roomsCopy.sort((a, b) => b.rent - a.rent);
-      case "name-asc":
-        return roomsCopy.sort((a, b) =>
-          a.location_city.localeCompare(b.location_city)
-        );
-      case "name-desc":
-        return roomsCopy.sort((a, b) =>
-          b.location_city.localeCompare(a.location_city)
-        );
+      case "created_at-desc":
+        return roomsCopy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       default:
-        return roomsCopy;
+        return roomsCopy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     }
   };
 
@@ -54,13 +52,14 @@ function Rooms() {
   }
 
   return (
-    <div className="px-[7%] mt-12 mb-20">
-      <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div className="px-[7%] mt-6 mb-20">
+      <div className="mb-8 pt-4 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100/50">
         <div className="text-[#007185] text-[32px] md:text-[40px] font-bold font-dmsans">
           Roommate Listings
         </div>
         <SortBy
           sortOption={sortOption}
+          type="rooms"
           setSortOption={(value) => {
             setSortOption(value);
             setPage(1);
@@ -69,12 +68,13 @@ function Rooms() {
       </div>
 
       {error && (
-        <div className="text-red-500 text-lg text-center mt-4">
-          {typeof error === "string" ? error : error.message}
+        <div className="bg-red-100 text-red-800 p-4 mb-8 rounded-2xl text-center font-medium shadow-sm border border-red-200">
+          <span className="mr-2">⚠️</span>
+          {typeof error === 'object' ? (error.message || JSON.stringify(error)) : String(error || "Unknown error")}
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {displayedRooms.length > 0 ? (
           displayedRooms.map((room, index) => (
             <RoomCard key={index} room={room} />
@@ -88,7 +88,7 @@ function Rooms() {
 
       <div className="mx-auto flex flex-col md:flex-row justify-between gap-6 items-center mt-16 px-8 py-6 bg-white rounded-2xl shadow-sm border border-gray-100">
         <div className="text-[#323232] text-sm font-medium font-dmsans">
-          Showing {startIndex + 1}-{Math.min(startIndex + roomsPerPage, rooms.length)} of {rooms.length} items
+          Showing {startIndex + 1}-{Math.min(startIndex + roomsPerPage, safeRooms.length)} of {safeRooms.length} items
         </div>
         <Pagination
           count={numsOfPage}
@@ -112,7 +112,7 @@ function Rooms() {
             },
             "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
             {
-              color: "#ffa41",
+              color: "#ffa41c",
               mx: "16px",
             },
           }}

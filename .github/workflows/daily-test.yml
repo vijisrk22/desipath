@@ -1,0 +1,56 @@
+name: Daily Test Run and Email Report
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  test_and_report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        working-directory: ./FRONTEND
+        run: npm ci
+
+      - name: Run Tests and Generate Simple Text Report
+        working-directory: ./FRONTEND
+        env:
+          NO_COLOR: '1' # Disables terminal colors so the text file is clean
+        # Run tests, pipe output to a text file, and continue on error so the email still sends
+        run: npm run test:report > test-report.txt 2>&1
+        continue-on-error: true
+
+      - name: Send Email Notification
+        uses: dawidd6/action-send-mail@v4
+        with:
+          # SMTP configuration
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: Desipath Daily Frontend Test Report
+          to: vivekaanand@gmail.com, vijisrk@gmail.com
+          from: Desipath CI
+          body: |
+            Hello,
+
+            The daily frontend test run has completed! 
+            
+            Attached is a simple text file (`test-report.txt`) containing the full breakdown of which tests passed, which failed, and the specific error messages for any failures.
+            
+            Best regards,
+            Desipath Automated CI/CD
+          attachments: ./FRONTEND/test-report.txt

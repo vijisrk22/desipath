@@ -55,22 +55,40 @@ function ActiveSearchFilters() {
                 key="location"
                 label={`Location: ${locText}`}
                 onDelete={() => handleRemove("location")}
-                color="primary"
+                sx={{
+                    borderColor: '#0857d0',
+                    color: '#0857d0',
+                    fontWeight: '500',
+                    '& .MuiChip-deleteIcon': {
+                        color: '#0857d0',
+                        opacity: 0.7,
+                        '&:hover': { opacity: 1 }
+                    }
+                }}
                 variant="outlined"
             />
         );
     }
 
     // Price Chip
-    // Check if priceMin/Max differs from default or just always show if present?
-    // Let's show if present.
     if (lastSearchQuery.priceMin !== undefined || lastSearchQuery.priceMax !== undefined) {
+        const min = typeof lastSearchQuery.priceMin === 'object' ? 0 : (lastSearchQuery.priceMin || 0);
+        const max = typeof lastSearchQuery.priceMax === 'object' ? 'Any' : (lastSearchQuery.priceMax || 'Any');
         chips.push(
             <Chip
                 key="price"
-                label={`Price: $${lastSearchQuery.priceMin || 0} - $${lastSearchQuery.priceMax || 'Any'}`}
+                label={`Price: $${min} - $${max}`}
                 onDelete={() => handleRemove("price")}
-                color="primary"
+                sx={{
+                    borderColor: '#0857d0',
+                    color: '#0857d0',
+                    fontWeight: '500',
+                    '& .MuiChip-deleteIcon': {
+                        color: '#0857d0',
+                        opacity: 0.7,
+                        '&:hover': { opacity: 1 }
+                    }
+                }}
                 variant="outlined"
             />
         )
@@ -88,7 +106,16 @@ function ActiveSearchFilters() {
                     key={`type-${type}`}
                     label={`Type: ${type}`}
                     onDelete={() => handleRemove("type", type)}
-                    color="primary"
+                    sx={{
+                        borderColor: '#0857d0',
+                        color: '#0857d0',
+                        fontWeight: '500',
+                        '& .MuiChip-deleteIcon': {
+                            color: '#0857d0',
+                            opacity: 0.7,
+                            '&:hover': { opacity: 1 }
+                        }
+                    }}
                     variant="outlined"
                 />
             );
@@ -98,7 +125,7 @@ function ActiveSearchFilters() {
     if (chips.length === 0) return null;
 
     return (
-        <div className="py-2">
+        <div className="py-2 hidden md:block">
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 {chips}
             </Stack>

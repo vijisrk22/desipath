@@ -10,6 +10,15 @@ export const fetchRooms = createAsyncThunk("roommates/fetchRooms", async(_, {rej
     }
 })
 
+export const fetchMyRooms = createAsyncThunk("roommates/fetchMyRooms", async(_, {rejectWithValue}) =>{
+    try{
+        const response = await api.get("/api/roommates/my-listings");
+        return response.data;
+    }catch(error){
+        return rejectWithValue(error.response?.data || "Failed to fetch your rooms");
+    }
+})
+
 export const fetchRoomById = createAsyncThunk("roommates/fetchRoomById", async(roomId, {rejectWithValue})=>{
     try{
         const response = await api.get(`/api/roommates/${roomId}`);
@@ -69,6 +78,7 @@ const roommatesSlice = createSlice({
             per_page: 9
         },
         roomDetails: null,
+        myRooms: [],
         error: null,
         loading: false,
         lastSearchQuery: null,
@@ -103,6 +113,18 @@ const roommatesSlice = createSlice({
             .addCase(fetchRooms.rejected, (state,action)=>{
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch rooms";
+            })
+            .addCase(fetchMyRooms.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyRooms.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myRooms = action.payload || [];
+            })
+            .addCase(fetchMyRooms.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch your rooms";
             })
             .addCase(fetchRoomById.pending, (state)=>{
                 state.loading = true;
@@ -162,8 +184,9 @@ const roommatesSlice = createSlice({
             })  
             .addCase(deleteRoom.fulfilled, (state, action) => {
                 state.loading = false;
-                // Remove the deleted room from the list of rooms
-                state.rooms = state.rooms.filter(room => room.id !== action.payload.id);
+                const deletedId = action.meta.arg;
+                state.rooms = state.rooms.filter(room => room.id !== deletedId);
+                state.myRooms = state.myRooms.filter(room => room.id !== deletedId);
             })  
             .addCase(deleteRoom.rejected, (state, action) => {
                 state.loading = false;

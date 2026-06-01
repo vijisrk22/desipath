@@ -36,7 +36,7 @@ function SearchResultsContent() {
   }
 
   if (error) {
-    return <div className="text-red-500">Something went wrong: {error}</div>;
+    return <div className="text-red-500 p-10 text-center font-bold">Something went wrong: {typeof error === 'object' ? (error.message || JSON.stringify(error)) : error}</div>;
   }
 
   return (

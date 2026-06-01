@@ -6,104 +6,81 @@ import { fetchChatList } from "../../store/ChatSlice";
 
 function ChatList() {
   const dispatch = useDispatch();
-  const { userMessages, loading, error } = useSelector((state) => state.chat); // Access loading and error from the Redux store
+  const { userMessages, loading, error } = useSelector((state) => state.chat); 
   const { user } = useSelector((state) => state.user);
-  const chatList = [];
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
     dispatch(fetchChatList());
     const interval = setInterval(() => {
       dispatch(fetchChatList());
-    }, 1000);
+    }, 30000); // Poll every 30s as requested
     return () => clearInterval(interval);
   }, [dispatch]);
 
-  userMessages.forEach((msg) => {
-    const isSender = msg.sender_id === user.id;
-
-    const loggedInUser = isSender
-      ? { id: msg.sender_id, name: msg.sender_name }
-      : { id: msg.receiver_id, name: msg.receiver_name };
-
-    const chatPartner = isSender
-      ? { id: msg.receiver_id, name: msg.receiver_name }
-      : { id: msg.sender_id, name: msg.sender_name };
-
-    const existingChat = chatList.find(
-      (chat) =>
-        chat.ad_id === msg.ad_id &&
-        chat.ad_type === msg.ad_type &&
-        chat.chatPartner.id === (isSender ? msg.receiver_id : msg.sender_id)
-    );
-
-    if (existingChat) {
-      existingChat.messages.push(msg);
-    } else {
-      chatList.push({
-        ad_id: msg.ad_id,
-        ad_type: msg.ad_type,
-        loggedInUser,
-        chatPartner,
-        messages: [msg],
-      });
-    }
-  });
-
   return (
     <Paper
-      elevation={10}
+      elevation={0}
       sx={{
-        borderRadius: "10px",
-        borderColor: "#d1d5db",
-        borderStyle: "solid",
-        borderWidth: "1px",
-        px: "15px",
-        py: "20px",
-        height: "100vh", // Set a fixed height for scrollable content
+        borderRadius: "16px",
+        border: "1px solid #e5e7eb",
+        height: "calc(100vh - 180px)",
         display: "flex",
         flexDirection: "column",
+        overflow: "hidden",
+        backgroundColor: "#ffffff",
       }}
     >
-      <Typography
-        sx={{
-          color: "#1f2937 ",
-          fontSize: "1.5rem",
-          lineHeight: "1.75rem",
-          fontWeight: "bold",
-        }}
-        className="font-dmsans"
-      >
-        Messages
-      </Typography>
+      <Box sx={{ p: 3, borderBottom: "1px solid #f3f4f6" }}>
+        <Typography
+          sx={{
+            color: "#111827",
+            fontSize: "1.25rem",
+            fontWeight: "700",
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          Messages
+        </Typography>
+      </Box>
+
       <Box
         sx={{
-          flex: 1, // Takes remaining space
-          overflowY: "auto", // Enable vertical scrolling
-          pr: "5px", // Prevents content from hiding behind scrollbar
+          flex: 1,
+          overflowY: "auto",
+          p: 0,
+          backgroundColor: "#ffffff",
           "&::-webkit-scrollbar": {
-            width: "5px", // Thin scrollbar
-          },
-          "&::-webkit-scrollbar-track": {
-            backgroundColor: "transparent", // Track color
+            width: "4px",
           },
           "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#9ca3af", // Thumb color (gray-400)
-            borderRadius: "10px", // Rounded edges
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "#6b7280", // Darker gray on hover
+            backgroundColor: "#d1d5db",
+            borderRadius: "4px",
           },
         }}
       >
-        {chatList.length === 0 && (
-          <Typography sx={{ textAlign: "center", mt: 12, color: "#6b7280" }}>
-            No messages yet.
-          </Typography>
+        {loading && userMessages.length === 0 ? (
+           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+             <Typography sx={{ color: '#9ca3af' }}>Loading chats...</Typography>
+           </Box>
+        ) : userMessages.length === 0 ? (
+          <Box sx={{ textAlign: "center", mt: 8 }}>
+            <Typography sx={{ color: "#9ca3af", fontSize: "0.9rem" }}>
+              No messages yet.
+            </Typography>
+          </Box>
+        ) : (
+          userMessages
+            .filter((chat) => chat?.chatPartner && Number(chat.chatPartner.id) !== Number(user?.id))
+            .map((chat) => (
+              <ChatListCard 
+                key={`${chat.ad_type}-${chat.ad_id}-${chat.chatPartner.id}`} 
+                chat={chat} 
+              />
+            ))
         )}
-
-        {chatList?.map((chat) => (
-          <ChatListCard key={`${chat.ad_type}${chat.ad_id}`} chat={chat} />
-        ))}
       </Box>
     </Paper>
   );

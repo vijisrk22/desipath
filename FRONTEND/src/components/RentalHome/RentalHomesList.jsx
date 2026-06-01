@@ -8,60 +8,53 @@ import SortBy from "../SortBy";
 import { searchRentalHome, fetchRentalHomes } from "../../store/RentalHomesSlice";
 
 function RentalHomesList() {
-  // backend API endpoint /api/rooms
-  // State for events
   const dispatch = useDispatch();
   const { loading, error, rentalHomes, pagination, lastSearchQuery } = useSelector(
     (state) => state.rentalHomes
   );
 
-  // const roomsPerPage = 9; // Handled by backend now
-  // const [page, setPage] = useState(1); // We can still use local state or use pagination.current_page
-
-  // Sync page state with pagination from store if needed, or just rely on local page state to trigger fetch
   const [page, setPage] = useState(1);
-
-  console.log(rentalHomes);
-
   const [sortOption, setSortOption] = useState("created_at-desc");
 
-  // Client-side sort is removed, now we pass sortOption to backend
-  // const getSortedRentalHomes = () => { ... }
-
-  // const sortedRentalHomes = getSortedRentalHomes();
-  // const numsOfPage = Math.ceil(rentalHomes.length / roomsPerPage);
-  // const displayedRooms = sortedRentalHomes.slice(...)
-
-  // Fetch rentalHomes on mount and when page or sort parameters change
   useEffect(() => {
+    const savedLocation = localStorage.getItem('user_location');
+    
     if (lastSearchQuery) {
       dispatch(searchRentalHome({ searchQuery: lastSearchQuery, page, sortOption }));
-    } else {
+    } else if (!savedLocation) {
       dispatch(fetchRentalHomes({ page, sortOption }));
     }
-  }, [dispatch, page, sortOption, lastSearchQuery]);
+  }, [dispatch, page, sortOption]);
 
   const numsOfPage = pagination?.last_page || 1;
 
   if (loading) {
     return <Loader />;
   }
+
   return (
-    <div className="px-[7%] mt-12 mb-20">
-      <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="text-[#007185] text-[32px] md:text-[40px] font-bold font-dmsans">
+    <div className="px-[7%] mt-6 mb-20">
+      <div className="mb-8 pt-4 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100/50">
+        <div className="text-[#007185] text-[16px] md:text-[20px] font-bold font-dmsans uppercase tracking-wide">
           Rental Listings
         </div>
         <SortBy
           sortOption={sortOption}
           setSortOption={(value) => {
             setSortOption(value);
-            setPage(1); // Reset to page 1 on sort change
+            setPage(1);
           }}
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+      {error && (
+        <div className="bg-red-100 text-red-800 p-4 mb-8 rounded-2xl text-center font-medium shadow-sm border border-red-200">
+          <span className="mr-2">⚠️</span>
+          {typeof error === 'object' ? (error.message || JSON.stringify(error)) : String(error || "Unknown error")}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {rentalHomes.length > 0 ? (
           rentalHomes.map((rentalHome, index) => (
             <RentalHomeCard key={index} rentalHome={rentalHome} />
@@ -88,19 +81,19 @@ function RentalHomesList() {
           showLastButton
           sx={{
             "& .MuiPaginationItem-page": {
-              mx: "12px", // Adds spacing between page numbers
+              mx: "12px",
             },
             "& .MuiPaginationItem-page.Mui-selected": {
-              backgroundColor: "#ffa41c", // Sets the background color for the selected page
-              color: "white", // Ensures text is visible
+              backgroundColor: "#0857d0",
+              color: "white",
             },
             "& .MuiPaginationItem-ellipsis": {
-              color: "#ffa41c", // Sets color for ellipsis (...)
+              color: "#0857d0",
               fontWeight: "bold",
             },
             "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
             {
-              color: "#ffa41",
+              color: "#0857d0",
               mx: "16px",
             },
           }}

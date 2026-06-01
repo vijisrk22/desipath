@@ -9,11 +9,18 @@ import DescriptionInput from "../InputTemplate/DescriptionInput";
 import TextFieldInput from "../InputTemplate/TextFieldInput";
 import ReviewRentalHomePost from "./ReviewRentalHomePost";
 import CheckBoxInput from "../InputTemplate/CheckBoxInput";
-
-import { useState } from "react";
 import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
 
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import api from "../../utils/api";
+import dayjs from "dayjs";
+
 function PostRentalHomeForm() {
+  const { action, homeId } = useParams();
+  const isEdit = action === "edit";
+  console.log("PostRentalHomeForm:", { action, homeId, isEdit });
+
   const bedroomValues = Array.from({ length: 4 }, (_, index) => index + 1);
   const bathroomValues = Array.from({ length: 4 }, (_, index) => index + 1);
   const {
@@ -22,6 +29,7 @@ function PostRentalHomeForm() {
     register,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -36,10 +44,63 @@ function PostRentalHomeForm() {
   const [reviewSession, setReviewSession] = useState(false);
   const [formDetails, setFormDetails] = useState(null);
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isEdit && homeId) {
+      setLoading(true);
+      api.get(`/api/rentalhomes/${homeId}`)
+        .then(res => {
+          const data = res.data;
+          
+          // 1. Handle dates
+          if (data.available_from) {
+            data.available_from = dayjs(data.available_from);
+          }
+          
+          // 2. Parse BHK string (e.g. "3 Bed 2 Bath") into separate fields
+          if (data.bhk) {
+            const parts = data.bhk.split(" ");
+            data.bedrooms = parseInt(parts[0], 10) || 1;
+            data.bathrooms = parseInt(parts[2], 10) || 1;
+          }
+          
+          // 3. Format location string for Autocomplete
+          if (data.location_city || data.location_state || data.location_zipcode) {
+            data.location = `${data.location_city || ""}, ${data.location_state || ""}, ${data.location_zipcode || ""}`.trim().replace(/^,|,$/g, "");
+          }
+          
+          // 4. Convert amenities array to object format { "Gym": true, ... }
+          if (Array.isArray(data.amenities)) {
+            const amenitiesObj = {};
+            data.amenities.forEach(amenity => {
+              amenitiesObj[amenity] = true;
+            });
+            data.amenities = amenitiesObj;
+          }
+
+          reset(data);
+          
+          if (data.images) {
+            try {
+              const parsed = typeof data.images === 'string' ? JSON.parse(data.images) : data.images;
+              setImages(Array.isArray(parsed) ? parsed : []);
+            } catch (e) {
+              console.error("Failed to parse images:", e);
+              setImages([]);
+            }
+          } else {
+            setImages([]);
+          }
+        })
+        .catch(err => console.error("Error fetching listing for edit:", err))
+        .finally(() => setLoading(false));
+    }
+  }, [isEdit, homeId, reset]);
 
   const onSubmit = (data) => {
     console.log("Form Data:", data);
-    setFormDetails(data);
+    setFormDetails({ ...data, id: homeId }); // Include ID if editing
     setReviewSession(true);
   };
 
@@ -47,6 +108,16 @@ function PostRentalHomeForm() {
     { name: "amenities.Gym", label: "Gym" },
     { name: "amenities.Club House", label: "Club House" },
     { name: "amenities.Swimming Pool", label: "Swimming Pool" },
+    { name: "amenities.Walk-In Closets", label: "Walk-In Closets" },
+    { name: "amenities.Window Coverings", label: "Window Coverings" },
+    { name: "amenities.Balcony", label: "Balcony" },
+    { name: "amenities.Patio", label: "Patio" },
+    { name: "amenities.Hardwood Floors", label: "Hardwood Floors" },
+    { name: "amenities.Microwave", label: "Microwave" },
+    { name: "amenities.Granite Counter", label: "Granite Counter" },
+    { name: "amenities.Washer Dryer", label: "Washer Dryer" },
+    { name: "amenities.Air conditioning", label: "Air conditioning" },
+    { name: "amenities.Heating", label: "Heating" },
   ];
 
   return (
@@ -61,90 +132,95 @@ function PostRentalHomeForm() {
       )}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-screen-md mx-auto w-full"
+        className="max-w-2xl mx-auto w-full space-y-4"
       >
-        {/* PropertyType */}
-        <FourRadioInput
-          text="Property Type"
-          name="property_type"
-          op1="Condo"
-          op2="Single family Home"
-          op3="Apartment"
-          op4="Basement Apartment"
-          control={control}
-        />
-        {/*From Date */}
+        <div className="bg-gray-50/50 p-4 rounded-xl">
+          <FourRadioInput
+            text="Property Type"
+            name="property_type"
+            op1="Condo"
+            op2="Single family Home"
+            op3="Apartment"
+            op4="Basement Apartment"
+            control={control}
+          />
+        </div>
+
         <DatePickerInput
           text="Available From"
           dateFieldName1="available_from"
           control={control}
           toDate={false}
+          placeholderLab=""
         />
-        {/* Area */}
         <TextFieldInput
           name="area"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
-          text="Area"
+          text="Area (sqft)"
+          rules={{
+            pattern: {
+              value: /^\d*\.?\d*$/,
+              message: "Invalid area. Use numbers only (decimals allowed)",
+            },
+          }}
         />
-        {/*deposit/rent  */}
         <TextFieldInput
           name="deposit_rent"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
-          text="Deposit/Rent"
+          text="Monthly Rent ($)"
+          rules={{
+            pattern: {
+              value: /^\d+$/,
+              message: "Monthly Rent must be a whole number (no decimals)",
+            },
+          }}
         />
-        {/* Bedrooms */}
+        <TextFieldInput
+          name="accommodates"
+          defaultValue=""
+          control={control}
+          text="Accommodates"
+        />
+
         <SelectInput
           name="bedrooms"
-          label="BHK"
+          label="Bedrooms (BHK)"
           control={control}
           data={bedroomValues}
         />
-        {/* Bathrooms */}
         <SelectInput
           name="bathrooms"
           label="Bathrooms"
           control={control}
           data={bathroomValues}
         />
-        {/* Address */}
+
         <TextFieldInput
           name="address"
-          defaultValue="Street Address"
+          defaultValue=""
           control={control}
-          text="Address"
+          text="Street Address"
         />
-
-        {/* Location */}
         <LocationAutocompleteInput control={control} setValue={setValue} />
-
         <TextFieldInput
           name="community_name"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
-          text="Community Name"
+          text="Community/Building Name"
         />
-        {/* Amenities */}
+
         <CheckBoxInput
           text="Amenities"
           options={amenitiesOptions}
           register={register}
         />
+        <TwoRadioInput name="pets" text="Pets Allowed?" control={control} />
 
-        {/* Pets */}
-        <TwoRadioInput name="pets" text="Pets" control={control} />
-        {/* Accommodates */}
-        <TextFieldInput
-          name="accommodates"
-          defaultValue="Text"
-          control={control}
-          text="Accommodates"
-        />
-        {/* Smoking */}
         <TextFieldInput
           name="contact_no"
-          defaultValue="Text"
+          defaultValue=""
           control={control}
           text="Contact Number"
           rules={{
@@ -156,11 +232,12 @@ function PostRentalHomeForm() {
         />
         <TwoRadioInput
           name="smoking"
-          text="Smoking"
+          text="Smoking?"
           op1="Ok"
           op2="Not okay"
           control={control}
         />
+
         <PhotoUpload images={images} setImages={setImages} />
         <DescriptionInput name="description" control={control} />
         {Object.keys(errors).length > 0 && (
@@ -175,11 +252,16 @@ function PostRentalHomeForm() {
             </ul>
           </div>
         )}
+        {loading && (
+          <div className="absolute inset-0 bg-white/60 z-50 flex items-center justify-center rounded-2xl">
+            <div className="w-10 h-10 border-4 border-[#ffa41c] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
         <button
           type="submit"
-          className="mt-4 w-full px-10 py-5 bg-[#ffa41c] rounded-[28px] text-center text-gray-800 text-base font-semibold font-dmsans hover:bg-[#e8931a] transition-colors"
+          className="mt-8 w-full py-4 bg-[#ffa41c] rounded-[12px] text-center text-gray-800 text-xl font-bold font-dmsans hover:bg-[#e8931a] transition-all shadow-lg"
         >
-          Review Post
+          {isEdit ? 'Review Changes' : 'Review Post'}
         </button>
       </form>
     </div>

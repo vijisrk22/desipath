@@ -20,23 +20,29 @@ use Illuminate\Support\Facades\Storage;
 *     @OA\Property(property="user_type", type="string", enum={"Agent", "Owner"}, example="Agent", description="Type of user listing the home"),
 *     @OA\Property(property="home_type", type="string", enum={"Condominum", "Single family", "Town home"}, example="Single family", description="Type of home"),
 *     @OA\Property(property="price", type="number", format="decimal", example=250000.00, description="Price of the home"),
+*     @OA\Property(property="price_per_sqft", type="number", format="decimal", nullable=true, example=200.00, description="Price per square foot (optional)"),
 *     @OA\Property(property="built_area", type="number", format="decimal", nullable=true, example=1200.50, description="Built area in square feet (optional)"),
 *     @OA\Property(property="lot_size", type="number", format="decimal", nullable=true, example=5000.75, description="Lot size in square feet (optional)"),
+*     @OA\Property(property="total_parking_spaces", type="integer", nullable=true, example=2, description="Total number of parking spaces (optional)"),
+*     @OA\Property(property="attached_garage", type="boolean", nullable=true, example=true, description="Indicates if there is an attached garage (optional)"),
 *     @OA\Property(property="hoa_fees", type="number", format="decimal", nullable=true, example=150.00, description="Homeowner Association fees (optional)"),
 *     @OA\Property(property="year_built", type="integer", nullable=true, example=2005, description="Year the home was built (optional)"),
 *     @OA\Property(property="under_construction", type="boolean", nullable=true, example=false, description="Indicates if the home is under construction (optional)"),
 *     @OA\Property(property="bedroom_total", type="integer", nullable=true, example=4, description="Total number of bedrooms (optional)"),
 *     @OA\Property(property="half_bathroom_total", type="integer", nullable=true, example=1, description="Total number of half bathrooms (optional)"),
 *     @OA\Property(property="full_bathroom_total", type="integer", nullable=true, example=2, description="Total number of full bathrooms (optional)"),
+*     @OA\Property(property="total_bathroom_total", type="integer", nullable=true, example=3, description="Total number of bathrooms (optional)"),
 *     @OA\Property(property="basement_size", type="number", format="decimal", nullable=true, example=800.00, description="Size of the basement in square feet (optional)"),
 *     @OA\Property(property="basement_status", type="string", enum={"Finished", "Unfinished", "Semi finished"}, nullable=true, example="Finished", description="Status of the basement (optional)"),
 *     @OA\Property(property="laundry_in_house", type="boolean", nullable=true, example=true, description="Indicates if laundry is in the house (optional)"),
 *     @OA\Property(property="home_level", type="integer", nullable=true, example=2, description="Number of levels in the home (optional)"),
 *     @OA\Property(property="pool", type="boolean", nullable=true, example=false, description="Indicates if the home has a pool (optional)"),
+*     @OA\Property(property="community_pool", type="boolean", nullable=true, example=false, description="Indicates if the community has a pool (optional)"),
 *     @OA\Property(property="annual_tax_amount", type="number", format="decimal", nullable=true, example=2500.00, description="Annual property tax amount (optional)"),
 *     @OA\Property(property="images", type="array", @OA\Items(type="string"), example={"house1.jpg", "house2.jpg"}),
 *     @OA\Property(property="description", type="string", nullable=true, example="Beautiful family home with modern amenities.", description="Detailed description of the home (optional)"),
 *     @OA\Property(property="kitchen_granite_countertop", type="boolean", nullable=true, example=true, description="Indicates if the kitchen has granite countertops (optional)"),
+*     @OA\Property(property="solar_setup", type="boolean", nullable=true, example=true, description="Indicates if the home has a solar setup (optional)"),
 *     @OA\Property(property="fireplace_count", type="integer", nullable=true, example=1, description="Number of fireplaces in the home (optional)"),
 *     @OA\Property(property="flooring", type="array", items=@OA\Items(type="string", enum={"Wood", "Vinyl", "Carpet", "Ceramic Tile"}), nullable=true, example={"Wood", "Ceramic Tile"}, description="Flooring types available in the home (optional)"),
 *     @OA\Property(property="location_state", type="string", example="California"),
@@ -59,12 +65,64 @@ class HomesController extends Controller
      *     @OA\Response(response=200, description="List of homes")
      * )
      */
+    public function adminIndex(Request $request)
+    {
+        $query = BuySellHome::query();
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('location_city', 'like', "%{$search}%")
+                  ->orWhere('location_state', 'like', "%{$search}%")
+                  ->orWhere('home_type', 'like', "%{$search}%")
+                  ->orWhere('seller_name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $results = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $results->getCollection()->transform(function ($item) {
+            if (is_string($item->images) && !empty($item->images)) {
+                $item->images = json_decode($item->images, true);
+            }
+            return $item;
+        });
+
+        return response()->json($results);
+    }
+
+    public function adminToggleStatus(Request $request, $id)
+    {
+        $item = BuySellHome::findOrFail($id);
+        $item->status = ($item->status === 'active' || $item->status === 'approved') ? 'pending' : 'active';
+        $item->save();
+        return response()->json(['success' => true, 'status' => $item->status]);
+    }
+
     public function index(Request $request)
     {
         // Removed repairServerPaths as it causes the API to hang on Azure Production
 
-        $perPage = 9;
-        $query = BuySellHome::query();
+        $perPage = 12;
+        $query = BuySellHome::query()->where('status', 'active');
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('location_city', 'like', "%{$search}%")
+                  ->orWhere('location_state', 'like', "%{$search}%")
+                  ->orWhere('location_zipcode', 'like', "%{$search}%")
+                  ->orWhere('home_type', 'like', "%{$search}%")
+                  ->orWhere('seller_name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
 
         if ($request->has('sort')) {
             switch ($request->sort) {
@@ -74,11 +132,11 @@ class HomesController extends Controller
                 case 'price-desc':
                     $query->orderBy('price', 'desc');
                     break;
-                case 'name-asc':
-                    $query->orderBy('home_type', 'asc');
+                case 'created_at-desc':
+                    $query->orderBy('created_at', 'desc');
                     break;
-                case 'name-desc':
-                    $query->orderBy('home_type', 'desc');
+                case 'area-desc':
+                    $query->orderBy('built_area', 'desc');
                     break;
                 default:
                     $query->orderBy('created_at', 'desc');
@@ -151,23 +209,29 @@ class HomesController extends Controller
             'user_type' => $faker->randomElement(['Agent', 'Owner']),
             'home_type' => $faker->randomElement(['Condominum', 'Single family', 'Town home']),
             'price' => $faker->randomFloat(2, 50000, 500000),
+            'price_per_sqft' => $faker->randomFloat(2, 100, 500),
             'built_area' => $faker->randomFloat(2, 500, 4000),
             'lot_size' => $faker->randomFloat(2, 1000, 10000),
+            'total_parking_spaces' => $faker->numberBetween(1, 5),
+            'attached_garage' => $faker->boolean,
             'hoa_fees' => $faker->randomFloat(2, 0, 500),
             'year_built' => $faker->numberBetween(1900, 2023),
             'under_construction' => $faker->boolean,
             'bedroom_total' => $faker->numberBetween(1, 10),
             'half_bathroom_total' => $faker->numberBetween(0, 2),
             'full_bathroom_total' => $faker->numberBetween(1, 5),
+            'total_bathroom_total' => $faker->numberBetween(1, 7),
             'basement_size' => $faker->randomFloat(2, 0, 2000),
             'basement_status' => $faker->randomElement(['Finished', 'Unfinished', 'Semi finished']),
             'laundry_in_house' => $faker->boolean,
             'home_level' => $faker->numberBetween(1, 3),
             'pool' => $faker->boolean,
+            'community_pool' => $faker->boolean,
             'annual_tax_amount' => $faker->randomFloat(2, 1000, 10000),
             'images' => json_encode($photos),
             'description' => $faker->paragraph,
             'kitchen_granite_countertop' => $faker->boolean,
+            'solar_setup' => $faker->boolean,
             'fireplace_count' => $faker->numberBetween(0, 3),
             'flooring' => implode(',', $faker->randomElements(['Wood', 'Vinyl', 'Carpet', 'Ceramic Tile'], $faker->numberBetween(1, 4))),
             //'seller_id' => Auth::id(),
@@ -234,24 +298,29 @@ class HomesController extends Controller
             'user_type' => 'required|in:Agent,Owner',
             'home_type' => 'required|in:Condominum,Single family,Town home',
             'price' => 'required|numeric',
+            'price_per_sqft' => 'nullable|numeric',
             'built_area' => 'nullable|numeric',
             'lot_size' => 'nullable|numeric',
+            'total_parking_spaces' => 'nullable|integer',
+            'attached_garage' => 'nullable|boolean',
             'hoa_fees' => 'nullable|numeric',
-            'year_built' => 'nullable|integer',
+            'year_built' => 'nullable|integer', 
             'under_construction' => 'nullable|boolean',
             'bedroom_total' => 'nullable|integer',
             'half_bathroom_total' => 'nullable|integer',
             'full_bathroom_total' => 'nullable|integer',
+            'total_bathroom_total' => 'nullable|integer',
             'basement_size' => 'nullable|numeric',
             'basement_status' => 'nullable|in:Finished,Unfinished,Semi finished',
             'laundry_in_house' => 'nullable|boolean',
             'home_level' => 'nullable|integer',
             'pool' => 'nullable|boolean',
-            'annual_tax_amount' => 'nullable|numeric',
+            'community_pool' => 'nullable|boolean',
+            'annual_tax_amount' => 'nullable|numeric', 
             'images' => 'nullable|array',
             'images.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64-encoded image
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
                 // Validate the decoded image size
@@ -266,11 +335,14 @@ class HomesController extends Controller
             'location_zipcode' => 'nullable|string|max:20',
             'description' => 'nullable|string|max:1000',
             'kitchen_granite_countertop' => 'nullable|boolean',
+            'solar_setup' => 'nullable|boolean',
             'fireplace_count' => 'nullable|integer',
             'flooring' => 'nullable|array',
             'flooring.*' => 'in:Wood,Vinyl,Carpet,Ceramic Tile',
             'seller_id' => 'nullable|exists:users,id',
-            'seller_name' => 'nullable|string|max:255'
+            'seller_name' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'company_name' => 'nullable|string|max:255'
         ]);
 
         $receiver = User::find($request->seller_id);
@@ -279,6 +351,16 @@ class HomesController extends Controller
         }
         $data = $request->except('images'); // get all fields except photos
         $data['seller_name'] = $receiver->name;
+        $data['status'] = 'active';
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
 
         if (isset($data['flooring']) && is_array($data['flooring'])) {
             $data['flooring'] = implode(',', $data['flooring']);
@@ -286,12 +368,7 @@ class HomesController extends Controller
 
         if ($request->has('images') && !empty($request->images)) {
             $photos = [];
-            
-            // Ensure the directory exists
-            $directory = storage_path('app/public/buysellhomes');
-            if (!file_exists($directory)) {
-                mkdir($directory, 0775, true);
-            }
+            $disk = env('FILESYSTEM_DISK', 'public');
 
             foreach ($request->images as $base64Image) {
                 // Get the file extension
@@ -303,15 +380,13 @@ class HomesController extends Controller
                 
                 // Generate a unique filename for the image
                 $filename = uniqid() . '.' . $extension;
+                $path = 'buysellhomes/' . $filename;
                 
-                // Store the file in the storage directory
-                $path = $directory . '/' . $filename;
+                // Store using Storage facade
+                \Illuminate\Support\Facades\Storage::disk($disk)->put($path, $imageData);
                 
-                // Write the decoded data to the file
-                file_put_contents($path, $imageData);
-                
-                // Add the file path (relative to public storage) to the array
-                $photos[] = 'storage/buysellhomes/' . $filename;
+                // Add the URL/path to the array
+                $photos[] = $disk === 'public' ? 'storage/' . $path : \Illuminate\Support\Facades\Storage::disk($disk)->url($path);
             }
             
             // Store the photos array as JSON in the database
@@ -399,19 +474,57 @@ class HomesController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $query = BuySellHome::query();
+        $query = BuySellHome::query()->where('status', 'active');
 
-        $query->where(function ($q) use ($request) {
-            if ($request->filled('city')) {
-                $q->orWhere('location_city', 'like', '%' . $request->city . '%');
-            }
-            if ($request->filled('zipcode')) {
-                $q->orWhere('location_zipcode', 'like', '%' . $request->zipcode . '%');
-            }
-            if ($request->filled('houseType')) {
-                $q->orWhere('home_type', 'like', '%' . $request->houseType . '%');
-            }
-        });
+        $city = trim($request->city);
+        $zipcode = trim($request->zipcode);
+        $radius = 70; // Miles
+
+        $centerPoint = null;
+
+        // Try to get coordinates for the search center
+        if ($zipcode) {
+            $centerPoint = \DB::table('usa_zipcodes')->where('zip', $zipcode)->first();
+        } elseif ($city) {
+            $centerPoint = \DB::table('usa_zipcodes')
+                ->where('city', 'like', '%' . $city . '%')
+                ->first();
+        }
+
+        if ($centerPoint && $centerPoint->lat && $centerPoint->lng) {
+            $lat = $centerPoint->lat;
+            $lng = $centerPoint->lng;
+            $searchZip = $centerPoint->zip;
+
+            // Bounding box optimization to reduce rows before expensive distance calculation
+            $latRange = $radius / 69;
+            $lngRange = $radius / (69 * cos(deg2rad($lat)));
+
+            $query->whereBetween('latitude', [$lat - $latRange, $lat + $latRange])
+                  ->whereBetween('longitude', [$lng - $lngRange, $lng + $lngRange]);
+
+            $query->select('*')
+                ->selectRaw("(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
+                ->having('distance', '<=', $radius);
+            
+            // Priority ordering: exact zip first, then by distance
+            $query->orderByRaw("CASE WHEN location_zipcode = ? THEN 0 ELSE 1 END ASC", [$searchZip])
+                  ->orderBy('distance', 'asc');
+        } else {
+            // Fallback to basic keyword matching if no coordinates found
+            $query->where(function ($q) use ($request) {
+                if ($request->filled('city')) {
+                    $q->orWhere('location_city', 'like', '%' . $request->city . '%');
+                }
+                if ($request->filled('zipcode')) {
+                    $q->orWhere('location_zipcode', 'like', '%' . $request->zipcode . '%');
+                }
+            });
+        }
+
+        if ($request->filled('houseType')) {
+            $query->where('home_type', 'like', '%' . $request->houseType . '%');
+        }
 
         if ($request->has('sort')) {
             switch ($request->sort) {
@@ -421,11 +534,11 @@ class HomesController extends Controller
                 case 'price-desc':
                     $query->orderBy('price', 'desc');
                     break;
-                case 'name-asc':
-                    $query->orderBy('home_type', 'asc');
+                case 'created_at-desc':
+                    $query->orderBy('created_at', 'desc');
                     break;
-                case 'name-desc':
-                    $query->orderBy('home_type', 'desc');
+                case 'area-desc':
+                    $query->orderBy('built_area', 'desc');
                     break;
                 default:
                     $query->orderBy('created_at', 'desc');
@@ -435,7 +548,7 @@ class HomesController extends Controller
              $query->orderBy('created_at', 'desc');
         }
 
-        $perPage = 9;
+        $perPage = 12;
         $buysellhomes = $query->paginate($perPage);
 
         // Automatically decode JSON-encoded 'photos' field to an array
@@ -500,27 +613,33 @@ class HomesController extends Controller
         }
 
         $request->validate([
-            'user_type' => 'required|in:Agent,Owner',
-            'home_type' => 'required|in:Condominum,Single family,Town home',
-            'price' => 'required|numeric',
+            'user_type' => 'sometimes|in:Agent,Owner',
+            'home_type' => 'sometimes|in:Condominum,Single family,Town home',
+            'price' => 'sometimes|numeric',
+            'status' => 'nullable|in:active,inactive',
+            'price_per_sqft' => 'nullable|numeric',
             'built_area' => 'nullable|numeric',
             'lot_size' => 'nullable|numeric',
+            'total_parking_spaces' => 'nullable|integer',
+            'attached_garage' => 'nullable|boolean',
             'hoa_fees' => 'nullable|numeric',
             'year_built' => 'nullable|integer',
             'under_construction' => 'nullable|boolean',
             'bedroom_total' => 'nullable|integer',
-            'half_bathroom_total' => 'nullable|integer',
+            'half_bathroom_total' => 'nullable|integer', 
             'full_bathroom_total' => 'nullable|integer',
+            'total_bathroom_total' => 'nullable|integer',
             'basement_size' => 'nullable|numeric',
             'basement_status' => 'nullable|in:Finished,Unfinished,Semi finished',
             'laundry_in_house' => 'nullable|boolean',
             'home_level' => 'nullable|integer',
             'pool' => 'nullable|boolean',
+            'community_pool' => 'nullable|boolean',
             'annual_tax_amount' => 'nullable|numeric',
-            'images' => 'nullable|array',
+            'images' => 'nullable|array', 
             'images.*' => ['nullable', 'string', function ($attribute, $value, $fail) {
                 // Check if the value is a valid base64-encoded image
-                if (!preg_match('/^data:image\/(jpeg|png|jpg|gif);base64,/', $value)) {
+                if (!preg_match('/^data:image\/\w+;base64,/', $value)) {
                     $fail('The ' . $attribute . ' must be a valid base64 encoded image.');
                 }
                 // Validate the decoded image size
@@ -535,19 +654,34 @@ class HomesController extends Controller
             'location_zipcode' => 'nullable|string|max:20',
             'description' => 'nullable|string|max:1000',
             'kitchen_granite_countertop' => 'nullable|boolean',
+            'solar_setup' => 'nullable|boolean',
             'fireplace_count' => 'nullable|integer',
             'flooring' => 'nullable|array',
             'flooring.*' => 'in:Wood,Vinyl,Carpet,Ceramic Tile',
             'seller_id' => 'nullable|exists:users,id',
-            'seller_name' => 'nullable|string|max:255'
+            'seller_name' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'company_name' => 'nullable|string|max:255'
         ]);
 
-        $receiver = User::find($request->seller_id);
-        if (!$receiver) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
         $data = $request->except('images');
-        $data['seller_name'] = $receiver->name;
+        
+        if ($request->has('seller_id')) {
+            $receiver = User::find($request->seller_id);
+            if (!$receiver) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+            $data['seller_name'] = $receiver->name;
+        }
+
+        // Sync coordinates
+        if ($request->filled('location_zipcode')) {
+            $coords = \DB::table('usa_zipcodes')->where('zip', $request->location_zipcode)->first();
+            if ($coords) {
+                $data['latitude'] = $coords->lat;
+                $data['longitude'] = $coords->lng;
+            }
+        }
 
         if (isset($data['flooring']) && is_array($data['flooring'])) {
             $data['flooring'] = implode(',', $data['flooring']);
@@ -555,12 +689,7 @@ class HomesController extends Controller
 
         if ($request->has('images') && !empty($request->images)) {
             $photos = [];
-            
-            // Ensure the directory exists
-            $directory = storage_path('app/public/buysellhomes');
-            if (!file_exists($directory)) {
-                mkdir($directory, 0775, true);
-            }
+            $disk = env('FILESYSTEM_DISK', 'public');
 
             foreach ($request->images as $base64Image) {
                 preg_match('/data:image\/(.*);base64/', $base64Image, $matches);
@@ -569,12 +698,11 @@ class HomesController extends Controller
                 $imageData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $base64Image));
 
                 $filename = uniqid() . '.' . $extension;
+                $path = 'buysellhomes/' . $filename;
 
-                $path = $directory . '/' . $filename;
+                \Illuminate\Support\Facades\Storage::disk($disk)->put($path, $imageData);
 
-                file_put_contents($path, $imageData);
-
-                $photos[] = 'storage/buysellhomes/' . $filename;
+                $photos[] = $disk === 'public' ? 'storage/' . $path : \Illuminate\Support\Facades\Storage::disk($disk)->url($path);
             }
 
             $data['images'] = json_encode($photos);
@@ -583,7 +711,9 @@ class HomesController extends Controller
         $home->update($data);
 
         // Return photos as array in response
-        $home->images = json_decode($home->images, true);
+        if (is_string($home->images)) {
+            $home->images = json_decode($home->images, true);
+        }
 
         return response()->json(['message' => 'Home updated successfully', 'data' => $home]);
     }
@@ -639,5 +769,17 @@ class HomesController extends Controller
         } catch (\Exception $e) {
             // Silently fail if filesystem is read-only
         }
+    }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = \App\Models\BuySellHome::where('seller_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = \App\Models\BuySellHome::where('seller_id', $request->user()->id)->get();
+        return response()->json($listings);
     }
 }

@@ -1,91 +1,105 @@
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import ButtonRight from "../ButtonRight";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import api from "../../utils/api";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { getFullImageUrl } from "../../utils/imageHelper";
+import { getStateCode } from "../../utils/locationHelper";
+
+import LazyImage from "../LazyImage";
+import { generateRandomSuffix } from "../../utils/urlHelper";
 
 export default function HouseCard({ house }) {
   const [isFavorited, setIsFavorited] = useState(false);
+
+  // Calculate total baths
+  const totalBaths = (house.full_bathroom_total || 0) + (house.half_bathroom_total || 0);
+
+  const mainImage = house.images && house.images.length > 0
+    ? getFullImageUrl(house.images[0])
+    : "/homesSmpl.png";
+
   return (
-    <Card
-      sx={{ 
-        width: "100%", 
-        maxWidth: 400,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 4,
-        transition: "transform 0.2s, box-shadow 0.2s",
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: "0 12px 24px rgba(0,0,0,0.12)"
-        }
-      }}
-      className="relative shadow-sm border border-gray-100"
+    <Link
+      to={`/services/BuyHome/${house.id}-${generateRandomSuffix(house.id)}`}
+      className="group block bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 overflow-hidden h-full flex flex-col w-full"
     >
-      <button
-        onClick={() => setIsFavorited(!isFavorited)}
-        className="absolute top-3 right-4  flex items-center justify-center bg-white/40 p-2 rounded-full shadow-md"
-      >
-        {isFavorited ? (
-          <FavoriteIcon
-            sx={{ width: "1.5rem", height: "1.5rem", color: "red" }}
-          />
-        ) : (
-          <img
-            src={isFavorited ? "/heartFilled.svg" : "/heart.svg"}
-            alt="heart"
-            className="w-6 h-6"
-          />
-        )}
-      </button>
+      {/* Image Section */}
+      <div className="relative h-56 lg:h-64 overflow-hidden">
+        <LazyImage
+          src={mainImage}
+          alt={house.home_type}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        />
 
-      <CardMedia
-        component="img"
-        image={house.images && house.images.length > 0 
-          ? `${api.defaults.baseURL}/${house.images[0]}` 
-          : "/homesSmpl.png"}
-        title="house"
-        sx={{
-          p: 0,
-          height: 240,
-          objectFit: "cover",
-        }}
-      />
+        {/* Badge */}
+        <div className="absolute top-4 left-4">
+          <span className="bg-[#cc4b1f] text-white text-[11px] font-bold px-3 py-1.5 rounded-md uppercase tracking-wider shadow-sm">
+            {house.user_type === 'Agent' ? 'Agent Listing' : 'Active'}
+          </span>
+        </div>
 
-      <CardContent sx={{ flexGrow: 1, px: 3, pt: 3 }}>
-        <div className="text-gray-800 text-[24px] font-bold font-dmsans truncate mb-2">
-          {house.home_type}
+        {/* Favorite Button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsFavorited(!isFavorited);
+          }}
+          className="absolute top-4 right-4 p-2 bg-black/20 backdrop-blur-md hover:bg-black/40 rounded-full transition-all duration-300 transform group-hover:scale-110"
+        >
+          {isFavorited ? (
+            <FavoriteIcon sx={{ color: '#ef4444', fontSize: '1.4rem' }} />
+          ) : (
+             <FavoriteIcon sx={{ color: 'white', fontSize: '1.4rem', opacity: 0.8 }} />
+          )}
+        </button>
+      </div>
+
+      {/* Content Section */}
+      <div className="p-6 flex flex-col flex-grow bg-white">
+        <div className="mb-3">
+          <h2 className="text-[28px] font-bold text-[#1a1a1a] font-dmsans tracking-tight">
+            {house.price
+              ? `$${Number(house.price).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+              : "Contact for Price"}
+          </h2>
         </div>
-        <div className="flex items-center gap-2 text-gray-500">
-          <img src="/location.svg" className="w-5 h-5 opacity-70" />
-          <div className="text-[16px] font-medium font-dmsans truncate">
-            {house.location_city ? `${house.location_city}, ${house.location_state}` : "Location not available"}
+
+        <div className="flex items-center gap-4 mb-4">
+          <div className="flex flex-col gap-0.5">
+             <div className="flex items-center text-gray-900 font-bold text-[16px]">
+               {house.bedroom_total || '0'} <span className="text-gray-400 font-medium text-[10px] uppercase tracking-tighter ml-1">bd</span>
+               <span className="text-gray-300 mx-2">|</span>
+               {totalBaths || '0'} <span className="text-gray-400 font-medium text-[10px] uppercase tracking-tighter ml-1">ba</span>
+               <span className="text-gray-300 mx-2">|</span>
+               {house.built_area ? Number(house.built_area).toLocaleString() : '0'} <span className="text-gray-400 font-medium text-[10px] uppercase tracking-tighter ml-1">sqft</span>
+             </div>
+          </div>
+          <div className="h-4 w-[1px] bg-gray-200 hidden sm:block mx-1"></div>
+          <div className="text-gray-500 font-medium text-xs uppercase tracking-wide line-clamp-1">
+            {(() => {
+              const type = typeof house.home_type === 'object' ? house.home_type.name : (house.home_type || 'Single Family');
+              if (type === 'Condominum') return 'Condominium';
+              if (type === 'Town home') return 'Townhouse';
+              return type;
+            })()}
           </div>
         </div>
-      </CardContent>
-      <CardActions sx={{ px: 2, pb: 3, pt: 1 }}>
-        <div className="flex justify-between items-center w-full gap-2 overflow-hidden">
-          <div className="flex-shrink-0">
-            <span className="text-[#007185] text-lg md:text-xl font-bold font-dmsans whitespace-nowrap">
-              {house.price 
-                ? `$${Number(house.price).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` 
-                : "Contact for Price"}
-            </span>
-          </div>
-          <div className="flex-shrink-0">
-            <ButtonRight
-              text="Details"
-              path={`/services/houses/buyHouse/${house.id}`}
-              textClass="text-sm font-bold"
-              paddingClass="px-4 py-2"
-            />
-          </div>
+
+        <div className="text-[14px] text-gray-600 font-medium leading-snug mt-auto flex items-start gap-1.5">
+          <svg className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span className="line-clamp-2">
+            {[
+              house.address,
+              house.location_city,
+              getStateCode(house.location_state),
+              house.location_zipcode
+            ].filter(Boolean).join(", ") || "Address not available"}
+          </span>
         </div>
-      </CardActions>
-    </Card>
+      </div>
+    </Link>
   );
 }

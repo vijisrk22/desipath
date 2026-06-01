@@ -199,10 +199,10 @@ class MessageController extends Controller
         // Get authenticated user's ID
         $authUserId = Auth::id();
 
-        // Retrieve all messages where sender_id is the authenticated user
+        // Retrieve all messages where sender_id or receiver_id is the authenticated user
         $messages = Message::where('sender_id', $authUserId)
             ->orWhere('receiver_id', $authUserId)
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // If no messages are found, return a 404 response with a message
@@ -212,6 +212,76 @@ class MessageController extends Controller
 
         // Return the messages as JSON
         return response()->json($messages);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/messages/conversations",
+     *     summary="Get all conversations for the authenticated user",
+     *     description="Fetch a grouped list of conversations involving the authenticated user",
+     *     operationId="getConversations",
+     *     tags={"Chat"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of conversations",
+     *     )
+     * )
+     */
+    public function getConversations()
+    {
+        $userId = Auth::id();
+
+        // Get the latest message for each conversation thread
+        // A conversation is defined by (ad_id, ad_type, and the other participant)
+        $subquery = Message::select(\DB::raw('MAX(id) as max_id'))
+            ->where(function($q) use ($userId) {
+                $q->where('sender_id', $userId)
+                  ->orWhere('receiver_id', $userId);
+            })
+            ->groupBy('ad_id', 'ad_type', \DB::raw('CASE WHEN sender_id = ' . $userId . ' THEN receiver_id ELSE sender_id END'));
+
+        $conversations = Message::whereIn('id', $subquery)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        foreach ($conversations as $chat) {
+            $isSender = $chat->sender_id == $userId;
+            $partnerId = $isSender ? $chat->receiver_id : $chat->sender_id;
+            
+            // Try to use stored names first, fallback to DB lookup
+            $partnerName = $isSender ? $chat->receiver_name : $chat->sender_name;
+            
+            if (!$partnerName) {
+                $partner = User::find($partnerId);
+                $partnerName = $partner ? $partner->name : 'Unknown User';
+            }
+
+            $chat->chatPartner = [
+                'id' => $partnerId,
+                'name' => $partnerName,
+            ];
+            
+            // Add other names for consistency
+            if (!$chat->sender_name) {
+                $s = User::find($chat->sender_id);
+                $chat->sender_name = $s ? $s->name : 'Unknown';
+            }
+            if (!$chat->receiver_name) {
+                $r = User::find($chat->receiver_id);
+                $chat->receiver_name = $r ? $r->name : 'Unknown';
+            }
+
+            // Calculate unread count (messages sent by the partner to the auth user, which are not yet read)
+            $chat->unread_count = Message::where('sender_id', $partnerId)
+                ->where('receiver_id', $userId)
+                ->where('ad_id', $chat->ad_id)
+                ->where('ad_type', $chat->ad_type)
+                ->where('is_read', false)
+                ->count();
+        }
+
+        return response()->json($conversations);
     }
 
 
@@ -271,7 +341,7 @@ class MessageController extends Controller
             'receiver_id' => 'required|exists:users,id',
             'message' => 'required|string|max:1000',
             'ad_id' => 'required|integer', // Validate ad ID
-            'ad_type' => 'required|string|in:roommate,car,rentalhome,buysellhome,travelcompanion,astrologyad,classesforkid,trainingad',
+            'ad_type' => 'required|string|in:roommate,car,rentalhome,buysellhome,travelcompanion,astrologyad,classesforkid,trainingad,localjob,jobreferral,itjob',
         ]);
 
         $authUser = Auth::user();
@@ -290,11 +360,38 @@ class MessageController extends Controller
                 'ad_id' => $request->ad_id,
                 'ad_type' => $request->ad_type,
                 'message' => $request->message,
+                'is_read' => false,
             ]);
         } else {
             // Handle case where user is not found
             return response()->json(['error' => 'Receiver not found'], 404);
         }
         return response()->json($message, 201);
+    }
+
+    /**
+     * Mark messages in a conversation as read
+     */
+    public function markAsRead(Request $request)
+    {
+        $request->validate([
+            'sender_id' => 'required|integer',
+            'ad_id' => 'required|integer',
+            'ad_type' => 'required|string',
+        ]);
+
+        $authUserId = Auth::id();
+        $senderId = $request->sender_id;
+        $adId = $request->ad_id;
+        $adType = $request->ad_type;
+
+        Message::where('sender_id', $senderId)
+            ->where('receiver_id', $authUserId)
+            ->where('ad_id', $adId)
+            ->where('ad_type', $adType)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['success' => true]);
     }
 }

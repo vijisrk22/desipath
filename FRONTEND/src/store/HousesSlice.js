@@ -15,6 +15,15 @@ export const fetchHouses = createAsyncThunk("houses/fetchHouses", async({ page =
     }
 })
 
+export const fetchMyHouses = createAsyncThunk("houses/fetchMyHouses", async(_, {rejectWithValue}) =>{
+    try{
+        const response = await api.get("/api/homes/my-listings");
+        return response.data;
+    }catch(error){
+        return rejectWithValue(error.response?.data || "Failed to fetch your houses");
+    }
+})
+
 export const fetchHouseById = createAsyncThunk("houses/fetchHouseById", async(houseId, {rejectWithValue})=>{
     try{
         const response = await api.get(`/api/homes/${houseId}`);
@@ -47,6 +56,24 @@ export const searchHouse = createAsyncThunk("houses/searchHouse", async ({ searc
     }
 })
 
+export const updateHouse = createAsyncThunk("houses/updateHouse", async({ houseId, houseData }, { rejectWithValue }) => {
+    try {
+        const response = await api.put(`/api/homes/${houseId}`, houseData);
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || "Failed to update house");
+    }
+})
+
+export const deleteHouse = createAsyncThunk("houses/deleteHouse", async (houseId, { rejectWithValue }) => {
+    try {
+        const response = await api.delete(`/api/homes/${houseId}`);
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || "Failed to delete house");
+    }
+})
+
 const housesSlice = createSlice({
     name: "houses",
     initialState:{
@@ -55,9 +82,12 @@ const housesSlice = createSlice({
             current_page: 1,
             last_page: 1,
             total: 0,
-            per_page: 9
+            per_page: 12,
+            from: 0,
+            to: 0
         },
         houseDetails: null,
+        myHouses: [],
         error: null,
         loading: false,
         lastSearchQuery: null,
@@ -78,7 +108,9 @@ const housesSlice = createSlice({
                 current_page: 1,
                 last_page: 1,
                 total: 0,
-                per_page: 9
+                per_page: 12,
+                from: 0,
+                to: 0
             };
             state.lastSearchQuery = null;
             state.error = null;
@@ -99,11 +131,25 @@ const housesSlice = createSlice({
                     last_page: action.payload.last_page,
                     total: action.payload.total,
                     per_page: action.payload.per_page,
+                    from: action.payload.from,
+                    to: action.payload.to,
                 };
             })
             .addCase(fetchHouses.rejected, (state,action)=>{
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch houses";
+            })
+            .addCase(fetchMyHouses.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyHouses.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myHouses = action.payload || [];
+            })
+            .addCase(fetchMyHouses.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch your houses";
             })
             .addCase(fetchHouseById.pending, (state)=>{
                 state.loading = true;
@@ -142,6 +188,8 @@ const housesSlice = createSlice({
                     last_page: action.payload.last_page,
                     total: action.payload.total,
                     per_page: action.payload.per_page,
+                    from: action.payload.from,
+                    to: action.payload.to,
                 };
                 state.lastSearchQuery = action.meta.arg.searchQuery;
             })
@@ -156,6 +204,35 @@ const housesSlice = createSlice({
                     per_page: 9
                 };
             })
+            .addCase(updateHouse.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateHouse.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.houses.findIndex(h => h.id === action.payload.id);
+                if (index !== -1) {
+                    state.houses[index] = action.payload;
+                }
+            })
+            .addCase(updateHouse.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to update house";
+            })
+            .addCase(deleteHouse.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteHouse.fulfilled, (state, action) => {
+                state.loading = false;
+                const deletedId = action.meta.arg;
+                state.houses = state.houses.filter(h => h.id !== deletedId);
+                state.myHouses = state.myHouses.filter(h => h.id !== deletedId);
+            })
+            .addCase(deleteHouse.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to delete house";
+            });
     }
 })
 

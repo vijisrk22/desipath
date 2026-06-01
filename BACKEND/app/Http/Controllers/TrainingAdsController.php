@@ -23,6 +23,36 @@ use Faker\Factory as Faker;
  */
 class TrainingAdsController extends Controller
 {
+    public function adminIndex(Request $request)
+    {
+        $query = TrainingAd::query();
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('course_title', 'like', "%{$search}%")
+                  ->orWhere('agenda', 'like', "%{$search}%")
+                  ->orWhere('contact_form', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $results = $query->orderBy('timestamp', 'desc')->paginate(20);
+
+        return response()->json($results);
+    }
+
+    public function adminToggleStatus(Request $request, $id)
+    {
+        $item = TrainingAd::findOrFail($id);
+        $item->status = ($item->status === 'active' || $item->status === 'approved') ? 'pending' : 'active';
+        $item->save();
+        return response()->json(['success' => true, 'status' => $item->status]);
+    }
+
     /**
      * @OA\Get(
      *     path="/api/trainingads",
@@ -32,9 +62,21 @@ class TrainingAdsController extends Controller
      *     @OA\Response(response=200, description="List of training ads")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return TrainingAd::all();
+        $query = TrainingAd::query()->where('status', 'active');
+
+        // Admin search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('course_title', 'like', "%{$search}%")
+                  ->orWhere('agenda', 'like', "%{$search}%")
+                  ->orWhere('contact_form', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->orderBy('timestamp', 'desc')->paginate(15);
     }
 
     /**
@@ -102,7 +144,9 @@ public function dummyInsert()
             'contact_form' => 'nullable|string'
         ]);
 
-        $trainingAd = TrainingAd::create($request->all());
+        $data = $request->all();
+        $data['status'] = 'active';
+        $trainingAd = TrainingAd::create($data);
 
         return response()->json(['message' => 'Training ad added successfully', 'data' => $trainingAd], 201);
     }
@@ -151,8 +195,9 @@ public function dummyInsert()
         }
 
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'course_title' => 'required|string|max:255',
+            'user_id' => 'sometimes|exists:users,id',
+            'course_title' => 'sometimes|string|max:255',
+            'status' => 'nullable|in:active,inactive',
             'course_fee' => 'nullable|numeric',
             'agenda' => 'nullable|string',
             'image_1' => 'nullable|string',
@@ -187,5 +232,17 @@ public function dummyInsert()
         $trainingAd->delete();
 
         return response()->json(['message' => 'Training ad deleted successfully']);
+    }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = TrainingAd::where('user_id', $request->user()->id)->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $listings = TrainingAd::where('user_id', $request->user()->id)->get();
+        return response()->json($listings);
     }
 }

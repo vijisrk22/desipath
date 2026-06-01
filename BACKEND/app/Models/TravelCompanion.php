@@ -47,7 +47,8 @@ class TravelCompanion extends Model
         'amazon_gift_card_value',
         'willing_gift',
         'gift_card_value',
-        'poster_id'
+        'poster_id',
+        'status'
     ];
 
     protected $casts = [
