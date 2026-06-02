@@ -4,6 +4,8 @@ import Layout from "./Layout";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LandingPage from "./pages/LandingPage";
+import ImmigrationNews from './pages/News/ImmigrationNews';
+import ImmigrationNewsDetail from './pages/News/ImmigrationNewsDetail';
 const Roommates = lazy(() => import("./pages/Roommates/Roommates"));
 const RoomDetails = lazy(() => import("./pages/Roommates/RoomDetails"));
 const Chat = lazy(() => import("./components/Chat/Chat"));
@@ -185,6 +187,10 @@ function App() {
           <Route path="/buy-sell-items/post" element={<PrivateRoute><BuySellItemPortal /></PrivateRoute>} />
           <Route path="/buy-sell-items/edit/:id" element={<PrivateRoute><BuySellItemPortal /></PrivateRoute>} />
           <Route path="/buy-sell-items/success" element={<PrivateRoute><BuySellItemSuccess /></PrivateRoute>} />
+
+          {/* Immigration News */}
+          <Route path="/immigration-news" element={<ImmigrationNews />} />
+          <Route path="/immigration-news/:slug" element={<ImmigrationNewsDetail />} />
 
           {/* Jobs */}
           <Route path="/jobs" element={<JobsLanding />} />

@@ -1,0 +1,40 @@
+name: Immigration News Crawler
+
+on:
+  schedule:
+    # Runs every 4 hours at the top of the hour
+    - cron: '0 */4 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  run-crawler:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'desipath-crawler/package-lock.json'
+
+      - name: Install Dependencies
+        working-directory: ./desipath-crawler
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: ./desipath-crawler
+        run: npx playwright install chromium --with-deps
+
+      - name: Run Crawler Pipeline
+        working-directory: ./desipath-crawler
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+        run: node src/index.js

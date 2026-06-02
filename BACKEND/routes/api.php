@@ -70,6 +70,11 @@ Route::prefix('financial-advisors')->group(function () {
     Route::get('/{slug}', [FinancialAdvisorController::class, 'show']);
 });
 
+// Immigration News Routes
+Route::get('/news/immigration/latest-urgent', [App\Http\Controllers\ImmigrationNewsController::class, 'getLatestUrgent']);
+Route::get('/news/immigration', [App\Http\Controllers\ImmigrationNewsController::class, 'index']);
+Route::get('/news/immigration/{slug}', [App\Http\Controllers\ImmigrationNewsController::class, 'show']);
+
 Route::middleware('auth:sanctum')->prefix('financial-advisors')->group(function () {
     Route::post('/', [FinancialAdvisorController::class, 'store']);
     Route::get('/my-listings', [FinancialAdvisorController::class, 'myListings']);

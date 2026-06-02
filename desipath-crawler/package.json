@@ -1,0 +1,23 @@
+{
+  "name": "desipath-crawler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
+    "@mozilla/readability": "^0.6.0",
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "jsdom": "^29.1.1",
+    "mysql2": "^3.22.4",
+    "p-limit": "^7.3.0",
+    "playwright": "^1.60.0",
+    "rss-parser": "^3.13.0"
+  }
+}
