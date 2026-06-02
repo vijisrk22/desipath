@@ -96,7 +96,12 @@ const services = [
   {
     name: "Ride Share",
     image: "/img/services/Desipath_RideShare.png",
-    path: "",
+    path: "/rides",
+  },
+  {
+    name: "Finance/invest/Tax",
+    image: "/img/services/Desipath_Finance.png",
+    path: "/financial-advisors",
   },
 ];
 

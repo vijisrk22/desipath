@@ -84,7 +84,7 @@ class ProfileController extends Controller
             $file = $request->file('photo');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('profile_photos', $filename, 'public');
-            $validatedData['profile_photo'] = $path;
+            $validatedData['profile_photo'] = 'storage/' . $path;
         }
 
         $user->update($validatedData);

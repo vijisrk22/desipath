@@ -79,6 +79,13 @@ const LocalJobPortal = lazy(() => import("./pages/Jobs/LocalJobPortal"));
 const ItJobs = lazy(() => import("./pages/Jobs/ItJobs"));
 const ItJobPortal = lazy(() => import("./pages/Jobs/ItJobPortal"));
 
+const RidesHub = lazy(() => import("./pages/Rides/RidesHub"));
+const RidePostForm = lazy(() => import("./pages/Rides/RidePostForm"));
+const RideDetails = lazy(() => import("./pages/Rides/RideDetails"));
+const FinanceSearch = lazy(() => import("./pages/Finance/FinanceSearch"));
+const FinancePortal = lazy(() => import("./pages/Finance/FinancePortal"));
+const FinanceProfile = lazy(() => import("./pages/Finance/FinanceProfile"));
+
 const DesiDoctorsSearch = lazy(() => import("./pages/DesiDoctors/DesiDoctorsSearch"));
 const DoctorProfile = lazy(() => import("./pages/DesiDoctors/DoctorProfile"));
 const DoctorAdPortal = lazy(() => import("./pages/DesiDoctors/DoctorAdPortal"));
@@ -156,6 +163,8 @@ function App() {
             />
             <Route path="classesForKids/:action?" element={<ClassesForKids />} />
             
+
+
             <Route path="Localdeals" element={<Localdeals />} />
             <Route path="Localdeals/post" element={<PrivateRoute><LocalAdPortal /></PrivateRoute>} />
             <Route path="Localdeals/edit/:id" element={<PrivateRoute><LocalAdPortal /></PrivateRoute>} />
@@ -185,6 +194,19 @@ function App() {
           <Route path="/jobs/local/post" element={<PrivateRoute><LocalJobPortal /></PrivateRoute>} />
           <Route path="/jobs/it" element={<ItJobs />} />
           <Route path="/jobs/it/post" element={<PrivateRoute><ItJobPortal /></PrivateRoute>} />
+
+          {/* Community Rides */}
+          <Route path="/rides" element={<RidesHub />} />
+          <Route path="/rides/post/offer" element={<PrivateRoute><RidePostForm postType="offering" mode="post" /></PrivateRoute>} />
+          <Route path="/rides/post/request" element={<PrivateRoute><RidePostForm postType="seeking" mode="post" /></PrivateRoute>} />
+          <Route path="/rides/edit/:id" element={<PrivateRoute><RidePostForm mode="edit" /></PrivateRoute>} />
+          <Route path="/rides/:type/:slug" element={<RideDetails />} />
+
+          {/* Finance / Invest / Tax */}
+          <Route path="/financial-advisors" element={<FinanceSearch />} />
+          <Route path="/financial-advisors/post" element={<PrivateRoute><FinancePortal /></PrivateRoute>} />
+          <Route path="/financial-advisors/edit/:id" element={<PrivateRoute><FinancePortal mode="edit" /></PrivateRoute>} />
+          <Route path="/financial-advisors/:slug" element={<FinanceProfile />} />
 
           {/* Events */}
           <Route path="/events/:action?" element={<EventsLanding />} />

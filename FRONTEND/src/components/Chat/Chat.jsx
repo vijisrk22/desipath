@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import Footer from "../Footer/Footer";
 import Navbar from "../Navbar/Navbar";
 import ChatList from "./ChatList";
@@ -13,6 +13,7 @@ function Chat() {
   const { userMessages } = useSelector((state) => state.chat);
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const chatPartnerInfo = useMemo(() => {
     const raw = searchParams.get("chatPartnerInfo");
@@ -31,6 +32,27 @@ function Chat() {
   useEffect(() => {
     dispatch(fetchChatList());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!chatPartnerInfo && userMessages?.length > 0 && user) {
+      const validChats = userMessages.filter(
+        (chat) => chat?.chatPartner && Number(chat.chatPartner.id) !== Number(user?.id)
+      );
+      if (validChats.length > 0) {
+        const firstChat = validChats[0];
+        const info = {
+          chatPartnerId: firstChat.chatPartner.id,
+          chatPartnerName: firstChat.chatPartner.name,
+        };
+        navigate(
+          `/inbox?adType=${firstChat.ad_type}&adId=${firstChat.ad_id}&chatPartnerInfo=${encodeURIComponent(
+            JSON.stringify(info)
+          )}`,
+          { replace: true }
+        );
+      }
+    }
+  }, [chatPartnerInfo, userMessages, user, navigate]);
 
   return (
     <div className="bg-[#f3f4f6] min-h-screen">

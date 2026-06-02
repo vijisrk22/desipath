@@ -53,11 +53,11 @@ function ChatList() {
           p: 0,
           backgroundColor: "#ffffff",
           "&::-webkit-scrollbar": {
-            width: "4px",
+            width: "8px",
           },
           "&::-webkit-scrollbar-thumb": {
             backgroundColor: "#d1d5db",
-            borderRadius: "4px",
+            borderRadius: "8px",
           },
         }}
       >

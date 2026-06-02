@@ -134,11 +134,11 @@ function ChatScreen({ loggedInUser, chatPartner, adId, adType }) {
           flexDirection: "column",
           gap: 2,
           "&::-webkit-scrollbar": {
-            width: "4px",
+            width: "8px",
           },
           "&::-webkit-scrollbar-thumb": {
             backgroundColor: "#d1d5db",
-            borderRadius: "4px",
+            borderRadius: "8px",
           },
         }}
       >

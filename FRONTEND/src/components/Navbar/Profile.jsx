@@ -5,6 +5,7 @@ import {
   Menu,
   MenuItem,
   Typography,
+  Avatar
 } from "@mui/material";
 import { useState } from "react";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -12,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../store/UserSlice";
 import { useNavigate } from "react-router-dom";
 import Loader from "../Loader";
+import { getFullImageUrl } from "../../utils/imageHelper";
 
 function Profile({ user, viewPortClass = "md:flex hidden" }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -58,8 +60,17 @@ function Profile({ user, viewPortClass = "md:flex hidden" }) {
             aria-haspopup="true"
             onClick={handleMenu}
             color="gray"
+            sx={{ p: 0.5 }}
           >
-            <AccountCircle sx={{ fontSize: 48 }} />
+            {(user?.profile_photo || user?.photoUrl) ? (
+              <Avatar
+                src={getFullImageUrl(user.profile_photo || user.photoUrl)}
+                alt={user?.name || "User Avatar"}
+                sx={{ width: 48, height: 48, border: "2px solid #e5e7eb" }}
+              />
+            ) : (
+              <AccountCircle sx={{ fontSize: 48 }} />
+            )}
           </IconButton>
           <Menu
             id="menu-appbar"

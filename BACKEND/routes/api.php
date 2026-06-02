@@ -28,6 +28,9 @@ use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\RealEstateController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\AttorneyController;
+use App\Http\Controllers\Api\BuySellItemController;
+use App\Http\Controllers\Api\CommunityRideController;
+use App\Http\Controllers\Api\FinancialAdvisorController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -59,6 +62,19 @@ Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
     return response()->json(['message' => 'Logged out successfully']);
+});
+
+// --- Financial Advisors Routes ---
+Route::prefix('financial-advisors')->group(function () {
+    Route::get('/', [FinancialAdvisorController::class, 'index']);
+    Route::get('/{slug}', [FinancialAdvisorController::class, 'show']);
+});
+
+Route::middleware('auth:sanctum')->prefix('financial-advisors')->group(function () {
+    Route::post('/', [FinancialAdvisorController::class, 'store']);
+    Route::get('/my-listings', [FinancialAdvisorController::class, 'myListings']);
+    Route::put('/{id}', [FinancialAdvisorController::class, 'update']);
+    Route::delete('/{id}', [FinancialAdvisorController::class, 'destroy']);
 });
 
 // Route::middleware('auth:sanctum')->get('/profile', function (Request $request) {
@@ -515,8 +531,6 @@ Route::get('/attorneys', [AttorneyController::class, 'index']);
 Route::get('/attorneys/{slug}', [AttorneyController::class, 'show']);
 
 // --- Buy/Sell Items Routes ---
-use App\Http\Controllers\BuySellItemController;
-
 Route::prefix('buy-sell-items')->group(function () {
     Route::get('/', [BuySellItemController::class, 'index']);
     Route::get('/{id}', [BuySellItemController::class, 'show'])->where('id', '[0-9]+');
@@ -548,4 +562,17 @@ Route::middleware('auth:sanctum')->prefix('jobs')->group(function () {
     Route::post('/referrals', [JobReferralController::class, 'store']);
     Route::post('/local', [LocalJobController::class, 'store']);
     Route::post('/it', [ItJobController::class, 'store']);
+});
+
+// --- Community Rides Routes ---
+Route::middleware('auth:sanctum')->prefix('rides')->group(function () {
+    Route::get('/my-listings', [CommunityRideController::class, 'myListings']);
+    Route::post('/', [CommunityRideController::class, 'store']);
+    Route::put('/{id}', [CommunityRideController::class, 'update']);
+    Route::delete('/{id}', [CommunityRideController::class, 'destroy']);
+});
+
+Route::prefix('rides')->group(function () {
+    Route::get('/', [CommunityRideController::class, 'index']);
+    Route::get('/{slug}', [CommunityRideController::class, 'show']);
 });

@@ -56,6 +56,8 @@ const MyListings = () => {
         { id: 'KidsClass', label: 'Kids Class', icon: '🎨', listPath: '/api/kids-classes/my-listings', del: deleteKidsClass, upd: updateKidsClass, redirect: '/kids-class/instructor-portal/edit' },
         { id: 'Photography', label: 'Photography', icon: '📸', listPath: '/api/photography/my-listings', del: deletePhotographer, upd: updatePhotographer, redirect: '/services/photography/edit' },
         { id: 'Attorneys', label: 'Desi Attorneys', icon: '⚖️', listPath: '/api/attorneys/my-listings', redirect: '/desi-attorneys/edit' },
+        { id: 'Rides', label: 'Community Rides', icon: '🚗', listPath: '/api/rides/my-listings', redirect: '/rides/edit' },
+        { id: 'Finance', label: 'Financial Advisors', icon: '📈', listPath: '/api/financial-advisors/my-listings', redirect: '/financial-advisors/edit' },
     ];
 
     const fetchCategoryData = async (catId) => {
@@ -71,7 +73,7 @@ const MyListings = () => {
             // Backend returns already filtered list
             const formatted = data.map(item => ({
                 ...item,
-                id: item.id || item.attorney_id || item.doctor_id,
+                id: item.id || item.attorney_id || item.doctor_id || item.ride_id || item.advisor_id,
                 status: item.status || item.profile_status || 'pending',
                 _categoryType: cat.label,
                 _catId: cat.id,
@@ -106,13 +108,14 @@ const MyListings = () => {
 
     const handleDelete = async (item) => {
         if (window.confirm("Are you sure you want to delete this listing?")) {
-            if (item._catId === 'Attorneys') {
+            if (item._catId === 'Attorneys' || item._catId === 'Rides') {
                 try {
-                    await api.delete(`/api/attorneys/${item.id}`);
+                    const endpoint = item._catId === 'Attorneys' ? `/api/attorneys/${item.id}` : `/api/rides/${item.ride_id || item.id}`;
+                    await api.delete(endpoint);
                     showToast('Listing deleted successfully', 'success');
                     fetchCategoryData(item._catId);
                 } catch (err) {
-                    console.error("Failed to delete attorney:", err);
+                    console.error("Failed to delete listing:", err);
                     showToast('Failed to delete listing', 'error');
                 }
             } else {
@@ -133,10 +136,10 @@ const MyListings = () => {
         setTabData(prev => ({ ...prev, [activeTab]: updatedData }));
 
         try {
-            if (item._catId === 'Attorneys') {
-                await api.put(`/api/attorneys/${item.id}`, {
-                    profile_status: newStatus
-                });
+            if (item._catId === 'Attorneys' || item._catId === 'Rides') {
+                const endpoint = item._catId === 'Attorneys' ? `/api/attorneys/${item.id}` : `/api/rides/${item.ride_id || item.id}`;
+                const payload = item._catId === 'Attorneys' ? { profile_status: newStatus } : { status: newStatus };
+                await api.put(endpoint, payload);
                 showToast('Listing updated', 'success');
             } else {
                 const idKey = item._catId.toLowerCase() === 'houses' ? 'houseId' : 

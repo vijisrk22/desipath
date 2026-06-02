@@ -70,20 +70,6 @@ function ChatScreenHeader({ adId, adType }) {
             {chatPartnerInfo?.chatPartnerName || "User"}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box 
-              sx={{ 
-                px: 1, 
-                py: 0.25, 
-                borderRadius: "4px", 
-                backgroundColor: "#dcfce7", 
-                fontSize: "0.6rem", 
-                color: "#166534",
-                fontWeight: "bold",
-                textTransform: "uppercase"
-              }}
-            >
-              {adType}
-            </Box>
             <Typography
               sx={{
                 color: "#9ca3af",
