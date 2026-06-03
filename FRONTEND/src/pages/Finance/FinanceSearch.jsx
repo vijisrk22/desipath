@@ -7,6 +7,9 @@ import Footer from '../../components/Footer/Footer';
 export default function FinanceSearch() {
   const [advisors, setAdvisors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalAdvisors, setTotalAdvisors] = useState(0);
   const [filters, setFilters] = useState({
     query: '',
     pfic_advisory: false,
@@ -32,9 +35,12 @@ export default function FinanceSearch() {
       if (filters.fbar_fatca_advisory) params.append('fbar_fatca_advisory', '1');
       if (filters.dtaa_optimization) params.append('dtaa_optimization', '1');
       if (filters.fee_structure) params.append('fee_structure', filters.fee_structure);
+      params.append('page', currentPage);
 
       const res = await api.get(`/api/financial-advisors?${params.toString()}`);
       setAdvisors(res.data.data || []);
+      setTotalPages(res.data.last_page || 1);
+      setTotalAdvisors(res.data.total || 0);
     } catch (err) {
       console.error(err);
     } finally {
@@ -43,8 +49,18 @@ export default function FinanceSearch() {
   };
 
   useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when filters change
+  }, [filters.query, filters.category, filters.pfic_advisory, filters.fbar_fatca_advisory, filters.dtaa_optimization, filters.fee_structure]);
+
+  useEffect(() => {
     fetchAdvisors();
-  }, [filters.category, filters.pfic_advisory, filters.fbar_fatca_advisory, filters.dtaa_optimization, filters.fee_structure]);
+  }, [currentPage, filters.category, filters.pfic_advisory, filters.fbar_fatca_advisory, filters.dtaa_optimization, filters.fee_structure]);
+
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http') || path.startsWith('/img/')) return path;
+    return `http://localhost:8000/storage/${path}`;
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -173,7 +189,7 @@ export default function FinanceSearch() {
         {/* Results */}
         <section className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{advisors.length} Verified Advisors Found</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{totalAdvisors} Verified Advisors Found</h2>
           </div>
 
           {loading ? (
@@ -193,10 +209,10 @@ export default function FinanceSearch() {
                   <div className="flex flex-col sm:flex-row gap-6">
                     {/* Avatar */}
                     <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-50 rounded-full flex-shrink-0 flex items-center justify-center text-2xl font-bold text-blue-700 overflow-hidden border-2 border-white shadow-sm group-hover:scale-105 transition transform">
-                      {advisor.user?.profile_photo ? (
-                        <img src={`http://localhost:8000/storage/${advisor.user.profile_photo}`} alt={advisor.user.name} className="w-full h-full object-cover" />
+                      {(advisor.advisor_profile_image || advisor.user?.profile_photo) ? (
+                        <img src={getImageUrl(advisor.advisor_profile_image) || getImageUrl(advisor.user?.profile_photo)} alt={advisor.consultant_name || advisor.user?.name} className="w-full h-full object-cover" />
                       ) : (
-                        advisor.user?.name?.charAt(0) || 'A'
+                        (advisor.consultant_name || advisor.user?.name)?.charAt(0) || 'A'
                       )}
                     </div>
                     
@@ -205,7 +221,7 @@ export default function FinanceSearch() {
                       <div className="flex justify-between items-start">
                         <div>
                           <Link to={`/financial-advisors/${advisor.slug}`} className="text-xl font-bold text-gray-900 hover:text-blue-600 transition">
-                            {advisor.user?.name}
+                            {advisor.consultant_name || advisor.user?.name}
                           </Link>
                           <p className="text-gray-600 font-medium">{advisor.firm_name}</p>
                         </div>
@@ -235,6 +251,9 @@ export default function FinanceSearch() {
                         {advisor.pfic_advisory && <span className="bg-orange-50 text-orange-700 text-xs px-2.5 py-1 rounded-md font-medium border border-orange-100">PFIC Advisory</span>}
                         {advisor.fbar_fatca_advisory && <span className="bg-orange-50 text-orange-700 text-xs px-2.5 py-1 rounded-md font-medium border border-orange-100">FBAR/FATCA</span>}
                         {advisor.dtaa_optimization && <span className="bg-orange-50 text-orange-700 text-xs px-2.5 py-1 rounded-md font-medium border border-orange-100">DTAA Spec.</span>}
+                        {advisor.services && advisor.services.slice(0, 3).map((service, idx) => (
+                          <span key={idx} className="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-md font-medium border border-blue-100">{service}</span>
+                        ))}
                       </div>
 
                     </div>
@@ -248,6 +267,27 @@ export default function FinanceSearch() {
                   </div>
                 </div>
               ))}
+              
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-2 mt-8">
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 rounded-lg font-medium transition ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    Previous
+                  </button>
+                  <span className="text-gray-600 font-medium">Page {currentPage} of {totalPages}</span>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 rounded-lg font-medium transition ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </section>

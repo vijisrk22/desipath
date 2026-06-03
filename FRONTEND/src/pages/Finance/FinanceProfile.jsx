@@ -49,13 +49,14 @@ export default function FinanceProfile() {
     );
   }
 
-  const profileImageUrl = advisor.advisor_profile_image 
-    ? `http://localhost:8000/storage/${advisor.advisor_profile_image}`
-    : (advisor.user?.profile_photo ? `http://localhost:8000/storage/${advisor.user.profile_photo}` : null);
-    
-  const coverImageUrl = advisor.cover_image 
-    ? `http://localhost:8000/storage/${advisor.cover_image}`
-    : 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80';
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http') || path.startsWith('/img/')) return path;
+    return `http://localhost:8000/storage/${path}`;
+  };
+
+  const profileImageUrl = getImageUrl(advisor.advisor_profile_image) || getImageUrl(advisor.user?.profile_photo) || null;
+  const coverImageUrl = getImageUrl(advisor.cover_image) || 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80';
 
   const displayName = advisor.consultant_name || advisor.user?.name;
 

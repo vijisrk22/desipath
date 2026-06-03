@@ -9,6 +9,7 @@ export default function FinancePortal({ mode = 'post' }) {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
+  const [citySuggestions, setCitySuggestions] = useState([]);
   
   const [formData, setFormData] = useState({
     firm_name: '',
@@ -58,6 +59,24 @@ export default function FinancePortal({ mode = 'post' }) {
     const { name, files: selectedFiles } = e.target;
     if (selectedFiles.length > 0) {
       setFiles(prev => ({ ...prev, [name]: selectedFiles[0] }));
+    }
+  };
+
+  const handleCitySearch = async (val) => {
+    setFormData(prev => ({ ...prev, primary_city: val }));
+    if (val.length > 1) {
+      try {
+        const parts = val.split(',').map(p => p.trim());
+        const searchTerm = parts[parts.length - 1];
+        if (searchTerm.length < 2) return;
+        const res = await api.get(`/api/location/locations?filter=${searchTerm}`);
+        const data = res.data?.value || (Array.isArray(res.data) ? res.data : []);
+        setCitySuggestions(data.map(loc => `${loc.city}, ${loc.state_name}, ${loc.zip}`));
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      setCitySuggestions([]);
     }
   };
 
@@ -182,9 +201,33 @@ export default function FinancePortal({ mode = 'post' }) {
           <div>
             <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Location & Practice</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium mb-1">Primary City</label>
-                <input name="primary_city" value={formData.primary_city} onChange={handleChange} required className="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <div className="relative">
+                <label className="block text-sm font-medium mb-1">Primary City / Zip Code</label>
+                <input 
+                  name="primary_city" 
+                  value={formData.primary_city} 
+                  onChange={(e) => handleCitySearch(e.target.value)} 
+                  required 
+                  autoComplete="off"
+                  placeholder="e.g. New York, NY or 10001"
+                  className="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500" 
+                />
+                {citySuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                    {citySuggestions.map((s, i) => (
+                      <div 
+                        key={i} 
+                        className="px-4 py-3 hover:bg-blue-50 cursor-pointer text-sm border-b border-gray-50 last:border-0 transition text-gray-700" 
+                        onClick={() => {
+                          setFormData(prev => ({...prev, primary_city: s}));
+                          setCitySuggestions([]);
+                        }}
+                      >
+                        {s}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Licensed States (Hold Ctrl/Cmd to select multiple)</label>

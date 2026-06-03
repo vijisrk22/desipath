@@ -63,6 +63,7 @@ const PhotographerDetails = lazy(() => import("./pages/Photography/PhotographerD
 const PhotographyPortal = lazy(() => import("./pages/Photography/PhotographyPortal"));
 const PhotographySuccess = lazy(() => import("./pages/Photography/PhotographySuccess"));
 const ForumAdmin = lazy(() => import("./pages/AdminDashboard/ForumAdmin"));
+const NewsReviewQueue = lazy(() => import("./pages/Admin/NewsReviewQueue"));
 const InstructorProfile = lazy(() => import("./pages/InstructorProfile"));
 const FindProperties = lazy(() => import("./pages/RealEstate/FindProperties"));
 const PostProperty = lazy(() => import("./pages/RealEstate/PostProperty"));
@@ -320,6 +321,7 @@ function App() {
             <Route path="zipcodes" element={<ZipcodesAdmin />} />
             <Route path="it-training-leads" element={<ItTrainingLeadsAdmin />} />
             <Route path="forum" element={<ForumAdmin />} />
+            <Route path="news-queue" element={<NewsReviewQueue />} />
             <Route path="*" element={<div className="p-10 font-bold text-gray-500">Module coming soon...</div>} />
           </Route>
 

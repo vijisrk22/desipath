@@ -21,13 +21,37 @@ class FinancialAdvisorController extends Controller
             // Text search
             if ($request->has('query') && !empty($request->input('query'))) {
                 $q = $request->input('query');
-                $query->where(function($qBuilder) use ($q) {
-                    $qBuilder->whereHas('user', function($u) use ($q) {
+                
+                // State abbreviation mapping
+                $states = [
+                    'alabama' => 'AL', 'alaska' => 'AK', 'arizona' => 'AZ', 'arkansas' => 'AR', 'california' => 'CA',
+                    'colorado' => 'CO', 'connecticut' => 'CT', 'delaware' => 'DE', 'florida' => 'FL', 'georgia' => 'GA',
+                    'hawaii' => 'HI', 'idaho' => 'ID', 'illinois' => 'IL', 'indiana' => 'IN', 'iowa' => 'IA',
+                    'kansas' => 'KS', 'kentucky' => 'KY', 'louisiana' => 'LA', 'maine' => 'ME', 'maryland' => 'MD',
+                    'massachusetts' => 'MA', 'michigan' => 'MI', 'minnesota' => 'MN', 'mississippi' => 'MS', 'missouri' => 'MO',
+                    'montana' => 'MT', 'nebraska' => 'NE', 'nevada' => 'NV', 'new hampshire' => 'NH', 'new jersey' => 'NJ',
+                    'new mexico' => 'NM', 'new york' => 'NY', 'north carolina' => 'NC', 'north dakota' => 'ND', 'ohio' => 'OH',
+                    'oklahoma' => 'OK', 'oregon' => 'OR', 'pennsylvania' => 'PA', 'rhode island' => 'RI', 'south carolina' => 'SC',
+                    'south dakota' => 'SD', 'tennessee' => 'TN', 'texas' => 'TX', 'utah' => 'UT', 'vermont' => 'VT',
+                    'virginia' => 'VA', 'washington' => 'WA', 'west virginia' => 'WV', 'wisconsin' => 'WI', 'wyoming' => 'WY'
+                ];
+                
+                $qLower = strtolower(trim($q));
+                $mappedState = array_key_exists($qLower, $states) ? $states[$qLower] : null;
+
+                $query->where(function($qBuilder) use ($q, $mappedState) {
+                    $qBuilder->where('consultant_name', 'like', "%{$q}%")
+                    ->orWhereHas('user', function($u) use ($q) {
                         $u->where('name', 'like', "%{$q}%");
                     })
                     ->orWhere('firm_name', 'like', "%{$q}%")
                     ->orWhere('primary_city', 'like', "%{$q}%")
+                    ->orWhere('state', 'like', "%{$q}%")
                     ->orWhere('nri_specialist_statement', 'like', "%{$q}%");
+                    
+                    if ($mappedState) {
+                        $qBuilder->orWhere('state', $mappedState);
+                    }
                 });
             }
             

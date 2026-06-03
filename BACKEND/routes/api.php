@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomesController;
+use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\RentalHomesController;
 use App\Http\Controllers\RoomMatesController;
 use App\Http\Controllers\TrainingAdsController;
@@ -373,6 +374,13 @@ Route::middleware([])->group(function () {
     Route::get('/it-training/instructor/{slug}', [ItTrainingController::class, 'getBySlug']);
     Route::get('/it-training-admin', [ItTrainingController::class, 'adminIndex']);
     Route::post('/it-training/{id}/toggle-status', [ItTrainingController::class, 'adminToggleStatus']);
+});
+
+// --- Admin Routes ---
+Route::prefix('admin/news')->group(function () {
+    Route::get('/queue', [AdminNewsController::class, 'getQueue']);
+    Route::post('/queue/{id}/approve', [AdminNewsController::class, 'approve']);
+    Route::post('/queue/{id}/reject', [AdminNewsController::class, 'reject']);
 });
 
 // --- Forum Routes ---
