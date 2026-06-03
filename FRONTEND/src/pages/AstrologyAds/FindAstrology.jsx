@@ -74,7 +74,7 @@ export default function FindAstrology() {
         paths={paths} 
       />
 
-      <div className="max-w-[1440px] mx-auto px-[7%] mt-[-45px] relative z-20">
+      <div className="max-w-[1440px] mx-auto px-[7%] mt-[-16px] md:mt-[-20px] lg:mt-[-24px] relative z-20">
         {/* Unified Search Section */}
         <div className="bg-white p-2 md:p-3 rounded-[32px] md:rounded-full shadow-2xl border border-slate-200 backdrop-blur-xl flex flex-col md:flex-row gap-2 items-center">
           

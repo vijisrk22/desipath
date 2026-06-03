@@ -124,9 +124,11 @@ export default function DesiDoctorsSearch() {
       </div>
 
       {/* Elegant Hero Search Panel */}
-      <div className="bg-gradient-to-br from-[#0c4a6e] via-[#0284c7] to-[#0369a1] py-12 px-[7%] text-white shadow-md relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-        <div className="max-w-6xl mx-auto relative z-10">
+      <div className="bg-gradient-to-br from-[#0c4a6e] via-[#0284c7] to-[#0369a1] text-white shadow-md relative">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+        </div>
+        <div className="pt-8 pb-12 px-[7%] max-w-6xl mx-auto relative z-10">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-3xl">🩺</span>
             <span className="bg-orange-700/20 text-orange-200 border border-orange-700/30 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">

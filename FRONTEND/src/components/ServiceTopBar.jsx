@@ -83,9 +83,9 @@ function ServiceTopBar({ inputs = [], title, paths, form, plainBg = false }) {
            </div>
         )}
       </div>
-       <div className={`mt-[10px] md:mt-[15px] lg:mt-[20px] ${title === 'Find Your Dream Property' ? 'max-w-6xl mx-auto lg:px-8 w-full' : ''}`}>
-        <div className="inline-flex h-[35px] md:h-[52px] px-8 md:px-10 relative rounded-t-2xl bg-white items-center shadow-sm ml-4 lg:ml-8">
-          <div className="relative text-center text-[#007185] text-[12px] md:text-[15px] lg:text-[17px] xl:text-[18px] font-semibold font-dmsans">
+      <div className={`${title === 'Discover Top Astrologers' ? 'mt-1 md:mt-1.5 lg:mt-2' : 'mt-[10px] md:mt-[15px] lg:mt-[20px]'} ${title === 'Find Your Dream Property' ? 'max-w-6xl mx-auto lg:px-8 w-full' : ''}`}>
+        <div className={`inline-flex h-[35px] md:h-[52px] px-8 md:px-10 relative rounded-t-2xl bg-white ml-4 lg:ml-8 ${title === 'Discover Top Astrologers' ? 'items-start pt-1 md:pt-2' : 'shadow-sm items-center'}`}>
+          <div className={`relative text-center text-[#007185] ${title === 'Discover Top Astrologers' ? 'text-[10px] md:text-[12px] lg:text-[13px] xl:text-[14px]' : 'text-[12px] md:text-[15px] lg:text-[17px] xl:text-[18px]'} font-semibold font-dmsans`}>
             {title}
           </div>
         </div>

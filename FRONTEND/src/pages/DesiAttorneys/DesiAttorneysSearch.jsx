@@ -165,9 +165,11 @@ export default function DesiAttorneysSearch() {
       </div>
 
       {/* Hero Header */}
-      <div className="bg-gradient-to-br from-[#1e293b] via-[#334155] to-[#475569] py-5 px-[7%] text-white shadow-md relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl -mr-16 -mt-16 animate-pulse"></div>
-        <div className="max-w-6xl mx-auto relative z-10">
+      <div className="bg-gradient-to-br from-[#1e293b] via-[#334155] to-[#475569] text-white shadow-md relative">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl -mr-16 -mt-16 animate-pulse"></div>
+        </div>
+        <div className="pt-5 pb-8 px-[7%] max-w-6xl mx-auto relative z-10">
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <span className="text-2xl">⚖️</span>
             <span className="bg-amber-600 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
