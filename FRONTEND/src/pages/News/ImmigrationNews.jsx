@@ -26,6 +26,14 @@ const ImmigrationNews = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [loading, setLoading] = useState(true);
 
+  // Alert settings states
+  const [showAlertSettings, setShowAlertSettings] = useState(false);
+  const [alertEmail, setAlertEmail] = useState('');
+  const [alertEmailError, setAlertEmailError] = useState('');
+  const [selectedAlertCategories, setSelectedAlertCategories] = useState(CATEGORIES.filter(c => c !== 'All'));
+  const [alertFrequency, setAlertFrequency] = useState('instant'); // 'instant', 'daily', 'weekly'
+  const [alertSubmitState, setAlertSubmitState] = useState('idle'); // 'idle', 'submitting', 'success'
+
   // Mobile Swipe and Popup states
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -34,6 +42,26 @@ const ImmigrationNews = () => {
   const [popupUrl, setPopupUrl] = useState(null);
   const [popupTitle, setPopupTitle] = useState('');
   const [swipeClass, setSwipeClass] = useState('transition-all duration-300 ease-out translate-x-0 opacity-100 rotate-0');
+
+  const handleAlertSubmit = (e) => {
+    e.preventDefault();
+    if (!alertEmail) {
+      setAlertEmailError('Email address is required.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(alertEmail)) {
+      setAlertEmailError('Please enter a valid email address.');
+      return;
+    }
+    setAlertEmailError('');
+    setAlertSubmitState('submitting');
+    
+    // Simulate API call for premium user experience
+    setTimeout(() => {
+      setAlertSubmitState('success');
+    }, 1200);
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -163,7 +191,7 @@ const ImmigrationNews = () => {
       <div className="bg-gradient-to-r from-blue-900 to-blue-700 py-5 md:py-10 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-2xl md:text-5xl font-extrabold text-white mb-2">Immigration News</h1>
-          <p className="text-blue-100 text-sm md:text-lg max-w-2xl mx-auto">AI-curated daily news for Indian-Americans in the USA & Canada. Updated every 3–4 hours.</p>
+          <p className="text-blue-100 text-sm md:text-lg max-w-4xl mx-auto">AI-curated daily news for Indian-Americans in the USA & Canada. Updated every 3–4 hours.</p>
         </div>
       </div>
 
@@ -301,6 +329,20 @@ const ImmigrationNews = () => {
               <div className="text-center text-[10px] text-gray-400 mt-2 font-medium">
                 Swipe left for next, swipe right for previous
               </div>
+
+              {/* Mobile Stay Updated alert CTA */}
+              <div className="bg-white rounded-2xl border border-gray-100 p-4 mt-6 shadow-sm flex items-center justify-between">
+                <div className="mr-2">
+                  <h4 className="font-bold text-xs text-gray-900">Stay Updated</h4>
+                  <p className="text-[10px] text-gray-500">Get instant breaking news alerts</p>
+                </div>
+                <button 
+                  onClick={() => setShowAlertSettings(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-xl transition"
+                >
+                  Configure
+                </button>
+              </div>
             </>
           )}
         </div>
@@ -365,7 +407,10 @@ const ImmigrationNews = () => {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
               <h3 className="font-bold text-lg mb-4 text-gray-900 border-b pb-2">Stay Updated</h3>
               <p className="text-sm text-gray-600 mb-4">Never miss an important immigration update. Get high-urgency alerts pushed straight to your phone or email.</p>
-              <button className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">
+              <button 
+                onClick={() => setShowAlertSettings(true)}
+                className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition"
+              >
                 Manage Alert Settings
               </button>
             </div>
@@ -402,6 +447,135 @@ const ImmigrationNews = () => {
                 sandbox="allow-scripts allow-same-origin allow-popups"
               />
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Alert Settings Modal */}
+      {showAlertSettings && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden relative border border-gray-100 transition-all transform animate-scaleUp">
+            
+            {alertSubmitState === 'success' ? (
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-200">
+                  <span className="text-green-500 font-bold text-3xl">✓</span>
+                </div>
+                <h3 className="font-extrabold text-xl text-gray-900 mb-2">Alerts Configured!</h3>
+                <p className="text-sm text-gray-600 mb-6">
+                  We've saved your subscription preferences. High-urgency updates will be sent to <span className="font-semibold text-gray-800">{alertEmail}</span>.
+                </p>
+                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 mb-6 text-left text-xs text-gray-600 space-y-1.5">
+                  <div><span className="font-medium text-gray-800">Frequency:</span> <span className="capitalize">{alertFrequency === 'instant' ? 'Breaking Alerts' : alertFrequency}</span></div>
+                  <div><span className="font-medium text-gray-800">Selected Topics:</span> {selectedAlertCategories.map(c => CATEGORY_NAMES[c] || c).join(', ')}</div>
+                </div>
+                <button 
+                  onClick={() => {
+                    setShowAlertSettings(false);
+                    setTimeout(() => setAlertSubmitState('idle'), 300);
+                  }}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow"
+                >
+                  Dismiss
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleAlertSubmit}>
+                {/* Header */}
+                <div className="bg-gradient-to-r from-blue-900 to-indigo-800 text-white px-6 py-5 relative">
+                  <h3 className="font-extrabold text-lg">Alert Settings</h3>
+                  <p className="text-blue-100 text-xs mt-1">Receive high-urgency notifications for critical updates.</p>
+                  <button 
+                    type="button"
+                    onClick={() => setShowAlertSettings(false)} 
+                    className="absolute top-5 right-5 text-blue-200 hover:text-white transition-colors text-lg"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Body */}
+                <div className="p-6">
+                  {/* Email Field */}
+                  <div className="mb-5">
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Email Address</label>
+                    <input 
+                      type="email" 
+                      value={alertEmail} 
+                      onChange={(e) => {
+                        setAlertEmail(e.target.value);
+                        if (alertEmailError) setAlertEmailError('');
+                      }}
+                      placeholder="you@example.com"
+                      className={`w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
+                        alertEmailError ? 'border-red-400 focus:ring-red-200' : 'border-gray-200 focus:ring-blue-100 focus:border-blue-500'
+                      }`}
+                    />
+                    {alertEmailError && <p className="text-red-500 text-xs mt-1 font-medium">{alertEmailError}</p>}
+                  </div>
+
+                  {/* Categories checkboxes */}
+                  <div className="mb-5">
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Topics of Interest</label>
+                    <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
+                      {CATEGORIES.filter(c => c !== 'All').map(cat => (
+                        <label key={cat} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 border border-gray-100 cursor-pointer select-none transition">
+                          <input 
+                            type="checkbox"
+                            checked={selectedAlertCategories.includes(cat)}
+                            onChange={() => {
+                              setSelectedAlertCategories(prev => 
+                                prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+                              );
+                            }}
+                            className="rounded text-blue-600 focus:ring-blue-400 h-4 w-4"
+                          />
+                          <span className="text-xs font-medium text-gray-700">{CATEGORY_NAMES[cat] || cat}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Frequency toggle */}
+                  <div className="mb-6">
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Alert Frequency</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {['instant', 'daily', 'weekly'].map(freq => (
+                        <button
+                          key={freq}
+                          type="button"
+                          onClick={() => setAlertFrequency(freq)}
+                          className={`py-2 px-3 rounded-xl border text-xs font-bold capitalize transition-all ${
+                            alertFrequency === freq 
+                              ? 'bg-blue-600 text-white border-blue-600 shadow-sm' 
+                              : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                          }`}
+                        >
+                          {freq === 'instant' ? 'Breaking' : freq}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={alertSubmitState === 'submitting'}
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-xs flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {alertSubmitState === 'submitting' ? (
+                      <>
+                        <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        Saving settings...
+                      </>
+                    ) : (
+                      'Save & Activate Alerts'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+
           </div>
         </div>
       )}

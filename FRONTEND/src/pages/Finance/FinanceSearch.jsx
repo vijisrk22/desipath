@@ -77,7 +77,7 @@ export default function FinanceSearch() {
           <h1 className="text-2xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
             Cross-Border Financial Expertise
           </h1>
-          <p className="text-sm md:text-lg text-blue-100 max-w-2xl mx-auto mb-4 md:mb-6 font-light">
+          <p className="text-sm md:text-lg text-blue-100 max-w-4xl mx-auto mb-4 md:mb-6 font-light">
             Connect with specialized advisors for NRIs. Navigate PFIC, DTAA, and complex tax regulations with confidence.
           </p>
           
