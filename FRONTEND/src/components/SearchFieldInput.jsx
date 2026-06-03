@@ -59,56 +59,45 @@ function SearchFieldInput({ inputs, title }) {
     }
   }, [isMobile]);
 
+  // 1. Sync from Redux whenever lastSearchQuery changes
   useEffect(() => {
-    const savedLocation = localStorage.getItem('user_location');
-
-    // 1. Sync from Redux (lastSearchQuery)
     if (lastSearchQuery) {
       const reduxLoc = lastSearchQuery.location || [lastSearchQuery.city, lastSearchQuery.state, lastSearchQuery.zipcode].filter(Boolean).join(", ");
       
-      // If global location changed elsewhere (e.g. Home page), prioritize it
-      if (savedLocation && reduxLoc !== savedLocation && !hasAutoSearched) {
+      setValue("location", reduxLoc);
+      
+      if (lastSearchQuery.priceMin !== undefined && lastSearchQuery.priceMax !== undefined) {
+        setPriceRange([lastSearchQuery.priceMin, lastSearchQuery.priceMax]);
+      }
+      
+      if (title === "Rent a Home") {
+        const rentalTypes = ["Condo", "Single family Home", "Apartment", "Basement Apartment"];
+        rentalTypes.forEach(type => {
+          setValue(`rentalHomeType.${type}`, lastSearchQuery.rentalHomeType?.includes(type) || false); 
+        });
+      }
+    }
+  }, [lastSearchQuery, title, setValue]);
+
+  // 2. Handle initial auto-search / location prioritization
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('user_location');
+    
+    if (savedLocation && !hasAutoSearched) {
+      if (lastSearchQuery) {
+        const reduxLoc = lastSearchQuery.location || [lastSearchQuery.city, lastSearchQuery.state, lastSearchQuery.zipcode].filter(Boolean).join(", ");
+        if (reduxLoc !== savedLocation) {
+          setValue("location", savedLocation);
+          setHasAutoSearched(true);
+          handleSubmit(onSubmit)();
+        }
+      } else {
         setValue("location", savedLocation);
         setHasAutoSearched(true);
         handleSubmit(onSubmit)();
-        return;
       }
-
-      if (title === "Rent a Home" || title === "Buy a home" || title === "Buy a Car" || title === "Find a Room" || title === "Find an Event") {
-        const newLoc = reduxLoc;
-        if (watch("location") !== newLoc) {
-          setValue("location", newLoc);
-        }
-        
-        // Sync Price
-        if (lastSearchQuery.priceMin !== undefined && lastSearchQuery.priceMax !== undefined) {
-          if (priceRange[0] !== lastSearchQuery.priceMin || priceRange[1] !== lastSearchQuery.priceMax) {
-            setPriceRange([lastSearchQuery.priceMin, lastSearchQuery.priceMax]);
-          }
-        }
-        
-        // Sync Types for Rental Homes
-        if (title === "Rent a Home") {
-          const rentalTypes = ["Condo", "Single family Home", "Apartment", "Basement Apartment"];
-          rentalTypes.forEach(type => {
-            const isChecked = lastSearchQuery.rentalHomeType?.includes(type);
-            if (watch(`rentalHomeType.${type}`) !== isChecked) {
-              setValue(`rentalHomeType.${type}`, isChecked); 
-            }
-          });
-        }
-      }
-      return;
     }
-
-    // 2. If no Redux query, check localStorage for session location
-    if (savedLocation && !hasAutoSearched) {
-      setValue("location", savedLocation);
-      // Automatically trigger search ONCE
-      setHasAutoSearched(true);
-      handleSubmit(onSubmit)();
-    }
-  }, [lastSearchQuery, title, setValue, handleSubmit, hasAutoSearched, watch, priceRange]);
+  }, [lastSearchQuery, hasAutoSearched, setValue, handleSubmit]);
 
   useEffect(() => {
     const maxPrice =

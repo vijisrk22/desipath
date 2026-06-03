@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 
 export default function FinanceProfile() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [advisor, setAdvisor] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -60,6 +61,22 @@ export default function FinanceProfile() {
 
   const displayName = advisor.consultant_name || advisor.user?.name;
 
+  const handleContact = (e) => {
+    e.preventDefault();
+    const chatInfo = encodeURIComponent(
+      JSON.stringify({
+        chatPartnerId: advisor.user_id,
+        chatPartnerName: displayName,
+      })
+    );
+    const initialMessage = encodeURIComponent(
+      "I am looking for some help in financial review"
+    );
+    navigate(
+      `/inbox?chatPartnerInfo=${chatInfo}&initialMessage=${initialMessage}&adId=${advisor.id}&adType=financial_advisor`
+    );
+  };
+
   return (
     <div className="bg-[#f3f2ef] min-h-screen flex flex-col font-sans">
       <Navbar />
@@ -100,9 +117,12 @@ export default function FinanceProfile() {
                   <span className="mr-2 text-xl">🎁</span> Free {advisor.free_consultation} Consultation
                 </div>
               )}
-              <a href={`mailto:${advisor.contact_email || advisor.user?.email}`} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold transition shadow-sm self-start mt-2">
+              <button 
+                onClick={handleContact}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold transition shadow-sm self-start mt-2"
+              >
                 Contact Advisor
-              </a>
+              </button>
             </div>
 
             {/* Basic Info */}

@@ -1,4 +1,15 @@
-import { lazy, Suspense } from 'react';
+import { lazy as reactLazy, Suspense } from 'react';
+
+const lazy = (componentImport) =>
+  reactLazy(async () => {
+    try {
+      return await componentImport();
+    } catch (error) {
+      console.error("Error loading chunk, forcing page reload:", error);
+      window.location.reload();
+      return new Promise(() => {}); // Keep loading state active during reload
+    }
+  });
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./Layout";
 import LoginPage from "./pages/LoginPage";
