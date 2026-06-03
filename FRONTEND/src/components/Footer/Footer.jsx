@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import SubscribeNewsletter from "./SubscribeNewsletter";
 
-function Footer({ bgColor = "bg-[#f3f5f7]", newsletter = "hidden", hideOnMobile = false }) {
+function Footer({ bgColor = "bg-[#f3f5f7]", newsletter = "hidden", hideOnMobile = true }) {
   const displayClass = hideOnMobile ? "hidden md:inline-flex" : "inline-flex";
   const icons = [
     "/facebook.svg",

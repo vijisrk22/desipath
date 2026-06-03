@@ -29,10 +29,11 @@ const ImmigrationNews = () => {
   // Mobile Swipe and Popup states
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchStartY, setTouchStartY] = useState(null);
   const [popupUrl, setPopupUrl] = useState(null);
   const [popupTitle, setPopupTitle] = useState('');
+  const [swipeClass, setSwipeClass] = useState('transition-all duration-300 ease-out translate-x-0 opacity-100 rotate-0');
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -47,38 +48,67 @@ const ImmigrationNews = () => {
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
-    if (!e.changedTouches || e.changedTouches.length === 0) return;
-    setTouchEnd(null);
-    setTouchStart(e.changedTouches[0].clientX);
+    const touch = e.nativeEvent.changedTouches?.[0] || e.changedTouches?.[0];
+    if (!touch) return;
+    setTouchStartX(touch.clientX);
+    setTouchStartY(touch.clientY);
   };
 
-  const onTouchMove = (e) => {
-    if (!e.changedTouches || e.changedTouches.length === 0) return;
-    setTouchEnd(e.changedTouches[0].clientX);
-  };
+  const onTouchEnd = (e) => {
+    if (touchStartX === null || touchStartY === null) return;
+    const touch = e.nativeEvent.changedTouches?.[0] || e.changedTouches?.[0];
+    if (!touch) return;
 
-  const onTouchEnd = () => {
-    if (touchStart === null || touchEnd === null) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+    const endX = touch.clientX;
+    const endY = touch.clientY;
 
-    if (isLeftSwipe) {
-      handlePrev(); // Swipe Left -> Previous
-    } else if (isRightSwipe) {
-      handleNext(); // Swipe Right -> Next
+    const diffX = touchStartX - endX;
+    const diffY = touchStartY - endY;
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      if (Math.abs(diffX) > minSwipeDistance) {
+        if (diffX > 0) {
+          handleNext(); // Swipe Left -> Next
+        } else {
+          handlePrev(); // Swipe Right -> Previous
+        }
+      }
     }
+
+    setTouchStartX(null);
+    setTouchStartY(null);
+  };
+
+  const animateCard = (direction, callback) => {
+    setSwipeClass(
+      direction === 'left'
+        ? 'transition-all duration-200 ease-in translate-x-[-120%] opacity-0 -rotate-6'
+        : 'transition-all duration-200 ease-in translate-x-[120%] opacity-0 rotate-6'
+    );
+
+    setTimeout(() => {
+      callback();
+      setSwipeClass(
+        direction === 'left'
+          ? 'translate-x-[120%] opacity-0 rotate-6'
+          : 'translate-x-[-120%] opacity-0 -rotate-6'
+      );
+
+      setTimeout(() => {
+        setSwipeClass('transition-all duration-300 ease-out translate-x-0 opacity-100 rotate-0');
+      }, 30);
+    }, 200);
   };
 
   const handleNext = () => {
     if (currentIndex < news.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+      animateCard('left', () => setCurrentIndex(prev => prev + 1));
     }
   };
 
   const handlePrev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
+      animateCard('right', () => setCurrentIndex(prev => prev - 1));
     }
   };
 
@@ -162,12 +192,36 @@ const ImmigrationNews = () => {
             <p className="text-center text-gray-500 py-20">No news found for this category.</p>
           ) : (
             <>
+              {/* Navigation Indicators (Top) */}
+              <div className="flex items-center justify-between mb-2 px-2 select-none">
+                <button 
+                  onClick={handlePrev} 
+                  disabled={currentIndex === 0}
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-white border border-gray-200 text-gray-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed active:bg-gray-50 transition"
+                >
+                  &larr; Prev
+                </button>
+                <span className="text-xs font-extrabold text-gray-400 tracking-wider">
+                  {currentIndex + 1} of {news.length}
+                </span>
+                <button 
+                  onClick={handleNext} 
+                  disabled={currentIndex === news.length - 1}
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-white border border-gray-200 text-gray-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed active:bg-gray-50 transition"
+                >
+                  Next &rarr;
+                </button>
+              </div>
+              <div className="text-center text-[10px] text-gray-400 mb-4 font-medium">
+                Swipe left for next, swipe right for previous
+              </div>
+
               {/* Swipeable Card */}
               <div 
                 onTouchStart={onTouchStart}
-                onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
-                className="bg-white rounded-3xl border border-gray-100 p-6 shadow-lg flex-1 flex flex-col justify-between min-h-[420px] relative transition-transform duration-300 active:scale-[0.99] touch-pan-y"
+                onTouchCancel={onTouchEnd}
+                className={`bg-white rounded-3xl border border-gray-100 p-6 shadow-lg flex-1 flex flex-col justify-between min-h-[420px] relative active:scale-[0.99] touch-pan-y ${swipeClass}`}
                 style={{ touchAction: 'pan-y' }}
               >
                 <div>
@@ -245,7 +299,7 @@ const ImmigrationNews = () => {
                 </button>
               </div>
               <div className="text-center text-[10px] text-gray-400 mt-2 font-medium">
-                Swipe left for previous, swipe right for next
+                Swipe left for next, swipe right for previous
               </div>
             </>
           )}
