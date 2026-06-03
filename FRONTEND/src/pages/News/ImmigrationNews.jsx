@@ -348,12 +348,12 @@ const ImmigrationNews = () => {
 
                   <div className="flex justify-between items-center text-xs text-gray-500 pt-4 border-t border-gray-50">
                     <span>Source: {article.source_name} &bull; {new Date(article.published_at).toLocaleDateString()}</span>
-                    <button 
-                      onClick={() => openPopupModal(article.source_url, article.ai_headline)}
+                    <Link 
+                      to={`/immigration-news/${article.slug}`}
                       className="font-semibold text-blue-600 hover:underline"
                     >
                       Read more &rarr;
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))
