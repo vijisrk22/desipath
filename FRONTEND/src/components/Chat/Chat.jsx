@@ -34,6 +34,9 @@ function Chat() {
   }, [dispatch]);
 
   useEffect(() => {
+    // Only auto-select the first chat on desktop screen widths (1024px and above)
+    if (window.innerWidth < 1024) return;
+
     if (!chatPartnerInfo && userMessages?.length > 0 && user) {
       const validChats = userMessages.filter(
         (chat) => chat?.chatPartner && Number(chat.chatPartner.id) !== Number(user?.id)

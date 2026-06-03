@@ -72,12 +72,12 @@ export default function FinanceSearch() {
       <Navbar />
       
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-700 py-8 px-4">
+      <div className="bg-gradient-to-r from-blue-900 to-blue-700 py-4 md:py-8 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
+          <h1 className="text-2xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
             Cross-Border Financial Expertise
           </h1>
-          <p className="text-lg text-blue-100 max-w-2xl mx-auto mb-6 font-light">
+          <p className="text-sm md:text-lg text-blue-100 max-w-2xl mx-auto mb-4 md:mb-6 font-light">
             Connect with specialized advisors for NRIs. Navigate PFIC, DTAA, and complex tax regulations with confidence.
           </p>
           

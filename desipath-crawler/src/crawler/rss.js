@@ -9,15 +9,34 @@ const parser = new Parser({
 });
 
 const RSS_SOURCES = [
+    // --- Official Government Sources ---
+    { name: 'USCIS News Releases', url: 'https://www.uscis.gov/rss-news/1/1125', category: 'official_govt' },
+    { name: 'USCIS Alerts', url: 'https://www.uscis.gov/rss-news/5/1125', category: 'official_govt' },
+    { name: 'IRCC Canada Newsroom', url: 'https://api.io.canada.ca/io-server/gc/news/en/v2?dept=immigrationrefugeesandcitizenshipcanada', category: 'official_govt' },
     { name: 'USCIS Official Newsroom', url: 'https://www.uscis.gov/news/rss', category: 'official_govt' },
-    { name: 'US State Dept Visa Bulletins', url: 'https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin.html', category: 'official_govt' }, // Wait, this is a web page, not RSS.
+
+    // --- Immigration Legal & Advocacy Blogs ---
     { name: 'Immigration Impact', url: 'https://immigrationimpact.com/feed/', category: 'advocacy' },
+    { name: 'RedBus2US', url: 'https://redbus2us.com/feed/', category: 'legal' },
+    { name: 'Murthy Law Firm', url: 'https://murthy.com/feed/', category: 'legal' },
+    { name: 'Visa Lawyer Blog', url: 'https://visalawyerblog.com/feed/', category: 'legal' },
     { name: 'AILA', url: 'https://www.aila.org/rss/news', category: 'legal' },
     { name: 'Boundless Immigration Blog', url: 'https://www.boundless.com/blog/feed/', category: 'legal' },
     { name: 'National Immigration Forum', url: 'https://immigrationforum.org/feed/', category: 'advocacy' },
-    { name: 'Times of India NRI', url: 'https://timesofindia.indiatimes.com/rssfeeds/71.cms', category: 'news_site' }, // updated URL based on typical TOI RSS
+
+    // --- Indo-American & Diaspora News ---
+    { name: 'The American Bazaar', url: 'https://www.theamericanbazaar.com/feed/', category: 'community' },
     { name: 'India West', url: 'https://www.indiawest.com/feed/', category: 'community' },
-    { name: 'Economic Times NRI', url: 'https://economictimes.indiatimes.com/nri/rssfeeds/242254924.cms', category: 'news_site' }
+
+    // --- News Sites & Diaspora Focus ---
+    { name: 'Times of India NRI', url: 'https://timesofindia.indiatimes.com/rssfeeds/71.cms', category: 'news_site' },
+    { name: 'Economic Times NRI', url: 'https://economictimes.indiatimes.com/nri/rssfeeds/242254924.cms', category: 'news_site' },
+    { name: 'The Hindu', url: 'https://www.thehindu.com/feeder/default.rss', category: 'news_site' },
+    { name: 'Indian Express', url: 'https://indianexpress.com/feed/', category: 'news_site' },
+    { name: 'NDTV Latest News', url: 'https://feeds.feedburner.com/NDTV-LatestNews', category: 'news_site' },
+    { name: 'Reuters World', url: 'https://feeds.reuters.com/reuters/worldNews', category: 'news_site' },
+    { name: 'AP Top News', url: 'https://rsshub.app/apnews/topics/apf-topnews', category: 'news_site' },
+    { name: 'NPR News', url: 'https://feeds.npr.org/1001/rss.xml', category: 'news_site' }
 ];
 
 async function isDuplicate(url, title) {

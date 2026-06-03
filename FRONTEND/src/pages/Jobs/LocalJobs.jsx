@@ -67,7 +67,7 @@ const LocalJobs = () => {
             
             {/* Breadcrumb & Top Actions */}
             <div className="flex items-center justify-between mb-4">
-              <div className="text-sm text-blue-200 flex items-center">
+              <div className="text-sm text-blue-200 hidden md:flex items-center">
                 <span onClick={() => navigate('/')} className="cursor-pointer hover:text-white hover:underline font-medium">Home</span>
                 <span className="mx-2">&gt;</span>
                 <span onClick={() => navigate('/jobs')} className="cursor-pointer hover:text-white hover:underline font-medium">Jobs</span>

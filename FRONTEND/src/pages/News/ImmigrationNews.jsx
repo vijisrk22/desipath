@@ -160,10 +160,10 @@ const ImmigrationNews = () => {
       )}
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-700 py-10 px-4">
+      <div className="bg-gradient-to-r from-blue-900 to-blue-700 py-5 md:py-10 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-2">Immigration News</h1>
-          <p className="text-blue-100 text-lg max-w-2xl mx-auto">AI-curated daily news for Indian-Americans in the USA & Canada. Updated every 3–4 hours.</p>
+          <h1 className="text-2xl md:text-5xl font-extrabold text-white mb-2">Immigration News</h1>
+          <p className="text-blue-100 text-sm md:text-lg max-w-2xl mx-auto">AI-curated daily news for Indian-Americans in the USA & Canada. Updated every 3–4 hours.</p>
         </div>
       </div>
 
