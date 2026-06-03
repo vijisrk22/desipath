@@ -77,16 +77,18 @@ const ImmigrationNewsDetail = () => {
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
+    if (!e.changedTouches || e.changedTouches.length === 0) return;
     setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    setTouchStart(e.changedTouches[0].clientX);
   };
 
   const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    if (!e.changedTouches || e.changedTouches.length === 0) return;
+    setTouchEnd(e.changedTouches[0].clientX);
   };
 
   const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+    if (touchStart === null || touchEnd === null) return;
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -132,7 +134,8 @@ const ImmigrationNewsDetail = () => {
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
-              className="bg-white rounded-3xl border border-gray-100 p-6 shadow-lg flex-1 flex flex-col justify-between min-h-[420px] relative transition-transform duration-300 active:scale-[0.99]"
+              className="bg-white rounded-3xl border border-gray-100 p-6 shadow-lg flex-1 flex flex-col justify-between min-h-[420px] relative transition-transform duration-300 active:scale-[0.99] touch-pan-y"
+              style={{ touchAction: 'pan-y' }}
             >
               <div>
                 <div className="flex items-center space-x-2 mb-4">
