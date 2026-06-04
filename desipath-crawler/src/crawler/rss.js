@@ -36,7 +36,19 @@ const RSS_SOURCES = [
     { name: 'NDTV Latest News', url: 'https://feeds.feedburner.com/NDTV-LatestNews', category: 'news_site' },
     { name: 'Reuters World', url: 'https://feeds.reuters.com/reuters/worldNews', category: 'news_site' },
     { name: 'AP Top News', url: 'https://rsshub.app/apnews/topics/apf-topnews', category: 'news_site' },
-    { name: 'NPR News', url: 'https://feeds.npr.org/1001/rss.xml', category: 'news_site' }
+    { name: 'NPR News', url: 'https://feeds.npr.org/1001/rss.xml', category: 'news_site' },
+
+    // --- Tech Industry, Layoffs & AI ---
+    { name: 'TechCrunch Layoffs', url: 'https://techcrunch.com/tag/layoffs/feed/', category: 'layoffs' },
+    { name: 'VentureBeat AI', url: 'https://venturebeat.com/category/ai/feed/', category: 'ai' },
+    { name: 'TechCrunch AI', url: 'https://techcrunch.com/category/artificial-intelligence/feed/', category: 'ai' },
+
+    // --- Indian & Global IT Sector ---
+    { name: 'ET CIO Technology', url: 'https://cio.economictimes.indiatimes.com/rss/lateststories', category: 'it_news' },
+    { name: 'TOI Technology', url: 'https://timesofindia.indiatimes.com/rssfeeds/66973374.cms', category: 'it_news' },
+
+    // --- Breaking US Safety & Security ---
+    { name: 'AP US News', url: 'https://rsshub.app/apnews/topics/apf-usnews', category: 'community' }
 ];
 
 async function isDuplicate(url, title) {
