@@ -35,6 +35,7 @@ export default function AdminDashboard() {
     { name: 'Real Estate', path: '/admindashboard/real-estate', icon: '🏙️' },
     { name: 'Photography', path: '/admindashboard/photography', icon: '📸' },
     { name: 'Forum', path: '/admindashboard/forum', icon: '💬' },
+    { name: 'News Queue', path: '/admindashboard/news-queue', icon: '📰' },
     { name: 'IT Training Leads', path: '/admindashboard/it-training-leads', icon: '📈' },
   ];
 
