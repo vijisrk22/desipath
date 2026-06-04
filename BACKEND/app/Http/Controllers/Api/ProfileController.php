@@ -43,6 +43,14 @@ class ProfileController extends Controller
             'phone_number' => 'sometimes|nullable|string|max:20',
             'country_code' => 'sometimes|nullable|string|max:10',
             'location' => 'sometimes|nullable|string|max:255',
+            'username' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:50',
+                'regex:/^[a-zA-Z0-9_]+$/',
+                \Illuminate\Validation\Rule::unique('users', 'username')->ignore($user->id),
+            ],
         ];
 
         $validatedData = $request->validate($rules);

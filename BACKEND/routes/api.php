@@ -60,6 +60,17 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 
+// Check username availability (public, no auth required)
+Route::get('/check-username', function (Request $request) {
+    $username = $request->query('username', '');
+    if (empty($username)) {
+        return response()->json(['available' => false, 'message' => 'Username is required.'], 422);
+    }
+    $exists = \App\Models\User::where('username', $username)->exists();
+    return response()->json(['available' => !$exists]);
+});
+
+
 Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
     return response()->json(['message' => 'Logged out successfully']);

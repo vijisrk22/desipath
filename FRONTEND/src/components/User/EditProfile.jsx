@@ -1,7 +1,7 @@
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import TextFieldInput from "../InputTemplate/TextFieldInput";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile } from "../../store/UserSlice";
 import ButtonRight from "../ButtonRight";
@@ -9,15 +9,19 @@ import PhoneNumberInput from "../InputTemplate/PhoneNumberInput";
 import BackWithHeader from "./BackWithHeader";
 import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
 import { getFullImageUrl } from "../../utils/imageHelper";
+import api from "../../utils/api";
+
 function EditProfile() {
-  const [formDetails, setFormDetails] = useState(null);
   const user = useSelector((state) => state.user.user);
   const navigate = useNavigate();
+
   const {
     handleSubmit,
     control,
     setValue,
     reset,
+    register,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -27,9 +31,15 @@ function EditProfile() {
       location: user?.location || "",
       phone_number: user?.phone_number || "",
       country_code: user?.country_code || "US",
+      username: user?.username || "",
     }
   });
   const dispatch = useDispatch();
+
+  // Username availability state
+  const [usernameStatus, setUsernameStatus] = useState(null); // null | 'checking' | 'available' | 'taken' | 'invalid'
+  const usernameDebounceRef = useRef(null);
+  const watchedUsername = watch("username");
 
   useEffect(() => {
     if (user) {
@@ -40,12 +50,51 @@ function EditProfile() {
         location: user.location || "",
         phone_number: user.phone_number || "",
         country_code: user.country_code || "US",
+        username: user.username || "",
       });
     }
   }, [user, reset]);
 
+  // Debounced username availability check
+  useEffect(() => {
+    const currentUsername = watchedUsername || "";
+    
+    // If empty or same as existing username, no need to check
+    if (!currentUsername || currentUsername === user?.username) {
+      setUsernameStatus(null);
+      return;
+    }
+
+    // Validate format: letters, numbers, underscores only
+    if (!/^[a-zA-Z0-9_]+$/.test(currentUsername)) {
+      setUsernameStatus('invalid');
+      return;
+    }
+
+    setUsernameStatus('checking');
+
+    if (usernameDebounceRef.current) {
+      clearTimeout(usernameDebounceRef.current);
+    }
+
+    usernameDebounceRef.current = setTimeout(async () => {
+      try {
+        const res = await api.get(`/api/check-username?username=${encodeURIComponent(currentUsername)}`);
+        setUsernameStatus(res.data.available ? 'available' : 'taken');
+      } catch {
+        setUsernameStatus(null);
+      }
+    }, 600);
+
+    return () => {
+      if (usernameDebounceRef.current) clearTimeout(usernameDebounceRef.current);
+    };
+  }, [watchedUsername, user?.username]);
+
   const onSubmit = async (data) => {
-    // If password is not set or empty, remove it from data
+    // Prevent saving if username is taken or invalid
+    if (usernameStatus === 'taken' || usernameStatus === 'invalid') return;
+
     if (!data.password || data.password.trim() === "") {
       delete data.password;
     }
@@ -60,7 +109,6 @@ function EditProfile() {
     }
   };
 
-  console.log("User in EditProfile:", user);
   const fileInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
 
@@ -87,6 +135,25 @@ function EditProfile() {
       setUploading(false);
     }
   };
+
+  // Username indicator UI
+  const renderUsernameIndicator = () => {
+    if (usernameStatus === 'checking') {
+      return <p className="text-xs text-gray-400 mt-1 flex items-center gap-1"><span className="animate-spin">⏳</span> Checking availability…</p>;
+    }
+    if (usernameStatus === 'available') {
+      return <p className="text-xs text-green-600 mt-1 flex items-center gap-1">✅ Username is available!</p>;
+    }
+    if (usernameStatus === 'taken') {
+      return <p className="text-xs text-red-500 mt-1 flex items-center gap-1">❌ Username is already taken.</p>;
+    }
+    if (usernameStatus === 'invalid') {
+      return <p className="text-xs text-orange-500 mt-1 flex items-center gap-1">⚠️ Only letters, numbers, and underscores allowed.</p>;
+    }
+    return <p className="text-xs text-gray-400 mt-1">Letters, numbers, and underscores only.</p>;
+  };
+
+  const isSaveDisabled = usernameStatus === 'taken' || usernameStatus === 'invalid';
 
   return (
     <div className="flex flex-col items-center justify-between gap-5 max-w-screen-md mx-auto px-6 py-4">
@@ -121,7 +188,7 @@ function EditProfile() {
         <p className="text-xs text-gray-400 mt-2">Click to change avatar</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full">
         <TextFieldInput
           name="first_name"
           defaultValue={user?.name && typeof user.name === 'string' ? user.name.split(" ")[0] : (typeof user?.name === 'object' ? (user.name?.name || "") : "")}
@@ -136,6 +203,21 @@ function EditProfile() {
           text="Last Name"
           requiredAssertion={false}
         />
+
+        {/* Username field with live availability indicator */}
+        <div className="w-full mb-2">
+          <TextFieldInput
+            name="username"
+            defaultValue={user?.username || ""}
+            control={control}
+            text="Username"
+            requiredAssertion={false}
+            customProps={{ placeholder: "e.g. viveksmith123", autoComplete: "username" }}
+          />
+          <div className="px-1">
+            {renderUsernameIndicator()}
+          </div>
+        </div>
 
         <PhoneNumberInput
           control={control}
@@ -173,8 +255,14 @@ function EditProfile() {
             paddingClass="px-6 py-2 md:px-6"
             arrowVisible={false}
             requiredAssertion={false}
+            disabled={isSaveDisabled}
           />
         </div>
+        {isSaveDisabled && (
+          <p className="text-center text-sm text-red-500 -mt-2">
+            Please fix the username before saving.
+          </p>
+        )}
       </form>
     </div>
   );

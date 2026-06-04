@@ -150,10 +150,19 @@ class AuthController extends Controller
 
         // Generate 6 digit OTP
         $otp = rand(100000, 999999);
-        
+
+        // Parse first and last name for username generation
+        $nameParts = explode(' ', trim($request->name), 2);
+        $firstName = $nameParts[0] ?? '';
+        $lastName   = $nameParts[1] ?? '';
+
+        // Auto-generate unique username (e.g., viveksmith123)
+        $username = User::generateUniqueUsername($firstName, $lastName);
+
         // Create user with Pending status
         $user = User::create([
             'name' => $request->name,
+            'username' => $username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role' => $request->role,
@@ -164,6 +173,7 @@ class AuthController extends Controller
             'business_phone' => $request->business_phone,
             'business_location' => $request->business_location,
         ]);
+
 
         // MOCK EMAIL SENDING: Log the OTP to laravel.log
         \Log::info("OTP for {$user->email}: {$otp}");

@@ -25,6 +25,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
         'role',
@@ -65,6 +66,37 @@ class User extends Authenticatable
         ];
     }
     
+    /**
+     * Generate a unique username from first and last name.
+     * Format: firstnamelastname + 3-digit number (e.g., viveksmith123)
+     */
+    public static function generateUniqueUsername(string $firstName, string $lastName): string
+    {
+        // Normalize: lowercase + strip non-alpha characters
+        $base = strtolower(preg_replace('/[^a-zA-Z]/', '', $firstName . $lastName));
+
+        if (empty($base)) {
+            $base = 'user';
+        }
+
+        // Try 100–999 suffixes first for a nice 3-digit number
+        $suffix = rand(100, 999);
+        $attempts = 0;
+        $maxAttempts = 50;
+
+        while ($attempts < $maxAttempts) {
+            $candidate = $base . $suffix;
+            if (!self::where('username', $candidate)->exists()) {
+                return $candidate;
+            }
+            $suffix = rand(100, 999);
+            $attempts++;
+        }
+
+        // Ultimate fallback: append timestamp fragment
+        return $base . substr(time(), -3);
+    }
+
     public function isBusinessUser()
     {
         return $this->role === 'business';
