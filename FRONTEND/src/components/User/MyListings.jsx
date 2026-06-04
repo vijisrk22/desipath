@@ -56,6 +56,7 @@ const MyListings = () => {
         { id: 'KidsClass', label: 'Kids Class', icon: '🎨', listPath: '/api/kids-classes/my-listings', del: deleteKidsClass, upd: updateKidsClass, redirect: '/kids-class/instructor-portal/edit' },
         { id: 'Photography', label: 'Photography', icon: '📸', listPath: '/api/photography/my-listings', del: deletePhotographer, upd: updatePhotographer, redirect: '/services/photography/edit' },
         { id: 'Attorneys', label: 'Desi Attorneys', icon: '⚖️', listPath: '/api/attorneys/my-listings', redirect: '/desi-attorneys/edit' },
+        { id: 'Doctor', label: 'Desi Doctors', icon: '👨‍⚕️', listPath: '/api/doctors/my-listings', redirect: '/desi-doctors/edit' },
         { id: 'Rides', label: 'Community Rides', icon: '🚗', listPath: '/api/rides/my-listings', redirect: '/rides/edit' },
         { id: 'Finance', label: 'Financial Advisors', icon: '📈', listPath: '/api/financial-advisors/my-listings', redirect: '/financial-advisors/edit' },
     ];
@@ -108,9 +109,14 @@ const MyListings = () => {
 
     const handleDelete = async (item) => {
         if (window.confirm("Are you sure you want to delete this listing?")) {
-            if (item._catId === 'Attorneys' || item._catId === 'Rides') {
+            if (['Attorneys', 'Rides', 'Doctor', 'Finance'].includes(item._catId)) {
                 try {
-                    const endpoint = item._catId === 'Attorneys' ? `/api/attorneys/${item.id}` : `/api/rides/${item.ride_id || item.id}`;
+                    let endpoint = "";
+                    if (item._catId === 'Attorneys') endpoint = `/api/attorneys/${item.id}`;
+                    else if (item._catId === 'Rides') endpoint = `/api/rides/${item.ride_id || item.id}`;
+                    else if (item._catId === 'Doctor') endpoint = `/api/doctors/${item.id}`;
+                    else if (item._catId === 'Finance') endpoint = `/api/financial-advisors/${item.id}`;
+                    
                     await api.delete(endpoint);
                     showToast('Listing deleted successfully', 'success');
                     fetchCategoryData(item._catId);
@@ -136,9 +142,22 @@ const MyListings = () => {
         setTabData(prev => ({ ...prev, [activeTab]: updatedData }));
 
         try {
-            if (item._catId === 'Attorneys' || item._catId === 'Rides') {
-                const endpoint = item._catId === 'Attorneys' ? `/api/attorneys/${item.id}` : `/api/rides/${item.ride_id || item.id}`;
-                const payload = item._catId === 'Attorneys' ? { profile_status: newStatus } : { status: newStatus };
+            if (['Attorneys', 'Rides', 'Doctor', 'Finance'].includes(item._catId)) {
+                let endpoint = "";
+                let payload = {};
+                if (item._catId === 'Attorneys') {
+                    endpoint = `/api/attorneys/${item.id}`;
+                    payload = { profile_status: newStatus };
+                } else if (item._catId === 'Rides') {
+                    endpoint = `/api/rides/${item.ride_id || item.id}`;
+                    payload = { status: newStatus };
+                } else if (item._catId === 'Doctor') {
+                    endpoint = `/api/doctors/${item.id}`;
+                    payload = { profile_status: newStatus };
+                } else if (item._catId === 'Finance') {
+                    endpoint = `/api/financial-advisors/${item.id}`;
+                    payload = { profile_status: newStatus };
+                }
                 await api.put(endpoint, payload);
                 showToast('Listing updated', 'success');
             } else {

@@ -32,7 +32,6 @@ function CustomGoogleButton() {
       <GoogleLogin
         onSuccess={handleSuccess}
         onError={handleError}
-        useOneTap
         theme="outline"
         size="large"
         text="signup_with"

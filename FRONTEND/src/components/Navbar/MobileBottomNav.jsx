@@ -162,6 +162,7 @@ export default function MobileBottomNav() {
             <Link
               to={user ? "/profile" : "/login"}
               state={{ from: { pathname: "/profile" } }}
+              onClick={() => setProfileMenuOpen(false)}
               className="flex items-center gap-3 px-4 py-3.5 hover:bg-blue-50 transition-colors"
             >
               <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -177,6 +178,7 @@ export default function MobileBottomNav() {
             <Link
               to={user ? "/postad" : "/login"}
               state={{ from: { pathname: "/postad" } }}
+              onClick={() => setProfileMenuOpen(false)}
               className="flex items-center gap-3 px-4 py-3.5 hover:bg-orange-50 transition-colors border-t border-gray-100"
             >
               <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
@@ -296,7 +298,13 @@ export default function MobileBottomNav() {
 
             {/* 5 — Profile & Post Ad */}
             <button
-              onClick={() => setProfileMenuOpen((v) => !v)}
+              onClick={() => {
+                if (user) {
+                  setProfileMenuOpen((v) => !v);
+                } else {
+                  navigate("/login", { state: { from: { pathname: "/profile" } } });
+                }
+              }}
               className="flex flex-col items-center gap-0.5 flex-1 py-1 group"
               aria-label="Profile and Post Ad"
               aria-expanded={profileMenuOpen}

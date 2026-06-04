@@ -146,6 +146,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/realestate/my-count', [RealEstateController::class, 'getMyAdCount']);
     Route::get('/attorneys/my-listings', [AttorneyController::class, 'getMyListings']);
     Route::get('/attorneys/my-count', [AttorneyController::class, 'getMyAdCount']);
+    Route::get('/doctors/my-listings', [DoctorController::class, 'getMyListings']);
+    Route::get('/doctors/my-count', [DoctorController::class, 'getMyAdCount']);
 });
 
 // Public car read routes (no auth required — anyone can browse listings)

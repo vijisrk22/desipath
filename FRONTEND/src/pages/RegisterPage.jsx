@@ -236,7 +236,7 @@ function RegisterPage() {
 
                   <div className="space-y-2">
                     <EmailInput register={register} errors={errors} />
-                    <PasswordInput register={register} errors={errors} />
+                    <PasswordInput register={register} errors={errors} autoComplete="new-password" />
                     
                     <div>
                       <input

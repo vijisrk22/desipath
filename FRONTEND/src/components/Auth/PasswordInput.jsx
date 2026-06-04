@@ -1,4 +1,4 @@
-function PasswordInput({ register, errors, noFlag = false }) {
+function PasswordInput({ register, errors, noFlag = false, autoComplete = "current-password" }) {
   return (
     <div>
       <input
@@ -18,6 +18,7 @@ function PasswordInput({ register, errors, noFlag = false }) {
               }),
         })}
         type="password"
+        autoComplete={autoComplete}
         placeholder="Your password"
         className="w-full px-4 py-2 bg-gray-50 border border-transparent focus:border-[#0857d0] focus:bg-white rounded-xl text-gray-800 text-sm font-dmsans transition-all outline-none"
       />

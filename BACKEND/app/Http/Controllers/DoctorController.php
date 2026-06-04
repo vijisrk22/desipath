@@ -394,4 +394,35 @@ class DoctorController extends Controller
             'message' => 'Doctor profile deleted successfully.'
         ]);
     }
+
+    /**
+     * Retrieve user's own doctor listings.
+     */
+    public function getMyListings(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([], 401);
+        }
+
+        $listings = Doctor::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($listings);
+    }
+
+    /**
+     * Retrieve user's doctor listing count.
+     */
+    public function getMyAdCount(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['count' => 0]);
+        }
+
+        $count = Doctor::where('user_id', $user->id)->count();
+        return response()->json(['count' => $count]);
+    }
 }

@@ -158,7 +158,7 @@ function EditProfile() {
           text="Password"
           type="password"
           requiredAssertion={false}
-          customProps={{ placeholder: "******" }}
+          customProps={{ placeholder: "******", autoComplete: "new-password" }}
         />
         <LocationAutocompleteInput
           control={control}

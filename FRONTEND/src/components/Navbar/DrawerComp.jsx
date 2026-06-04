@@ -264,7 +264,7 @@ function DrawerComp({ navItems, setValue }) {
           <Profile user={user} viewPortClass="md:hidden" isStatic={true} onMenuClick={() => setOpenDrawer(false)} />
         ) : (
           <Box sx={{ my: "1rem", mx: "auto" }}>
-            <SignInUp viewPortClass="flex md:hidden" />
+            <SignInUp viewPortClass="flex md:hidden" onMenuClick={() => setOpenDrawer(false)} />
           </Box>
         )}
       </Drawer>

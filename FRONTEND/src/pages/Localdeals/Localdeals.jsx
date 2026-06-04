@@ -513,15 +513,6 @@ export default function Localdeals() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-
-              {/* Mobile Search Button */}
-              <button 
-                onClick={() => setIsSearchModalOpen(true)}
-                className="md:hidden p-2 bg-gray-50 text-gray-600 rounded-full border border-gray-100 hover:bg-gray-100 transition-colors"
-                aria-label="Open search"
-              >
-                <IoSearch size={18} />
-              </button>
             </div>
             
             {location && (
@@ -535,8 +526,8 @@ export default function Localdeals() {
             )}
           </div>
 
-          {/* Desktop Search Bar (Hidden on mobile) */}
-          <div className="relative mb-4 hidden md:block">
+          {/* Search Bar (Visible on all devices, below Local Deals title row) */}
+          <div className="relative mb-4">
             <button 
               onClick={() => {
                 setAds([]);
@@ -561,8 +552,21 @@ export default function Localdeals() {
                 }
               }}
               onKeyDown={handleSearch}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+              className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400 text-sm"
             />
+            {searchQuery && (
+              <button 
+                onClick={() => {
+                  setSearchQuery("");
+                  setAds([]);
+                  setPage(1);
+                  fetchAds(1, true);
+                }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <IoClose size={20} />
+              </button>
+            )}
           </div>
 
 
