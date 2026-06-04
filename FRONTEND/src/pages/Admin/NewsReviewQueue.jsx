@@ -24,7 +24,7 @@ const NewsReviewQueue = () => {
   const fetchQueue = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/admin/news/queue');
+      const response = await api.get('/api/admin/news/queue');
       const data = response.data || [];
       setQueue(data);
 
@@ -53,7 +53,7 @@ const NewsReviewQueue = () => {
     setActionType('approve');
     try {
       const payload = useEdits ? { edited_summary: editSummary } : {};
-      await api.post(`/admin/news/queue/${id}/approve`, payload);
+      await api.post(`/api/admin/news/queue/${id}/approve`, payload);
       toast.success(useEdits ? 'Article edited and published live!' : 'Article approved and published live!');
       setEditingId(null);
       setEditSummary('');
@@ -72,7 +72,7 @@ const NewsReviewQueue = () => {
     setActioningId(id);
     setActionType('reject');
     try {
-      await api.post(`/admin/news/queue/${id}/reject`);
+      await api.post(`/api/admin/news/queue/${id}/reject`);
       toast.warn('Article rejected and archived.');
       fetchQueue();
     } catch (error) {
