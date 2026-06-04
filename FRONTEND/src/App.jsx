@@ -201,8 +201,8 @@ function App() {
           <Route path="/buy-sell-items/success" element={<PrivateRoute><BuySellItemSuccess /></PrivateRoute>} />
 
           {/* Immigration News */}
-          <Route path="/immigration-news" element={<ImmigrationNews />} />
-          <Route path="/immigration-news/:slug" element={<ImmigrationNewsDetail />} />
+          <Route path="/daily-news" element={<ImmigrationNews />} />
+          <Route path="/daily-news/:slug" element={<ImmigrationNewsDetail />} />
 
           {/* Jobs */}
           <Route path="/jobs" element={<JobsLanding />} />

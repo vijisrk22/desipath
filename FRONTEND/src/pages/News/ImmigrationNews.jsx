@@ -183,7 +183,7 @@ const ImmigrationNews = () => {
         <div className="bg-red-600 text-white p-3 text-center">
           <span className="font-bold">Breaking: </span> 
           {urgentNews[0].ai_headline} 
-          <Link to={`/immigration-news/${urgentNews[0].slug}`} className="ml-2 underline font-semibold">Read now</Link>
+          <Link to={`/daily-news/${urgentNews[0].slug}`} className="ml-2 underline font-semibold">Read now</Link>
         </div>
       )}
 
@@ -266,7 +266,7 @@ const ImmigrationNews = () => {
                     )}
                   </div>
 
-                  <Link to={`/immigration-news/${news[currentIndex].slug}`}>
+                  <Link to={`/daily-news/${news[currentIndex].slug}`}>
                     <h2 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors leading-snug">
                       {news[currentIndex].ai_headline}
                     </h2>
@@ -372,7 +372,7 @@ const ImmigrationNews = () => {
                     )}
                   </div>
 
-                  <Link to={`/immigration-news/${article.slug}`}>
+                  <Link to={`/daily-news/${article.slug}`}>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
                       {article.ai_headline}
                     </h2>
@@ -390,7 +390,7 @@ const ImmigrationNews = () => {
                   <div className="flex justify-between items-center text-xs text-gray-500 pt-4 border-t border-gray-50">
                     <span>Source: {article.source_name} &bull; {new Date(article.published_at).toLocaleDateString()}</span>
                     <Link 
-                      to={`/immigration-news/${article.slug}`}
+                      to={`/daily-news/${article.slug}`}
                       className="font-semibold text-blue-600 hover:underline"
                     >
                       Read more &rarr;

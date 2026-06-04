@@ -76,7 +76,7 @@ const services = [
   {
     name: "Desi News",
     image: "/img/services/Immigration_Desipath.jpeg",
-    path: "/immigration-news",
+    path: "/daily-news",
   },
   {
     name: "Jobs",

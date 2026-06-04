@@ -71,7 +71,7 @@ const ImmigrationNewsDetail = () => {
     const nextArticle = news[newIndex];
     if (nextArticle) {
       setArticle(nextArticle);
-      navigate(`/immigration-news/${nextArticle.slug}`, { replace: true });
+      navigate(`/daily-news/${nextArticle.slug}`, { replace: true });
     }
   };
 
@@ -157,7 +157,7 @@ const ImmigrationNewsDetail = () => {
       {isMobile ? (
         <div className="max-w-md mx-auto px-4 py-6 flex-1 flex flex-col justify-between" style={{ minHeight: 'calc(100vh - 180px)', paddingBottom: '90px' }}>
           <div>
-            <Link to="/immigration-news" className="text-blue-600 hover:underline text-sm font-medium block mb-4">&larr; Back to Immigration News</Link>
+            <Link to="/daily-news" className="text-blue-600 hover:underline text-sm font-medium block mb-4">&larr; Back to Desi News</Link>
             
             {/* Navigation Indicators (Top) */}
             {news.length > 0 && (
@@ -278,7 +278,7 @@ const ImmigrationNewsDetail = () => {
         </div>
       ) : (
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <Link to="/immigration-news" className="text-blue-600 hover:underline text-sm font-medium">&larr; Back to Immigration News</Link>
+          <Link to="/daily-news" className="text-blue-600 hover:underline text-sm font-medium">&larr; Back to Desi News</Link>
           
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10 mt-6">
             <div className="flex items-center space-x-2 mb-4">

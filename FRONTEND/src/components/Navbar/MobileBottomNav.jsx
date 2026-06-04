@@ -126,7 +126,7 @@ export default function MobileBottomNav() {
   const activeHome   = isMatch(location.pathname, "/") || isOnForum;
   const activeAds    = isMatch(location.pathname, "/services/Localdeals");
   const activeEvents = isMatch(location.pathname, "/events/findEvent");
-  const activeNews   = isMatch(location.pathname, "/immigration-news");
+  const activeNews   = isMatch(location.pathname, "/daily-news");
   const activeChat   = isMatch(location.pathname, "/inbox");
   const activeUser   = isMatch(location.pathname, "/profile") || isMatch(location.pathname, "/postad");
 
@@ -260,7 +260,7 @@ export default function MobileBottomNav() {
 
             {/* 4 — Desi News */}
             <Link
-              to="/immigration-news"
+              to="/daily-news"
               className="flex flex-col items-center gap-0.5 flex-1 py-1 group"
               aria-label="Desi News"
             >
