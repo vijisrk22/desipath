@@ -208,7 +208,7 @@ export default function MobileBottomNav() {
 
       {/* ── Bottom Nav Bar ───────────────────────────────────────────────── */}
       <nav
-        className="fixed left-4 right-4 z-50 md:hidden"
+        className="fixed left-2 right-2 z-50 md:hidden"
         style={{ bottom: "calc(12px + env(safe-area-inset-bottom, 0px))" }}
         aria-label="Mobile navigation"
       >
