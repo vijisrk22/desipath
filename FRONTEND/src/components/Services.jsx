@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import SectionHeadings from "./SectionHeadings";
 import LazyImage from "./LazyImage";
@@ -62,6 +63,7 @@ const services = [
     name: "Local Deals",
     image: "/img/services/Desipath_LocalAds.jpeg",
     path: "/services/Localdeals",
+    tooltip: "Explore exclusive local offers on dining, shopping, and a wide range of services near you."
   },
   {
     name: "Photography",
@@ -82,6 +84,7 @@ const services = [
     name: "Jobs",
     image: "/img/services/Desipath_jobs.jpeg",
     path: "/jobs",
+    tooltip: "Land your next opportunity! Explore IT jobs, blue collar roles, or connect with someone who can refer you in."
   },
   {
     name: "Forum",
@@ -125,12 +128,41 @@ function makePlaceholder(text, size = 167) {
 }
 
 export default function ServicesSection() {
+  const [activeTooltip, setActiveTooltip] = useState(null);
+
   return (
     <div className="flex flex-col justify-start items-center gap-[24px]">
       {/* Services heading removed as per user request */}
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8 lg:gap-10 xl:gap-12 max-w-6xl mx-auto px-4 md:px-8 w-full justify-items-center">
         {services.map((service, index) => (
-          <div key={index} className="flex flex-col items-center gap-3">
+          <div 
+            key={index} 
+            className="flex flex-col items-center gap-3 relative"
+            onMouseEnter={() => service.tooltip && setActiveTooltip(index)}
+            onMouseLeave={() => setActiveTooltip(null)}
+          >
+            {service.tooltip && activeTooltip === index && (
+              <div 
+                className="absolute bottom-[115%] left-1/2 -translate-x-1/2 z-35 w-64 bg-slate-900/95 backdrop-blur-md border border-blue-500/20 shadow-[0_12px_40px_rgba(0,0,0,0.25),0_0_15px_rgba(59,130,246,0.15)] p-4 rounded-2xl pointer-events-none animate-tooltip"
+              >
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2 border-b border-slate-800 pb-1.5">
+                    <span className="flex h-2 w-2 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-orange-400 font-dmsans">
+                      Discovery
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-100 leading-relaxed font-semibold font-dmsans text-left">
+                    {service.tooltip}
+                  </p>
+                </div>
+                {/* Arrow */}
+                <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-slate-900 border-r border-b border-blue-500/20 rotate-45"></div>
+              </div>
+            )}
             <Link
               to={service.path}
               // ensure a fixed circular container so images render with the expected size
@@ -153,6 +185,16 @@ export default function ServicesSection() {
           </div>
         ))}
       </div>
+
+      <style>{`
+        @keyframes tooltipFade {
+          from { opacity: 0; transform: translate(-50%, 8px); }
+          to   { opacity: 1; transform: translate(-50%, 0); }
+        }
+        .animate-tooltip {
+          animation: tooltipFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
     </div>
   );
 }

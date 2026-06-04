@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../../utils/api';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
+import { MdClose } from 'react-icons/md';
 
 const CATEGORIES = ['All', 'h1b', 'green_card', 'uscis_policy', 'travel_passport', 'student_visa', 'employment', 'family_immigration', 'nri_india', 'legal_court', 'community', 'other'];
 
@@ -23,6 +24,7 @@ const CATEGORY_NAMES = {
 const ImmigrationNews = () => {
   const [news, setNews] = useState([]);
   const [urgentNews, setUrgentNews] = useState([]);
+  const [showBreakingBanner, setShowBreakingBanner] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
   const [loading, setLoading] = useState(true);
 
@@ -179,11 +181,18 @@ const ImmigrationNews = () => {
       <Navbar />
 
       {/* Urgent Banner */}
-      {urgentNews.length > 0 && (
-        <div className="bg-red-600 text-white p-3 text-center">
+      {urgentNews.length > 0 && showBreakingBanner && (
+        <div className="relative bg-red-600 text-white p-3 text-center pr-10">
           <span className="font-bold">Breaking: </span> 
           {urgentNews[0].ai_headline} 
           <Link to={`/daily-news/${urgentNews[0].slug}`} className="ml-2 underline font-semibold">Read now</Link>
+          <button 
+            onClick={() => setShowBreakingBanner(false)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-red-200 focus:outline-none transition-colors"
+            aria-label="Close breaking news banner"
+          >
+            <MdClose size={20} className="inline-block" />
+          </button>
         </div>
       )}
 

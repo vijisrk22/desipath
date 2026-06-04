@@ -82,11 +82,11 @@ function LoginPage() {
     return <Loader />;
   }
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] flex items-center justify-center p-4 md:p-8 font-dmsans">
-      <div className="bg-white w-full max-w-[1000px] min-h-[600px] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-gray-100 transform transition-all duration-500 hover:shadow-blue-100/50">
+    <div className="min-h-screen w-full bg-white md:bg-[#f8fafc] flex items-stretch md:items-center justify-center p-0 md:p-8 font-dmsans">
+      <div className="bg-white w-full max-w-[1000px] rounded-none md:rounded-3xl shadow-none md:shadow-2xl overflow-hidden flex flex-col md:flex-row border-none md:border md:border-gray-100 transform transition-all duration-500 hover:shadow-blue-100/50">
         
         {/* Visual/Branding Side (Preserving AuthPageLeft content) */}
-        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#0857d0] to-[#2e61b1] p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden">
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#0857d0] to-[#2e61b1] p-6 pb-12 md:p-12 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
           {/* Background Decorative Element */}
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white opacity-5 rounded-full"></div>
           <div className="absolute top-10 -right-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
@@ -115,7 +115,7 @@ function LoginPage() {
         </div>
 
         {/* Form Side */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-white">
+        <div className="w-full md:w-1/2 px-6 pt-6 pb-10 md:p-12 flex flex-col justify-start md:justify-center bg-white rounded-t-[32px] md:rounded-none mt-[-24px] md:mt-0 relative z-10 flex-1 shadow-[-5px_-5px_25px_rgba(0,0,0,0.06)] md:shadow-none animate-slideUp">
           <div className="max-w-md mx-auto w-full">
             
             {showOtp ? (

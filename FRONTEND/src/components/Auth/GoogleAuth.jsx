@@ -1,4 +1,4 @@
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { googleLogin } from "../../store/UserSlice";
@@ -28,7 +28,7 @@ function CustomGoogleButton() {
   };
 
   return (
-    <div className="w-full mt-8">
+    <div className="w-full mt-8 flex justify-center">
       <GoogleLogin
         onSuccess={handleSuccess}
         onError={handleError}
@@ -38,7 +38,6 @@ function CustomGoogleButton() {
         text="signup_with"
         shape="rectangular"
         logo_alignment="left"
-        width="100%"
       />
     </div>
   );
@@ -46,12 +45,11 @@ function CustomGoogleButton() {
 
 function GoogleAuth() {
   return (
-    <GoogleOAuthProvider clientId="122456871358-0ml36gj9qblo6smhq4j7hhpgb05khtdo.apps.googleusercontent.com">
-      <div className="w-full">
-        <CustomGoogleButton />
-      </div>
-    </GoogleOAuthProvider>
+    <div className="w-full flex justify-center">
+      <CustomGoogleButton />
+    </div>
   );
 }
 
 export default GoogleAuth;
+

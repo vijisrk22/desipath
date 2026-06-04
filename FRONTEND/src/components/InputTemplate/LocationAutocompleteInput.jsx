@@ -4,7 +4,7 @@ import { Paper, MenuItem, CircularProgress, Typography } from "@mui/material";
 import { useWatch, Controller } from "react-hook-form";
 import { useQuery } from "react-query";
 import api from "../../utils/api";
-import { MdMyLocation } from "react-icons/md";
+import { MdMyLocation, MdClose } from "react-icons/md";
 
 function LocationAutocompleteInput({
   control,
@@ -141,22 +141,38 @@ function LocationAutocompleteInput({
             name="location"
             control={control}
             render={({ field }) => (
-              <input
-                {...field}
-                value={field.value || ""}
-                autoComplete="off"
-                placeholder={placeholder || "City, State, Zip"}
-                className="outline-none px-1 flex-1 min-w-0 bg-transparent text-sm font-bold text-gray-700"
-                onFocus={() => {
-                  if (field.value && field.value.length >= 2) {
-                    setIsDropdownOpen(true);
-                  }
-                }}
-              />
+              <>
+                <input
+                  {...field}
+                  value={field.value || ""}
+                  autoComplete="off"
+                  placeholder={placeholder || "City, State, Zip"}
+                  className="outline-none px-1 flex-1 min-w-0 bg-transparent text-sm font-bold text-gray-700"
+                  onFocus={() => {
+                    if (field.value && field.value.length >= 2) {
+                      setIsDropdownOpen(true);
+                    }
+                  }}
+                />
+                {field.value && (
+                  <MdClose
+                    className="cursor-pointer text-gray-400 hover:text-red-500 mr-1 shrink-0"
+                    onClick={() => {
+                      setValue("location", "");
+                      setSelectedLocation("");
+                      setIsDropdownOpen(false);
+                      localStorage.removeItem("user_location");
+                      if (onSelect) onSelect("");
+                    }}
+                    title="Clear location"
+                    size={18}
+                  />
+                )}
+              </>
             )}
           />
           <MdMyLocation
-            className="cursor-pointer text-gray-400 hover:text-blue-500 ml-2"
+            className="cursor-pointer text-gray-400 hover:text-blue-500 ml-2 shrink-0"
             onClick={handleGeolocation}
             title="Use my current location"
             size={18}

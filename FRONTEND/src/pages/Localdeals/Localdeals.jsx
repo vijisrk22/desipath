@@ -352,7 +352,9 @@ const SearchModal = ({ isOpen, onClose, searchQuery, setSearchQuery, handleSearc
 
 export default function Localdeals() {
   const [ads, setAds] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategories, setSelectedCategories] = useState(["All"]);
+  const [tempCategories, setTempCategories] = useState(["All"]);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [location, setLocation] = useState(localStorage.getItem('local_deals_location'));
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAd, setSelectedAd] = useState(null);
@@ -360,13 +362,28 @@ export default function Localdeals() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const [categories, setCategories] = useState(["All"]);
+  const [categories, setCategories] = useState([
+    "All",
+    "Restaurant & Food",
+    "Grocery & Retail",
+    "Beauty & Wellness",
+    "Education & Tutoring",
+    "IT & Technology",
+    "Legal & Financial",
+    "Home Services",
+    "Healthcare",
+    "Travel & Immigration",
+    "Events & Entertainment",
+    "Photography",
+    "Bakery",
+    "Other"
+  ]);
 
   useEffect(() => {
     const fetchCats = async () => {
       try {
         const res = await api.get('/api/marketplace/categories?module=local_ads');
-        if (res.data.success) {
+        if (res.data.success && res.data.data.length > 0) {
           const names = res.data.data.map(c => c.name);
           setCategories(["All", ...names]);
         }
@@ -376,6 +393,23 @@ export default function Localdeals() {
     };
     fetchCats();
   }, []);
+
+  const handleCategoryToggle = (cat) => {
+    if (cat === "All") {
+      setTempCategories(["All"]);
+    } else {
+      let next = tempCategories.filter(c => c !== "All");
+      if (next.includes(cat)) {
+        next = next.filter(c => c !== cat);
+        if (next.length === 0) {
+          next = ["All"];
+        }
+      } else {
+        next.push(cat);
+      }
+      setTempCategories(next);
+    }
+  };
   
   const observer = useRef();
   const lastAdElementRef = (node) => {
@@ -394,7 +428,7 @@ export default function Localdeals() {
     setPage(1);
     setHasMore(true);
     fetchAds(1, true);
-  }, [selectedCategory, location]);
+  }, [selectedCategories, location]);
 
   useEffect(() => {
     if (page > 1) {
@@ -406,8 +440,17 @@ export default function Localdeals() {
     setLoading(true);
     try {
       const cityOnly = location ? location.split(',')[0].trim() : "";
-      const categoryParam = selectedCategory === "All" ? "" : selectedCategory;
-      const res = await api.get(`/api/local-ads/feed?page=${pageNum}&category=${categoryParam}&city=${cityOnly}&search=${searchQuery}`);
+      const categoryParam = (selectedCategories.includes("All") || selectedCategories.length === 0)
+        ? ""
+        : selectedCategories.join(",");
+      const res = await api.get(`/api/local-ads/feed`, {
+        params: {
+          page: pageNum,
+          category: categoryParam,
+          city: cityOnly,
+          search: searchQuery
+        }
+      });
       
       const newAds = res.data.data;
       if (isNew) {
@@ -449,7 +492,28 @@ export default function Localdeals() {
         <div className="max-w-[600px] mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Local Deals</h1>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent shrink-0">Local Deals</h1>
+              
+              {/* Categories Selector */}
+              <button
+                onClick={() => {
+                  setTempCategories(selectedCategories);
+                  setIsCategoryModalOpen(true);
+                }}
+                className="flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-[11px] font-bold hover:bg-blue-100 transition-colors border border-blue-100 shrink-0"
+              >
+                <span>
+                  {selectedCategories.includes("All") || selectedCategories.length === 0
+                    ? "All Categories"
+                    : selectedCategories.length === 1
+                    ? selectedCategories[0]
+                    : `Categories (${selectedCategories.length})`}
+                </span>
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
               {/* Mobile Search Button */}
               <button 
                 onClick={() => setIsSearchModalOpen(true)}
@@ -501,22 +565,7 @@ export default function Localdeals() {
             />
           </div>
 
-          {/* Categories */}
-          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  selectedCategory === cat 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+
         </div>
       </div>
 
@@ -574,6 +623,86 @@ export default function Localdeals() {
         setSearchQuery={setSearchQuery}
         handleSearch={handleSearch}
       />
+
+      {/* Category Selection Modal */}
+      <AnimatePresence>
+        {isCategoryModalOpen && (
+          <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsCategoryModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            {/* Modal Body */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[85vh] z-10"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+                <h3 className="text-xl font-bold text-gray-900 font-dmsans">Select Categories</h3>
+                <button
+                  onClick={() => setIsCategoryModalOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700"
+                >
+                  <IoClose size={24} />
+                </button>
+              </div>
+
+              {/* Checklist Content */}
+              <div className="overflow-y-auto my-6 pr-1 no-scrollbar grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {categories.map((cat) => {
+                  const isChecked = tempCategories.includes(cat);
+                  return (
+                    <label
+                      key={cat}
+                      className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                        isChecked
+                          ? "bg-blue-50/50 border-blue-200 text-blue-900"
+                          : "border-gray-100 hover:bg-gray-50/60 text-gray-700"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => handleCategoryToggle(cat)}
+                        className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 border-gray-300 transition"
+                      />
+                      <span className="text-sm font-bold tracking-wide font-dmsans">{cat}</span>
+                    </label>
+                  );
+                })}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setTempCategories(["All"])}
+                  className="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all font-dmsans"
+                >
+                  Clear All
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategories(tempCategories);
+                    setIsCategoryModalOpen(false);
+                  }}
+                  className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-200 font-dmsans"
+                >
+                  Apply Filters
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <style dangerouslySetInnerHTML={{ __html: `
         .no-scrollbar::-webkit-scrollbar { display: none; }

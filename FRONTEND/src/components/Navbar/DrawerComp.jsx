@@ -204,15 +204,25 @@ function DrawerComp({ navItems, setValue }) {
       {/* ── MUI Drawer ───────────────────────────────────────────── */}
       <Drawer open={openDrawer} onClose={() => setOpenDrawer(false)} anchor="top">
         {/* Close button */}
-        <Box sx={{ display: "flex", mb: "-2rem", mt: "1rem", mr: "1rem" }}>
-          <button
-            onClick={() => setOpenDrawer(false)}
-            style={{ marginLeft: "auto", padding: "4px 12px", color: "#9ca3af", fontWeight: 700, fontSize: "1rem" }}
-          >✕</button>
-        </Box>
+        <button
+          onClick={() => setOpenDrawer(false)}
+          style={{
+            position: "absolute",
+            top: "1rem",
+            right: "1rem",
+            padding: "8px 12px",
+            color: "#9ca3af",
+            fontWeight: 700,
+            fontSize: "1.2rem",
+            zIndex: 50,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >✕</button>
 
         {/* Mobile menu — only About Us & Contact */}
-        <div className="md:hidden flex flex-col items-center gap-2 py-8 px-6">
+        <div className="md:hidden flex flex-col items-center gap-2 pt-16 pb-8 px-6">
           {mobileItems.map(item => {
             const isActive = item.path === currentPath;
             return (
@@ -251,7 +261,7 @@ function DrawerComp({ navItems, setValue }) {
 
         {/* Auth buttons */}
         {user ? (
-          <Profile user={user} viewPortClass="md:hidden" />
+          <Profile user={user} viewPortClass="md:hidden" isStatic={true} onMenuClick={() => setOpenDrawer(false)} />
         ) : (
           <Box sx={{ my: "1rem", mx: "auto" }}>
             <SignInUp viewPortClass="flex md:hidden" />

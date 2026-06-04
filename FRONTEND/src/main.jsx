@@ -7,6 +7,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "react-query";
 import store from "./store/index.js"; // Import your Redux store
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const queryClient = new QueryClient();
 
@@ -36,10 +37,13 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
           <BrowserRouter>
-            <App />
+            <GoogleOAuthProvider clientId="122456871358-0ml36gj9qblo6smhq4j7hhpgb05khtdo.apps.googleusercontent.com">
+              <App />
+            </GoogleOAuthProvider>
           </BrowserRouter>
         </ThemeProvider>
       </QueryClientProvider>
     </Provider>
   </StrictMode>
 );
+

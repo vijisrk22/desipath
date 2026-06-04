@@ -25,7 +25,12 @@ class LocalAdsController extends Controller
             });
 
         if ($request->has('category') && $request->category !== 'All' && !empty($request->category)) {
-            $query->where('category', $request->category);
+            $categories = explode(',', $request->category);
+            if (count($categories) > 1) {
+                $query->whereIn('category', $categories);
+            } else {
+                $query->where('category', $request->category);
+            }
         }
 
         if ($request->has('city') && $request->city !== 'All' && !empty($request->city)) {

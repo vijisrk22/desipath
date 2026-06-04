@@ -122,15 +122,19 @@ export default function MobileBottomNav() {
     setProfileMenuOpen(false);
   }, [location.pathname]);
 
-  const isOnForum    = isMatch(location.pathname, "/forum");
-  const activeHome   = isMatch(location.pathname, "/") || isOnForum;
-  const activeAds    = isMatch(location.pathname, "/services/Localdeals");
-  const activeEvents = isMatch(location.pathname, "/events/findEvent");
-  const activeNews   = isMatch(location.pathname, "/daily-news");
-  const activeChat   = isMatch(location.pathname, "/inbox");
-  const activeUser   = isMatch(location.pathname, "/profile") || isMatch(location.pathname, "/postad");
+  const currentPath  = (location.pathname === "/login" && location.state?.from?.pathname) 
+                        ? location.state.from.pathname 
+                        : location.pathname;
 
-  const showForumBtn = isMatch(location.pathname, "/") || 
+  const isOnForum    = isMatch(currentPath, "/forum");
+  const activeHome   = isMatch(currentPath, "/") || isOnForum;
+  const activeAds    = isMatch(currentPath, "/services/Localdeals");
+  const activeEvents = isMatch(currentPath, "/events/findEvent");
+  const activeNews   = isMatch(currentPath, "/daily-news");
+  const activeChat   = isMatch(currentPath, "/inbox");
+  const activeUser   = isMatch(currentPath, "/profile") || isMatch(currentPath, "/postad");
+
+  const showForumBtn = isMatch(currentPath, "/") || 
                        activeAds || 
                        activeEvents || 
                        activeChat;
@@ -149,13 +153,15 @@ export default function MobileBottomNav() {
           {/* Menu card */}
           <div
             ref={menuRef}
-            className="absolute bottom-[72px] right-4 bg-white rounded-2xl shadow-2xl overflow-hidden w-52 border border-gray-100 animate-slideUp"
+            className="absolute right-4 bg-white rounded-2xl shadow-2xl overflow-hidden w-52 border border-gray-100 animate-slideUp"
+            style={{ bottom: "calc(80px + env(safe-area-inset-bottom, 0px))" }}
           >
             <div className="px-4 py-3 border-b border-gray-100">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Account</p>
             </div>
             <Link
               to={user ? "/profile" : "/login"}
+              state={{ from: { pathname: "/profile" } }}
               className="flex items-center gap-3 px-4 py-3.5 hover:bg-blue-50 transition-colors"
             >
               <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -170,6 +176,7 @@ export default function MobileBottomNav() {
             </Link>
             <Link
               to={user ? "/postad" : "/login"}
+              state={{ from: { pathname: "/postad" } }}
               className="flex items-center gap-3 px-4 py-3.5 hover:bg-orange-50 transition-colors border-t border-gray-100"
             >
               <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
@@ -188,7 +195,7 @@ export default function MobileBottomNav() {
         <div className="fixed left-0 top-[45%] z-50 md:hidden">
           <Link
             to="/forum"
-            className="flex flex-col items-center gap-2 py-4 px-2 bg-[#0857d0]/30 backdrop-blur-md text-black border-2 border-l-0 border-white/20 rounded-r-xl shadow-2xl transition-all hover:bg-[#0857d0]/50 active:scale-95"
+            className="flex flex-col items-center gap-2 py-4 px-2 bg-[#ffa41c]/90 backdrop-blur-md text-blue-900 border-2 border-l-0 border-orange-400/80 rounded-r-xl shadow-2xl transition-all hover:bg-[#ffa41c] active:scale-95"
             aria-label="Community Forum"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -201,17 +208,16 @@ export default function MobileBottomNav() {
 
       {/* ── Bottom Nav Bar ───────────────────────────────────────────────── */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+        className="fixed left-4 right-4 z-50 md:hidden"
+        style={{ bottom: "calc(12px + env(safe-area-inset-bottom, 0px))" }}
         aria-label="Mobile navigation"
       >
-        {/* Safe-area spacer for notched phones */}
+        {/* Floating rounded container */}
         <div
-          className="bg-[#ffa41c]/70 backdrop-blur-lg border-t border-orange-400"
-          style={{ boxShadow: "0 -4px 24px rgba(0,0,0,0.15)" }}
+          className="bg-[#ffa41c]/90 backdrop-blur-md border border-orange-400/80 rounded-2xl"
+          style={{ boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)" }}
         >
-          <div className="flex items-end justify-around px-2 pt-1 pb-2"
-            style={{ paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
-          >
+          <div className="flex items-center justify-around px-2 py-2">
 
             {/* 1 — Home */}
             <Link
@@ -309,7 +315,7 @@ export default function MobileBottomNav() {
       </nav>
 
       {/* Bottom padding so page content isn't hidden behind the nav */}
-      <div className="h-[72px] md:hidden" aria-hidden="true" />
+      <div className="md:hidden" aria-hidden="true" style={{ height: "calc(88px + env(safe-area-inset-bottom, 0px))" }} />
 
       <style>{`
         @keyframes slideUp {

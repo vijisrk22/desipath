@@ -198,39 +198,41 @@ function EventsBody({ sortOption: sortProp, setSortOption: setSortProp }) {
           )}
         </div>
 
-        <div className="flex flex-row justify-between gap-8 items-center mt-12 px-8 py-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-          <div className="text-[#323232] text-sm font-medium font-dmsans whitespace-nowrap">
-            Showing {startIndex + 1}–{Math.min(startIndex + EVENTS_PER_PAGE, totalEvents)} of {totalEvents} events
+        {totalEvents > 0 && (
+          <div className="flex flex-row justify-between gap-8 items-center mt-12 px-8 py-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div className="text-[#323232] text-sm font-medium font-dmsans whitespace-nowrap">
+              Showing {startIndex + 1}–{Math.min(startIndex + EVENTS_PER_PAGE, totalEvents)} of {totalEvents} events
+            </div>
+            <Pagination
+              count={numsOfPage}
+              size="medium"
+              variant="outlined"
+              shape="rounded"
+              page={page}
+              onChange={(_, value) => setPage(value)}
+              showFirstButton
+              showLastButton
+              sx={{
+                "& .MuiPaginationItem-root": {
+                  borderColor: "#e5e7eb",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  fontFamily: "DM Sans, sans-serif",
+                },
+                "& .MuiPaginationItem-page.Mui-selected": {
+                  backgroundColor: "#ffa41c",
+                  color: "white",
+                  borderColor: "#ffa41c",
+                  "&:hover": { backgroundColor: "#e69419" },
+                },
+                "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast": {
+                  backgroundColor: "#f9fafb",
+                  "&:hover": { backgroundColor: "#f3f4f6" },
+                },
+              }}
+            />
           </div>
-          <Pagination
-            count={numsOfPage}
-            size="medium"
-            variant="outlined"
-            shape="rounded"
-            page={page}
-            onChange={(_, value) => setPage(value)}
-            showFirstButton
-            showLastButton
-            sx={{
-              "& .MuiPaginationItem-root": {
-                borderColor: "#e5e7eb",
-                borderRadius: "8px",
-                fontWeight: "600",
-                fontFamily: "DM Sans, sans-serif",
-              },
-              "& .MuiPaginationItem-page.Mui-selected": {
-                backgroundColor: "#ffa41c",
-                color: "white",
-                borderColor: "#ffa41c",
-                "&:hover": { backgroundColor: "#e69419" },
-              },
-              "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast": {
-                backgroundColor: "#f9fafb",
-                "&:hover": { backgroundColor: "#f3f4f6" },
-              },
-            }}
-          />
-        </div>
+        )}
       </div>
     </div>
   );
