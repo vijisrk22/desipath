@@ -602,73 +602,86 @@ const TravelCompanionWizard = ({ type = 'seeker' }) => {
           </Stepper>
         </Box>
 
-        {/* Content Card */}
-        <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 md:p-12 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          {renderStepContent(activeStep)}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between">
-          <div className="hidden md:flex">
-            <Button
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              startIcon={<ArrowBack />}
-              sx={{ 
-                borderRadius: '16px', 
-                px: 4, 
-                py: 1.5, 
-                color: 'gray', 
-                textTransform: 'none', 
-                fontWeight: 700 
-              }}
-            >
-              Back
-            </Button>
+        {/* Form / Content Card Wrapper */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (activeStep === steps.length - 1) {
+              handlePublish();
+            } else {
+              handleNext();
+            }
+          }}
+        >
+          {/* Content Card */}
+          <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 md:p-12 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {renderStepContent(activeStep)}
           </div>
-          
-          {activeStep === steps.length - 1 ? (
-            <Button
-              variant="contained"
-              disabled={!formData.agree_to_terms || loading}
-              onClick={handlePublish}
-              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <CheckCircle sx={{ color: 'white' }} />}
-              sx={{ 
-                borderRadius: '16px', 
-                px: 6, 
-                py: 1.5, 
-                bgcolor: '#2563eb', 
-                '&:hover': { bgcolor: '#1d4ed8' },
-                color: 'white !important',
-                textTransform: 'none',
-                fontWeight: 800,
-                boxShadow: '0 8px 20px -6px rgba(37,99,235,0.4)',
-                '& .MuiButton-startIcon': { color: 'white' }
-              }}
-            >
-              {loading ? (isEditing ? 'Updating...' : 'Publishing...') : (isEditing ? 'Update Post' : 'Publish Post')}
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={handleNext}
-              endIcon={<ArrowForward sx={{ color: 'white' }} />}
-              sx={{ 
-                borderRadius: '16px', 
-                px: 6, 
-                py: 1.5, 
-                bgcolor: '#2563eb', 
-                '&:hover': { bgcolor: '#1d4ed8' },
-                color: 'white !important',
-                textTransform: 'none',
-                fontWeight: 800,
-                '& .MuiButton-endIcon': { color: 'white' }
-              }}
-            >
-              Next Step
-            </Button>
-          )}
-        </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-between">
+            <div className="hidden md:flex">
+              <Button
+                type="button"
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                startIcon={<ArrowBack />}
+                sx={{ 
+                  borderRadius: '16px', 
+                  px: 4, 
+                  py: 1.5, 
+                  color: 'gray', 
+                  textTransform: 'none', 
+                  fontWeight: 700 
+                }}
+              >
+                Back
+              </Button>
+            </div>
+            
+            {activeStep === steps.length - 1 ? (
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!formData.agree_to_terms || loading}
+                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <CheckCircle sx={{ color: 'white' }} />}
+                sx={{ 
+                  borderRadius: '16px', 
+                  px: 6, 
+                  py: 1.5, 
+                  bgcolor: '#2563eb', 
+                  '&:hover': { bgcolor: '#1d4ed8' },
+                  color: 'white !important',
+                  textTransform: 'none',
+                  fontWeight: 800,
+                  boxShadow: '0 8px 20px -6px rgba(37,99,235,0.4)',
+                  '& .MuiButton-startIcon': { color: 'white' }
+                }}
+              >
+                {loading ? (isEditing ? 'Updating...' : 'Publishing...') : (isEditing ? 'Update Post' : 'Publish Post')}
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                variant="contained"
+                endIcon={<ArrowForward sx={{ color: 'white' }} />}
+                sx={{ 
+                  borderRadius: '16px', 
+                  px: 6, 
+                  py: 1.5, 
+                  bgcolor: '#2563eb', 
+                  '&:hover': { bgcolor: '#1d4ed8' },
+                  color: 'white !important',
+                  textTransform: 'none',
+                  fontWeight: 800,
+                  '& .MuiButton-endIcon': { color: 'white' }
+                }}
+              >
+                Next Step
+              </Button>
+            )}
+          </div>
+        </form>
       </div>
       </div>
       <Footer />

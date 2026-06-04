@@ -89,9 +89,12 @@ const RouteBuilder = ({ onChange, initialLegs }) => {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <Box>
-                  <label className="block text-[11px] font-bold text-gray-500 mb-1.5 ml-1">Airport</label>
+                  <label className="block text-[11px] font-bold text-gray-500 mb-1.5 ml-1">
+                    Airport {leg.leg_type !== 'transit' && <span className="text-red-500">*</span>}
+                  </label>
                   <AirportAutocomplete 
                     value={leg.city ? `${leg.city} (${leg.iata_code})` : ""}
+                    required={leg.leg_type !== 'transit'}
                     onSelect={(airport) => updateLeg(leg.id, {
                       iata_code: airport.iata_code,
                       city: airport.city,

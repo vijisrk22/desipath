@@ -11,7 +11,7 @@ import { Search, LocalAirport } from '@mui/icons-material';
 import api from '../../utils/api';
 import { useQuery } from 'react-query';
 
-const AirportAutocomplete = ({ onSelect, placeholder = "Search city or airport code (e.g. BOM, Chicago)", value }) => {
+const AirportAutocomplete = ({ onSelect, placeholder = "Search city or airport code (e.g. BOM, Chicago)", value, required }) => {
   const [inputValue, setInputValue] = useState(value || "");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -70,6 +70,7 @@ const AirportAutocomplete = ({ onSelect, placeholder = "Search city or airport c
         <Search className="text-gray-400 group-focus-within:text-[#2563eb] mr-2" fontSize="small" />
         <InputBase
           fullWidth
+          required={required}
           placeholder={placeholder}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
