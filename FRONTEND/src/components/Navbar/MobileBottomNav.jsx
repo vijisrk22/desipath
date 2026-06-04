@@ -75,6 +75,19 @@ const PlusIcon = () => (
   </svg>
 );
 
+const NewspaperIcon = ({ filled }) => (
+  <svg viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor"
+    strokeWidth={filled ? 0 : 1.8} className="w-6 h-6">
+    {filled ? (
+      <path fillRule="evenodd" clipRule="evenodd"
+        d="M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm1.5 4.5a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5H6Zm0 3a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5H6Zm0 3a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5H6Zm12-6a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Z" />
+    ) : (
+      <path strokeLinecap="round" strokeLinejoin="round"
+        d="M12 7.5h1.5m-1.5 3h1.5m-7.53-3h3m-3 3h3m-3 3h3m7.5-3v6m-9-9h12a1.5 1.5 0 0 1 1.5 1.5v10.5a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5V6.75A1.5 1.5 0 0 1 4.5 5.25h12" />
+    )}
+  </svg>
+);
+
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
 const isMatch = (pathname, to) => {
   if (to === "/") return pathname === "/";
@@ -113,6 +126,7 @@ export default function MobileBottomNav() {
   const activeHome   = isMatch(location.pathname, "/") || isOnForum;
   const activeAds    = isMatch(location.pathname, "/services/Localdeals");
   const activeEvents = isMatch(location.pathname, "/events/findEvent");
+  const activeNews   = isMatch(location.pathname, "/immigration-news");
   const activeChat   = isMatch(location.pathname, "/inbox");
   const activeUser   = isMatch(location.pathname, "/profile") || isMatch(location.pathname, "/postad");
 
@@ -244,7 +258,22 @@ export default function MobileBottomNav() {
               {activeEvents && <span className="w-1 h-1 rounded-full bg-blue-900 mt-0.5" />}
             </Link>
 
-            {/* 4 — Inbox */}
+            {/* 4 — Desi News */}
+            <Link
+              to="/immigration-news"
+              className="flex flex-col items-center gap-0.5 flex-1 py-1 group"
+              aria-label="Desi News"
+            >
+              <span className={`transition-colors ${activeNews ? "text-blue-900" : "text-blue-800/70 group-hover:text-blue-900"}`}>
+                <NewspaperIcon filled={activeNews} />
+              </span>
+              <span className={`text-[10px] font-bold transition-colors ${activeNews ? "text-blue-900" : "text-blue-800/70"}`}>
+                Desi News
+              </span>
+              {activeNews && <span className="w-1 h-1 rounded-full bg-blue-900 mt-0.5" />}
+            </Link>
+
+            {/* 5 — Inbox */}
             <Link
               to="/inbox"
               className="flex flex-col items-center gap-0.5 flex-1 py-1 group"
