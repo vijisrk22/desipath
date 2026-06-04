@@ -182,27 +182,34 @@ const NewsReviewQueue = () => {
               >
                 
                 {/* Card Title & Flag Alert Ribbon */}
-                <div className={`px-6 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b ${
-                  isLegalWarning ? 'bg-red-50/50 border-red-100' : 'bg-amber-50/50 border-amber-100'
-                }`}>
-                  <div className="max-w-3xl">
+                <div className="px-6 py-5 border-b border-gray-100">
+                  <div className="w-full">
                     <h2 className="text-xl font-bold text-gray-900 leading-snug">{item.ai_headline}</h2>
-                    <a 
-                      href={item.source_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-bold mt-1.5 inline-flex items-center gap-1"
-                    >
-                      🔗 Verify Original Source Article &rarr;
-                    </a>
+                    <div className="mt-2 flex flex-wrap gap-4 items-center text-xs text-gray-500">
+                      <a 
+                        href={item.source_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-blue-600 hover:text-blue-800 hover:underline font-bold inline-flex items-center gap-1"
+                      >
+                        🔗 Verify Original Source Article &rarr;
+                      </a>
+                      <span>&bull;</span>
+                      <span>Raw Queue ID: #{item.raw_queue_id}</span>
+                    </div>
                   </div>
-                  <div className={`px-4 py-2 rounded-2xl text-xs font-bold border flex items-center gap-2 w-fit h-fit shrink-0 ${
+                  
+                  {/* Flag Alert Banner */}
+                  <div className={`mt-4 p-3.5 rounded-2xl text-xs border flex items-start gap-2.5 ${
                     isLegalWarning 
-                      ? 'bg-red-100 text-red-800 border-red-200' 
-                      : 'bg-amber-100 text-amber-800 border-amber-200'
+                      ? 'bg-red-50/70 text-red-900 border-red-200/50' 
+                      : 'bg-amber-50/70 text-amber-900 border-amber-200/50'
                   }`}>
-                    <span>{isLegalWarning ? '⚖️' : '⚠️'}</span>
-                    <span className="uppercase tracking-wider">Flag: {item.flag_reason}</span>
+                    <span className="text-sm shrink-0">{isLegalWarning ? '⚖️' : '⚠️'}</span>
+                    <div>
+                      <span className="uppercase tracking-widest text-[9px] text-gray-400 font-extrabold block mb-0.5">AI Flag Reason</span>
+                      <span className="font-semibold leading-relaxed">{item.flag_reason}</span>
+                    </div>
                   </div>
                 </div>
 
