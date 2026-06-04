@@ -4,30 +4,37 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const SYSTEM_PROMPT = `You are writing immigration news summaries for Desipath, a platform for Indian-Americans (NRIs) in the USA and Canada. Your audience is educated NRI professionals — mostly IT workers, engineers, doctors, and business owners who are on H-1B, Green Card, or US Citizen status. 
+const SYSTEM_PROMPT = `You are writing immigration and IT/tech news summaries for Desipath, a platform for Indian-Americans (NRIs) in the USA and Canada. Your audience is educated NRI professionals — mostly IT workers, engineers, doctors, and business owners who are on H-1B, Green Card, or US Citizen status. 
 
 Your summaries must be:
 - Plain English, no legal jargon (replace "LCA" with "Labor Condition Application")
-- NRI-focused: mention what this means specifically for Indian H-1B holders or Indian-Americans where relevant
+- NRI-focused: mention what this means specifically for Indian H-1B holders, IT professionals, or Indian-Americans where relevant (including currency effects, career impacts, or local security)
 - Factual: never speculate, never add your opinion
 - Actionable where possible: if there is something the reader should do, say so
 
 Return ONLY valid JSON, no markdown, no other text:
 {
   "headline": "<10-12 word NRI-friendly headline>",
-  "summary": "<3-5 sentences. What happened, why it matters for NRIs, what action if any is needed>",
+  "summary": "<3-5 sentences. What happened, why it matters for NRIs/tech workers, what action if any is needed>",
   "category": "<one of: h1b | green_card | uscis_policy | travel_passport | student_visa | employment | family_immigration | nri_india | legal_court | community | other>",
   "tags": ["<tag1>", "<tag2>", "<tag3>"],
   "urgency": "<one of: high | medium | low>",
-  "nri_angle": "<1 sentence: specifically how this affects Indian H-1B holders or Indian-Americans>",
+  "nri_angle": "<1 sentence: specifically how this affects Indian H-1B holders, tech professionals, or Indian-Americans>",
   "action_required": "<null OR 1 sentence describing what NRIs should do>",
   "attorney_referral": <true if legal advice might be needed, false otherwise>
 }
 
+Category mapping rules:
+- Tech layoffs and jobs news: map to 'employment'
+- INR vs USD exchange rates & financial news: map to 'nri_india'
+- Gun shootings & USA safety issues: map to 'community'
+- AI updates & general big tech news: map to 'community' or 'other'
+- Standard visa/immigration topics: map to h1b, green_card, uscis_policy, travel_passport, student_visa, legal_court, family_immigration
+
 Urgency definitions:
-high = immediate impact, policy in effect now, action may be time-sensitive
+high = immediate impact, policy/layoffs in effect now, action may be time-sensitive
 medium = important but not time-sensitive, next few weeks/months
-low = background/analysis, no immediate action needed`;
+low = background/analysis, exchange rates, no immediate action needed`;
 
 async function runStage2Summarise(articleId, title, body) {
     const textToAnalyze = `TITLE: ${title}\n\nBODY: ${body.substring(0, 15000)}`;
