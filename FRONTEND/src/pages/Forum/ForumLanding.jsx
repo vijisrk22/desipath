@@ -301,7 +301,7 @@ export default function ForumLanding() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] flex flex-col font-dmsans">
+    <div className="min-h-screen bg-gray-50 flex flex-col font-dmsans">
       <Navbar />
       
       <main className="max-w-6xl mx-auto w-full px-4 py-6 flex gap-6">
