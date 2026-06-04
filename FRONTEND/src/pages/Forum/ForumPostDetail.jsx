@@ -138,6 +138,27 @@ export default function ForumPostDetail() {
     fetchPost(true);
   }, [slug]);
 
+  React.useEffect(() => {
+    if (!loading && post) {
+      const hash = window.location.hash;
+      if (hash) {
+        const commentId = hash.replace('#', '');
+        setTimeout(() => {
+          const element = document.getElementById(commentId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Add a temporary highlight border/background flash
+            element.style.transition = 'background-color 0.8s ease';
+            element.style.backgroundColor = '#eff6ff'; // bg-blue-50
+            setTimeout(() => {
+              element.style.backgroundColor = 'transparent';
+            }, 1500);
+          }
+        }, 300);
+      }
+    }
+  }, [loading, post]);
+
   const fetchPost = (showLoading = true) => {
     if (showLoading) {
       setLoading(true);
@@ -183,6 +204,28 @@ export default function ForumPostDetail() {
     });
   };
 
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        toast.success("Link copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy link:", err);
+      });
+  };
+
+  const handleCommentShare = (comment) => {
+    const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}#comment-${comment.id}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        toast.success("Comment link copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy link:", err);
+      });
+  };
+
   const renderCommentContent = (comment, isReply = false) => {
     const isOwner = user && (comment.user_id === user.id || comment.user?.id === user.id);
     
@@ -211,7 +254,7 @@ export default function ForumPostDetail() {
         <p className={`${isReply ? 'text-xs' : 'text-sm'} text-gray-800 leading-relaxed mb-3 break-words`}>{comment.content}</p>
         <div className="flex items-center gap-4 text-[10px] font-black text-gray-400 uppercase">
           <button onClick={() => handleReplyClick(isReply ? comment.parent_id : comment.id, isReply ? comment.user?.name : null)} className="hover:underline">Reply</button>
-          {!isReply && <button className="hover:underline">Share</button>}
+          {!isReply && <button onClick={() => handleCommentShare(comment)} className="hover:underline">Share</button>}
           
           {isOwner && (
             <>
@@ -225,7 +268,7 @@ export default function ForumPostDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] flex flex-col font-dmsans">
+    <div className="min-h-screen bg-white flex flex-col font-dmsans">
       <Navbar />
       
       <main className="max-w-6xl mx-auto w-full px-4 py-6 flex gap-6">
@@ -289,7 +332,10 @@ export default function ForumPostDetail() {
                     </div>
 
                     {/* Share Pill */}
-                    <div className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer">
+                    <div 
+                      onClick={handleShare}
+                      className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer"
+                    >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
                       <span>Share</span>
                     </div>
@@ -343,7 +389,7 @@ export default function ForumPostDetail() {
               {/* Comments List */}
               <div className="space-y-6 mt-8 pb-10">
                 {(post.comments || []).filter(c => !c.parent_id).map(comment => (
-                  <div key={comment.id} className="flex gap-4 group">
+                  <div key={comment.id} id={`comment-${comment.id}`} className="flex gap-4 group">
                     <div className="flex flex-col items-center shrink-0">
                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-black text-blue-600">
                          {comment.user?.name?.charAt(0) || 'U'}
@@ -423,7 +469,7 @@ export default function ForumPostDetail() {
                </div>
              </div>
            </div>
-           <button onClick={() => navigate('/forum')} className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black rounded-full transition-all text-xs border border-gray-200">Back to Feed</button>
+           <button onClick={() => navigate('/forum')} className="w-full py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-black rounded-full transition-all text-xs border border-gray-200">Back to Feed</button>
         </div>
 
       </main>

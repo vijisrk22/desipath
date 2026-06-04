@@ -15,6 +15,7 @@ function LocationAutocompleteInput({
   onSelect,
   placeholder,
   className = "",
+  onFocus,
 }) {
   const wrapperRef = useRef();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -29,8 +30,10 @@ function LocationAutocompleteInput({
     if (defaultLocation && !input) {
       setValue("location", defaultLocation);
       setSelectedLocation(defaultLocation);
+      setIsDropdownOpen(false);
     } else if (input && (input === localStorage.getItem("user_location") || input === defaultLocation)) {
       setSelectedLocation(input);
+      setIsDropdownOpen(false);
     }
   }, [input, defaultLocation]);
 
@@ -148,8 +151,10 @@ function LocationAutocompleteInput({
                   autoComplete="off"
                   placeholder={placeholder || "City, State, Zip"}
                   className="outline-none px-1 flex-1 min-w-0 bg-transparent text-sm font-bold text-gray-700"
-                  onFocus={() => {
-                    if (field.value && field.value.length >= 2) {
+                  onFocus={(e) => {
+                    if (onFocus) {
+                      onFocus(e);
+                    } else if (field.value && field.value.length >= 2) {
                       setIsDropdownOpen(true);
                     }
                   }}
@@ -187,6 +192,7 @@ function LocationAutocompleteInput({
           text={text}
           customProps={{
             autoComplete: "off",
+            onFocus: onFocus,
             InputProps: {
               endAdornment: (
                 <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={handleGeolocation}>

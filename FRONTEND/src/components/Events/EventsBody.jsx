@@ -70,6 +70,9 @@ function EventsBody({ sortOption: sortProp, setSortOption: setSortProp }) {
   };
 
   const onLocationSubmit = (data) => {
+    if (data?.location) {
+      localStorage.setItem("user_location", data.location);
+    }
     const { city, state, zipcode } = parseLocation(data?.location);
     dispatch(searchEvents({ city, state, zipcode, eventType: [], priceMin: 0, priceMax: 15000 }));
   };
@@ -78,6 +81,7 @@ function EventsBody({ sortOption: sortProp, setSortOption: setSortProp }) {
 
   const handleModalLocationSelect = (locationString) => {
     setValue("location", locationString);
+    localStorage.setItem("user_location", locationString);
     const { city, state, zipcode } = parseLocation(locationString);
     dispatch(searchEvents({ city, state, zipcode, eventType: [], priceMin: 0, priceMax: 15000 }));
     setShowLocationModal(false);
@@ -137,6 +141,7 @@ function EventsBody({ sortOption: sortProp, setSortOption: setSortProp }) {
             setValue={setValue}
             type="search"
             onSelect={handleLocationSelect}
+            onFocus={() => setShowLocationModal(true)}
           />
         </form>
         <div className="ml-auto hidden md:block">

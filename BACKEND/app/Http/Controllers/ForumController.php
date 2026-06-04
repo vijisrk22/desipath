@@ -153,6 +153,29 @@ class ForumController extends Controller
 
     public function listSubforums()
     {
+        $count = ForumSubforum::count();
+        if ($count === 0) {
+            $categories = ForumPost::distinct()->pluck('category')->filter();
+            
+            $iconMap = [
+                'H1B Visa discussion' => '🛂',
+                'Indian Cooking' => '🍛',
+                'Real estate in USA' => '🏠',
+                'New to USA' => '🗽',
+                'About Studies' => '🎓',
+                'Kids' => '🧸'
+            ];
+
+            foreach ($categories as $cat) {
+                ForumSubforum::firstOrCreate([
+                    'name' => $cat,
+                ], [
+                    'slug' => \Illuminate\Support\Str::slug($cat),
+                    'icon' => $iconMap[$cat] ?? 'd/'
+                ]);
+            }
+        }
+
         return response()->json([
             'success' => true,
             'data' => ForumSubforum::orderBy('name')->get()

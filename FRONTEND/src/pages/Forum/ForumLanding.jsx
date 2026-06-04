@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
+import { toast } from 'react-toastify';
 
 const US_STATES = [
   { name: 'Alabama', abbr: 'AL' }, { name: 'Alaska', abbr: 'AK' }, { name: 'Arizona', abbr: 'AZ' }, { name: 'Arkansas', abbr: 'AR' },
@@ -285,6 +286,17 @@ export default function ForumLanding() {
       })
       .catch(err => {
         alert("Please login to post in the community");
+      });
+  };
+  const handleShare = (e, post) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        toast.success("Link copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy link:", err);
       });
   };
 
@@ -635,7 +647,10 @@ export default function ForumLanding() {
                       </div>
 
                       {/* Share Pill */}
-                      <div className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer">
+                      <div 
+                        onClick={(e) => handleShare(e, post)}
+                        className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer"
+                      >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
                         <span className="hidden sm:inline">Share</span>
                       </div>
