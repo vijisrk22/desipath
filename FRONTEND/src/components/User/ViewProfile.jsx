@@ -103,9 +103,15 @@ function ViewProfile() {
                 </div>
 
                 <div className="flex-1 text-center sm:text-left pb-1 min-w-0">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 font-dmsans mb-2 truncate">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 font-dmsans mb-1 truncate">
                     {typeof user?.name === 'object' ? (user.name?.name || JSON.stringify(user.name)) : (user?.name || "Member Name")}
                   </h1>
+                  {/* @username badge */}
+                  {user?.username && (
+                    <div className="inline-flex items-center gap-1 bg-blue-50 border border-blue-100 text-[#0857d0] text-xs font-bold px-2.5 py-0.5 rounded-full mb-2">
+                      <span className="opacity-60">@</span>{user.username}
+                    </div>
+                  )}
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-gray-400 text-xs sm:text-sm font-medium">
                     <div className="flex items-center gap-1.5">
                       <RiMapPinLine className="text-[#0857d0] shrink-0" />
@@ -164,6 +170,12 @@ function ViewProfile() {
                     <span className="text-gray-400 font-medium text-sm">Display Name</span>
                     <span className="text-gray-900 font-bold text-sm truncate ml-4 max-w-[55%] text-right">
                       {typeof user?.name === 'object' ? (user.name?.name || JSON.stringify(user.name)) : (user?.name || "N/A")}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between py-3 border-b border-gray-50">
+                    <span className="text-gray-400 font-medium text-sm">Username</span>
+                    <span className="text-[#0857d0] font-bold text-sm font-mono">
+                      {user?.username ? `@${user.username}` : <span className="text-gray-400 font-normal italic">Not set — edit profile</span>}
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-3 border-b border-gray-50">

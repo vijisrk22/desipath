@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -93,6 +94,15 @@ class ProfileController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('profile_photos', $filename, 'public');
             $validatedData['profile_photo'] = 'storage/' . $path;
+        }
+
+        // Backfill: auto-generate username for existing users who don't have one
+        if (empty($user->username) && !isset($validatedData['username'])) {
+            $nameParts2 = explode(' ', $user->name, 2);
+            $validatedData['username'] = User::generateUniqueUsername(
+                $nameParts2[0] ?? '',
+                $nameParts2[1] ?? ''
+            );
         }
 
         $user->update($validatedData);

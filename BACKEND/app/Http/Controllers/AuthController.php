@@ -73,6 +73,15 @@ class AuthController extends Controller
         }
 
         $user->update(['last_login_at' => now()]);
+
+        // Backfill username for existing accounts that predate this feature
+        if (empty($user->username)) {
+            $nameParts = explode(' ', trim($user->name), 2);
+            $user->update([
+                'username' => User::generateUniqueUsername($nameParts[0] ?? '', $nameParts[1] ?? '')
+            ]);
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
