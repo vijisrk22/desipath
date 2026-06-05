@@ -29,7 +29,7 @@ function ServiceHeroSection({ pageDetails, bgImg, orangeArrow = false }) {
         <div className="md:bg-transparent flex justify-center w-full lg:w-auto mb-6 lg:mb-0">
           <img
             src={bgImg}
-            className="h-[250px] md:h-[350px] lg:h-[400px] xl:h-[450px] w-auto object-contain"
+            className="h-[200px] md:h-[280px] lg:h-[320px] xl:h-[380px] w-auto object-contain rounded-2xl shadow-md"
             alt="Hero Service"
           />
         </div>
@@ -37,7 +37,7 @@ function ServiceHeroSection({ pageDetails, bgImg, orangeArrow = false }) {
         <div className="flex justify-center w-full lg:w-auto mb-6 lg:mb-0">
           <img
             src="/servicesHeroImg.jpg"
-            className="h-[250px] md:h-[350px] lg:h-[400px] xl:h-auto w-auto"
+            className="h-[200px] md:h-[280px] lg:h-[320px] xl:h-[380px] w-auto object-contain rounded-2xl shadow-md"
             alt="Hero Service"
           />
         </div>
