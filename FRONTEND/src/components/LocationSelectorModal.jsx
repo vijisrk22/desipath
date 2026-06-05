@@ -66,6 +66,7 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
       fullWidth
       PaperProps={{
         sx: {
+          fontFamily: '"DM Sans", sans-serif',
           borderRadius: '24px',
           padding: '16px',
           margin: { xs: '16px', sm: '32px' },
@@ -75,14 +76,14 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
     >
       <DialogTitle sx={{ p: 0, mb: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a1a1a' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'normal', color: '#1a1a1a', fontFamily: 'inherit' }}>
             Set Your Location
           </Typography>
           <IconButton onClick={() => { console.log("X Close clicked"); onClose(); }} size="small">
             <Close />
           </IconButton>
         </Box>
-        <Typography variant="body2" sx={{ color: '#666', mt: 1 }}>
+        <Typography variant="body1" sx={{ color: '#666', mt: 1, fontFamily: 'inherit' }}>
           See events happening near you.
         </Typography>
       </DialogTitle>
@@ -118,9 +119,10 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
                 borderRadius: '30px',
                 bgcolor: '#ffa41c',
                 color: 'white',
-                fontWeight: 800,
-                fontSize: '0.85rem',
-                textTransform: 'uppercase',
+                fontWeight: 'normal',
+                fontFamily: 'inherit',
+                fontSize: '1rem',
+                textTransform: 'none',
                 boxShadow: 'none',
                 '&:hover': {
                   bgcolor: '#e69419',
@@ -143,7 +145,8 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
               borderRadius: '12px',
               py: 1.5,
               textTransform: 'none',
-              fontWeight: 700,
+              fontWeight: 'normal',
+              fontFamily: 'inherit',
               borderColor: '#e0e0e0',
               color: '#333',
               '&:hover': {
@@ -166,7 +169,8 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
             sx={{
               mt: 1,
               textTransform: 'none',
-              fontWeight: 700,
+              fontWeight: 'normal',
+              fontFamily: 'inherit',
               color: '#666',
               '&:hover': {
                 color: '#333',
