@@ -67,7 +67,7 @@ function BuySellCar() {
           <div className="flex-grow bg-[#f0f8ff]">
             <ServiceHeroSection
               pageDetails={pageDetails}
-              bgImg={"/img/cars/buy_sell_cars_hero.png"}
+              bgImg={"/Desipath_BuysellCars.png"}
               orangeArrow={true}
             />
           </div>
