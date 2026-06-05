@@ -383,10 +383,10 @@ export default function ForumLanding() {
     }
   }, [shareMenuPostId]);
 
-  // Infinite scroll with IntersectionObserver
+  // Infinite scroll with IntersectionObserver (auto-load first 100 posts only)
   useEffect(() => {
     const sentinel = sentinelRef.current;
-    if (!sentinel) return;
+    if (!sentinel || posts.length >= 100) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -399,7 +399,7 @@ export default function ForumLanding() {
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, page]);
+  }, [hasMore, page, posts.length]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-dmsans">
@@ -795,13 +795,22 @@ export default function ForumLanding() {
               ))
             )}
             
-            {/* Infinite Scroll Sentinel */}
-            <div ref={sentinelRef} className="flex justify-center mt-6 pb-6 min-h-[40px]">
+            {/* Infinite Scroll Sentinel / Load More */}
+            <div ref={sentinelRef} className="flex flex-col items-center mt-6 pb-6 min-h-[40px] gap-3">
               {loading && posts.length > 0 && (
                 <div className="flex items-center gap-2 text-gray-400 text-sm">
                   <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                   Loading more posts...
                 </div>
+              )}
+              {/* Show Load More button after 100 posts */}
+              {hasMore && !loading && posts.length >= 100 && (
+                <button 
+                  onClick={loadMore}
+                  className="px-6 py-2.5 bg-white border border-blue-600 text-blue-600 font-bold rounded-full hover:bg-blue-50 transition shadow-sm active:scale-95"
+                >
+                  Load More
+                </button>
               )}
               {!hasMore && posts.length > 0 && (
                 <p className="text-gray-400 text-sm">You've reached the end 🎉</p>
