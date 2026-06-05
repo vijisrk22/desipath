@@ -76,7 +76,7 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
     >
       <DialogTitle sx={{ p: 0, mb: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6" sx={{ fontWeight: 'normal', color: '#1a1a1a', fontFamily: 'inherit' }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a1a1a', fontFamily: 'inherit' }}>
             Set Your Location
           </Typography>
           <IconButton onClick={() => { console.log("X Close clicked"); onClose(); }} size="small">
