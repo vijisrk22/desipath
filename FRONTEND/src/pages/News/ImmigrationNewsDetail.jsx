@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
+import { toast } from 'react-toastify';
 
 const CATEGORY_NAMES = {
   h1b: 'H-1B', green_card: 'Green Card', uscis_policy: 'USCIS Policy', 
@@ -27,11 +28,50 @@ const ImmigrationNewsDetail = () => {
   const [popupTitle, setPopupTitle] = useState('');
   const [swipeClass, setSwipeClass] = useState('transition-all duration-300 ease-out translate-x-0 opacity-100 rotate-0');
 
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const handleShareFacebook = () => {
+    const shareUrl = `${window.location.origin}/daily-news/${article.slug}`;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+    setShareMenuOpen(false);
+  };
+
+  const handleShareLinkedIn = () => {
+    const shareUrl = `${window.location.origin}/daily-news/${article.slug}`;
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+    setShareMenuOpen(false);
+  };
+
+  const handleShareInstagram = () => {
+    const shareUrl = `${window.location.origin}/daily-news/${article.slug}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => toast.success("Link copied! Paste it in your Instagram post."))
+      .catch(err => console.error("Failed to copy link:", err));
+    setShareMenuOpen(false);
+  };
+
+  const handleCopyLink = () => {
+    const shareUrl = `${window.location.origin}/daily-news/${article.slug}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => toast.success("Link copied to clipboard!"))
+      .catch(err => console.error("Failed to copy link:", err));
+    setShareMenuOpen(false);
+  };
+
+  // Close share menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setShareMenuOpen(false);
+    if (shareMenuOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [shareMenuOpen]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -196,7 +236,7 @@ const ImmigrationNewsDetail = () => {
               style={{ touchAction: 'pan-y' }}
             >
               <div>
-                <div className="flex items-center space-x-2 mb-4">
+                <div className="flex items-center space-x-2 mb-4 relative">
                   {article.is_government_source && (
                     <span className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-wider">Official</span>
                   )}
@@ -208,6 +248,33 @@ const ImmigrationNewsDetail = () => {
                       <span className="h-1.5 w-1.5 bg-red-600 rounded-full mr-1 animate-pulse"></span> Breaking
                     </span>
                   )}
+                  
+                  <div className="ml-auto relative">
+                    <div 
+                      onClick={(e) => { e.stopPropagation(); setShareMenuOpen(prev => !prev); }}
+                      className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-1 rounded-full transition cursor-pointer text-xs"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
+                      <span>Share</span>
+                    </div>
+                    {shareMenuOpen && (
+                      <div className="absolute top-full mt-2 right-0 bg-white rounded-xl shadow-xl border border-gray-200 py-2 w-48 z-50" onClick={e => e.stopPropagation()}>
+                        <button onClick={handleShareFacebook} className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-blue-50 flex items-center gap-3 transition-colors">
+                          <span className="text-lg">📘</span> Facebook
+                        </button>
+                        <button onClick={handleShareLinkedIn} className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-blue-50 flex items-center gap-3 transition-colors">
+                          <span className="text-lg">💼</span> LinkedIn
+                        </button>
+                        <button onClick={handleShareInstagram} className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-pink-50 flex items-center gap-3 transition-colors">
+                          <span className="text-lg">📸</span> Instagram
+                        </button>
+                        <div className="border-t border-gray-100 my-1"></div>
+                        <button onClick={handleCopyLink} className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                          <span className="text-lg">🔗</span> Copy Link
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <h2 className="text-xl font-bold text-gray-900 mb-3 leading-snug">
@@ -281,13 +348,42 @@ const ImmigrationNewsDetail = () => {
           <Link to="/daily-news" className="text-blue-600 hover:underline text-sm font-medium">&larr; Back to Desi News</Link>
           
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10 mt-6">
-            <div className="flex items-center space-x-2 mb-4">
-              <span className="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-sm font-semibold uppercase tracking-wider">
-                {CATEGORY_NAMES[article.category] || article.category}
-              </span>
-              <span className="text-gray-500 text-sm">
-                Source: {article.source_name} &bull; {new Date(article.published_at).toLocaleDateString()}
-              </span>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <span className="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-sm font-semibold uppercase tracking-wider">
+                  {CATEGORY_NAMES[article.category] || article.category}
+                </span>
+                <span className="text-gray-500 text-sm">
+                  Source: {article.source_name} &bull; {new Date(article.published_at).toLocaleDateString()}
+                </span>
+              </div>
+              
+              <div className="relative">
+                <div 
+                  onClick={(e) => { e.stopPropagation(); setShareMenuOpen(prev => !prev); }}
+                  className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
+                  <span>Share</span>
+                </div>
+                {shareMenuOpen && (
+                  <div className="absolute top-full mt-2 right-0 bg-white rounded-xl shadow-xl border border-gray-200 py-2 w-48 z-50" onClick={e => e.stopPropagation()}>
+                    <button onClick={handleShareFacebook} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-blue-50 flex items-center gap-3 transition-colors">
+                      <span className="text-lg">📘</span> Facebook
+                    </button>
+                    <button onClick={handleShareLinkedIn} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-blue-50 flex items-center gap-3 transition-colors">
+                      <span className="text-lg">💼</span> LinkedIn
+                    </button>
+                    <button onClick={handleShareInstagram} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-pink-50 flex items-center gap-3 transition-colors">
+                      <span className="text-lg">📸</span> Instagram
+                    </button>
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button onClick={handleCopyLink} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                      <span className="text-lg">🔗</span> Copy Link
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
