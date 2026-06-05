@@ -65,7 +65,7 @@ function RentalHome() {
         <>
           {" "}
           <div className="flex-grow bg-[#f0f8ff]">
-            <ServiceHeroSection pageDetails={pageDetails} bgImg="/rentalHomeHero.png" orangeArrow={true} />
+            <ServiceHeroSection pageDetails={pageDetails} bgImg="/rentalHomeHero.png" orangeArrow={true} noImage={true} />
           </div>
           <div className="bg-[#f0f8ff]">
             <Footer newsletter={"block"} />
