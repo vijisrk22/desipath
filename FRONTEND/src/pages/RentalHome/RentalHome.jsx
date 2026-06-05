@@ -2,7 +2,7 @@ import { useParams, Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
-import ServiceHeroSection from "../../components/ServiceHeroSection";
+import RentalHomeHero from "./RentalHomeHero";
 
 import FindRentalHome from "./FindRentalHome";
 import PostRentalHome from "./PostRentalHome";
@@ -29,8 +29,6 @@ function RentalHome() {
     setShowLocationModal(false);
   };
 
-  console.log("RentalHome action:", action);
-
   if ((action === "postRentalHome" || action === "edit") && !user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
@@ -38,15 +36,6 @@ function RentalHome() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [action]);
-
-  const pageDetails = {
-    path1: "findRentalHome",
-    path2: "postRentalHome",
-    description1: "Find a home for rent",
-    description2: "Want to rent out your home, post an ad today - free listing",
-    buttonText1: "Search for Rental Home",
-    buttonText2: "Post an Ad to Rent My Home",
-  };
 
   const showNavbar = true;
 
@@ -63,9 +52,8 @@ function RentalHome() {
 
       {action === undefined ? (
         <>
-          {" "}
           <div className="flex-grow bg-[#f0f8ff]">
-            <ServiceHeroSection pageDetails={pageDetails} bgImg="/Desipath_RentHome.png" orangeArrow={true} />
+            <RentalHomeHero />
           </div>
           <div className="bg-[#f0f8ff]">
             <Footer newsletter={"block"} />
