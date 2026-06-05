@@ -10,7 +10,7 @@ function SubscribeNewsletter() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 md:p-10 border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-8 relative z-10 -mb-16">
+    <div className="w-full max-w-5xl mx-auto bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 md:p-10 border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-8 relative z-10">
       {/* Left Side: Text */}
       <div className="flex-1 text-center md:text-left flex flex-col gap-2">
         <h3 className="text-[20px] md:text-[24px] font-[700] text-gray-900 font-dmsans">

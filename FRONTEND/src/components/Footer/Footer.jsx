@@ -79,13 +79,13 @@ function Footer({ newsletter = "hidden", hideOnMobile = true }) {
 
   return (
     <div className={`w-full flex-col ${displayClass}`}>
-      {newsletter !== "hidden" && (
-        <div className="w-full px-4 md:px-8 z-20">
-          <SubscribeNewsletter />
-        </div>
-      )}
+      <footer className="w-full bg-gradient-to-b from-[#F8FAFC] to-[#EEF4FF] border-t border-[#E5E7EB] pt-16 md:pt-20 pb-8 md:pb-12 px-6 md:px-12 lg:px-[80px]">
+        {newsletter !== "hidden" && (
+          <div className="w-full z-20 pb-16 md:pb-24">
+            <SubscribeNewsletter />
+          </div>
+        )}
 
-      <footer className="w-full bg-gradient-to-b from-[#F8FAFC] to-[#EEF4FF] border-t border-[#E5E7EB] pt-24 md:pt-32 pb-8 md:pb-12 px-6 md:px-12 lg:px-[80px]">
         <div className="max-w-[1400px] mx-auto w-full flex flex-col gap-16">
           
           {/* Main Footer Content - 5 Columns */}
