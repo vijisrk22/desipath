@@ -22,7 +22,7 @@ function ServiceHeroSection({ pageDetails, bgImg, orangeArrow = false }) {
           buttonText={pageDetails?.buttonText2}
           path={pageDetails?.path2}
           orangeArrow={orangeArrow}
-          variant="p"
+          variant="h1"
         />
       </div>
 
