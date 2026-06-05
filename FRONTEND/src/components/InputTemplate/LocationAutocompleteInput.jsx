@@ -4,7 +4,7 @@ import { Paper, MenuItem, CircularProgress, Typography } from "@mui/material";
 import { useWatch, Controller } from "react-hook-form";
 import { useQuery } from "react-query";
 import api from "../../utils/api";
-import { MdMyLocation, MdClose } from "react-icons/md";
+import { MdMyLocation, MdClose, MdSearch } from "react-icons/md";
 
 function LocationAutocompleteInput({
   control,
@@ -145,12 +145,13 @@ function LocationAutocompleteInput({
             control={control}
             render={({ field }) => (
               <>
+                <MdSearch className="text-gray-500 mr-2 shrink-0" size={20} />
                 <input
                   {...field}
                   value={field.value || ""}
                   autoComplete="off"
                   placeholder={placeholder || "City, State, Zip"}
-                  className="outline-none px-1 flex-1 min-w-0 bg-transparent text-sm font-bold text-gray-700"
+                  className="outline-none px-1 flex-1 min-w-0 bg-transparent text-sm text-gray-700"
                   onFocus={(e) => {
                     if (onFocus) {
                       onFocus(e);
@@ -175,12 +176,6 @@ function LocationAutocompleteInput({
                 )}
               </>
             )}
-          />
-          <MdMyLocation
-            className="cursor-pointer text-gray-400 hover:text-blue-500 ml-2 shrink-0"
-            onClick={handleGeolocation}
-            title="Use my current location"
-            size={18}
           />
         </div>
       ) : (
