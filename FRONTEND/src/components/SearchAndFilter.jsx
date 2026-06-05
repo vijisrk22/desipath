@@ -27,6 +27,11 @@ const categories = [
   { label: "Photography", path: "/services/photography" },
   { label: "Immigration", path: "/services/immigration" },
   { label: "Jobs", path: "/services/jobs" },
+  { label: "Financial/Invest/Tax", path: "/financial-advisors" },
+  { label: "Community Rides", path: "/rides" },
+  { label: "Buy/Sell Items", path: "/buy-sell-items" },
+  { label: "Forum", path: "/forum" },
+  { label: "Real Estate (India/Dubai)", path: "/real-estate/find" },
 ];
 
 const phrases = [

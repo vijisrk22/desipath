@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, CircularProgress } from '@mui/material';
@@ -249,16 +249,38 @@ export default function ForumPostDetail() {
     });
   };
 
-  const handleShare = () => {
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+
+  const handleShareFacebook = () => {
+    const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}`;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+    setShareMenuOpen(false);
+  };
+
+  const handleShareInstagram = () => {
     const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}`;
     navigator.clipboard.writeText(shareUrl)
-      .then(() => {
-        toast.success("Link copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy link:", err);
-      });
+      .then(() => toast.success("Link copied! Paste it in your Instagram post."))
+      .catch(err => console.error("Failed to copy link:", err));
+    setShareMenuOpen(false);
   };
+
+  const handleCopyLink = () => {
+    const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => toast.success("Link copied to clipboard!"))
+      .catch(err => console.error("Failed to copy link:", err));
+    setShareMenuOpen(false);
+  };
+
+  // Close share menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setShareMenuOpen(false);
+    if (shareMenuOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [shareMenuOpen]);
 
   const handleCommentShare = (comment) => {
     const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}#comment-${comment.id}`;
@@ -393,13 +415,29 @@ export default function ForumPostDetail() {
                       <span>{post.comments?.length || 0}</span>
                     </div>
 
-                    {/* Share Pill */}
-                    <div 
-                      onClick={handleShare}
-                      className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
-                      <span>Share</span>
+                    {/* Share Pill with Dropdown */}
+                    <div className="relative">
+                      <div 
+                        onClick={(e) => { e.stopPropagation(); setShareMenuOpen(prev => !prev); }}
+                        className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
+                        <span>Share</span>
+                      </div>
+                      {shareMenuOpen && (
+                        <div className="absolute bottom-full mb-2 right-0 bg-white rounded-xl shadow-xl border border-gray-200 py-2 w-48 z-50" onClick={e => e.stopPropagation()}>
+                          <button onClick={handleShareFacebook} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-blue-50 flex items-center gap-3 transition-colors">
+                            <span className="text-lg">📘</span> Facebook
+                          </button>
+                          <button onClick={handleShareInstagram} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-pink-50 flex items-center gap-3 transition-colors">
+                            <span className="text-lg">📸</span> Instagram
+                          </button>
+                          <div className="border-t border-gray-100 my-1"></div>
+                          <button onClick={handleCopyLink} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                            <span className="text-lg">🔗</span> Copy Link
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                   </div>

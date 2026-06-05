@@ -246,7 +246,7 @@ function EditProfile() {
           control={control}
           setValue={setValue}
           defaultLocation={user?.location || ""}
-          text="Current Location"
+          text="Current Location (City, Zipcode)"
         />
         <div className="my-4 flex items-center justify-center">
           <ButtonRight

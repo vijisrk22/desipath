@@ -22,6 +22,10 @@ const categories = [
     { id: 'RealEstate', label: "Real Estate (India/Dubai)", icon: "🏢", postPath: "/real-estate/post", viewPath: "/profile/myListings", description: "List premium residential or commercial properties in India and Dubai.", countPath: "/api/realestate/my-count" },
     { id: 'Photography', label: "Photography & Video", icon: "📸", postPath: "/services/photography/post", viewPath: "/profile/myListings", description: "List your photography or videography services.", countPath: "/api/photography/my-count" },
     { id: 'LocalAds', label: "Post Local Deal", icon: "🏷️", postPath: "/services/Localdeals/post", viewPath: "/profile/myListings", description: "Create a vibrant deal for your local business.", countPath: "/api/local-ads/my-count" },
+    { id: 'Finance', label: "Financial/Invest/Tax", icon: "💰", postPath: "/financial-advisors/post", viewPath: "/profile/myListings", description: "List your financial advisory, investment consulting, or tax preparation services.", countPath: "/api/financial-advisors/my-count" },
+    { id: 'Rides', label: "Community Rides", icon: "🚙", postPath: "/rides/post/offer", viewPath: "/profile/myListings", description: "Offer or request rides within your local community.", countPath: "/api/rides/my-count" },
+    { id: 'BuySellItems', label: "Buy/Sell Items", icon: "🛒", postPath: "/buy-sell-items/post", viewPath: "/profile/myListings", description: "Buy and sell everyday items in the community marketplace.", countPath: "/api/buy-sell-items/my-count" },
+    { id: 'Jobs', label: "Post a Job", icon: "💼", postPath: "/jobs/referrals/post", viewPath: "/profile/myListings", description: "Share job referrals and opportunities with the community.", countPath: "/api/jobs/referrals/my-count" },
 ];
 
 import { fetchAdCounts } from '../store/StatsSlice';

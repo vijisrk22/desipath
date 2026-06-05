@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Navbar from '../../components/Navbar/Navbar';
@@ -73,6 +73,9 @@ export default function ForumLanding() {
   const [isTagFilterOpen, setIsTagFilterOpen] = useState(false);
   const [tagSearchTerm, setTagSearchTerm] = useState("");
   const [forumState, setForumState] = useState("");
+  const [shareMenuPostId, setShareMenuPostId] = useState(null);
+  const sentinelRef = useRef(null);
+  const loadingRef = useRef(false);
   const { user } = useSelector((state) => state.user);
   const {
     register,
@@ -247,6 +250,7 @@ export default function ForumLanding() {
 
   const fetchPosts = (currentPage = 1, append = false) => {
     setLoading(true);
+    loadingRef.current = true;
     const tagsParam = selectedTags.length > 0 ? `&tags=${selectedTags.join(',')}` : '';
     const stateParam = forumState ? `&state=${forumState}` : '';
     api.get(`/api/forum/posts?search=${searchTerm}&category=${selectedCategory}&page=${currentPage}${tagsParam}${stateParam}`)
@@ -258,7 +262,7 @@ export default function ForumLanding() {
         }
       })
       .catch(err => console.error("Forum API Error:", err))
-      .finally(() => setLoading(false));
+      .finally(() => { setLoading(false); loadingRef.current = false; });
   };
 
   const loadMore = () => {
@@ -340,17 +344,62 @@ export default function ForumLanding() {
     });
   };
 
-  const handleShare = (e, post) => {
+  const handleShareFacebook = (e, post) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}`;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+    setShareMenuPostId(null);
+  };
+
+  const handleShareInstagram = (e, post) => {
     e.stopPropagation();
     const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}`;
     navigator.clipboard.writeText(shareUrl)
-      .then(() => {
-        toast.success("Link copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy link:", err);
-      });
+      .then(() => toast.success("Link copied! Paste it in your Instagram post."))
+      .catch(err => console.error("Failed to copy link:", err));
+    setShareMenuPostId(null);
   };
+
+  const handleCopyLink = (e, post) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/forum/post/${post.slug || post.id}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => toast.success("Link copied to clipboard!"))
+      .catch(err => console.error("Failed to copy link:", err));
+    setShareMenuPostId(null);
+  };
+
+  const toggleShareMenu = (e, postId) => {
+    e.stopPropagation();
+    setShareMenuPostId(prev => prev === postId ? null : postId);
+  };
+
+  // Close share menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setShareMenuPostId(null);
+    if (shareMenuPostId !== null) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [shareMenuPostId]);
+
+  // Infinite scroll with IntersectionObserver
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingRef.current) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, page]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-dmsans">
@@ -715,13 +764,29 @@ export default function ForumLanding() {
                         <span>{post.comments_count}</span>
                       </div>
 
-                      {/* Share Pill */}
-                      <div 
-                        onClick={(e) => handleShare(e, post)}
-                        className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
-                        <span className="hidden sm:inline">Share</span>
+                      {/* Share Pill with Dropdown */}
+                      <div className="relative">
+                        <div 
+                          onClick={(e) => toggleShareMenu(e, post.id)}
+                          className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
+                          <span className="hidden sm:inline">Share</span>
+                        </div>
+                        {shareMenuPostId === post.id && (
+                          <div className="absolute bottom-full mb-2 right-0 bg-white rounded-xl shadow-xl border border-gray-200 py-2 w-48 z-50 animate-in fade-in slide-in-from-bottom-2" onClick={e => e.stopPropagation()}>
+                            <button onClick={(e) => handleShareFacebook(e, post)} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-blue-50 flex items-center gap-3 transition-colors">
+                              <span className="text-lg">📘</span> Facebook
+                            </button>
+                            <button onClick={(e) => handleShareInstagram(e, post)} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-pink-50 flex items-center gap-3 transition-colors">
+                              <span className="text-lg">📸</span> Instagram
+                            </button>
+                            <div className="border-t border-gray-100 my-1"></div>
+                            <button onClick={(e) => handleCopyLink(e, post)} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                              <span className="text-lg">🔗</span> Copy Link
+                            </button>
+                          </div>
+                        )}
                       </div>
 
                     </div>
@@ -730,17 +795,18 @@ export default function ForumLanding() {
               ))
             )}
             
-            {/* Load More Button */}
-            {hasMore && !loading && (
-              <div className="flex justify-center mt-6 pb-6">
-                <button 
-                  onClick={loadMore}
-                  className="px-6 py-2 bg-white border border-blue-600 text-blue-600 font-bold rounded-full hover:bg-blue-50 transition shadow-sm"
-                >
-                  Load More
-                </button>
-              </div>
-            )}
+            {/* Infinite Scroll Sentinel */}
+            <div ref={sentinelRef} className="flex justify-center mt-6 pb-6 min-h-[40px]">
+              {loading && posts.length > 0 && (
+                <div className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  Loading more posts...
+                </div>
+              )}
+              {!hasMore && posts.length > 0 && (
+                <p className="text-gray-400 text-sm">You've reached the end 🎉</p>
+              )}
+            </div>
           </div>
         </div>
 
