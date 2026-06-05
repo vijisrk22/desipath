@@ -13,8 +13,13 @@ export default function HouseCard({ house }) {
   // Calculate total baths
   const totalBaths = (house.full_bathroom_total || 0) + (house.half_bathroom_total || 0);
 
-  const mainImage = house.images && house.images.length > 0
-    ? getFullImageUrl(house.images[0])
+  // Filter out empty strings or null values from images array
+  const validImages = Array.isArray(house.images) 
+    ? house.images.filter(img => img && typeof img === 'string' && img.trim() !== '' && img.trim() !== '""') 
+    : [];
+
+  const mainImage = validImages.length > 0
+    ? getFullImageUrl(validImages[0]) || "/homesSmpl.png"
     : "/homesSmpl.png";
 
   return (

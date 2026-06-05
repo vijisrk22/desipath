@@ -56,7 +56,6 @@ function Footer({ newsletter = "hidden", hideOnMobile = true }) {
     { text: "Home", to: "/" },
     { text: "Forum", to: "/forum" },
     { text: "Events", to: "/events" },
-    { text: "Marketplace", to: "/services" },
     { text: "Local Deals", to: "/localdeals" },
   ];
 
@@ -100,8 +99,8 @@ function Footer({ newsletter = "hidden", hideOnMobile = true }) {
           {/* Main Footer Content - 5 Columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
             
-            {/* Column 1: Brand (Takes up 4 cols on large screens) */}
-            <div className="lg:col-span-4 flex flex-col gap-4">
+            {/* Column 1: Brand (Takes up 3 cols on large screens) */}
+            <div className="lg:col-span-3 flex flex-col gap-4">
               <Link to="/" className="text-[28px] font-bold text-[#1565D8] font-dmsans tracking-tight hover:opacity-90 transition-opacity">
                 Desipath
               </Link>
@@ -138,10 +137,10 @@ function Footer({ newsletter = "hidden", hideOnMobile = true }) {
               </ul>
             </div>
 
-            {/* Column 3: Services */}
-            <div className="lg:col-span-2 flex flex-col gap-6">
+            {/* Column 3: Services (Takes up 3 cols on large screens, inner grid 2 cols) */}
+            <div className="lg:col-span-3 flex flex-col gap-6">
               <h4 className="text-[16px] font-semibold text-gray-900 font-dmsans uppercase tracking-wider">Services</h4>
-              <ul className="flex flex-col gap-3">
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-3">
                 {serviceLinks.map((link, idx) => (
                   <li key={idx}>
                     <Link to={link.to} className="text-[15px] text-gray-600 hover:text-[#1565D8] hover:underline font-dmsans transition-colors">
