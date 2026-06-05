@@ -54,19 +54,28 @@ function Footer({ newsletter = "hidden", hideOnMobile = true }) {
 
   const exploreLinks = [
     { text: "Home", to: "/" },
-    { text: "Forum", to: "/services/forum" },
-    { text: "Events", to: "/services/events" },
+    { text: "Forum", to: "/forum" },
+    { text: "Events", to: "/events" },
     { text: "Marketplace", to: "/services" },
-    { text: "Local Businesses", to: "/services/localdeals" },
+    { text: "Local Deals", to: "/localdeals" },
   ];
 
   const serviceLinks = [
     { text: "Rental Homes", to: "/services/rentalhomes" },
-    { text: "Cars", to: "/services/cars" },
-    { text: "Jobs", to: "/services/jobs" },
-    { text: "Rideshare", to: "/services/rideshare" },
-    { text: "Classifieds", to: "/services/classifieds" },
-    { text: "Real Estate", to: "/services/realestate" },
+    { text: "Roommates", to: "/services/roommates" },
+    { text: "Buy/Sell Cars", to: "/services/cars" },
+    { text: "Buy/Sell House", to: "/services/BuyHome" },
+    { text: "Buy/Sell Items", to: "/buy-sell-items" },
+    { text: "Jobs", to: "/jobs" },
+    { text: "Rideshare", to: "/rideshub" },
+    { text: "IT Trainings", to: "/services/itTrainings" },
+    { text: "Classes For Kids", to: "/services/classesForKids" },
+    { text: "Photography", to: "/services/photography" },
+    { text: "Desi Doctors", to: "/desiDoctors" },
+    { text: "Desi Attorneys", to: "/desiAttorneys" },
+    { text: "Astrology Ads", to: "/astrologyAds" },
+    { text: "Travel Companion", to: "/travelCompanion" },
+    { text: "Finance", to: "/finance" },
   ];
 
   const companyLinks = [
