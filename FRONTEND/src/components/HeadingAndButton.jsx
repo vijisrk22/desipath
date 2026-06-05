@@ -10,17 +10,17 @@ function HeadingAndButton({ description, buttonText, path, disable = false, oran
              {description}
            </h1>
         ) : (
-           <p className="text-[20px] md:text-[24px] leading-[1.5] text-gray-800 font-medium font-dmsans text-center lg:text-start">
+           <p className="text-[20px] md:text-[24px] leading-[1.5] mb-[20px] text-gray-800 font-medium font-dmsans text-center lg:text-start">
              {description}
            </p>
         )}
-        <div className="flex justify-center lg:justify-start w-full mt-4">
+        <div className="flex justify-center lg:justify-start w-full">
           <ButtonRight 
             text={buttonText} 
             path={path} 
             disabled={disable} 
             paddingClass="py-[18px] px-[30px] w-fit min-w-[280px] !rounded-[40px]"
-            textClass="text-sm md:text-base font-bold"
+            textClass="text-[18px] font-bold"
             orangeArrow={orangeArrow}
           />
         </div>

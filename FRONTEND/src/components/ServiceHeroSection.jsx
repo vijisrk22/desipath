@@ -7,7 +7,7 @@ function ServiceHeroSection({ pageDetails, bgImg, orangeArrow = false }) {
       className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-[60px] max-w-[1400px] mx-auto py-8 px-[7%] lg:py-[60px] lg:px-[80px] w-full"
     >
       <div
-        className="flex-1 max-w-[500px] w-full flex flex-col gap-4 text-center lg:text-start items-center lg:items-start"
+        className="flex-1 max-w-[500px] w-full flex flex-col gap-[40px] text-center lg:text-start items-center lg:items-start"
       >
         <HeadingAndButton
           description={pageDetails?.description1}
