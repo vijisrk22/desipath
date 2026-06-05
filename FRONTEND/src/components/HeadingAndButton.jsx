@@ -1,18 +1,25 @@
 import ButtonRight from "./ButtonRight";
 
-function HeadingAndButton({ description, buttonText, path, disable = false, orangeArrow = false }) {
+function HeadingAndButton({ description, buttonText, path, disable = false, orangeArrow = false, variant = "p" }) {
+  const isH1 = variant === "h1";
   return (
     <div className="flex-grow w-full">
-      <div className="py-2 flex flex-col justify-center items-center lg:items-start gap-3">
-        <div className="max-w-[300px] md:max-w-[400px] text-gray-800 text-lg sm:text-[18px] md:text-[20px] lg:text-[22px] font-medium font-dmsans leading-tight text-center lg:text-start">
-          {description}
-        </div>
-        <div className="flex justify-center lg:justify-start w-full">
+      <div className="flex flex-col justify-center items-center lg:items-start">
+        {isH1 ? (
+           <h1 className="text-[32px] md:text-[48px] leading-[1.2] mb-[20px] text-gray-800 font-medium font-dmsans text-center lg:text-start">
+             {description}
+           </h1>
+        ) : (
+           <p className="text-[20px] md:text-[24px] leading-[1.5] text-gray-800 font-medium font-dmsans text-center lg:text-start">
+             {description}
+           </p>
+        )}
+        <div className="flex justify-center lg:justify-start w-full mt-4">
           <ButtonRight 
             text={buttonText} 
             path={path} 
             disabled={disable} 
-            paddingClass="px-5 py-2"
+            paddingClass="py-[18px] px-[30px] w-fit min-w-[280px] !rounded-[40px]"
             textClass="text-sm md:text-base font-bold"
             orangeArrow={orangeArrow}
           />
