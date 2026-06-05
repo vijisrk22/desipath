@@ -6,7 +6,7 @@ function HeadingAndButton({ description, buttonText, path, disable = false, oran
     <div className="flex-grow w-full">
       <div className="flex flex-col justify-center items-center lg:items-start">
         {isH1 ? (
-           <h1 className="text-[32px] md:text-[48px] leading-[1.2] mb-[20px] text-gray-800 font-medium font-dmsans text-center lg:text-start">
+           <h1 className="text-[28px] md:text-[36px] leading-[1.2] mb-[20px] text-gray-800 font-medium font-dmsans text-center lg:text-start">
              {description}
            </h1>
         ) : (
