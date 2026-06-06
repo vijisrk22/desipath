@@ -29,10 +29,10 @@ function BuySellHouse() {
   const pageDetails = {
     path1: "find",
     path2: "sellHouse",
-    description1: "Search for a house to buy in your area",
-    description2: "Post an ad to sell your house",
-    buttonText1: "Homes To Buy",
-    buttonText2: "Post An Ad/Sale My Home",
+    description1: "Find Your Dream Home",
+    description2: "Ready to Sell Your Home?",
+    buttonText1: "Search Homes for Sale",
+    buttonText2: "List Your Home for Sale",
   };
 
   return (

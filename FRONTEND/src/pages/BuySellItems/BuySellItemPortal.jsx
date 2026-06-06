@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import api, { BASE_URL } from '../../utils/api';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';

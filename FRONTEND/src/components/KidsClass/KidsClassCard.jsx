@@ -42,7 +42,7 @@ export default function KidsClassCard({ cls }) {
 
         <div className="mb-4">
            <Tooltip title={cls.title} arrow placement="top">
-              <h3 className="text-lg font-bold text-gray-900 line-clamp-1 cursor-help">{cls.title}</h3>
+              <h3 className="text-base font-bold text-gray-900 line-clamp-2 cursor-help min-h-[48px]">{cls.title}</h3>
            </Tooltip>
            <p className="text-gray-500 text-xs font-medium">by {cls.instructorName}</p>
         </div>

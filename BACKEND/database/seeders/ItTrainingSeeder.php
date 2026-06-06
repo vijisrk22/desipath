@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\User;
 
@@ -23,22 +22,12 @@ class ItTrainingSeeder extends Seeder
         DB::table('it_instructors')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $userData = [
-            ['name' => 'Vijay Sam', 'email' => 'Vijay123@sharklasers.com'],
-            ['name' => 'Sam Rajesh', 'email' => 'Sam123@sharklasers.com'],
-            ['name' => 'Ram Kumar', 'email' => 'Ram123@sharklasers.com'],
-            ['name' => 'Binoy Varghese', 'email' => 'binoy123@sharklasers.com'],
-            ['name' => 'Hilton Kumar', 'email' => 'Hilton123@sharklasers.com'],
-            ['name' => 'Muthu Kumar', 'email' => 'Muthu123@sharklasers.com'],
-            ['name' => 'Ferry Sam', 'email' => 'Ferry123@sharklasers.com'],
-            ['name' => 'Henry George', 'email' => 'Henry123@sharklasers.com'],
-            ['name' => 'George John', 'email' => 'George123@sharklasers.com'],
-            ['name' => 'Uma Desai', 'email' => 'uma123@sharklasers.com'],
-            ['name' => 'Paul Kumar', 'email' => 'paul123@sharklasers.com'],
-            ['name' => 'Wisley Kutty', 'email' => 'wisley123@sharkalasers.com'],
-            ['name' => 'Cathey Tommy', 'email' => 'tommy123@sharklasers.com'],
-            ['name' => 'Daniel Shankar', 'email' => 'daniel123@sharklasers.com'],
-        ];
+        // Get 50 random users from the existing database to act as instructors
+        $users = User::inRandomOrder()->limit(50)->get();
+        if ($users->isEmpty()) {
+            $this->command->error('No users found in database.');
+            return;
+        }
 
         // MUST MATCH marketplace_categories and marketplace_subcategories EXACTLY
         $categories = [
@@ -75,35 +64,36 @@ class ItTrainingSeeder extends Seeder
         ];
 
         $bios = [
-            "Senior IT Professional with expertise in large-scale system architecture and team mentorship.",
+            "Senior IT Professional with 10+ years of expertise in large-scale system architecture and team mentorship.",
             "Passionate tech educator focused on bridging the gap between academia and industry requirements.",
             "Full-stack developer and consultant with a track record of delivering robust cloud-native applications.",
             "Expert trainer specializing in high-growth technologies and professional certification preparation.",
             "Technical lead with a deep understanding of modern software engineering practices and agile methodologies."
         ];
 
-        foreach ($userData as $u) {
-            // 1. Ensure User Exists
-            $user = User::where('email', $u['email'])->first();
-            if (!$user) {
-                $user = User::create([
-                    'id' => Str::uuid(),
-                    'name' => $u['name'],
-                    'email' => $u['email'],
-                    'password' => Hash::make('Test123*'),
-                ]);
+        $totalCoursesTarget = 100;
+        $coursesCreated = 0;
+
+        foreach ($users as $index => $user) {
+            if ($coursesCreated >= $totalCoursesTarget) {
+                break;
             }
 
-            // 2. Create Instructor Profile
+            // Create Instructor Profile
             $instructorId = Str::uuid()->toString();
-            $slug = Str::slug($u['name']);
+            $slug = Str::slug($user->name);
             
+            // Handle slug uniqueness
+            while (DB::table('it_instructors')->where('slug', $slug)->exists()) {
+                $slug = Str::slug($user->name) . '-' . Str::random(4);
+            }
+
             DB::table('it_instructors')->insert([
                 'id' => $instructorId,
-                'name' => $u['name'],
+                'name' => $user->name,
                 'slug' => $slug,
                 'account_type' => 'individual',
-                'email' => $u['email'],
+                'email' => $user->email,
                 'bio' => $bios[array_rand($bios)],
                 'years_experience' => rand(5, 18),
                 'phone' => '+1 408-' . rand(100, 999) . '-' . rand(1000, 9999),
@@ -113,25 +103,27 @@ class ItTrainingSeeder extends Seeder
                 'updated_at' => now(),
             ]);
 
-            // 3. Create 3 Classes in different subcategories
-            $allCats = array_keys($categories);
-            shuffle($allCats);
-            $selectedCats = array_slice($allCats, 0, 3);
+            // Assign 2 courses per instructor
+            for ($i = 0; $i < 2; $i++) {
+                if ($coursesCreated >= $totalCoursesTarget) {
+                    break;
+                }
 
-            foreach ($selectedCats as $cat) {
+                $cat = array_rand($categories);
                 $sub = $categories[$cat][array_rand($categories[$cat])];
+                
                 $classId = Str::uuid()->toString();
 
                 DB::table('it_training_classes')->insert([
                     'id' => $classId,
                     'instructor_id' => $instructorId,
-                    'title' => "Master " . $sub . " Bootcamp",
+                    'title' => $sub . " Certification Training",
                     'category' => $cat,
                     'subcategory' => $sub,
                     'level' => json_encode(['Intermediate', 'Advanced']),
                     'format' => json_encode(['Online', 'Live Interactive']),
-                    'short_description' => "Level up your skills with this industry-leading training on " . $sub . ".",
-                    'training_covers' => "Comprehensive A-Z guide to " . $sub . " with projects.",
+                    'short_description' => "Get certified in " . $sub . " with industry-expert led training. Master the skills demanded by top employers.",
+                    'training_covers' => "Comprehensive A-Z guide with real-world industry projects.",
                     'status' => 'active',
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -141,10 +133,10 @@ class ItTrainingSeeder extends Seeder
                 DB::table('it_training_overview')->insert([
                     'id' => Str::uuid()->toString(),
                     'class_id' => $classId,
-                    'detailed_description' => "This course covers everything from basics to advanced concepts in " . $sub . ". You will work on real-world projects and build a portfolio.",
-                    'who_is_it_for' => json_encode(['Software Engineers', 'IT Graduates', 'Tech Enthusiasts']),
-                    'what_will_learn' => json_encode(['Industry Best Practices', 'Core Architecture', 'Deployment Strategies']),
-                    'highlights' => json_encode(['1-on-1 Mentorship', 'Job Referral Program', 'Lifetime Access']),
+                    'detailed_description' => "This Edureka-style training covers everything from basics to advanced concepts. You will work on real-world projects, build a strong portfolio, and prepare for official certification exams.",
+                    'who_is_it_for' => json_encode(['Software Engineers', 'IT Professionals', 'Tech Enthusiasts']),
+                    'what_will_learn' => json_encode(['Industry Best Practices', 'Core Architecture', 'Certification Exam Prep']),
+                    'highlights' => json_encode(['1-on-1 Mentorship', 'Job Referral Program', 'Lifetime Access', 'Industry Recognized Certificate']),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -153,15 +145,15 @@ class ItTrainingSeeder extends Seeder
                 DB::table('it_training_schedules')->insert([
                     'id' => Str::uuid()->toString(),
                     'class_id' => $classId,
-                    'duration_label' => '12 Weeks',
-                    'total_sessions' => 24,
+                    'duration_label' => rand(4, 12) . ' Weeks',
+                    'total_sessions' => rand(12, 36),
                     'session_length_minutes' => 120,
                     'days_of_week' => json_encode(['Saturday', 'Sunday']),
                     'time_start' => '10:00:00',
                     'time_end' => '12:00:00',
-                    'batch_start_date' => now()->addDays(rand(10, 45))->format('Y-m-d'),
-                    'online_platform' => 'Microsoft Teams',
-                    'max_students' => 15,
+                    'batch_start_date' => now()->addDays(rand(5, 30))->format('Y-m-d'),
+                    'online_platform' => 'Zoom',
+                    'max_students' => rand(10, 30),
                     'trial_available' => true,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -171,9 +163,9 @@ class ItTrainingSeeder extends Seeder
                 DB::table('it_training_pricing')->insert([
                     'id' => Str::uuid()->toString(),
                     'class_id' => $classId,
-                    'fee_amount' => rand(499, 1499),
+                    'fee_amount' => rand(299, 1999),
                     'fee_type' => 'full_course',
-                    'discount_label' => 'Early Bird 20% Off',
+                    'discount_label' => 'Limited Time 20% Off',
                     'certificate_provided' => true,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -185,24 +177,26 @@ class ItTrainingSeeder extends Seeder
                     'class_id' => $classId,
                     'prerequisites' => json_encode(['Basic IT Knowledge', 'High-speed Internet']),
                     'materials_needed' => json_encode(['Laptop with 16GB RAM', 'Required Software installed']),
-                    'tech_requirements' => json_encode(['Stable Internet connection', 'Webcam']),
+                    'tech_requirements' => json_encode(['Stable Internet connection', 'Webcam', 'Microphone']),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
 
                 // Modules
-                for ($m = 1; $m <= 4; $m++) {
+                for ($m = 1; $m <= 5; $m++) {
                     DB::table('it_training_modules')->insert([
                         'id' => Str::uuid()->toString(),
                         'class_id' => $classId,
                         'sort_order' => $m,
-                        'title' => "Module $m: Deep Dive into " . $sub,
-                        'description' => "Core concepts and practical implementations of " . $sub,
-                        'estimated_duration' => "3 Weeks",
+                        'title' => "Module $m: Deep Dive into core concepts",
+                        'description' => "Detailed curriculum covering essential industry topics with hands-on labs and practical implementations.",
+                        'estimated_duration' => "2 Weeks",
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
                 }
+
+                $coursesCreated++;
             }
         }
     }

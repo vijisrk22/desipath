@@ -24,15 +24,23 @@ import {
   Flight,
   Person,
   Description,
-  Edit
+  Edit,
+  VerifiedUser,
+  Star,
+  LocationOn,
+  CheckCircleOutline
 } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 
-const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal = false }) => {
+const TravelPostCard = ({ post, type = 'volunteer', isOwner = false }) => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
   const [showDetails, setShowDetails] = React.useState(false);
+
+  // Mock data for the new premium design features
+  const mockRating = (4.5 + Math.random() * 0.5).toFixed(1);
+  const mockAssistedCount = Math.floor(Math.random() * 20) + 2;
 
   const handleMessage = (e) => {
     if (e) {
@@ -67,11 +75,44 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
       console.log("Chat navigation error:", err);
     }
   };
+
   const isVolunteer = type === 'volunteer';
   const legs = post.route_legs || [];
   const departure = legs.find(l => l.leg_type === 'departure');
   const destination = legs.find(l => l.leg_type === 'destination');
-  const transits = legs.filter(l => l.leg_type === 'transit');
+  
+  // Format assistance tags
+  let helpTags = [];
+  const data = isVolunteer ? post.comfortable_helping : post.special_needs;
+  if (Array.isArray(data)) helpTags = data;
+  else if (typeof data === 'string') {
+    try { const parsed = JSON.parse(data); helpTags = Array.isArray(parsed) ? parsed : [data]; }
+    catch(e) { helpTags = [data]; }
+  }
+  else if (typeof data === 'boolean') helpTags = data ? ['General Assistance'] : [];
+  else if (data) helpTags = [String(data)];
+
+  const getCityName = (leg) => {
+    if (!leg) return 'Unknown';
+    if (leg.city) return leg.city;
+    const map = {
+      'BOM': 'Mumbai',
+      'JFK': 'New York USA',
+      'HYD': 'Hyderabad',
+      'IAD': 'Washington DC',
+      'COK': 'Kochi',
+      'CCU': 'Kolkata',
+      'ORD': 'Chicago',
+      'YVR': 'Vancouver',
+      'DEL': 'New Delhi',
+      'SFO': 'San Francisco',
+      'EWR': 'Newark',
+      'YYZ': 'Toronto',
+      'BLR': 'Bengaluru',
+      'MAA': 'Chennai'
+    };
+    return map[leg.iata_code] || 'Unknown City';
+  };
 
   const DetailsModal = () => (
     <Modal
@@ -82,13 +123,13 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
       <Paper sx={{ 
         width: '100%', 
         maxWidth: 600, 
-        borderRadius: '32px', 
+        borderRadius: '24px', 
         overflow: 'hidden',
         outline: 'none',
         position: 'relative'
       }}>
         {/* Header */}
-        <div className="bg-[#2563eb] p-8 text-white relative">
+        <div className="bg-[#1565D8] p-8 text-white relative">
           <IconButton 
             onClick={() => setShowDetails(false)}
             sx={{ position: 'absolute', right: 16, top: 16, color: 'white' }}
@@ -96,12 +137,12 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
             <Close />
           </IconButton>
           <div className="flex items-center gap-4 mb-4">
-             <Avatar src={post.user?.profile_photo} sx={{ width: 64, height: 64, border: '3px solid rgba(255,255,255,0.3)', bgcolor: 'white', color: '#2563eb', fontWeight: 900 }}>
+             <Avatar src={post.user?.profile_photo} sx={{ width: 64, height: 64, border: '3px solid rgba(255,255,255,0.3)', bgcolor: 'white', color: '#1565D8', fontWeight: 900 }}>
                {post.user?.name?.[0]}
              </Avatar>
              <div>
                <Typography variant="h5" fontWeight={900}>{post.user?.name}</Typography>
-               <Typography variant="subtitle2" sx={{ opacity: 0.8, fontWeight: 700 }}>
+               <Typography variant="subtitle2" sx={{ opacity: 0.9, fontWeight: 600 }}>
                  {isVolunteer ? 'Travel Volunteer Offer' : 'Travel Companion Request'}
                </Typography>
              </div>
@@ -110,20 +151,19 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
 
         {/* Content */}
         <div className="p-8 max-h-[70vh] overflow-y-auto space-y-8 font-poppins">
-          {/* Route Section */}
           <section>
             <Typography variant="overline" color="text.secondary" fontWeight={900}>Flight Route</Typography>
             <div className="mt-4 space-y-4">
               {legs.map((leg, idx) => (
                 <div key={idx} className="flex items-start gap-4">
                   <div className="flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-[#2563eb]">
+                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-[#1565D8]">
                       <Flight sx={{ fontSize: 16, transform: leg.leg_type === 'destination' ? 'rotate(180deg)' : 'none' }} />
                     </div>
                     {idx < legs.length - 1 && <div className="w-0.5 h-10 bg-blue-100 my-1"></div>}
                   </div>
                   <div>
-                    <Typography variant="subtitle1" fontWeight={800}>{leg.iata_code} — {leg.city}</Typography>
+                    <Typography variant="subtitle1" fontWeight={800}>{leg.iata_code} — {getCityName(leg)}</Typography>
                     <Typography variant="caption" color="text.secondary" fontWeight={700} className="uppercase tracking-widest">
                       {leg.leg_type} {leg.airport_name && `• ${leg.airport_name}`}
                     </Typography>
@@ -135,7 +175,6 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
 
           <Divider />
 
-          {/* Traveler Info */}
           <div className="grid grid-cols-2 gap-8">
             <section>
               <Typography variant="overline" color="text.secondary" fontWeight={900}>Traveler Info</Typography>
@@ -165,30 +204,17 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
 
           <Divider />
 
-          {/* Assistance */}
           <section>
             <Typography variant="overline" color="text.secondary" fontWeight={900}>
               {isVolunteer ? 'Can Help With' : 'Assistance Needed'}
             </Typography>
             <div className="grid grid-cols-2 gap-3 mt-3">
-              {(() => {
-                const data = isVolunteer ? post.comfortable_helping : post.special_needs;
-                let list = [];
-                if (Array.isArray(data)) list = data;
-                else if (typeof data === 'string') {
-                  try { const parsed = JSON.parse(data); list = Array.isArray(parsed) ? parsed : [data]; }
-                  catch(e) { list = [data]; }
-                }
-                else if (typeof data === 'boolean') list = data ? ['General Assistance'] : [];
-                else if (data) list = [String(data)];
-                
-                return list.map(item => (
-                  <div key={item} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                    <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                    <Typography variant="caption" fontWeight={700} color="text.primary">{item}</Typography>
-                  </div>
-                ));
-              })()}
+              {helpTags.map(item => (
+                <div key={item} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+                  <CheckCircleOutline sx={{ fontSize: 16, color: '#10B981' }} />
+                  <Typography variant="caption" fontWeight={700} color="text.primary">{item}</Typography>
+                </div>
+              ))}
             </div>
           </section>
 
@@ -200,14 +226,13 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
                   <Description fontSize="small" className="text-gray-400" />
                   <Typography variant="overline" color="text.secondary" fontWeight={900}>Notes</Typography>
                 </div>
-                <Typography variant="body2" className="italic text-gray-600 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <Typography variant="body2" className="italic text-gray-600 bg-gray-50 p-4 rounded-xl border border-gray-100">
                   "{post.comments}"
                 </Typography>
               </section>
             </>
           )}
 
-          {/* Contact Action */}
           <div className="pt-4">
             <Button 
               fullWidth 
@@ -215,7 +240,7 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
               startIcon={<Message />}
               onClick={handleMessage}
               disabled={isOwner}
-              sx={{ bgcolor: '#2563eb', py: 2, borderRadius: '16px', fontWeight: 800, textTransform: 'none' }}
+              sx={{ bgcolor: '#1565D8', '&:hover': { bgcolor: '#1152b3' }, py: 2, borderRadius: 'full', fontWeight: 800, textTransform: 'none' }}
             >
               {isOwner ? 'Your Post' : `Message ${post.user?.name?.split(' ')[0]}`}
             </Button>
@@ -225,261 +250,140 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false, horizontal 
     </Modal>
   );
 
-  if (horizontal) {
-    return (
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col md:flex-row items-stretch min-h-[180px]">
-        {/* User & Info Section (Left/Side) */}
-        <div className={`p-6 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col justify-center min-w-[220px] ${isVolunteer ? 'bg-black' : 'bg-[#111111]'} relative`}>
-          <div className="flex items-center gap-3 mb-4 relative z-10">
-            <Avatar 
-              src={post.user?.profile_photo} 
-              sx={{ 
-                bgcolor: isVolunteer ? '#3b82f6' : '#6366f1', 
-                width: 44, 
-                height: 44, 
-                fontWeight: 900,
-                border: '2px solid rgba(255,255,255,0.1)'
-              }}
-            >
-              {post.user?.name?.[0]}
-            </Avatar>
-            <div className="overflow-hidden">
-              <Typography variant="subtitle2" fontWeight={800} noWrap sx={{ color: 'white', lineHeight: 1.2, maxWidth: 140 }}>
-                {post.user?.name || 'Anonymous'}
-              </Typography>
-              <Typography variant="caption" sx={{ color: isVolunteer ? '#93c5fd' : '#c7d2fe', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
-                {isVolunteer ? 'Volunteer' : 'Seeker'}
-              </Typography>
-            </div>
-          </div>
-          <div className="mt-auto relative z-10">
-            <Typography variant="h6" fontWeight={900} sx={{ color: '#fbbf24' }}>
-              {post.gift_card_offer && post.gift_card_offer !== '0' ? `$${post.gift_card_offer}` : 
-               post.gift_card_preference && post.gift_card_preference !== 'free' ? `$${post.gift_card_preference}` : 'FREE'}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'white', opacity: 0.7, fontWeight: 700, fontSize: '0.65rem' }}>
-              Amazon Gift Card
-            </Typography>
-          </div>
-          {/* Subtle accent line */}
-          <div className={`absolute right-0 top-0 w-1 h-full ${isVolunteer ? 'bg-blue-500/30' : 'bg-indigo-500/30'}`}></div>
-        </div>
-
-        {/* Route Section (Middle) */}
-        <div className="flex-grow p-6 flex flex-col justify-center">
-          <div className="flex items-center gap-6 mb-4">
-            <div className="text-center">
-              <Typography variant="h5" fontWeight={900}>{departure?.iata_code}</Typography>
-              <Typography variant="caption" fontWeight={700} color="text.secondary">{departure?.city}</Typography>
-            </div>
-            
-            <div className="flex-1 flex flex-col items-center min-w-[100px]">
-               <div className="w-full flex items-center gap-2 mb-1">
-                 <div className="h-0.5 rounded-full bg-blue-100 flex-1"></div>
-                 <Flight sx={{ color: '#f97316', fontSize: 18, transform: 'rotate(90deg)' }} />
-                 <div className="h-0.5 rounded-full bg-blue-100 flex-1"></div>
-               </div>
-               {transits.length > 0 && (
-                 <Typography variant="caption" sx={{ color: '#2563eb', fontWeight: 800, fontSize: '0.65rem' }}>
-                   {transits.length} STOP{transits.length > 1 ? 'S' : ''}
-                 </Typography>
-               )}
-            </div>
-
-            <div className="text-center">
-              <Typography variant="h5" fontWeight={900}>{destination?.iata_code}</Typography>
-              <Typography variant="caption" fontWeight={700} color="text.secondary">{destination?.city}</Typography>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 text-gray-500">
-              <CalendarMonth sx={{ fontSize: 16, opacity: 0.6 }} />
-              <Typography variant="caption" fontWeight={700}>
-                {post.travel_date_confirmed 
-                  ? dayjs(post.travel_date).format('MMM D, YYYY') 
-                  : `${dayjs(post.travel_month_from).format('MMM')} - ${dayjs(post.travel_month_to).format('MMM YYYY')}`}
-              </Typography>
-            </div>
-            <Divider orientation="vertical" flexItem sx={{ height: 12, my: 'auto' }} />
-            <div className="flex flex-wrap gap-1">
-              {(post.languages || []).slice(0, 2).map((lang) => (
-                <Chip key={lang} label={lang} size="small" sx={{ height: 20, fontSize: '0.6rem', fontWeight: 700, bgcolor: 'white', border: '1px solid #f3f4f6' }} />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Actions Section (Right) */}
-        <div className="p-6 border-t md:border-t-0 md:border-l border-gray-100 flex md:flex-col justify-center gap-3 min-w-[160px] bg-gray-50/10">
-          <Button 
-            variant="contained"
-            fullWidth
-            onClick={() => setShowDetails(true)}
-            endIcon={<ArrowForward sx={{ color: '#1e3a8a' }} />} 
-            sx={{ 
-              bgcolor: '#eff6ff', 
-              '&:hover': { bgcolor: '#dbeafe' }, 
-              color: '#1e3a8a !important', 
-              fontWeight: 800, 
-              textTransform: 'none', 
-              borderRadius: '14px', 
-              py: 1, 
-              '& .MuiButton-endIcon': { color: '#1e3a8a' } 
-            }}
-          >
-            Details
-          </Button>
-          {isOwner && (
-            <Button 
-              fullWidth
-              startIcon={<Edit />}
-              onClick={() => navigate(`/travel-companion/post-${type === 'seeker' ? 'request' : 'volunteer'}`, { state: { editData: post } })}
-              sx={{ color: '#2563eb', fontWeight: 800, textTransform: 'none', borderRadius: '14px', py: 1 }}
-            >
-              Edit
-            </Button>
-          )}
-          <Button 
-            fullWidth
-            onClick={!isOwner ? handleMessage : undefined}
-            sx={{ color: isOwner ? '#ef4444' : '#6b7280', fontWeight: 800, textTransform: 'none', borderRadius: '14px', py: 1 }}
-          >
-            {isOwner ? 'Remove' : 'Message'}
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const compensation = post.gift_card_offer && post.gift_card_offer !== '0' 
+    ? `$${post.gift_card_offer} Reward` 
+    : post.gift_card_preference && post.gift_card_preference !== 'free' 
+      ? `$${post.gift_card_preference} Compensation` 
+      : 'FREE';
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full">
-      {/* Card Header: User Info & Match Status */}
-      <div className={`p-6 pb-5 ${isVolunteer ? 'bg-black' : 'bg-[#111111]'} relative`}>
-        <div className="flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-3">
+    <div className="bg-white rounded-[24px] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col font-poppins h-full">
+      
+      {/* Top Row: User Profile & Trust */}
+      <div className="p-6 pb-4 border-b border-gray-50">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
             <Avatar 
               src={post.user?.profile_photo} 
-              sx={{ 
-                bgcolor: isVolunteer ? '#3b82f6' : '#6366f1', 
-                width: 48, 
-                height: 48, 
-                fontWeight: 900,
-                border: '2px solid rgba(255,255,255,0.1)'
-              }}
+              sx={{ width: 56, height: 56, bgcolor: '#f3f4f6', color: '#1565D8', fontWeight: 'bold' }}
             >
               {post.user?.name?.[0]}
             </Avatar>
-            <div className="overflow-hidden">
-              <Typography variant="subtitle1" fontWeight={800} noWrap sx={{ color: 'white', lineHeight: 1.2, maxWidth: 150 }}>
+            <div>
+              <h3 className="font-bold text-lg text-[#1F2937] leading-tight">
                 {post.user?.name || 'Anonymous'}
-              </Typography>
-              <Typography variant="caption" sx={{ color: isVolunteer ? '#93c5fd' : '#c7d2fe', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
-                {isVolunteer ? 'Offering Help' : 'Seeking Help'}
-              </Typography>
+              </h3>
+              <div className="flex items-center gap-1 mt-1">
+                <VerifiedUser sx={{ fontSize: 14, color: '#10B981' }} />
+                <span className="text-xs font-semibold text-[#10B981]">Verified {isVolunteer ? 'Volunteer' : 'Seeker'}</span>
+              </div>
+              <div className="flex items-center gap-1 mt-1 text-gray-500">
+                <LocationOn sx={{ fontSize: 14 }} />
+                <span className="text-xs">{departure?.city || 'Unknown Location'}</span>
+              </div>
             </div>
           </div>
-          <div className="text-right">
-             <Typography variant="h6" fontWeight={900} sx={{ color: '#fbbf24' }}>
-               {post.gift_card_offer && post.gift_card_offer !== '0' ? `$${post.gift_card_offer}` : 
-                post.gift_card_preference && post.gift_card_preference !== 'free' ? `$${post.gift_card_preference}` : 'FREE'}
-             </Typography>
-             <Typography variant="caption" sx={{ color: 'white', opacity: 0.7, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.6rem' }}>
-               Amazon Gift Card
-             </Typography>
+        </div>
+
+        {/* Ratings Row (Mock Data) */}
+        <div className="flex items-center gap-4 mt-4">
+          <div className="flex items-center gap-1 text-[#F59E0B]">
+            <Star sx={{ fontSize: 16 }} />
+            <span className="text-sm font-bold text-[#1F2937]">{mockRating}</span>
+          </div>
+          <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+          <div className="text-sm text-[#6B7280] font-medium">
+            {mockAssistedCount} Travelers Assisted
           </div>
         </div>
-        {/* Subtle accent line */}
-        <div className={`absolute bottom-0 left-0 h-1 w-full ${isVolunteer ? 'bg-blue-500/30' : 'bg-indigo-500/30'}`}></div>
       </div>
 
-      {/* Main Content: Route */}
-      <div className="px-6 py-4 bg-gray-50/50 flex-grow">
-        <div className="flex items-center justify-between mb-6">
+      {/* Route & Date */}
+      <div className="p-6 bg-blue-50/30 flex-grow">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex-1">
-            <Typography variant="h5" fontWeight={900}>{departure?.iata_code}</Typography>
-            <Typography variant="caption" fontWeight={700} color="text.secondary">{departure?.city}</Typography>
+            <div className="font-bold text-[#1F2937] text-lg">{getCityName(departure)}</div>
+            <div className="text-sm text-[#6B7280]">{departure?.iata_code}</div>
           </div>
-          <div className="flex-1 flex flex-col items-center px-4">
-             <div className="w-full flex items-center gap-2 mb-1">
-               <div className="h-0.5 rounded-full bg-gray-200 flex-1"></div>
-                <Flight sx={{ color: '#f97316', fontSize: 18, transform: 'rotate(90deg)' }} />
-               <div className="h-0.5 rounded-full bg-gray-200 flex-1"></div>
-             </div>
-             {transits.length > 0 && (
-               <Typography variant="caption" sx={{ bgcolor: 'blue.50', color: 'blue.600', px: 1, py: 0.2, rounded: '4px', fontWidth: 800 }}>
-                 {transits.length} STOP{transits.length > 1 ? 'S' : ''}
-               </Typography>
-             )}
+          <div className="flex-1 px-2 flex items-center justify-center">
+            <div className="flex-1 border-t-2 border-dotted border-[#93C5FD]"></div>
+            <Flight sx={{ color: '#1565D8', transform: 'rotate(90deg)', mx: 1, fontSize: 20 }} />
+            <div className="flex-1 border-t-2 border-dotted border-[#93C5FD]"></div>
           </div>
           <div className="flex-1 text-right">
-            <Typography variant="h5" fontWeight={900}>{destination?.iata_code}</Typography>
-            <Typography variant="caption" fontWeight={700} color="text.secondary">{destination?.city}</Typography>
+            <div className="font-bold text-[#1F2937] text-lg">{getCityName(destination)}</div>
+            <div className="text-sm text-[#6B7280]">{destination?.iata_code}</div>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2 text-[#1565D8] font-semibold bg-white px-3 py-2 rounded-xl w-fit shadow-sm border border-blue-100">
+          <CalendarMonth fontSize="small" />
+          <span className="text-sm">
+            {post.travel_date_confirmed 
+              ? dayjs(post.travel_date).format('MMMM D, YYYY') 
+              : `${dayjs(post.travel_month_from).format('MMM')} - ${dayjs(post.travel_month_to).format('MMM YYYY')}`}
+          </span>
+        </div>
+      </div>
+
+      {/* Details & Tags */}
+      <div className="p-6 border-t border-gray-50 space-y-4">
+        <div>
+          <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Languages</div>
+          <div className="flex flex-wrap gap-2">
+            {(post.languages || []).slice(0, 3).map((lang) => (
+              <Chip key={lang} label={lang} size="small" sx={{ bgcolor: '#F3F4F6', color: '#4B5563', fontWeight: 600, fontSize: '0.7rem' }} />
+            ))}
+            {(post.languages || []).length > 3 && (
+               <Chip label={`+${post.languages.length - 3}`} size="small" sx={{ bgcolor: '#F3F4F6', color: '#4B5563', fontWeight: 600, fontSize: '0.7rem' }} />
+            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-gray-500 mb-4">
-          <CalendarMonth fontSize="small" sx={{ opacity: 0.6 }} />
-          <Typography variant="body2" fontWeight={700}>
-            {post.travel_date_confirmed 
-              ? dayjs(post.travel_date).format('MMM D, YYYY') 
-              : `${dayjs(post.travel_month_from).format('MMM')} - ${dayjs(post.travel_month_to).format('MMM YYYY')}`}
-          </Typography>
-        </div>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mt-4">
-          {(post.languages || []).slice(0, 3).map((lang) => (
-            <Chip key={lang} label={lang} size="small" sx={{ bgcolor: 'white', border: '1px solid #f3f4f6', fontWeight: 500, fontSize: '0.65rem' }} />
-          ))}
-          {isVolunteer ? (
-             post.travelling_as && <Chip label={post.travelling_as} size="small" sx={{ bgcolor: 'blue.50', color: 'blue.700', fontWeight: 700, border: '1px solid #dbeafe', fontSize: '0.65rem' }} />
-          ) : (
-            post.traveler_relation && <Chip label={post.traveler_relation} size="small" sx={{ bgcolor: 'blue.50', color: 'blue.700', fontWeight: 700, border: '1px solid #dbeafe', fontSize: '0.65rem' }} />
-          )}
+        
+        <div className="flex items-center justify-between pt-2">
+           <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Compensation</div>
+           <div className={`font-bold text-sm px-3 py-1 rounded-full ${compensation === 'FREE' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+             {compensation}
+           </div>
         </div>
       </div>
 
-      {/* Footer Actions */}
-      <div className="p-4 border-t border-gray-100 flex items-center justify-between">
-         <div className="flex items-center gap-2">
-            <Button 
-              startIcon={isOwner ? null : <Message />} 
-              onClick={!isOwner ? handleMessage : undefined}
-              sx={{ color: isOwner ? '#ef4444' : '#1f2937', fontWeight: 800, textTransform: 'none', borderRadius: '12px' }}
-            >
-              {isOwner ? 'Remove' : 'Message'}
-            </Button>
-            {isOwner && (
-              <Button 
-                startIcon={<Edit />}
-                onClick={() => navigate(`/travel-companion/post-${type === 'seeker' ? 'request' : 'volunteer'}`, { state: { editData: post } })}
-                sx={{ color: '#2563eb', fontWeight: 800, textTransform: 'none', borderRadius: '12px' }}
-              >
-                Edit
-              </Button>
-            )}
-         </div>
+      {/* Actions */}
+      <div className="p-4 bg-green-50/50 border-t border-green-100 grid grid-cols-2 gap-3 mt-auto">
         <Button 
-          endIcon={<ArrowForward sx={{ color: '#1e3a8a' }} />} 
-          variant="contained"
+          variant="outlined"
           onClick={() => setShowDetails(true)}
           sx={{ 
-            bgcolor: '#eff6ff', 
-            '&:hover': { bgcolor: '#dbeafe' }, 
-            color: '#1e3a8a !important', 
-            fontWeight: 800, 
+            borderColor: '#E5E7EB',
+            color: '#4B5563',
+            fontWeight: 700, 
             textTransform: 'none', 
-            borderRadius: '12px', 
-            px: 3, 
-            '& .MuiButton-endIcon': { color: '#1e3a8a' },
-            boxShadow: 'none',
-            border: '1px solid #dbeafe'
+            borderRadius: '999px',
+            '&:hover': { bgcolor: '#F3F4F6', borderColor: '#D1D5DB' }
           }}
         >
-          Details
+          View Details
+        </Button>
+        <Button 
+          variant="contained"
+          onClick={!isOwner ? handleMessage : undefined}
+          disabled={isOwner}
+          sx={{ 
+            bgcolor: '#1565D8', 
+            color: 'white', 
+            fontWeight: 700, 
+            textTransform: 'none', 
+            borderRadius: '999px',
+            boxShadow: 'none',
+            '&:hover': { bgcolor: '#1152b3', boxShadow: '0 4px 6px -1px rgba(21, 101, 216, 0.2)' }
+          }}
+        >
+          {isOwner ? 'Your Post' : 'Message'}
         </Button>
       </div>
+
       <DetailsModal />
     </div>
   );

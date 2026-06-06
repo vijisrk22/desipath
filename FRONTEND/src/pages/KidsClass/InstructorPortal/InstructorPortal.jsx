@@ -37,6 +37,8 @@ export default function InstructorPortal() {
       languages: [],
       city: '',
       state: '',
+      zipcode: '',
+      address: '',
       email: '',
       phone: ''
     },
@@ -76,7 +78,9 @@ export default function InstructorPortal() {
                 bio: instructor?.bio || '',
                 slug: instructor?.slug || '',
                 yearsExperience: instructor?.years_experience || '',
-                city: '', state: '', email: instructor?.email || '', phone: instructor?.phone || ''
+                city: instructor?.city || '', state: instructor?.state || '', 
+                zipcode: instructor?.zipcode || '', address: instructor?.address || '',
+                email: instructor?.email || '', phone: instructor?.phone || ''
               },
               classBasic: {
                 title: classBasic?.title || '', category: classBasic?.category || '', subcategory: classBasic?.subcategory || '',

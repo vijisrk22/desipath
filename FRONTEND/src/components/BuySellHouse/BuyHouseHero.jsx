@@ -73,7 +73,7 @@ function BuyHouseHero() {
   };
 
   return (
-    <div className="relative w-full h-[300px] md:h-[360px] bg-gradient-to-b from-blue-900 to-blue-950 flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-auto min-h-[350px] py-12 md:py-0 md:h-[360px] bg-gradient-to-b from-blue-900 to-blue-950 flex items-center justify-center">
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-overlay"
@@ -92,7 +92,7 @@ function BuyHouseHero() {
         </p>
 
         {/* Search Bar Container */}
-        <div className="w-full bg-white rounded-2xl md:rounded-full p-2 md:p-3 shadow-2xl flex flex-col md:flex-row items-center gap-3">
+        <div className="w-full bg-white rounded-2xl md:rounded-full p-2 md:p-3 shadow-2xl flex flex-col md:flex-row items-center gap-3 relative z-20">
           
           <div className="w-full md:w-1/3 md:border-r border-gray-200 px-2 md:pl-4">
              <LocationAutocompleteInput

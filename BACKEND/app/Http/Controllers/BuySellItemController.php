@@ -13,6 +13,11 @@ class BuySellItemController extends Controller
     {
         $query = BuySellItem::query()
             ->select('buy_sell_items.*')
+            ->addSelect(['state' => \DB::table('usa_zipcodes')
+                ->select('state_id')
+                ->whereColumn('zip', 'buy_sell_items.zipcode')
+                ->limit(1)
+            ])
             ->with('user:id,name,email,profile_photo')
             ->where('buy_sell_items.status', 'active');
 
@@ -41,7 +46,6 @@ class BuySellItemController extends Controller
                 $subquery->selectRaw("MIN(3959 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat))))", [$lat, $lng, $lat])
                     ->from('usa_zipcodes')
                     ->whereColumn('usa_zipcodes.city', 'buy_sell_items.city')
-                    ->whereColumn('usa_zipcodes.state_id', 'buy_sell_items.state')
                     ->whereBetween('usa_zipcodes.lat', [$lat - $latRange, $lat + $latRange])
                     ->whereBetween('usa_zipcodes.lng', [$lng - $lngRange, $lng + $lngRange]);
             }, 'distance')

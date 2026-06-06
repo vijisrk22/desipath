@@ -39,6 +39,27 @@
         }
     },
     "scripts": {
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "php artisan serve"
+        ],
+        "db-migrate": "php artisan migrate",
+        "db-seed": [
+            "Composer\\Config::disableProcessTimeout",
+            "php -d memory_limit=512M artisan db:seed"
+        ],
+        "db-fresh-seed": [
+            "Composer\\Config::disableProcessTimeout",
+            "php -d memory_limit=512M artisan migrate:fresh --seed"
+        ],
+        "db-restore": [
+            "Composer\\Config::disableProcessTimeout",
+            "php master_db_restore.php"
+        ],
+        "seed-homes": [
+            "Composer\\Config::disableProcessTimeout",
+            "php seed_buysellhomes_ca_nj.php"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

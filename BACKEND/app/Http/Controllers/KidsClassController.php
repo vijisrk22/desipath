@@ -77,6 +77,8 @@ class KidsClassController extends Controller
                     'phone' => $instructorData['phone'] ?? null,
                     'bio' => $instructorData['bio'] ?? null,
                     'years_experience' => $instructorData['yearsExperience'] ?? null,
+                    'zipcode' => $instructorData['zipcode'] ?? null,
+                    'address' => $instructorData['address'] ?? null,
                     'profile_photo_url' => (isset($instructorData['photoUrl']) && !str_starts_with($instructorData['photoUrl'], 'blob:')) ? $instructorData['photoUrl'] : null,
                     'created_at' => $now,
                     'updated_at' => $now,
@@ -476,6 +478,8 @@ class KidsClassController extends Controller
                     'phone' => $instructorData['phone'] ?? null,
                     'bio' => $instructorData['bio'] ?? null,
                     'years_experience' => $instructorData['yearsExperience'] ?? null,
+                    'zipcode' => $instructorData['zipcode'] ?? null,
+                    'address' => $instructorData['address'] ?? null,
                     'profile_photo_url' => (isset($instructorData['photoUrl']) && !str_starts_with($instructorData['photoUrl'], 'blob:')) ? $instructorData['photoUrl'] : null,
                     'updated_at' => now(),
                 ]);

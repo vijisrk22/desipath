@@ -5,10 +5,14 @@ import Footer from "../../components/Footer/Footer";
 import LocationSelectorModal from "../../components/LocationSelectorModal";
 import KidsClassCard from "../../components/KidsClass/KidsClassCard";
 import api from "../../utils/api";
+import { useForm } from "react-hook-form";
+import LocationAutocompleteInput from "../../components/InputTemplate/LocationAutocompleteInput";
 
 export default function KidsClassLanding() {
+  const { control, setValue, watch } = useForm();
   const [searchTerm, setSearchTerm] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState("");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [keywords, setKeywords] = useState([]);
@@ -23,6 +27,8 @@ export default function KidsClassLanding() {
     const savedLocation = localStorage.getItem('user_location');
     if (!savedLocation) {
       setShowLocationModal(true);
+    } else {
+      setCurrentLocation(savedLocation);
     }
     
     const fetchCats = async () => {
@@ -54,8 +60,15 @@ export default function KidsClassLanding() {
     fetchKeywords();
   }, []);
 
+  useEffect(() => {
+    if (currentLocation) {
+      setValue("location", currentLocation);
+    }
+  }, [currentLocation, setValue]);
+
   const handleLocationSelect = (locationString) => {
     localStorage.setItem('user_location', locationString);
+    setCurrentLocation(locationString);
     setShowLocationModal(false);
   };
 
@@ -167,15 +180,15 @@ export default function KidsClassLanding() {
             Discover a world of rich cultural learning, academics, and arts. Find the perfect classes to nurture your child's roots and talents!
           </p>
 
-          <div className="w-full max-w-3xl flex flex-col md:flex-row items-center gap-4 justify-center">
-            <div className="w-full max-w-lg relative">
+          <div className="w-full max-w-4xl flex flex-col md:flex-row items-center gap-3 justify-center bg-white rounded-2xl md:rounded-full p-2 md:p-3 shadow-2xl relative z-20">
+            <div className="w-full md:w-1/2 relative md:border-r border-gray-200">
               <input
                 type="text"
                 placeholder="Search for languages, math, music..."
                 value={searchTerm}
                 onChange={handleSearchChange}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="w-full py-2 pl-12 pr-6 rounded-full border-2 border-white shadow-md focus:outline-none focus:border-[#ffa41c] text-base font-dmsans transition-colors"
+                className="w-full py-2 pl-12 pr-6 rounded-full border-none focus:outline-none focus:ring-0 text-base font-dmsans transition-colors"
               />
               <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl">
                 🔍
@@ -183,7 +196,7 @@ export default function KidsClassLanding() {
 
               {/* Autocomplete Suggestions */}
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-[100] animate-fade-in-up">
+                <div className="absolute left-0 right-0 mt-4 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-[100] animate-fade-in-up">
                   {suggestions.map((s, idx) => (
                     <button
                       key={idx}
@@ -196,6 +209,16 @@ export default function KidsClassLanding() {
                   ))}
                 </div>
               )}
+            </div>
+
+            <div className="w-full md:w-1/2 px-2">
+              <LocationAutocompleteInput
+                control={control}
+                setValue={setValue}
+                watch={watch}
+                type="search"
+                placeholder="City, State, ZIP"
+              />
             </div>
           </div>
         </div>
@@ -263,15 +286,15 @@ export default function KidsClassLanding() {
                       </h2>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    <div className="flex flex-wrap gap-3">
                       {(category.subcategories || []).map((sub, jdx) => (
                         <Link
                           key={jdx}
                           to={`/kids-class/${category.slug}/${sub.slug}`}
-                          className="bg-white hover:bg-gray-50 flex flex-nowrap items-center gap-2 p-3 rounded-xl shadow-sm border border-black/5 hover:shadow-md transition-all transform hover:-translate-y-0.5"
+                          className="bg-white hover:bg-gray-50 flex items-center gap-2 p-3 rounded-xl shadow-sm border border-black/5 hover:shadow-md transition-all transform hover:-translate-y-0.5 w-auto"
                         >
                           <span className="text-lg md:text-xl shrink-0">{sub.icon || '🔹'}</span>
-                          <span className="font-semibold text-gray-800 text-sm font-dmsans truncate">
+                          <span className="font-semibold text-gray-800 text-sm font-dmsans whitespace-nowrap">
                             {sub.name}
                           </span>
                         </Link>

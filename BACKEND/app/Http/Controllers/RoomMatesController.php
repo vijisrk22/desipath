@@ -110,9 +110,9 @@ class RoomMatesController extends Controller
             });
         }
 
-        $roommates = $query->paginate(15);
+        $roommates = $query->get();
 
-        $roommates->getCollection()->transform(function ($roommate) {
+        $roommates->transform(function ($roommate) {
             if (is_string($roommate->photos) && !empty($roommate->photos)) {
                 $roommate->photos = json_decode($roommate->photos, true);
             }

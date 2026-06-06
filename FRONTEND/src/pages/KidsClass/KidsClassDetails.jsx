@@ -7,7 +7,7 @@ import { getFullImageUrl } from "../../utils/imageHelper";
 
 export default function KidsClassDetails() {
   const { id: idParam } = useParams();
-  const id = idParam ? idParam.split('-')[0] : null;
+  const id = idParam ? idParam.substring(0, 36) : null;
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enquiryParams, setEnquiryParams] = useState({ name: '', email: '', phone: '', message: '' });

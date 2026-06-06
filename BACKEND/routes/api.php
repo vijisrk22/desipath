@@ -29,7 +29,7 @@ use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\RealEstateController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\AttorneyController;
-use App\Http\Controllers\Api\BuySellItemController;
+use App\Http\Controllers\BuySellItemController;
 use App\Http\Controllers\Api\CommunityRideController;
 use App\Http\Controllers\Api\FinancialAdvisorController;
 

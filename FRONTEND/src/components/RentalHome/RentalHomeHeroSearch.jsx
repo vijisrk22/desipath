@@ -1,16 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { searchRentalHome } from "../../store/RentalHomesSlice";
-import LocationAutocompleteInput from "../InputTemplate/LocationAutocompleteInput";
 import { useForm } from "react-hook-form";
 import SearchIcon from '@mui/icons-material/Search';
+import LocationSelectorModal from "../LocationSelectorModal";
 
-function RentalHomeHeroSearch() {
+function RentalHomeHeroSearch({ location }) {
   const dispatch = useDispatch();
   const { control, setValue, watch, handleSubmit } = useForm();
 
   const [priceMax, setPriceMax] = useState("Any");
   const [selectedTypes, setSelectedTypes] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const selectedLocation = watch("location");
+
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('user_location');
+    if (savedLocation) {
+      setValue("location", savedLocation);
+      triggerSearch(savedLocation, priceMax, selectedTypes);
+    } else {
+      setIsModalOpen(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (location) {
+      setValue("location", location);
+    }
+  }, [location, setValue]);
+
+  const handleLocationSelect = (loc) => {
+    setValue('location', loc);
+    localStorage.setItem('user_location', loc);
+    setIsModalOpen(false);
+    triggerSearch(loc, priceMax, selectedTypes);
+  };
 
   const propertyTypes = ["Condominium", "Single Family", "Apartment", "Basement"];
 
@@ -20,8 +46,8 @@ function RentalHomeHeroSearch() {
     );
   };
 
-  const onSubmit = (data) => {
-    const loc = data.location || "";
+  const triggerSearch = (locationInput, priceMaxInput, typesInput) => {
+    const loc = locationInput || "";
     const parts = loc.split(",").map(s => s.trim());
     let city = "", state = "", zipcode = "";
 
@@ -72,8 +98,12 @@ function RentalHomeHeroSearch() {
     dispatch(searchRentalHome({ searchQuery }));
   };
 
+  const onSubmit = (data) => {
+    triggerSearch(data.location, priceMax, selectedTypes);
+  };
+
   return (
-    <div className="relative w-full h-[300px] md:h-[360px] bg-gradient-to-b from-blue-900 to-blue-950 flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-auto min-h-[350px] py-12 md:py-0 md:h-[360px] bg-gradient-to-b from-blue-900 to-blue-950 flex items-center justify-center">
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-overlay"
@@ -92,16 +122,24 @@ function RentalHomeHeroSearch() {
         </p>
 
         {/* Search Bar Container */}
-        <div className="w-full bg-white rounded-2xl md:rounded-full p-2 md:p-3 shadow-2xl flex flex-col md:flex-row items-center gap-3">
+        <div className="w-full bg-white rounded-2xl md:rounded-full p-2 md:p-3 shadow-2xl flex flex-col md:flex-row items-center gap-3 relative z-20">
           
-          <div className="w-full md:w-1/3 md:border-r border-gray-200 px-2 md:pl-4">
-             <LocationAutocompleteInput
-                control={control}
-                setValue={setValue}
-                watch={watch}
-                type="search"
-                placeholder="City, State, ZIP"
-              />
+          <div 
+            className="w-full md:w-1/3 md:border-r border-gray-200 px-2 md:pl-4 relative flex items-center"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <SearchIcon className="text-gray-400 absolute left-4" />
+            <input
+              type="text"
+              readOnly
+              value={selectedLocation || ""}
+              placeholder="City, State, ZIP"
+              className="w-full h-12 bg-transparent text-gray-700 font-dmsans font-medium outline-none cursor-pointer pl-10"
+              onFocus={(e) => {
+                e.target.blur();
+                setIsModalOpen(true);
+              }}
+            />
           </div>
 
           <div className="w-full md:w-1/4 md:border-r border-gray-200 px-2">
@@ -163,6 +201,15 @@ function RentalHomeHeroSearch() {
         </div>
 
       </div>
+
+      {isModalOpen && (
+        <LocationSelectorModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSelectLocation={handleLocationSelect}
+          buttonLabel="Search"
+        />
+      )}
     </div>
   );
 }

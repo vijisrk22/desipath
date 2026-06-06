@@ -99,10 +99,17 @@ export default function RentalHomeCard({ rentalHome }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 mb-4 h-6">
-          <img src="/location.svg" className="w-3.5 h-3.5 opacity-50" alt="location" />
-          <div className="text-gray-500 text-[13px] font-medium font-dmsans truncate">
-            {typeof rentalHome.location_city === 'object' ? (rentalHome.location_city?.name || "") : (rentalHome.location_city || rentalHome.city)}, {getStateCode(typeof rentalHome.location_state === 'object' ? rentalHome.location_state?.name : (rentalHome.location_state || rentalHome.state))}
+        <div className="flex items-start gap-2 mb-4 min-h-[20px]">
+          <img src="/location.svg" className="w-4 h-4 opacity-60 mt-0.5" alt="location" />
+          <div className="text-gray-500 text-[13px] font-medium font-dmsans flex flex-col min-w-0">
+            <span className="truncate">
+              {typeof rentalHome.location_city === 'object' ? (rentalHome.location_city?.name || "") : (rentalHome.location_city || rentalHome.city)}, {getStateCode(typeof rentalHome.location_state === 'object' ? rentalHome.location_state?.name : (rentalHome.location_state || rentalHome.state))} {rentalHome.location_zipcode || rentalHome.zipcode || ""}
+            </span>
+            {rentalHome.address && (
+              <span className="text-[11px] text-gray-400 truncate mt-0.5" title={rentalHome.address}>
+                {rentalHome.address}
+              </span>
+            )}
           </div>
         </div>
 

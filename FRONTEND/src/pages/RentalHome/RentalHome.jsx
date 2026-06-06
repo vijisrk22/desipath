@@ -8,26 +8,12 @@ import FindRentalHome from "./FindRentalHome";
 import PostRentalHome from "./PostRentalHome";
 import PostConfirmation from "../PostConfirmation";
 import RentalHomeDetails from "./RentalHomeDetails";
-import { useEffect, useState } from "react";
-import LocationSelectorModal from "../../components/LocationSelectorModal";
+import { useEffect } from "react";
 
 function RentalHome() {
   const { action } = useParams();
   const location = useLocation();
   const { user } = useSelector((state) => state.user);
-  const [showLocationModal, setShowLocationModal] = useState(false);
-
-  useEffect(() => {
-    const savedLocation = localStorage.getItem('user_location');
-    if (!savedLocation) {
-      setShowLocationModal(true);
-    }
-  }, []);
-
-  const handleLocationSelect = (locationString) => {
-    localStorage.setItem('user_location', locationString);
-    setShowLocationModal(false);
-  };
 
   if ((action === "postRentalHome" || action === "edit") && !user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
@@ -42,13 +28,6 @@ function RentalHome() {
   return (
     <div className="flex flex-col min-h-screen overflow-y-auto" style={{ cursor: 'default' }}>
       {showNavbar && <Navbar />}
-      
-      <LocationSelectorModal 
-        open={showLocationModal}
-        onClose={() => setShowLocationModal(false)}
-        onSelectLocation={handleLocationSelect}
-        onShowAll={() => setShowLocationModal(false)}
-      />
 
       {action === undefined ? (
         <>

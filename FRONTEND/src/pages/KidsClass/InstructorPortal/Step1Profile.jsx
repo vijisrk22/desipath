@@ -9,6 +9,10 @@ export default function Step1Profile({ data, update, instructorId, setInstructor
   const [imageError, setImageError] = useState(false);
   const [localBlobUrl, setLocalBlobUrl] = useState(null);
 
+  const [zipSuggestions, setZipSuggestions] = useState([]);
+  const [showZipDropdown, setShowZipDropdown] = useState(false);
+  const [isZipLoading, setIsZipLoading] = useState(false);
+
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -187,6 +191,82 @@ export default function Step1Profile({ data, update, instructorId, setInstructor
           </div>
           {errors.slug && <p className="text-xs text-red-500 font-medium">{errors.slug}</p>}
         </div>
+
+        {/* Location and Address */}
+        <div className="space-y-2">
+          <label className="font-semibold text-gray-700">
+            Location <span className="text-[11px] font-normal text-gray-400">(City,Zipcode,State)</span>
+          </label>
+          <div className="relative">
+            <input 
+              type="text" 
+              placeholder="e.g. Bridgewater, New Jersey, 08807"
+              value={data.zipcode || ''}
+              onChange={async (e) => {
+                const val = e.target.value;
+                update({ zipcode: val });
+                
+                if (val.length < 2) {
+                  setZipSuggestions([]);
+                  setShowZipDropdown(false);
+                  return;
+                }
+                
+                setIsZipLoading(true);
+                try {
+                  const res = await api.get(`/api/location/locations?filter=${val}`);
+                  const fetchedData = res.data?.value || (Array.isArray(res.data) ? res.data : []);
+                  setZipSuggestions(fetchedData);
+                  setShowZipDropdown(true);
+                } catch (err) {
+                  console.error(err);
+                } finally {
+                  setIsZipLoading(false);
+                }
+              }}
+              onBlur={() => setTimeout(() => setShowZipDropdown(false), 200)}
+              onFocus={() => {
+                if (zipSuggestions.length > 0) setShowZipDropdown(true);
+              }}
+              className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.zipcode ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+            />
+            {showZipDropdown && (isZipLoading || zipSuggestions.length > 0) && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                {isZipLoading ? (
+                  <div className="p-3 text-sm text-gray-500 text-center">Loading...</div>
+                ) : (
+                  zipSuggestions.map((loc, idx) => (
+                    <div 
+                      key={idx}
+                      className="p-3 hover:bg-gray-50 cursor-pointer text-sm text-gray-700 border-b last:border-b-0 border-gray-100"
+                      onClick={() => {
+                        update({ 
+                          zipcode: `${loc.city}, ${loc.state_name}, ${loc.zip}`
+                        });
+                        setShowZipDropdown(false);
+                      }}
+                    >
+                      {loc.city}, {loc.state_name}, {loc.zip}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+          {errors.zipcode && <p className="text-xs text-red-500 font-medium">{errors.zipcode}</p>}
+        </div>
+        <div className="space-y-2">
+          <label className="font-semibold text-gray-700">Address</label>
+          <input 
+            type="text" 
+            placeholder="Street address, City, State..."
+            value={data.address || ''}
+            onChange={(e) => update({ address: e.target.value })}
+            className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.address ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+          />
+          {errors.address && <p className="text-xs text-red-500 font-medium">{errors.address}</p>}
+        </div>
+
       </div>
 
       {/* Render Crop Modal if image selected */}
