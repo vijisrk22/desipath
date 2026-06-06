@@ -133,6 +133,8 @@ const rentalHomesSlice = createSlice({
                     last_page: action.payload?.last_page || 1,
                     total: action.payload?.total || (isArray ? action.payload.length : (action.payload?.data ? action.payload.data.length : 0)),
                     per_page: action.payload?.per_page || 9,
+                    from: action.payload?.from || 0,
+                    to: action.payload?.to || 0,
                 };
             })
             .addCase(fetchRentalHomes.rejected, (state, action) => {
@@ -193,6 +195,8 @@ const rentalHomesSlice = createSlice({
                     last_page: action.payload?.last_page || 1,
                     total: action.payload?.total || (isArray ? action.payload.length : (action.payload?.data ? action.payload.data.length : 0)),
                     per_page: action.payload?.per_page || 9,
+                    from: action.payload?.from || 0,
+                    to: action.payload?.to || 0,
                 };
                 state.lastSearchQuery = action.meta.arg.searchQuery;
             })

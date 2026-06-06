@@ -480,27 +480,36 @@ class RentalHomesController extends Controller
             $latRange = $radius / 69;
             $lngRange = $radius / (69 * cos(deg2rad($lat)));
 
-            $query->whereBetween('latitude', [$lat - $latRange, $lat + $latRange])
-                  ->whereBetween('longitude', [$lng - $lngRange, $lng + $lngRange]);
+            $query->where(function ($q) use ($lat, $latRange, $lng, $lngRange, $searchZip) {
+                $q->where('location_zipcode', $searchZip)
+                  ->orWhere(function ($subQ) use ($lat, $latRange, $lng, $lngRange) {
+                      $subQ->whereNotNull('latitude')
+                           ->whereNotNull('longitude')
+                           ->whereBetween('latitude', [$lat - $latRange, $lat + $latRange])
+                           ->whereBetween('longitude', [$lng - $lngRange, $lng + $lngRange]);
+                  });
+            });
 
             $query->select('*')
-                ->selectRaw("(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
-                ->having('distance', '<=', $radius);
+                ->selectRaw("IFNULL((3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))), 9999) AS distance", [$lat, $lng, $lat])
+                ->havingRaw("distance <= ? OR location_zipcode = ?", [$radius, $searchZip]);
             
             // Priority ordering: exact zip first, then by distance
             $query->orderByRaw("CASE WHEN location_zipcode = ? THEN 0 ELSE 1 END ASC", [$searchZip])
                   ->orderBy('distance', 'asc');
         } else {
             // Fallback to basic keyword matching if no coordinates found
-            if ($request->filled('city')) {
-                $query->where('location_city', 'like', '%' . $request->city . '%');
-            }
-            if ($request->filled('state')) {
-                $query->where('location_state', 'like', '%' . $request->state . '%');
-            }
-            if ($request->filled('zipcode')) {
-                $query->where('location_zipcode', 'like', '%' . $request->zipcode . '%');
-            }
+            $query->where(function ($q) use ($request) {
+                if ($request->filled('city')) {
+                    $q->orWhere('location_city', 'like', '%' . $request->city . '%');
+                }
+                if ($request->filled('state')) {
+                    $q->orWhere('location_state', 'like', '%' . $request->state . '%');
+                }
+                if ($request->filled('zipcode')) {
+                    $q->orWhere('location_zipcode', 'like', '%' . $request->zipcode . '%');
+                }
+            });
         }
 
         if ($request->filled('priceMin')) {
@@ -511,7 +520,21 @@ class RentalHomesController extends Controller
         }
 
         if ($request->filled('rentalHomeType') && is_array($request->rentalHomeType) && count($request->rentalHomeType) > 0) {
-            $query->whereIn('property_type', $request->rentalHomeType);
+            $mappedTypes = [];
+            foreach ($request->rentalHomeType as $type) {
+                if (strcasecmp($type, 'Condominium') === 0 || strcasecmp($type, 'Condo') === 0) {
+                    $mappedTypes[] = 'Condo';
+                } elseif (strcasecmp($type, 'Single Family') === 0 || strcasecmp($type, 'Single family Home') === 0) {
+                    $mappedTypes[] = 'Single family Home';
+                } elseif (strcasecmp($type, 'Basement') === 0 || strcasecmp($type, 'Basement Apartment') === 0) {
+                    $mappedTypes[] = 'Basement Apartment';
+                } elseif (strcasecmp($type, 'Apartment') === 0) {
+                    $mappedTypes[] = 'Apartment';
+                } else {
+                    $mappedTypes[] = $type;
+                }
+            }
+            $query->whereIn('property_type', $mappedTypes);
         }
 
         // Sorting

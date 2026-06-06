@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import TextFieldInput from "./TextFieldInput";
 import { Paper, MenuItem, CircularProgress, Typography } from "@mui/material";
-import { useWatch, Controller } from "react-hook-form";
+import { useWatch, Controller, useFormContext } from "react-hook-form";
 import { useQuery } from "react-query";
 import api from "../../utils/api";
 import { MdMyLocation, MdClose, MdSearch } from "react-icons/md";
@@ -9,6 +9,7 @@ import { MdMyLocation, MdClose, MdSearch } from "react-icons/md";
 function LocationAutocompleteInput({
   control,
   setValue,
+  watch: watchProp,
   defaultLocation,
   type = "", // "search", "pill", or default
   text = "Location",
@@ -17,6 +18,8 @@ function LocationAutocompleteInput({
   className = "",
   onFocus,
 }) {
+  const formContext = useFormContext();
+  const watch = watchProp || (formContext ? formContext.watch : null);
   const wrapperRef = useRef();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -160,20 +163,18 @@ function LocationAutocompleteInput({
                     }
                   }}
                 />
-                {field.value && (
-                  <MdClose
-                    className="cursor-pointer text-gray-400 hover:text-red-500 mr-1 shrink-0"
-                    onClick={() => {
-                      setValue("location", "");
-                      setSelectedLocation("");
-                      setIsDropdownOpen(false);
-                      localStorage.removeItem("user_location");
-                      if (onSelect) onSelect("");
-                    }}
-                    title="Clear location"
-                    size={18}
-                  />
-                )}
+                <MdClose
+                  className={`cursor-pointer transition-colors mr-1 shrink-0 ${field.value ? 'text-gray-400 hover:text-red-500 opacity-100' : 'opacity-0 pointer-events-none'}`}
+                  onClick={() => {
+                    setValue("location", "");
+                    setSelectedLocation("");
+                    setIsDropdownOpen(false);
+                    localStorage.removeItem("user_location");
+                    if (onSelect) onSelect("");
+                  }}
+                  title="Clear location"
+                  size={20}
+                />
               </>
             )}
           />

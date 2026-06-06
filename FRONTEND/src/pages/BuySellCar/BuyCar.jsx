@@ -1,19 +1,11 @@
 import Footer from "../../components/Footer/Footer";
-import ServiceTopBar from "../../components/ServiceTopBar";
-
+import BuyCarHero from "../../components/BuySellCar/BuyCarHero";
 import Cars from "../../components/BuySellCar/Cars";
-import ActiveCarSearchFilters from "../../components/BuySellCar/ActiveCarSearchFilters";
 
 function BuyCar() {
-  const inputs = ["location", "makeAndModel"];
-  const paths = [
-    { text: "Home", eP: "/" },
-    { text: "Buy/Sell Cars", eP: "/services/cars" },
-    { text: "Buy Car", eP: "/services/cars/buyCar" },
-  ];
   return (
     <div className="bg-[#f3f5f7]">
-      <ServiceTopBar inputs={inputs} title="Buy a Car" paths={paths} />
+      <BuyCarHero />
       <Cars />
       <Footer bgColor="bg-white" />
     </div>

@@ -500,12 +500,19 @@ class HomesController extends Controller
             $latRange = $radius / 69;
             $lngRange = $radius / (69 * cos(deg2rad($lat)));
 
-            $query->whereBetween('latitude', [$lat - $latRange, $lat + $latRange])
-                  ->whereBetween('longitude', [$lng - $lngRange, $lng + $lngRange]);
+            $query->where(function ($q) use ($lat, $latRange, $lng, $lngRange, $searchZip) {
+                $q->where('location_zipcode', $searchZip)
+                  ->orWhere(function ($subQ) use ($lat, $latRange, $lng, $lngRange) {
+                      $subQ->whereNotNull('latitude')
+                           ->whereNotNull('longitude')
+                           ->whereBetween('latitude', [$lat - $latRange, $lat + $latRange])
+                           ->whereBetween('longitude', [$lng - $lngRange, $lng + $lngRange]);
+                  });
+            });
 
             $query->select('*')
-                ->selectRaw("(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
-                ->having('distance', '<=', $radius);
+                ->selectRaw("IFNULL((3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))), 9999) AS distance", [$lat, $lng, $lat])
+                ->havingRaw("distance <= ? OR location_zipcode = ?", [$radius, $searchZip]);
             
             // Priority ordering: exact zip first, then by distance
             $query->orderByRaw("CASE WHEN location_zipcode = ? THEN 0 ELSE 1 END ASC", [$searchZip])
@@ -523,7 +530,24 @@ class HomesController extends Controller
         }
 
         if ($request->filled('houseType')) {
-            $query->where('home_type', 'like', '%' . $request->houseType . '%');
+            $houseTypes = is_array($request->houseType) ? $request->houseType : [$request->houseType];
+            $mappedTypes = [];
+            foreach ($houseTypes as $type) {
+                if (strcasecmp($type, 'Condominium') === 0 || strcasecmp($type, 'Condominum') === 0) {
+                    $mappedTypes[] = 'Condominum';
+                } elseif (strcasecmp($type, 'Single Family') === 0 || strcasecmp($type, 'Single family') === 0) {
+                    $mappedTypes[] = 'Single family';
+                } elseif (strcasecmp($type, 'Townhouse') === 0 || strcasecmp($type, 'Town home') === 0) {
+                    $mappedTypes[] = 'Town home';
+                } else {
+                    $mappedTypes[] = $type;
+                }
+            }
+            $query->where(function ($q) use ($mappedTypes) {
+                foreach ($mappedTypes as $type) {
+                    $q->orWhere('home_type', 'like', '%' . $type . '%');
+                }
+            });
         }
 
         if ($request->has('sort')) {

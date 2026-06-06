@@ -10,9 +10,22 @@ import { getFullImageUrl } from "../../utils/imageHelper";
 export default function RentalHomeCard({ rentalHome }) {
   const [isFavorited, setIsFavorited] = useState(false);
 
+  const addressParts = [
+    rentalHome.address,
+    rentalHome.location_city,
+    getStateCode(rentalHome.location_state),
+    rentalHome.location_zipcode
+  ].filter(Boolean);
+
+  const addressSlug = addressParts.join(" ")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+
+  const urlSlug = addressSlug ? `${addressSlug}-${rentalHome.id}` : `${rentalHome.id}`;
+
   return (
     <Link
-      to={`/services/rentalHomes/${rentalHome.id}-${generateRandomSuffix(rentalHome.id)}`}
+      to={`/services/rentalhomes/${urlSlug}`}
       className="group block bg-white rounded-[30px] shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 overflow-hidden h-full flex flex-col w-full relative"
       style={{ minHeight: "450px", maxWidth: "350px" }}
     >

@@ -36,7 +36,7 @@ function Houses() {
     <div className="px-[7%] mt-6 mb-20">
       <div className="mb-8 pt-4 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100/50">
         <div className="text-[#007185] text-[32px] md:text-[40px] font-bold font-dmsans">
-          Property Listings
+          New Listings
         </div>
         <SortBy
           sortOption={sortOption}

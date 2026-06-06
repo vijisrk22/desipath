@@ -1,18 +1,17 @@
 <?php
-require __DIR__.'/vendor/autoload.php';
-$app = require_once __DIR__.'/bootstrap/app.php';
+require 'vendor/autoload.php';
+$app = require_once 'bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-$request = Illuminate\Http\Request::create('/api/buy-sell-items', 'GET', [
-    'city' => 'Edison',
-    'zipcode' => '08817',
-    'min_price' => '0',
-    'max_price' => '10000',
-    'category' => 'All Categories'
+$request = Request::create('/api/homes/search', 'POST', [
+    'city' => '',
+    'state' => '',
+    'zipcode' => '08540',
+    'priceMin' => 0,
+    'priceMax' => 5000000
 ]);
 
-$controller = new App\Http\Controllers\BuySellItemController();
-$response = $controller->index($request);
-
+$controller = new \App\Http\Controllers\HomesController();
+$response = $controller->search($request);
 echo $response->getContent();

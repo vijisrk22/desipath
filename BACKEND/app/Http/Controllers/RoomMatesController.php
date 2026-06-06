@@ -317,7 +317,7 @@ class RoomMatesController extends Controller
      */
     public function show($id)
     {
-        $roomMate = RoomMate::find($id);
+        $roomMate = RoomMate::with('poster')->find($id);
 
         if (!$roomMate) {
             return response()->json(['message' => 'Room mate not found'], 404);
@@ -326,6 +326,12 @@ class RoomMatesController extends Controller
         if (!empty($roomMate->photos) && is_string($roomMate->photos)) {
             $roomMate->photos = json_decode($roomMate->photos, true);
         }
+
+        // Set phone_no for UI compatibility
+        if ($roomMate->poster) {
+            $roomMate->phone_no = $roomMate->poster->phone_number;
+        }
+
         return response()->json($roomMate);
     }
 

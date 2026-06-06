@@ -67,12 +67,12 @@ function RentalHomesList() {
       </div>
 
       <div className="mx-auto flex flex-col md:flex-row justify-between gap-6 items-center mt-16 px-8 py-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-        <div className="text-[#323232] text-sm font-medium font-dmsans">
-          Showing {pagination?.current_page || 1}-{pagination?.last_page || 1} of {pagination?.total || 0} homes
+        <div className="text-[#323232] text-sm font-medium font-dmsans whitespace-nowrap">
+          Showing {pagination?.from || 0}-{pagination?.to || 0} of {pagination?.total || 0} properties
         </div>
         <Pagination
           count={numsOfPage}
-          size="large"
+          size="medium"
           variant="outlined"
           shape="rounded"
           page={page}
@@ -80,21 +80,25 @@ function RentalHomesList() {
           showFirstButton
           showLastButton
           sx={{
-            "& .MuiPaginationItem-page": {
-              mx: "12px",
+            "& .MuiPaginationItem-root": {
+              borderColor: "#e5e7eb",
+              borderRadius: "8px",
+              fontWeight: "600",
+              fontFamily: "DM Sans, sans-serif",
             },
             "& .MuiPaginationItem-page.Mui-selected": {
-              backgroundColor: "#0857d0",
+              backgroundColor: "#ffa41c",
               color: "white",
+              borderColor: "#ffa41c",
+              "&:hover": {
+                backgroundColor: "#e69419",
+              },
             },
-            "& .MuiPaginationItem-ellipsis": {
-              color: "#0857d0",
-              fontWeight: "bold",
-            },
-            "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast":
-            {
-              color: "#0857d0",
-              mx: "16px",
+            "& .MuiPaginationItem-previousNext, & .MuiPaginationItem-firstLast": {
+              backgroundColor: "#f9fafb",
+              "&:hover": {
+                backgroundColor: "#f3f4f6",
+              },
             },
           }}
         />

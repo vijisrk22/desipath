@@ -17,7 +17,7 @@ function ReviewHousePost({ open, onClose, formDetails, images, isEdit }) {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const contents = [
-    { text: "You Are an", value: formDetails.role },
+    { text: "Listed by", value: formDetails.role },
     ...(formDetails.role === "Agent" ? [{ text: "Company Name", value: formDetails.company_name }] : []),
     { text: "Type", value: formDetails.type },
     { text: "Price per Sq.ft", value: formDetails.pricePerSqft },

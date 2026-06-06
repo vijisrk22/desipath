@@ -167,6 +167,8 @@ function App() {
             {/* Rental Home */}
             <Route path="rentalhomes/:action?" element={<RentalHome />} />
             <Route path="rentalhomes/:action/:homeId" element={<RentalHome />} />
+            <Route path="rentalHomes/:action?" element={<RentalHome />} />
+            <Route path="rentalHomes/:action/:homeId" element={<RentalHome />} />
 
             {/* Buy/Sell Car */}
             <Route path="cars/:action?" element={<BuySellCar />} />

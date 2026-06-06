@@ -5,7 +5,7 @@ import { getFullImageUrl } from "../../utils/imageHelper";
 import { getStateCode } from "../../utils/locationHelper";
 
 import LazyImage from "../LazyImage";
-import { generateRandomSuffix } from "../../utils/urlHelper";
+
 
 export default function HouseCard({ house }) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -22,9 +22,22 @@ export default function HouseCard({ house }) {
     ? getFullImageUrl(validImages[0]) || "/homesSmpl.png"
     : "/homesSmpl.png";
 
+  const addressParts = [
+    house.address,
+    house.location_city,
+    getStateCode(house.location_state),
+    house.location_zipcode
+  ].filter(Boolean);
+
+  const addressSlug = addressParts.join(" ")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+
+  const urlSlug = addressSlug ? `${addressSlug}-${house.id}` : `${house.id}`;
+
   return (
     <Link
-      to={`/services/BuyHome/${house.id}-${generateRandomSuffix(house.id)}`}
+      to={`/services/BuyHome/${urlSlug}`}
       className="group block bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 overflow-hidden h-full flex flex-col w-full"
     >
       {/* Image Section */}

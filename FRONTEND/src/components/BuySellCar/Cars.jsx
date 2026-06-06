@@ -6,7 +6,6 @@ import Loader from "../Loader";
 import SortBy from "../SortBy";
 
 import { fetchCars } from "../../store/CarsSlice";
-import ActiveCarSearchFilters from "./ActiveCarSearchFilters";
 
 function Cars() {
   const dispatch = useDispatch();
@@ -66,7 +65,6 @@ function Cars() {
         </div>
       )}
       <div className="mb-6 pt-4 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100/50">
-        <ActiveCarSearchFilters />
         <div className="ml-auto">
           <SortBy
             sortOption={sortOption}
