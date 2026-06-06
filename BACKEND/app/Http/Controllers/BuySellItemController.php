@@ -45,7 +45,7 @@ class BuySellItemController extends Controller
             $query->selectSub(function ($subquery) use ($lat, $lng, $latRange, $lngRange) {
                 $subquery->selectRaw("MIN(3959 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat))))", [$lat, $lng, $lat])
                     ->from('usa_zipcodes')
-                    ->whereColumn('usa_zipcodes.city', 'buy_sell_items.city')
+                    ->whereColumn('usa_zipcodes.zip', 'buy_sell_items.zipcode')
                     ->whereBetween('usa_zipcodes.lat', [$lat - $latRange, $lat + $latRange])
                     ->whereBetween('usa_zipcodes.lng', [$lng - $lngRange, $lng + $lngRange]);
             }, 'distance')
