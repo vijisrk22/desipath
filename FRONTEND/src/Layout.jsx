@@ -4,7 +4,7 @@ import GlobalLoadingIndicator from "./components/GlobalLoadingIndicator";
 
 function Layout() {
   return (
-    <div>
+    <div style={{ paddingBottom: '70px' }}>
       <GlobalLoadingIndicator />
       <Outlet />
       {/* Fixed bottom nav — only visible on mobile/tablet (hidden on md+) */}
