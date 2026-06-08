@@ -39,8 +39,10 @@ function FindEvent({ paths }) {
     <div className="bg-[#f3f5f7] min-h-screen">
       <EventsHeader paths={paths} />
 
-      {/* ── Mobile action bar (Filter + Sort buttons) ─────────────────── */}
-      <div className="md:hidden px-4 pb-1 flex justify-end gap-2">
+      {/* ── Mobile action bar (Title + Filter + Sort buttons) ─────────── */}
+      <div className="md:hidden px-4 pb-3 flex justify-between items-center gap-2">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent shrink-0">Local Events</h1>
+        <div className="flex gap-2">
         {/* Filter button */}
         <button
           onClick={() => setFilterOpen(true)}
@@ -60,6 +62,7 @@ function FindEvent({ paths }) {
           <SortIcon />
           Sort
         </button>
+        </div>
       </div>
 
       {/* ── Modals (mobile only) ─────────────────────────────────────── */}

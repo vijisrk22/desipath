@@ -50,13 +50,6 @@ function EventsBody({ sortOption: sortProp, setSortOption: setSortProp }) {
     }
   }, []);
 
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(handleObserver, { rootMargin: "200px" });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [handleObserver]);
 
   /* ── Helpers ──────────────────────────────────────────────────────── */
   const parseLocation = (loc) => {
@@ -120,6 +113,14 @@ function EventsBody({ sortOption: sortProp, setSortOption: setSortProp }) {
   /* Mobile slice — grows as user scrolls */
   const mobileEvents    = sortedEvents.slice(0, mobileVisible);
   const hasMoreMobile   = mobileVisible < totalEvents;
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(handleObserver, { rootMargin: "200px" });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [handleObserver, hasMoreMobile, loadingList, events]);
 
   if (loadingList) return <Loader />;
 

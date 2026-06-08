@@ -4,6 +4,7 @@ import api from '../../utils/api';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { MdClose } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 const CATEGORIES = ['All', 'h1b', 'green_card', 'uscis_policy', 'travel_passport', 'student_visa', 'employment', 'family_immigration', 'nri_india', 'legal_court', 'community', 'other'];
 
@@ -44,6 +45,42 @@ const ImmigrationNews = () => {
   const [popupUrl, setPopupUrl] = useState(null);
   const [popupTitle, setPopupTitle] = useState('');
   const [swipeClass, setSwipeClass] = useState('transition-all duration-300 ease-out translate-x-0 opacity-100 rotate-0');
+  const [shareMenuId, setShareMenuId] = useState(null);
+
+  const getShareUrl = (article) => `${window.location.origin}/daily-news/${article.slug}`;
+
+  const handleShareFacebook = (e, article) => {
+    e.stopPropagation();
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl(article))}`, '_blank', 'width=600,height=400');
+    setShareMenuId(null);
+  };
+
+  const handleShareLinkedIn = (e, article) => {
+    e.stopPropagation();
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl(article))}`, '_blank', 'width=600,height=500');
+    setShareMenuId(null);
+  };
+
+  const handleShareInstagram = (e, article) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(getShareUrl(article))
+      .then(() => toast.success('Link copied! Paste it in your Instagram post.'))
+      .catch(() => toast.error('Failed to copy link'));
+    setShareMenuId(null);
+  };
+
+  const handleCopyLink = (e, article) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(getShareUrl(article))
+      .then(() => toast.success('Link copied to clipboard!'))
+      .catch(() => toast.error('Failed to copy link'));
+    setShareMenuId(null);
+  };
+
+  const toggleShareMenu = (e, id) => {
+    e.stopPropagation();
+    setShareMenuId(prev => prev === id ? null : id);
+  };
 
   const handleAlertSubmit = (e) => {
     e.preventDefault();
@@ -304,7 +341,44 @@ const ImmigrationNews = () => {
                   <div className="text-[10px] text-gray-400 mb-4">
                     Source: {news[currentIndex].source_name} &bull; {new Date(news[currentIndex].published_at).toLocaleDateString()}
                   </div>
-                  
+
+                  {/* Share buttons row */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Share:</span>
+                    {/* Facebook */}
+                    <button
+                      onClick={(e) => handleShareFacebook(e, news[currentIndex])}
+                      title="Share on Facebook"
+                      className="w-8 h-8 rounded-full flex items-center justify-center bg-[#1877F2] hover:bg-[#166FE5] transition-colors shadow-sm"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </button>
+                    {/* LinkedIn */}
+                    <button
+                      onClick={(e) => handleShareLinkedIn(e, news[currentIndex])}
+                      title="Share on LinkedIn"
+                      className="w-8 h-8 rounded-full flex items-center justify-center bg-[#0A66C2] hover:bg-[#0958A8] transition-colors shadow-sm"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </button>
+                    {/* Instagram (copy link) */}
+                    <button
+                      onClick={(e) => handleShareInstagram(e, news[currentIndex])}
+                      title="Copy link for Instagram"
+                      className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] hover:opacity-90 transition-opacity shadow-sm"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="white" strokeWidth="2"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="none" stroke="white" strokeWidth="2"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
+                    </button>
+                    {/* Copy Link */}
+                    <button
+                      onClick={(e) => handleCopyLink(e, news[currentIndex])}
+                      title="Copy link"
+                      className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors shadow-sm"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </button>
+                  </div>
+
                   <button 
                     onClick={() => openPopupModal(news[currentIndex].source_url, news[currentIndex].ai_headline)}
                     className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transition text-xs flex items-center justify-center gap-1.5"
@@ -398,12 +472,46 @@ const ImmigrationNews = () => {
 
                   <div className="flex justify-between items-center text-xs text-gray-500 pt-4 border-t border-gray-50">
                     <span>Source: {article.source_name} &bull; {new Date(article.published_at).toLocaleDateString()}</span>
-                    <Link 
-                      to={`/daily-news/${article.slug}`}
-                      className="font-semibold text-blue-600 hover:underline"
-                    >
-                      Read more &rarr;
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      {/* Share buttons */}
+                      <div className="relative">
+                        <button
+                          onClick={(e) => toggleShareMenu(e, article.id)}
+                          className="flex items-center gap-1 text-gray-500 hover:text-gray-800 font-semibold transition-colors px-2 py-1 rounded-lg hover:bg-gray-100"
+                          title="Share"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
+                          Share
+                        </button>
+                        {shareMenuId === article.id && (
+                          <div className="absolute bottom-full mb-2 right-0 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 w-52 z-50" onClick={e => e.stopPropagation()}>
+                            <button onClick={(e) => handleShareFacebook(e, article)} className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                              <span className="w-7 h-7 rounded-full bg-[#1877F2] flex items-center justify-center shrink-0"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span>
+                              Facebook
+                            </button>
+                            <button onClick={(e) => handleShareLinkedIn(e, article)} className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                              <span className="w-7 h-7 rounded-full bg-[#0A66C2] flex items-center justify-center shrink-0"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span>
+                              LinkedIn
+                            </button>
+                            <button onClick={(e) => handleShareInstagram(e, article)} className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                              <span className="w-7 h-7 rounded-full bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] flex items-center justify-center shrink-0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="white" strokeWidth="2"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" stroke="white" strokeWidth="2" fill="none"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg></span>
+                              Instagram (copy link)
+                            </button>
+                            <div className="border-t border-gray-100 my-1"></div>
+                            <button onClick={(e) => handleCopyLink(e, article)} className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                              <span className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center shrink-0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+                              Copy Link
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <Link 
+                        to={`/daily-news/${article.slug}`}
+                        className="font-semibold text-blue-600 hover:underline"
+                      >
+                        Read more &rarr;
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))

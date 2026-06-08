@@ -115,7 +115,7 @@ function ChatScreen({ loggedInUser, chatPartner, adId, adType }) {
       sx={{
         borderRadius: "16px",
         border: "1px solid #e5e7eb",
-        height: "calc(100vh - 180px)",
+        height: { xs: "calc(100vh - 250px)", md: "calc(100vh - 180px)" },
         display: "flex",
         flexDirection: "column",
         backgroundColor: "#ffffff",

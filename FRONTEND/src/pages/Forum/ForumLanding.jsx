@@ -264,6 +264,7 @@ export default function ForumLanding() {
 
   const fetchPosts = (currentPage = 1, append = false) => {
     setLoading(true);
+    if (!append) setPosts([]);
     loadingRef.current = true;
     const tagsParam = selectedTags.length > 0 ? `&tags=${selectedTags.join(',')}` : '';
     const stateParam = forumState ? `&state=${forumState}` : '';
@@ -558,6 +559,39 @@ export default function ForumLanding() {
             </div>
           )}
 
+          {/* ── Mobile Subforum Selector (hidden on desktop) ─────────── */}
+          <div className="lg:hidden -mx-1">
+            <div
+              className="flex gap-2 overflow-x-auto pb-1 px-1"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              <button
+                onClick={() => setSelectedCategory('')}
+                className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold border transition-all whitespace-nowrap ${
+                  selectedCategory === ''
+                    ? 'bg-primary text-white border-primary shadow-md'
+                    : 'bg-card text-textsecondary border-bordercol hover:border-primary hover:text-primary'
+                }`}
+              >
+                🌐 All
+              </button>
+              {subforums.map((sub, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedCategory(sub.name)}
+                  className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold border transition-all whitespace-nowrap ${
+                    selectedCategory === sub.name
+                      ? 'bg-primary text-white border-primary shadow-md'
+                      : 'bg-card text-textsecondary border-bordercol hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  {sub.icon && <span>{sub.icon}</span>}
+                  {sub.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Filter Tabs & Tools */}
           <div className="bg-card p-2 rounded-2xl border border-bordercol shadow-sm flex flex-wrap items-center gap-2">
             {['🔥 Hot', '✨ Latest', '📈 Trending', '💬 Unanswered'].map((tag, i) => (
@@ -600,11 +634,11 @@ export default function ForumLanding() {
 
           {/* Posts List */}
           <div className="space-y-4">
-            {loading ? (
+            {loading && posts.length === 0 ? (
               <div className="flex justify-center py-20">
                 <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
               </div>
-            ) : posts.length === 0 ? (
+            ) : !loading && posts.length === 0 ? (
               <div className="bg-card rounded-2xl p-20 text-center border border-bordercol shadow-sm">
                 <div className="text-6xl mb-4">📭</div>
                 <h3 className="text-xl font-bold text-textprimary mb-2">No posts found</h3>

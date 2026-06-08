@@ -119,21 +119,17 @@ export default function EventsMobileFilterModal({ open, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[200] md:hidden flex items-end"
+      className="fixed inset-0 z-[200] md:hidden flex items-start"
       onMouseDown={handleBackdropClick}
       onTouchStart={handleBackdropClick}
       style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
     >
-      {/* Bottom sheet */}
+      {/* Top sheet */}
       <div
         ref={sheetRef}
-        className="w-full bg-white rounded-t-3xl shadow-2xl flex flex-col"
+        className="w-full bg-white rounded-b-3xl shadow-2xl flex flex-col"
         style={{ maxHeight: "82vh" }}
       >
-        {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-1 shrink-0">
-          <div className="w-10 h-1 rounded-full bg-gray-200" />
-        </div>
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 shrink-0">
@@ -205,8 +201,7 @@ export default function EventsMobileFilterModal({ open, onClose }) {
         </div>
 
         {/* Apply button */}
-        <div className="px-5 py-4 border-t border-gray-100 shrink-0"
-          style={{ paddingBottom: "max(16px, env(safe-area-inset-bottom))" }}
+        <div className="px-5 py-4 border-t border-gray-100 shrink-0 pb-6"
         >
           <button
             onClick={onClose}

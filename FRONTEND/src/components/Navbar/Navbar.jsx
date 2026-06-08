@@ -50,8 +50,8 @@ function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Back Button - Visible only on mobile below the header, not on home page or daily news list page */}
-      {currentPath !== "/" && currentPath !== "/daily-news" && currentPath !== "/daily-news/" && (
+      {/* Mobile Back Button - Visible only on mobile below the header, not on main bottom nav tabs */}
+      {currentPath !== "/" && currentPath !== "/daily-news" && currentPath !== "/daily-news/" && currentPath !== "/services/Localdeals" && currentPath !== "/services/Localdeals/" && currentPath !== "/events/findEvent" && currentPath !== "/events/findEvent/" && currentPath !== "/inbox" && currentPath !== "/inbox/" && currentPath !== "/profile" && currentPath !== "/profile/" && currentPath !== "/forum" && currentPath !== "/forum/" && (
         <div className="md:hidden w-full px-[7%] py-2 bg-gray-50 border-b border-gray-100 flex items-center shadow-sm">
           <button 
             onClick={() => navigate(-1)} 

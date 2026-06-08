@@ -28,20 +28,16 @@ export default function EventsMobileSortModal({ open, onClose, sortOption, setSo
 
   return (
     <div
-      className="fixed inset-0 z-[200] md:hidden flex items-end"
+      className="fixed inset-0 z-[200] md:hidden flex items-start"
       onMouseDown={handleBackdropClick}
       onTouchStart={handleBackdropClick}
       style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
     >
-      {/* Bottom sheet */}
+      {/* Top sheet */}
       <div
         ref={sheetRef}
-        className="w-full bg-white rounded-t-3xl shadow-2xl"
+        className="w-full bg-white rounded-b-3xl shadow-2xl pb-4"
       >
-        {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full bg-gray-200" />
-        </div>
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
@@ -72,8 +68,7 @@ export default function EventsMobileSortModal({ open, onClose, sortOption, setSo
           })}
         </div>
 
-        {/* Bottom safe area spacer */}
-        <div style={{ height: "max(16px, env(safe-area-inset-bottom))" }} />
+
       </div>
     </div>
   );

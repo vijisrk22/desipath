@@ -72,7 +72,7 @@ export default function MobileBottomNav() {
   const [hovered, setHovered] = useState(null);
 
   const isMatch = (pathname, to) => {
-    if (to === "/") return pathname === "/";
+    if (to === "/") return pathname === "/" || pathname === "/forum" || pathname.startsWith("/forum/");
     return pathname === to || pathname.startsWith(to + "/");
   };
 
