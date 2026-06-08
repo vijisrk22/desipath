@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../utils/api";
 import Navbar from "../../components/Navbar/Navbar";
@@ -16,7 +16,9 @@ import {
   CircularProgress,
   IconButton,
   Tabs,
-  Tab
+  Tab,
+  Dialog,
+  Slide
 } from '@mui/material';
 import { 
   Bed as BedIcon, 
@@ -24,6 +26,8 @@ import {
   SquareFoot as AreaIcon,
   LocationOn,
   ChevronLeft,
+  ChevronRight,
+  Close as CloseIcon,
   Share,
   FavoriteBorder,
   Business as CompanyIcon,
@@ -40,6 +44,10 @@ const CURRENCIES = [
   { code: "USD", symbol: "$" }
 ];
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 export default function PropertyDetails() {
   const { idOrSlug } = useParams();
   const [property, setProperty] = useState(null);
@@ -47,6 +55,22 @@ export default function PropertyDetails() {
   const [exchangeRates, setExchangeRates] = useState({});
   const [activeTab, setActiveTab] = useState(0);
   const [currency, setCurrency] = useState(CURRENCIES[0]);
+
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const openLightbox = (index) => {
+    setCurrentImageIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % property.gallery_images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev === 0 ? property.gallery_images.length - 1 : prev - 1));
+  };
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -152,14 +176,43 @@ export default function PropertyDetails() {
           <Grid container spacing={4}>
             {/* Left Column: Media & Info */}
             <Grid item xs={12} lg={8}>
-              {/* Main Image */}
-              <Paper elevation={0} sx={{ borderRadius: '32px', overflow: 'hidden', mb: 4, height: { xs: '300px', md: '500px' } }}>
-                <img 
-                  src={getFullImageUrl(property.main_image) || '/img/placeholder_property.jpg'} 
-                  alt={property.title}
-                  className="w-full h-full object-cover"
-                />
-              </Paper>
+              {/* Main Image Gallery */}
+              <Box sx={{ mb: 4 }}>
+                {property.gallery_images && property.gallery_images.length > 0 ? (
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={property.gallery_images.length > 1 ? 8 : 12}>
+                      <Paper elevation={0} sx={{ borderRadius: '32px', overflow: 'hidden', height: { xs: '300px', md: '500px' } }} onClick={() => openLightbox(0)}>
+                        <img 
+                          src={getFullImageUrl(property.gallery_images[0].image_path)} 
+                          alt={property.title}
+                          className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-500"
+                        />
+                      </Paper>
+                    </Grid>
+                    {property.gallery_images.length > 1 && (
+                      <Grid item xs={12} md={4} sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', gap: 2 }}>
+                        {property.gallery_images.slice(1, 3).map((img, idx) => (
+                          <Paper key={idx} elevation={0} sx={{ borderRadius: '32px', overflow: 'hidden', height: property.gallery_images.length > 2 ? 'calc(500px / 2 - 8px)' : '500px' }} onClick={() => openLightbox(idx + 1)}>
+                            <img 
+                              src={getFullImageUrl(img.image_path)} 
+                              alt={`Gallery ${idx + 1}`}
+                              className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-500"
+                            />
+                          </Paper>
+                        ))}
+                      </Grid>
+                    )}
+                  </Grid>
+                ) : (
+                  <Paper elevation={0} sx={{ borderRadius: '32px', overflow: 'hidden', height: { xs: '300px', md: '500px' } }}>
+                    <img 
+                      src={getFullImageUrl(property.main_image) || '/img/placeholder_property.jpg'} 
+                      alt={property.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </Paper>
+                )}
+              </Box>
 
               {/* Title & Stats */}
               <Box sx={{ mb: 6 }}>
@@ -373,6 +426,52 @@ export default function PropertyDetails() {
         </Container>
       </Box>
       <Footer newsletter="block" />
+
+      {/* Lightbox Modal */}
+      {property && property.gallery_images && property.gallery_images.length > 0 && (
+        <Dialog
+          fullScreen
+          open={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          TransitionComponent={Transition}
+          PaperProps={{
+            style: {
+              backgroundColor: 'rgba(0, 0, 0, 0.95)',
+              boxShadow: 'none',
+            },
+          }}
+        >
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={() => setLightboxOpen(false)}
+            aria-label="close"
+            sx={{ position: 'absolute', right: 20, top: 20, color: 'white', zIndex: 10 }}
+          >
+            <CloseIcon fontSize="large" />
+          </IconButton>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', position: 'relative' }}>
+            <IconButton onClick={prevImage} sx={{ position: 'absolute', left: 20, color: 'white', bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}>
+              <ChevronLeft fontSize="large" />
+            </IconButton>
+
+            <img
+              src={getFullImageUrl(property.gallery_images[currentImageIndex].image_path)}
+              alt={`Slide ${currentImageIndex + 1}`}
+              style={{ maxHeight: '90vh', maxWidth: '90vw', objectFit: 'contain' }}
+            />
+
+            <IconButton onClick={nextImage} sx={{ position: 'absolute', right: 20, color: 'white', bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}>
+              <ChevronRight fontSize="large" />
+            </IconButton>
+
+            <Typography variant="body1" sx={{ position: 'absolute', bottom: 20, color: 'white' }}>
+              {currentImageIndex + 1} / {property.gallery_images.length}
+            </Typography>
+          </Box>
+        </Dialog>
+      )}
     </main>
   );
 }

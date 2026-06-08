@@ -112,7 +112,7 @@ const LocationSelectorModal = ({ open, onClose, onSelectLocation, onShowAll, but
                    console.log("Autocomplete onSelect:", loc);
                    onSelectLocation(loc);
                 }}
-                placeholder="City, state or ZIP"
+                placeholder="City, State or ZIP"
               />
             </Box>
             <Button

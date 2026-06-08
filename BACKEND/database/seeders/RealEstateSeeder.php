@@ -59,7 +59,18 @@ class RealEstateSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-            DB::table('real_estate_ads')->insert($prop);
+            $adId = DB::table('real_estate_ads')->insertGetId($prop);
+            $selectedImages = (array) array_rand(array_flip($images), 4);
+            $imageRecords = [];
+            foreach ($selectedImages as $img) {
+                $imageRecords[] = [
+                    'real_estate_ad_id' => $adId,
+                    'image_path' => $img,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            DB::table('real_estate_images')->insert($imageRecords);
         }
 
         // UAE Properties
@@ -90,7 +101,18 @@ class RealEstateSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-            DB::table('real_estate_ads')->insert($prop);
+            $adId = DB::table('real_estate_ads')->insertGetId($prop);
+            $selectedImages = (array) array_rand(array_flip($images), 4);
+            $imageRecords = [];
+            foreach ($selectedImages as $img) {
+                $imageRecords[] = [
+                    'real_estate_ad_id' => $adId,
+                    'image_path' => $img,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            DB::table('real_estate_images')->insert($imageRecords);
         }
 
         // USA Properties
@@ -121,7 +143,18 @@ class RealEstateSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-            DB::table('real_estate_ads')->insert($prop);
+            $adId = DB::table('real_estate_ads')->insertGetId($prop);
+            $selectedImages = (array) array_rand(array_flip($images), 4);
+            $imageRecords = [];
+            foreach ($selectedImages as $img) {
+                $imageRecords[] = [
+                    'real_estate_ad_id' => $adId,
+                    'image_path' => $img,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            DB::table('real_estate_images')->insert($imageRecords);
         }
     }
 }
