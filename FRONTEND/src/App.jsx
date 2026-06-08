@@ -84,6 +84,7 @@ const BuySellItemsSearch = lazy(() => import("./pages/BuySellItems/BuySellItemsS
 const BuySellItemDetails = lazy(() => import("./pages/BuySellItems/BuySellItemDetails"));
 const BuySellItemPortal = lazy(() => import("./pages/BuySellItems/BuySellItemPortal"));
 const BuySellItemSuccess = lazy(() => import("./pages/BuySellItems/BuySellItemSuccess"));
+const ReportSuccess = lazy(() => import("./pages/BuySellItems/ReportSuccess"));
 
 const JobsLanding = lazy(() => import("./pages/Jobs/JobsLanding"));
 const JobReferrals = lazy(() => import("./pages/Jobs/JobReferrals"));
@@ -204,6 +205,7 @@ function App() {
           <Route path="/buy-sell-items/post" element={<PrivateRoute><BuySellItemPortal /></PrivateRoute>} />
           <Route path="/buy-sell-items/edit/:id" element={<PrivateRoute><BuySellItemPortal /></PrivateRoute>} />
           <Route path="/buy-sell-items/success" element={<PrivateRoute><BuySellItemSuccess /></PrivateRoute>} />
+          <Route path="/buy-sell-items/report-success" element={<ReportSuccess />} />
 
           {/* Immigration News */}
           <Route path="/daily-news" element={<ImmigrationNews />} />

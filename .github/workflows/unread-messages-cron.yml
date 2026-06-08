@@ -1,0 +1,19 @@
+name: Unread Messages Reminder Cron
+
+on:
+  schedule:
+    # Run every 12 hours (e.g., at 00:00 and 12:00 UTC)
+    - cron: '0 */12 * * *'
+  workflow_dispatch: # Allow manual triggering from the GitHub Actions tab
+
+jobs:
+  send_reminders:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger API endpoint
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d "{\"token\": \"${{ secrets.CRON_SECRET }}\"}" \
+            ${{ secrets.API_BASE_URL }}/api/cron/unread-reminders

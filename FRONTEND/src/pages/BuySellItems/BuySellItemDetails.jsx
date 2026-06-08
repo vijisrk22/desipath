@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api, { BASE_URL } from '../../utils/api';
 import { useSelector } from 'react-redux';
 import Navbar from '../../components/Navbar/Navbar';
@@ -11,6 +11,27 @@ const BuySellItemDetails = () => {
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const user = useSelector((state) => state.user.user);
+  const navigate = useNavigate();
+  
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [submittingReport, setSubmittingReport] = useState(false);
+
+  const handleReportSubmit = async () => {
+    if (!reportReason.trim()) return;
+    setSubmittingReport(true);
+    try {
+      await api.post(`/api/buy-sell-items/${id}/report`, { reason: reportReason });
+      setIsReportModalOpen(false);
+      setReportReason('');
+      navigate('/buy-sell-items/report-success', { state: { title: item.title } });
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      alert('Failed to submit report. Please try again.');
+    } finally {
+      setSubmittingReport(false);
+    }
+  };
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -99,12 +120,32 @@ const BuySellItemDetails = () => {
           {/* Details Section */}
           <div className="w-full p-8 flex flex-col">
             <div className="flex justify-between items-start mb-2">
-              <h1 className="text-3xl font-bold text-gray-900 leading-tight">{item.title}</h1>
-              {isOwner && (
-                <Link to={`/buy-sell-items/edit/${item.id}`} className="flex-shrink-0 text-sm font-semibold text-[#0857d0] bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100">
-                  Edit Ad
-                </Link>
-              )}
+              <h1 className="text-3xl font-bold text-gray-900 leading-tight pr-4">{item.title}</h1>
+              <div className="flex gap-2 flex-shrink-0">
+                {!isOwner && item.user && (
+                  <Link to={`/inbox?chatPartnerInfo=${encodeURIComponent(JSON.stringify({ chatPartnerId: item.user.id, chatPartnerName: item.user.name, profile_photo: item.user.profile_photo || '' }))}&initialMessage=${encodeURIComponent(`I am interested in your item for sale - ${item.title}`)}&adId=${item.id}&adType=buysellitem`} className="w-10 h-10 rounded-full bg-blue-50 text-[#0857d0] hover:bg-[#0857d0] hover:text-white transition-colors flex items-center justify-center shadow-sm" title="Message Seller">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                  </Link>
+                )}
+                <button className="w-10 h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors flex items-center justify-center shadow-sm" title="Share" onClick={() => {
+                   if (navigator.share) {
+                     navigator.share({ title: item.title, url: window.location.href });
+                   } else {
+                     navigator.clipboard.writeText(window.location.href);
+                     alert('Link copied to clipboard');
+                   }
+                }}>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                </button>
+                <button className="w-10 h-10 rounded-full bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-colors flex items-center justify-center shadow-sm" title="Report Listing" onClick={() => setIsReportModalOpen(true)}>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
+                </button>
+                {isOwner && (
+                  <Link to={`/buy-sell-items/edit/${item.id}`} className="flex-shrink-0 text-sm font-semibold text-[#0857d0] bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100 ml-2 flex items-center">
+                    Edit Ad
+                  </Link>
+                )}
+              </div>
             </div>
             
             <div className="text-sm text-gray-500 mb-6">Posted {new Date(item.created_at).toLocaleDateString()}</div>
@@ -160,7 +201,7 @@ const BuySellItemDetails = () => {
               )}
               
               {!isOwner && item.user && (
-                <Link to="/inbox" className="mt-5 w-full flex items-center justify-center gap-2 bg-[#0857d0] text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                <Link to={`/inbox?chatPartnerInfo=${encodeURIComponent(JSON.stringify({ chatPartnerId: item.user.id, chatPartnerName: item.user.name, profile_photo: item.user.profile_photo || '' }))}&initialMessage=${encodeURIComponent(`I am interested in your item for sale - ${item.title}`)}&adId=${item.id}&adType=buysellitem`} className="mt-5 w-full flex items-center justify-center gap-2 bg-[#0857d0] text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                   Message Seller
                 </Link>
@@ -171,6 +212,42 @@ const BuySellItemDetails = () => {
         </div>
       </div>
       </div>
+      
+      {/* Report Modal */}
+      {isReportModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              Report Listing
+            </h3>
+            <p className="text-gray-600 mb-4 text-sm">Please provide a reason for reporting this listing. Our moderation team will review it shortly.</p>
+            <textarea 
+              className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#0857d0] focus:border-transparent min-h-[120px] mb-6"
+              placeholder="E.g., Fraudulent item, inappropriate content, etc."
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+            ></textarea>
+            <div className="flex gap-3 justify-end">
+              <button 
+                onClick={() => setIsReportModalOpen(false)}
+                className="px-5 py-2.5 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
+                disabled={submittingReport}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleReportSubmit}
+                disabled={!reportReason.trim() || submittingReport}
+                className="px-5 py-2.5 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+              >
+                {submittingReport ? 'Submitting...' : 'Submit Report'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer newsletter={"block"} />
     </div>
   );

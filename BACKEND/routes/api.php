@@ -55,6 +55,10 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// --- Cron Routes ---
+Route::post('/cron/unread-reminders', [\App\Http\Controllers\CronController::class, 'sendUnreadReminders']);
+
+// --- Auth Routes ---
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -560,6 +564,7 @@ Route::get('/attorneys/{slug}', [AttorneyController::class, 'show']);
 Route::prefix('buy-sell-items')->group(function () {
     Route::get('/', [BuySellItemController::class, 'index']);
     Route::get('/{id}', [BuySellItemController::class, 'show'])->where('id', '[0-9]+');
+    Route::post('/{id}/report', [BuySellItemController::class, 'report'])->where('id', '[0-9]+');
 });
 
 Route::middleware('auth:sanctum')->group(function () {

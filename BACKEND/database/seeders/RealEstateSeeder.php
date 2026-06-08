@@ -156,5 +156,60 @@ class RealEstateSeeder extends Seeder
             }
             DB::table('real_estate_images')->insert($imageRecords);
         }
+
+        // New 20 Properties using Dubai Homes images
+        $dubaiImages = array_map(function($path) {
+            return '/images/dubaihomes/' . basename($path);
+        }, glob(public_path('images/dubaihomes/*.*')));
+
+        if (count($dubaiImages) > 0) {
+            for ($i = 0; $i < 20; $i++) {
+                $isIndia = rand(0, 1) == 1;
+                $city = $isIndia ? array_rand($indianCities) : array_rand($uaeCities);
+                $state = $isIndia ? $indianCities[$city] : $uaeCities[$city];
+                $country = $isIndia ? 'India' : 'Dubai';
+                $currency = $isIndia ? 'INR' : 'AED';
+                $price = $isIndia ? rand(50, 500) * 100000 : rand(100, 800) * 10000;
+                
+                $type = $propertyTypes[array_rand($propertyTypes)];
+                $bedrooms = rand(2, 5);
+                $prop = [
+                    'user_id' => 1,
+                    'title' => "Premium $bedrooms Bed $type in $city",
+                    'description' => "Exclusive $type featuring stunning architecture and premium finishing.",
+                    'property_type' => $type,
+                    'country' => $country,
+                    'city' => $city,
+                    'state' => $state,
+                    'price' => $price,
+                    'currency' => $currency,
+                    'area_sqft' => rand(1500, 7000),
+                    'bedrooms' => $bedrooms,
+                    'bathrooms' => $bedrooms + 1,
+                    'agent_name' => $agentNames[array_rand($agentNames)],
+                    'agent_company' => $agentCompanies[array_rand($agentCompanies)],
+                    'main_image' => $dubaiImages[array_rand($dubaiImages)],
+                    'features' => json_encode(['Pool', 'Gym', 'Smart Home', 'Balcony']),
+                    'status' => 'approved',
+                    'slug' => Str::slug("Premium $bedrooms Bed $type in $city") . '-' . Str::random(8),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+                $adId = DB::table('real_estate_ads')->insertGetId($prop);
+                
+                $selectedImagesCount = min(4, count($dubaiImages));
+                $selectedImages = (array) array_rand(array_flip($dubaiImages), $selectedImagesCount);
+                $imageRecords = [];
+                foreach ($selectedImages as $img) {
+                    $imageRecords[] = [
+                        'real_estate_ad_id' => $adId,
+                        'image_path' => $img,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                DB::table('real_estate_images')->insert($imageRecords);
+            }
+        }
     }
 }

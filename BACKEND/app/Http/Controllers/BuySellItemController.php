@@ -172,4 +172,25 @@ class BuySellItemController extends Controller
         $item->delete();
         return response()->json(['message' => 'Deleted successfully']);
     }
+
+    public function report(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:1000',
+        ]);
+
+        $item = BuySellItem::findOrFail($id);
+
+        $systemEmail = \Illuminate\Support\Facades\DB::table('system_emails')
+            ->where('purpose', 'report_listing')
+            ->first();
+
+        if ($systemEmail) {
+            $listingUrl = config('app.frontend_url', 'http://localhost:3000') . '/buy-sell-items/details/' . $item->id;
+            \Illuminate\Support\Facades\Mail::to($systemEmail->email_address)
+                ->send(new \App\Mail\ListingReported($item->id, $item->title, $request->reason, $listingUrl));
+        }
+
+        return response()->json(['message' => 'Report submitted successfully.']);
+    }
 }
