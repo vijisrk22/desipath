@@ -355,7 +355,7 @@ const BrowseListings = ({ type = 'volunteer' }) => {
           </div>
         ) : (
           <>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
+            <div className="flex flex-col gap-6 mb-12">
               {posts.map((post) => (
                 <TravelPostCard key={post.id} post={post} type={type} />
               ))}

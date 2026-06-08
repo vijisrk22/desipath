@@ -173,6 +173,20 @@ export default function ForumLanding() {
     return "";
   };
   
+  const STATE_MAP = {
+    al: "alabama", ak: "alaska", az: "arizona", ar: "arkansas", ca: "california",
+    co: "colorado", ct: "connecticut", de: "delaware", fl: "florida", ga: "georgia",
+    hi: "hawaii", id: "idaho", il: "illinois", in: "indiana", ia: "iowa",
+    ks: "kansas", ky: "kentucky", la: "louisiana", me: "maine", md: "maryland",
+    ma: "massachusetts", mi: "michigan", mn: "minnesota", ms: "mississippi",
+    mo: "missouri", mt: "montana", ne: "nebraska", nv: "nevada", nh: "new hampshire",
+    nj: "new jersey", nm: "new mexico", ny: "new york", nc: "north carolina",
+    nd: "north dakota", oh: "ohio", ok: "oklahoma", or: "oregon", pa: "pennsylvania",
+    ri: "rhode island", sc: "south carolina", sd: "south dakota", tn: "tennessee",
+    tx: "texas", ut: "utah", vt: "vermont", va: "virginia", wa: "washington",
+    wv: "west virginia", wi: "wisconsin", wy: "wyoming", dc: "district of columbia"
+  };
+
   const tagData = [
     { tag: '#DesiATLSouth', states: 'al, ga, ms' },
     { tag: '#DesiPacificNW', states: 'ak, id, mt, or, wa' },
@@ -402,37 +416,77 @@ export default function ForumLanding() {
   }, [hasMore, page, posts.length]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-dmsans">
+    <div className="min-h-screen bg-pagebg flex flex-col font-inter text-textprimary">
       <Navbar />
       
-      <main className="max-w-6xl mx-auto w-full px-4 py-6 flex gap-6">
+      <main className="max-w-7xl mx-auto w-full px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left: Main Feed */}
-        <div className="flex-grow min-w-0 space-y-4">
+        {/* LEFT SIDEBAR */}
+        <div className="hidden lg:block lg:col-span-3">
+          <div className="sticky top-24 space-y-6">
+            <div className="bg-card rounded-2xl border border-bordercol shadow-sm p-4">
+              <h3 className="text-sm font-bold text-textsecondary uppercase tracking-widest border-b border-bordercol pb-3 mb-3">Popular Communities</h3>
+              <div className="space-y-1">
+                <div 
+                  className={`flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl transition-all ${selectedCategory === '' ? 'bg-primary/10 text-primary font-bold' : 'text-textsecondary hover:bg-pagebg hover:text-textprimary font-medium'}`}
+                  onClick={() => setSelectedCategory('')}
+                >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${selectedCategory === '' ? 'bg-primary text-white' : 'bg-pagebg text-textsecondary'}`}>🌐</div>
+                  <span>All Subforums</span>
+                </div>
+                {subforums.map((sub, i) => (
+                  <div 
+                    key={i} 
+                    className={`flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl transition-all ${selectedCategory === sub.name ? 'bg-primary/10 text-primary font-bold' : 'text-textsecondary hover:bg-pagebg hover:text-textprimary font-medium'}`}
+                    onClick={() => setSelectedCategory(sub.name)}
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${selectedCategory === sub.name ? 'bg-primary text-white' : 'bg-pagebg text-textsecondary'}`}>{sub.icon || 'd/'}</div>
+                    <span>{sub.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Footer Links (Moved to Left Sidebar for clean look) */}
+            <div className="p-4 text-[12px] text-textsecondary font-medium space-y-3">
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                <span className="hover:text-primary cursor-pointer transition-colors">User Agreement</span>
+                <span className="hover:text-primary cursor-pointer transition-colors">Privacy Policy</span>
+                <span className="hover:text-primary cursor-pointer transition-colors">Content Policy</span>
+              </div>
+              <div className="pt-3 border-t border-bordercol">
+                Desipath Inc © 2026. All rights reserved.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* MAIN FEED */}
+        <div className="col-span-1 lg:col-span-6 space-y-6 min-w-0">
           
-          {/* Create Post Input (Reddit Style) */}
-          <div className="bg-white p-2 rounded-md border border-gray-300 flex items-center gap-3 shadow-sm">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl shrink-0 grayscale">👤</div>
+          {/* Create Post Input */}
+          <div className="bg-card p-4 rounded-2xl border border-bordercol shadow-sm flex items-center gap-4 transition-all hover:shadow-md">
+            <div className="w-10 h-10 rounded-full bg-pagebg flex items-center justify-center text-xl shrink-0">👤</div>
             <input 
               type="text" 
               placeholder="Create Post" 
               onClick={() => setIsPostModalOpen(true)}
               readOnly
-              className="flex-grow min-w-0 bg-[#f6f7f8] border border-gray-200 rounded-md px-4 py-2 hover:bg-white hover:border-blue-500 transition-all outline-none cursor-pointer text-sm"
+              className="flex-grow min-w-0 bg-pagebg border border-bordercol rounded-full px-5 py-3 hover:bg-white hover:border-primary transition-all outline-none cursor-pointer text-sm font-medium text-textprimary placeholder:text-textsecondary"
             />
           </div>
 
-          {/* Post Creation Modal */}
+          {/* Create Post Modal */}
           {isPostModalOpen && (
             <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 p-4">
-              <div className="bg-white rounded-xl w-full max-w-xl shadow-2xl p-6 relative">
-                <button onClick={() => setIsPostModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl">✕</button>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Create a post</h2>
+              <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl p-6 relative animate-scaleUp">
+                <button onClick={() => setIsPostModalOpen(false)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-textsecondary hover:bg-gray-100 hover:text-textprimary text-xl transition-colors">✕</button>
+                <h2 className="text-2xl font-bold text-textprimary mb-6">Create a post</h2>
                 
                 <form onSubmit={handleFormSubmit(handleCreatePost)} className="space-y-4">
                   <select 
                     {...register("category")}
-                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg font-bold text-xs outline-none focus:border-blue-500"
+                    className="w-full p-3 bg-pagebg border border-bordercol rounded-xl font-medium text-sm text-textprimary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   >
                     <option value="">Select Category</option>
                     {subforums.map((sub) => (
@@ -445,31 +499,31 @@ export default function ForumLanding() {
                     placeholder="Title"
                     required
                     {...register("title")}
-                    className="w-full p-2 border border-gray-200 rounded-lg text-xs font-bold outline-none focus:border-blue-500"
+                    className="w-full p-3 bg-pagebg border border-bordercol rounded-xl font-medium text-sm text-textprimary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   />
 
                   <textarea 
-                    rows="4"
+                    rows="5"
                     placeholder="Text (optional)"
                     required
                     {...register("content")}
-                    className="w-full p-2 border border-gray-200 rounded-lg text-xs outline-none focus:border-blue-500 resize-none"
+                    className="w-full p-3 bg-pagebg border border-bordercol rounded-xl font-medium text-sm text-textprimary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
                   ></textarea>
 
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-100">
-                    <span className="text-xs font-bold text-gray-700">Is this post related to a specific location?</span>
-                    <div className="flex gap-2">
+                  <div className="flex items-center justify-between p-3 bg-pagebg rounded-xl border border-bordercol">
+                    <span className="text-sm font-medium text-textsecondary">Location specific?</span>
+                    <div className="flex gap-2 bg-bordercol/30 p-1 rounded-lg">
                       <button 
                         type="button"
                         onClick={() => setValue("is_location_specific", true)}
-                        className={`px-4 py-1 rounded-full text-[10px] font-black transition ${isLocationSpecific ? 'bg-blue-600 text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
+                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${isLocationSpecific ? 'bg-card text-primary shadow-sm' : 'text-textsecondary hover:text-textprimary'}`}
                       >
                         Yes
                       </button>
                       <button 
                         type="button"
                         onClick={() => setValue("is_location_specific", false)}
-                        className={`px-4 py-1 rounded-full text-[10px] font-black transition ${!isLocationSpecific ? 'bg-blue-600 text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
+                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${!isLocationSpecific ? 'bg-card text-primary shadow-sm' : 'text-textsecondary hover:text-textprimary'}`}
                       >
                         No
                       </button>
@@ -478,7 +532,7 @@ export default function ForumLanding() {
 
                   {isLocationSpecific && (
                     <div className="animate-fadeIn space-y-3">
-                      <div className="bg-white rounded-lg overflow-visible">
+                      <div className="bg-card rounded-xl overflow-visible border border-bordercol">
                         <LocationAutocompleteInput 
                           control={control}
                           setValue={setValue}
@@ -486,220 +540,60 @@ export default function ForumLanding() {
                           placeholder="Location (City, State, Zip)"
                         />
                       </div>
-
                       {watch("location_tag") && (
-                        <div className="flex items-center gap-2 bg-orange-50 p-2 rounded-lg border border-orange-100">
-                          <span className="text-orange-400 text-[10px] font-bold uppercase tracking-widest">Auto Tag:</span>
-                          <span className="text-orange-600 text-[10px] font-black">{watch("location_tag")}</span>
+                        <div className="flex items-center gap-2 bg-primary/5 p-3 rounded-xl border border-primary/20">
+                          <span className="text-primary text-xs font-bold uppercase tracking-widest">Auto Tag:</span>
+                          <span className="text-primary font-bold">{watch("location_tag")}</span>
                         </div>
                       )}
                     </div>
                   )}
 
-                  <div className="flex justify-end gap-3 border-t pt-4">
-                    <button type="button" onClick={() => setIsPostModalOpen(false)} className="px-6 py-2 rounded-full border border-blue-600 text-blue-600 font-black text-xs hover:bg-blue-50 transition">Cancel</button>
-                    <button type="submit" className="px-6 py-2 rounded-full bg-blue-600 text-white font-black text-xs hover:bg-blue-700 transition">Post</button>
+                  <div className="flex justify-end gap-3 pt-6 border-t border-bordercol">
+                    <button type="button" onClick={() => setIsPostModalOpen(false)} className="min-h-[48px] px-6 rounded-full border-2 border-bordercol text-textprimary font-bold hover:bg-pagebg transition-all">Cancel</button>
+                    <button type="submit" className="min-h-[48px] px-8 rounded-full bg-primary text-white font-bold hover:bg-primary-hover shadow-[0_8px_30px_rgb(37,99,235,0.4)] transition-all hover:-translate-y-1">Post</button>
                   </div>
                 </form>
               </div>
             </div>
           )}
 
-          {/* Mobile Subforum Selector Button */}
-          <div className="lg:hidden">
-            <button 
-              onClick={() => setIsSubforumModalOpen(true)}
-              className="w-full bg-white border border-gray-300 rounded-md py-3 px-4 flex items-center justify-between shadow-sm active:scale-[0.98] transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">d/</div>
-                <span className="font-bold text-sm text-gray-700">
-                  {selectedCategory || "Browse all Subforums"}
-                </span>
-              </div>
-              <svg className={`w-5 h-5 text-gray-400 transition-transform ${isSubforumModalOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Subforum Popup Modal (Mobile Only) */}
-          {isSubforumModalOpen && (
-            <div className="fixed inset-0 z-[600] flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4">
-              <div className="bg-white rounded-t-3xl sm:rounded-xl w-full max-w-xl shadow-2xl overflow-hidden animate-slideUp">
-                <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                  <h3 className="font-bold text-gray-900">Explore Subforums</h3>
-                  <button onClick={() => setIsSubforumModalOpen(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">✕</button>
-                </div>
-                <div className="max-h-[70vh] overflow-y-auto p-4 space-y-2 no-scrollbar">
-                  <div 
-                    className={`flex items-center gap-3 p-3 rounded-xl transition ${selectedCategory === '' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-gray-50 text-gray-700'}`}
-                    onClick={() => { setSelectedCategory(''); setIsSubforumModalOpen(false); }}
-                  >
-                    <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-lg">🌐</div>
-                    <span className="font-bold text-sm">All Subforums</span>
-                  </div>
-                  {subforums.map((sub, i) => (
-                    <div 
-                      key={i} 
-                      className={`flex items-center gap-3 p-3 rounded-xl transition ${selectedCategory === sub.name ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-gray-50 text-gray-700'}`}
-                      onClick={() => { setSelectedCategory(sub.name); setIsSubforumModalOpen(false); }}
-                    >
-                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-xs font-bold text-indigo-600">{sub.icon || 'd/'}</div>
-                      <span className="font-bold text-sm">{sub.name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Tag Filter Popup Modal */}
-          {isTagFilterOpen && (
-            <div className="fixed inset-0 z-[600] flex items-center justify-center bg-black/60 p-4">
-              <div className="bg-white rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-                <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-blue-600 text-white">
-                  <div className="flex-grow">
-                    <h3 className="font-bold text-lg">Filter by Location Tag</h3>
-                    <p className="text-[10px] opacity-80 uppercase tracking-widest font-bold">Select one or more regions</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="relative group">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 group-focus-within:text-white transition-colors">🔍</span>
-                      <input 
-                        type="text" 
-                        placeholder="Search State (e.g. NY)"
-                        value={tagSearchTerm}
-                        onChange={(e) => setTagSearchTerm(e.target.value)}
-                        className="bg-white/20 border border-white/30 rounded-full pl-9 pr-4 py-1.5 text-xs text-white placeholder:text-white/60 outline-none focus:bg-white/30 focus:border-white/50 transition-all w-48 sm:w-64"
-                      />
-                      {tagSearchTerm && (
-                        <button 
-                          onClick={() => setTagSearchTerm("")}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"
-                        >✕</button>
-                      )}
-                    </div>
-                    <button onClick={() => { setIsTagFilterOpen(false); setTagSearchTerm(""); }} className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition">✕</button>
-                  </div>
-                </div>
-                
-                <div className="p-6 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-3 no-scrollbar min-h-[300px]">
-                  {tagData
-                    .filter(({ states, tag }) => 
-                      states.toLowerCase().includes(tagSearchTerm.toLowerCase()) ||
-                      tag.toLowerCase().includes(tagSearchTerm.toLowerCase())
-                    ).length === 0 && (
-                      <div className="col-span-full py-12 text-center text-gray-400 font-bold italic">
-                        No regional tags found for "{tagSearchTerm}"
-                      </div>
-                    )}
-                  {tagData
-                    .filter(({ states, tag }) => 
-                      states.toLowerCase().includes(tagSearchTerm.toLowerCase()) ||
-                      tag.toLowerCase().includes(tagSearchTerm.toLowerCase())
-                    )
-                    .map(({ tag, states }) => {
-                    const isActive = selectedTags.includes(tag);
-                    return (
-                      <div 
-                        key={tag}
-                        onClick={() => {
-                          setSelectedTags(prev => 
-                            isActive ? prev.filter(t => t !== tag) : [...prev, tag]
-                          );
-                        }}
-                        className={`cursor-pointer p-3 rounded-xl border-2 transition-all flex flex-col gap-1 group ${
-                          isActive 
-                            ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' 
-                            : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-200'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className={`text-[11px] font-black ${isActive ? 'scale-105' : ''} transition-transform`}>{tag}</span>
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
-                            isActive ? 'bg-blue-600 border-blue-600' : 'border-gray-300'
-                          }`}>
-                            {isActive && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
-                          </div>
-                        </div>
-                        <div className={`text-[9px] font-bold uppercase tracking-wider ${isActive ? 'text-blue-500' : 'text-gray-400'}`}>
-                          {states}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-gray-50">
-                  <span className="text-[11px] font-bold text-gray-500">{selectedTags.length} tags selected</span>
-                  <div className="flex gap-3">
-                    <button 
-                      onClick={() => setSelectedTags([])}
-                      className="px-6 py-2 text-gray-500 font-bold text-xs hover:underline"
-                    >Reset</button>
-                    <button 
-                      onClick={() => setIsTagFilterOpen(false)}
-                      className="px-8 py-2 bg-blue-600 text-white font-black rounded-full text-xs shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition"
-                    >Apply Filter</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="bg-white p-3 rounded-md border border-gray-300 flex items-center gap-4 sm:gap-6 shadow-sm overflow-x-auto no-scrollbar">
-            <button 
-              onClick={() => setIsTagFilterOpen(true)}
-              className={`p-2 rounded-full transition flex items-center gap-2 hover:bg-gray-100 ${selectedTags.length > 0 ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
-              title="Filter by Location Tag"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-              </svg>
-              {selectedTags.length > 0 && <span className="text-xs font-bold">{selectedTags.length}</span>}
-            </button>
-            <div className="h-6 w-px bg-gray-200"></div>
-            
-            <div className="flex items-center gap-2 border border-gray-200 rounded-full px-3 py-1.5 hover:bg-gray-50 transition min-w-max">
-              <span className="text-gray-500 text-sm">📍</span>
-              <select 
-                value={forumState}
-                onChange={(e) => setForumState(e.target.value)}
-                className="bg-transparent text-sm font-bold text-gray-700 outline-none cursor-pointer appearance-none pr-4 relative"
-                style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right .2rem top 50%', backgroundSize: '.65rem auto' }}
-              >
-                <option value="">All States</option>
-                {US_STATES.map(s => (
-                  <option key={s.abbr} value={s.abbr}>{s.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="h-6 w-px bg-gray-200"></div>
-
-            {['🔥 Hot', '✨ New'].map((tag, i) => (
-              <button key={i} className={`px-4 py-1.5 rounded-full font-bold text-sm whitespace-nowrap transition ${i === 0 ? 'bg-gray-100 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>
+          {/* Filter Tabs & Tools */}
+          <div className="bg-card p-2 rounded-2xl border border-bordercol shadow-sm flex flex-wrap items-center gap-2">
+            {['🔥 Hot', '✨ Latest', '📈 Trending', '💬 Unanswered'].map((tag, i) => (
+              <button key={i} className={`min-h-[44px] px-5 rounded-full font-bold text-sm transition-all ${i === 0 ? 'bg-primary/10 text-primary' : 'text-textsecondary hover:bg-pagebg hover:text-textprimary'}`}>
                 {tag}
               </button>
             ))}
+            <div className="flex-grow"></div>
+            
+            <button 
+              onClick={() => setIsTagFilterOpen(true)}
+              className={`min-h-[44px] px-4 rounded-full transition-all flex items-center gap-2 ${selectedTags.length > 0 ? 'bg-primary text-white shadow-md' : 'bg-pagebg text-textsecondary hover:bg-bordercol'}`}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+              </svg>
+              <span className="font-bold text-sm">Location Filters {selectedTags.length > 0 && `(${selectedTags.length})`}</span>
+            </button>
           </div>
 
-          {/* Active Tags Display */}
+          {/* Filter Tags UI */}
           {selectedTags.length > 0 && (
-            <div className="flex flex-wrap gap-2 items-center px-1">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mr-2">Filtered by:</span>
+            <div className="flex flex-wrap gap-2 items-center px-2">
+              <span className="text-xs font-bold text-textsecondary uppercase tracking-widest mr-2">Filtered by:</span>
               {selectedTags.map(tag => (
-                <div key={tag} className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1 rounded-full text-[11px] font-bold shadow-sm">
+                <div key={tag} className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-bold border border-primary/20">
                   {tag}
                   <button 
                     onClick={() => setSelectedTags(prev => prev.filter(t => t !== tag))}
-                    className="hover:text-blue-200 transition-colors"
+                    className="hover:text-primary-hover ml-1"
                   >✕</button>
                 </div>
               ))}
               <button 
                 onClick={() => setSelectedTags([])}
-                className="text-[10px] font-bold text-blue-600 hover:underline ml-2"
+                className="text-sm font-bold text-textsecondary hover:text-primary hover:underline ml-2 transition-colors"
               >Clear All</button>
             </div>
           )}
@@ -707,83 +601,93 @@ export default function ForumLanding() {
           {/* Posts List */}
           <div className="space-y-4">
             {loading ? (
-              <div className="flex justify-center p-20">
-                <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <div className="flex justify-center py-20">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : posts.length === 0 ? (
-              <div className="bg-white rounded-md p-20 text-center border border-gray-300">
-                <p className="text-gray-400 font-bold italic">No posts found in the community.</p>
+              <div className="bg-card rounded-2xl p-20 text-center border border-bordercol shadow-sm">
+                <div className="text-6xl mb-4">📭</div>
+                <h3 className="text-xl font-bold text-textprimary mb-2">No posts found</h3>
+                <p className="text-textsecondary">Be the first to start a discussion in this community.</p>
+                <button onClick={() => setIsPostModalOpen(true)} className="mt-6 min-h-[48px] px-8 rounded-full bg-primary text-white font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5">Create Post</button>
               </div>
             ) : (
               posts.map(post => (
                 <div 
                   key={post.id} 
-                  className="bg-white rounded-md border border-gray-300 flex flex-col hover:border-gray-400 transition-all cursor-pointer shadow-sm group p-3"
+                  className="bg-card rounded-2xl border border-bordercol flex flex-col hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer p-5"
                   onClick={() => navigate(`/forum/post/${post.slug || post.id}`)}
                 >
-                  {/* Post Content */}
                   <div className="w-full min-w-0">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-gray-500 mb-2">
-                      <img src="/reddit-avatar.png" alt="" className="w-5 h-5 rounded-full bg-gray-200" onError={(e) => e.target.style.display='none'} />
-                      <span className="text-gray-900 font-bold hover:underline break-all">d/{post.category || 'General'}</span>
-                      <span>•</span>
-                      <span className="truncate">{new Date(post.created_at).toLocaleDateString()}</span>
+                    {/* Header */}
+                    <div className="flex items-center gap-3 text-sm text-textsecondary mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">{post.category?.[0] || 'G'}</div>
+                        <span className="font-bold text-textprimary hover:text-primary transition-colors">d/{post.category || 'General'}</span>
+                      </div>
+                      <span className="text-bordercol">•</span>
+                      <span>{new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                       {post.location_tag && (
                         <>
-                          <span>•</span>
-                          <span className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-bold">{post.location_tag}</span>
+                          <span className="text-bordercol">•</span>
+                          <span className="bg-primary/5 text-primary border border-primary/20 px-2.5 py-0.5 rounded-full font-bold text-xs">{post.location_tag}</span>
                         </>
                       )}
                     </div>
-                    <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 leading-tight group-hover:text-blue-600 transition-colors break-words">{post.title}</h2>
-                    <p className="text-sm text-gray-700 line-clamp-3 mb-4 leading-relaxed break-words">{post.content}</p>
                     
-                    {/* Action Pills */}
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-bold text-gray-700 mt-2">
+                    {/* Title & Content */}
+                    <h2 className="text-[20px] font-bold text-textprimary mb-2 leading-snug break-words">{post.title}</h2>
+                    <p className="text-[16px] text-textsecondary line-clamp-3 mb-5 leading-relaxed break-words">{post.content}</p>
+                    
+                    {/* Actions */}
+                    <div className="flex items-center gap-3 text-sm font-bold text-textsecondary">
                       
-                      {/* Like (Heart) Pill */}
-                      <div 
-                        onClick={(e) => handleLike(e, post)}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-full transition cursor-pointer ${
+                      {/* Like */}
+                      <button 
+                        onClick={(e) => handleLike(e, post.id)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors ${
                           likedPosts.includes(post.id) 
-                            ? 'bg-rose-50 hover:bg-rose-100 text-rose-600' 
-                            : 'bg-[#eaedef] hover:bg-gray-300 text-gray-700'
+                            ? 'bg-primary/10 text-primary' 
+                            : 'bg-gray-100 hover:bg-gray-200 text-textsecondary'
                         }`}
                       >
                         {likedPosts.includes(post.id) ? (
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                         ) : (
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                         )}
                         <span>{post.votes || 0}</span>
-                      </div>
+                      </button>
 
-                      {/* Comments Pill */}
-                      <div className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      {/* Comments */}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); navigate(`/forum/post/${post.slug || post.id}`); }}
+                        className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors text-textsecondary"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         <span>{post.comments_count}</span>
-                      </div>
+                      </button>
 
-                      {/* Share Pill with Dropdown */}
+                      {/* Share */}
                       <div className="relative">
-                        <div 
+                        <button 
                           onClick={(e) => toggleShareMenu(e, post.id)}
-                          className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer"
+                          className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors text-textsecondary"
                         >
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
                           <span className="hidden sm:inline">Share</span>
-                        </div>
+                        </button>
                         {shareMenuPostId === post.id && (
-                          <div className="absolute bottom-full mb-2 right-0 bg-white rounded-xl shadow-xl border border-gray-200 py-2 w-48 z-50 animate-in fade-in slide-in-from-bottom-2" onClick={e => e.stopPropagation()}>
-                            <button onClick={(e) => handleShareFacebook(e, post)} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-blue-50 flex items-center gap-3 transition-colors">
-                              <span className="text-lg">📘</span> Facebook
+                          <div className="absolute bottom-full mb-2 right-0 bg-card rounded-xl shadow-xl border border-bordercol py-2 w-48 z-50 animate-fadeIn" onClick={e => e.stopPropagation()}>
+                            <button onClick={(e) => handleShareFacebook(e, post)} className="w-full text-left px-4 py-3 text-sm font-medium text-textprimary hover:bg-pagebg flex items-center gap-3 transition-colors">
+                              <span className="w-5 flex justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span> Facebook
                             </button>
-                            <button onClick={(e) => handleShareInstagram(e, post)} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-pink-50 flex items-center gap-3 transition-colors">
-                              <span className="text-lg">📸</span> Instagram
+                            <button onClick={(e) => handleShareInstagram(e, post)} className="w-full text-left px-4 py-3 text-sm font-medium text-textprimary hover:bg-pagebg flex items-center gap-3 transition-colors">
+                              <span className="w-5 flex justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-600"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></span> Instagram
                             </button>
-                            <div className="border-t border-gray-100 my-1"></div>
-                            <button onClick={(e) => handleCopyLink(e, post)} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-gray-50 flex items-center gap-3 transition-colors">
-                              <span className="text-lg">🔗</span> Copy Link
+                            <div className="border-t border-bordercol my-1"></div>
+                            <button onClick={(e) => handleCopyLink(e, post)} className="w-full text-left px-4 py-3 text-sm font-medium text-textprimary hover:bg-pagebg flex items-center gap-3 transition-colors">
+                              <span className="w-5 flex justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Copy Link
                             </button>
                           </div>
                         )}
@@ -795,106 +699,193 @@ export default function ForumLanding() {
               ))
             )}
             
-            {/* Infinite Scroll Sentinel / Load More */}
-            <div ref={sentinelRef} className="flex flex-col items-center mt-6 pb-6 min-h-[40px] gap-3">
+            <div ref={sentinelRef} className="flex flex-col items-center mt-8 pb-8 min-h-[40px] gap-4">
               {loading && posts.length > 0 && (
-                <div className="flex items-center gap-2 text-gray-400 text-sm">
-                  <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="flex items-center gap-3 text-textsecondary font-medium">
+                  <div className="w-6 h-6 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                   Loading more posts...
                 </div>
               )}
-              {/* Show Load More button after 100 posts */}
               {hasMore && !loading && posts.length >= 100 && (
                 <button 
                   onClick={loadMore}
-                  className="px-6 py-2.5 bg-white border border-blue-600 text-blue-600 font-bold rounded-full hover:bg-blue-50 transition shadow-sm active:scale-95"
+                  className="min-h-[48px] px-8 bg-card border-2 border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-all shadow-sm active:scale-95"
                 >
                   Load More
                 </button>
               )}
               {!hasMore && posts.length > 0 && (
-                <p className="text-gray-400 text-sm">You've reached the end 🎉</p>
+                <p className="text-textsecondary font-medium">You&apos;ve reached the end 🎉</p>
               )}
             </div>
           </div>
         </div>
 
-        {/* Right: Sidebar */}
-        <div className="hidden lg:block w-80 space-y-4">
-          
-          {/* Search Box */}
-          <div className="bg-white rounded-md border border-gray-300 shadow-sm p-3">
-             <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
-                <input 
-                  type="text" 
-                  placeholder="Search Forum"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-[#f6f7f8] border border-transparent focus:border-blue-500 focus:bg-white rounded-full pl-10 pr-4 py-2 text-sm outline-none transition-all"
-                />
-             </div>
-          </div>
-
-          {/* About Community */}
-          <div className="bg-white rounded-md border border-gray-300 shadow-sm overflow-hidden">
-            <div className="h-9 bg-blue-600"></div>
-            <div className="p-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-14 h-14 rounded-full border-4 border-white -mt-10 bg-blue-500 flex items-center justify-center text-2xl text-white font-fredoka">D</div>
-                <h3 className="font-bold text-gray-900 mt-[-10px]">d/DesipathForum</h3>
-              </div>
-              <p className="text-sm text-gray-700 leading-relaxed mb-4">
-                The hub for Indian students, professionals, and families in the USA. Share stories, ask for advice, and grow together.
-              </p>
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div><p className="font-bold text-sm">24.5k</p><p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Members</p></div>
-                <div><p className="font-bold text-sm text-emerald-500 flex items-center gap-1"><span className="w-2 h-2 bg-emerald-500 rounded-full"></span> 452</p><p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Online</p></div>
-              </div>
-              <button onClick={() => setIsPostModalOpen(true)} className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-full transition-all shadow-lg shadow-blue-500/20">Create Post</button>
+        {/* RIGHT SIDEBAR */}
+        <div className="hidden lg:block lg:col-span-3">
+          <div className="sticky top-24 space-y-6">
+            
+            {/* Search Box */}
+            <div className="bg-card rounded-2xl border border-bordercol shadow-sm p-4">
+               <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-textsecondary text-lg">🔍</span>
+                  <input 
+                    type="text" 
+                    placeholder="Search Forum"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-pagebg border border-bordercol focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-full pl-12 pr-4 py-3 text-sm font-medium outline-none transition-all text-textprimary placeholder:text-textsecondary"
+                  />
+               </div>
             </div>
-          </div>
 
-          {/* Trending Subforums */}
-          <div className="bg-white rounded-md border border-gray-300 shadow-sm p-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 mb-4">Subforums</h3>
-            <div className="space-y-4">
-              <div 
-                className={`flex items-center gap-3 cursor-pointer p-1 rounded hover:bg-gray-50 ${selectedCategory === '' ? 'bg-blue-50' : ''}`}
-                onClick={() => setSelectedCategory('')}
-              >
-                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-xs">🌐</div>
-                <span className="text-sm font-bold text-gray-900">All Subforums</span>
-              </div>
-              {subforums.map((sub, i) => (
-                <div 
-                  key={i} 
-                  className={`flex items-center justify-between cursor-pointer group p-1 rounded hover:bg-gray-50 ${selectedCategory === sub.name ? 'bg-blue-50 text-blue-600' : ''}`}
-                  onClick={() => setSelectedCategory(sub.name)}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs group-hover:bg-indigo-100">{sub.icon || 'd/'}</div>
-                    <span className="text-sm font-bold text-gray-900 group-hover:text-blue-600">{sub.name}</span>
+            {/* About Community */}
+            <div className="bg-card rounded-2xl border border-bordercol shadow-sm overflow-hidden">
+              <div className="h-16 bg-gradient-to-r from-primary to-blue-400"></div>
+              <div className="p-5 relative">
+                <div className="w-16 h-16 rounded-2xl border-4 border-card -mt-12 bg-white flex items-center justify-center text-3xl shadow-sm mb-4 overflow-hidden">
+                  <img src="/favicon-192x192.png" alt="DP" className="w-full h-full object-contain p-1" onError={(e) => { e.target.style.display='none'; e.target.parentNode.innerText='DP'; e.target.parentNode.className='w-16 h-16 rounded-2xl border-4 border-card -mt-12 bg-primary flex items-center justify-center text-xl shadow-sm mb-4 text-white font-bold'; }} />
+                </div>
+                <h3 className="text-lg font-bold text-textprimary mb-1">d/DesipathForum</h3>
+                <p className="text-sm text-textsecondary leading-relaxed mb-6">
+                  The premier hub for Indian students, professionals, and families in North America. Share stories, ask for advice, and grow together.
+                </p>
+                
+                <div className="flex items-center gap-6 mb-6 pt-6 border-t border-bordercol">
+                  <div>
+                    <p className="font-bold text-lg text-textprimary">24.5k</p>
+                    <p className="text-xs text-textsecondary font-bold uppercase tracking-widest">Members</p>
+                  </div>
+                  <div>
+                    <p className="font-bold text-lg text-success flex items-center gap-1.5">
+                      <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
+                      </span>
+                      452
+                    </p>
+                    <p className="text-xs text-textsecondary font-bold uppercase tracking-widest">Online</p>
                   </div>
                 </div>
-              ))}
+                <button onClick={() => setIsPostModalOpen(true)} className="w-full min-h-[48px] bg-primary hover:bg-primary-hover text-white font-bold rounded-full transition-all shadow-lg shadow-primary/20 hover:-translate-y-0.5">Create Post</button>
+              </div>
             </div>
-          </div>
 
-          {/* Footer links in sidebar */}
-          <div className="bg-white rounded-md border border-gray-300 shadow-sm p-4 text-[10px] text-gray-400 font-bold uppercase tracking-widest grid grid-cols-2 gap-y-2">
-            <span className="hover:underline cursor-pointer">User Agreement</span>
-            <span className="hover:underline cursor-pointer">Privacy Policy</span>
-            <span className="hover:underline cursor-pointer">Content Policy</span>
-            <span className="hover:underline cursor-pointer">Moderator Code</span>
-            <div className="col-span-full border-t mt-2 pt-2 text-center">
-              Desipath Inc © 2026. All rights reserved.
+            {/* Rules / Guidelines */}
+            <div className="bg-card rounded-2xl border border-bordercol shadow-sm p-5">
+              <h3 className="text-sm font-bold text-textprimary uppercase tracking-widest border-b border-bordercol pb-3 mb-4">Community Rules</h3>
+              <ol className="space-y-3 text-sm text-textsecondary font-medium list-decimal list-inside">
+                <li>Be respectful and welcoming.</li>
+                <li>No spam or self-promotion.</li>
+                <li>Keep discussions relevant.</li>
+                <li>Protect personal information.</li>
+              </ol>
             </div>
-          </div>
 
+          </div>
         </div>
 
       </main>
+
+      {/* Tag Filter Modal */}
+      {isTagFilterOpen && (
+        <div className="fixed inset-0 z-[600] flex items-center justify-center bg-textprimary/60 backdrop-blur-sm p-4">
+          <div className="bg-card rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scaleUp">
+            <div className="p-5 border-b border-bordercol flex items-center justify-between bg-primary text-white">
+              <div className="flex-grow">
+                <h3 className="font-bold text-xl mb-1">Filter by Location Tag</h3>
+                <p className="text-xs opacity-90 uppercase tracking-widest font-bold">Select one or more regions</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="relative group">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70">🔍</span>
+                  <input 
+                    type="text" 
+                    placeholder="Search State (e.g. NY)"
+                    value={tagSearchTerm}
+                    onChange={(e) => setTagSearchTerm(e.target.value)}
+                    className="bg-white/20 border border-white/30 rounded-full pl-10 pr-4 py-2 text-sm text-white placeholder:text-white/70 outline-none focus:bg-white/30 focus:border-white/50 transition-all w-48 sm:w-64"
+                  />
+                  {tagSearchTerm && (
+                    <button 
+                      onClick={() => setTagSearchTerm("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white"
+                    >✕</button>
+                  )}
+                </div>
+                <button onClick={() => { setIsTagFilterOpen(false); setTagSearchTerm(""); }} className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors text-lg">✕</button>
+              </div>
+            </div>
+            
+            <div className="p-6 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-4 bg-pagebg no-scrollbar min-h-[300px]">
+              {tagData
+                .filter(({ states, tag }) => {
+                  const searchTerm = tagSearchTerm.toLowerCase();
+                  if (tag.toLowerCase().includes(searchTerm)) return true;
+                  if (states.toLowerCase().includes(searchTerm)) return true;
+                  const stateCodes = states.toLowerCase().split(',').map(s => s.trim());
+                  return stateCodes.some(code => STATE_MAP[code] && STATE_MAP[code].includes(searchTerm));
+                }).length === 0 && (
+                  <div className="col-span-full py-16 text-center text-textsecondary font-bold text-lg">
+                    No regional tags found for &quot;{tagSearchTerm}&quot;
+                  </div>
+                )}
+              {tagData
+                .filter(({ states, tag }) => {
+                  const searchTerm = tagSearchTerm.toLowerCase();
+                  if (tag.toLowerCase().includes(searchTerm)) return true;
+                  if (states.toLowerCase().includes(searchTerm)) return true;
+                  const stateCodes = states.toLowerCase().split(',').map(s => s.trim());
+                  return stateCodes.some(code => STATE_MAP[code] && STATE_MAP[code].includes(searchTerm));
+                })
+                .map(({ tag, states }) => {
+                const isActive = selectedTags.includes(tag);
+                return (
+                  <div 
+                    key={tag}
+                    onClick={() => {
+                      setSelectedTags(prev => 
+                        isActive ? prev.filter(t => t !== tag) : [...prev, tag]
+                      );
+                    }}
+                    className={`cursor-pointer p-4 rounded-2xl border-2 transition-all flex flex-col gap-1.5 group ${
+                      isActive 
+                        ? 'border-primary bg-primary/5 shadow-md -translate-y-0.5' 
+                        : 'border-bordercol bg-card hover:border-primary/50 hover:shadow-sm'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className={`text-sm font-bold ${isActive ? 'text-primary' : 'text-textprimary'}`}>{tag}</span>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        isActive ? 'bg-primary border-primary' : 'border-bordercol'
+                      }`}>
+                        {isActive && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                      </div>
+                    </div>
+                    <div className={`text-[10px] font-bold uppercase tracking-widest ${isActive ? 'text-primary/70' : 'text-textsecondary'}`}>
+                      {states}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="p-5 border-t border-bordercol flex justify-between items-center bg-card">
+              <span className="text-sm font-bold text-textsecondary">{selectedTags.length} tags selected</span>
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setSelectedTags([])}
+                  className="px-4 text-textsecondary font-bold text-sm hover:text-primary transition-colors"
+                >Reset</button>
+                <button 
+                  onClick={() => setIsTagFilterOpen(false)}
+                  className="min-h-[48px] px-8 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/20 hover:bg-primary-hover hover:-translate-y-0.5 transition-all"
+                >Apply Filter</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer newsletter={"hidden"} hideOnMobile />
     </div>

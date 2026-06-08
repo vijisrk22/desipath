@@ -6,32 +6,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { toast } from 'react-toastify';
 
-const MOCK_COMMENTS = [
-  {
-    id: 101,
-    author: "coder_ravi",
-    time: "1 hour ago",
-    content: "Definitely use the official AWS training material. Also, check out Jon Bonso's practice exams on Udemy, they are very close to the real thing.",
-    votes: 42,
-    replies: [
-      {
-        id: 1011,
-        author: "tech_guru",
-        time: "30 mins ago",
-        content: "Thanks! I've heard good things about Bonso. Will check it out.",
-        votes: 12
-      }
-    ]
-  },
-  {
-    id: 102,
-    author: "cloud_seeker",
-    time: "45 mins ago",
-    content: "I passed last week! My advice is to focus on VPC and IAM. Those are heavily tested.",
-    votes: 28,
-    replies: []
-  }
-];
+
 
 import api from '../../utils/api';
 
@@ -208,7 +183,7 @@ export default function ForumPostDetail() {
     try {
       const stored = localStorage.getItem('forum_liked_posts');
       return stored ? JSON.parse(stored) : [];
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   });
@@ -303,14 +278,14 @@ export default function ForumPostDetail() {
             rows="2" 
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md outline-none focus:border-blue-500 transition-all text-sm mb-2"
+            className="w-full p-3 border border-bordercol rounded-xl outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm mb-3 bg-card text-textprimary"
             autoFocus
           ></textarea>
           <div className="flex gap-2">
-            <button disabled={isSubmittingEdit} type="submit" className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full text-[10px] flex items-center justify-center disabled:opacity-50 min-w-[50px]">
+            <button disabled={isSubmittingEdit} type="submit" className="px-5 py-2 bg-primary hover:bg-primary-hover text-white font-bold rounded-full text-xs flex items-center justify-center disabled:opacity-50 min-w-[60px] shadow-sm shadow-primary/20">
               {isSubmittingEdit ? <CircularProgress size={12} color="inherit" /> : "Save"}
             </button>
-            <button disabled={isSubmittingEdit} type="button" onClick={() => setEditingCommentId(null)} className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-full text-[10px] disabled:opacity-50">Cancel</button>
+            <button disabled={isSubmittingEdit} type="button" onClick={() => setEditingCommentId(null)} className="px-5 py-2 bg-pagebg hover:bg-bordercol/50 text-textsecondary font-bold rounded-full text-xs disabled:opacity-50 transition-colors">Cancel</button>
           </div>
         </form>
       );
@@ -318,15 +293,15 @@ export default function ForumPostDetail() {
 
     return (
       <>
-        <p className={`${isReply ? 'text-xs' : 'text-sm'} text-gray-800 leading-relaxed mb-3 break-words`}>{comment.content}</p>
-        <div className="flex items-center gap-4 text-[10px] font-black text-gray-400 uppercase">
-          <button onClick={() => handleReplyClick(isReply ? comment.parent_id : comment.id, isReply ? comment.user?.name : null)} className="hover:underline">Reply</button>
-          {!isReply && <button onClick={() => handleCommentShare(comment)} className="hover:underline">Share</button>}
+        <p className={`${isReply ? 'text-sm' : 'text-base'} text-textprimary leading-relaxed mb-3 break-words`}>{comment.content}</p>
+        <div className="flex items-center gap-4 text-xs font-bold text-textsecondary">
+          <button onClick={() => handleReplyClick(isReply ? comment.parent_id : comment.id, isReply ? comment.user?.name : null)} className="hover:text-primary transition-colors">Reply</button>
+          {!isReply && <button onClick={() => handleCommentShare(comment)} className="hover:text-primary transition-colors">Share</button>}
           
           {isOwner && (
             <>
-              <button onClick={() => handleEditClick(comment)} className="hover:underline hover:text-blue-600">Edit</button>
-              <button onClick={() => handleDelete(comment.id)} className="hover:underline hover:text-red-600">Delete</button>
+              <button onClick={() => handleEditClick(comment)} className="hover:text-primary transition-colors">Edit</button>
+              <button onClick={() => handleDelete(comment.id)} className="hover:text-danger transition-colors">Delete</button>
             </>
           )}
         </div>
@@ -335,83 +310,91 @@ export default function ForumPostDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-dmsans">
+    <div className="min-h-screen bg-pagebg flex flex-col font-inter text-textprimary">
       <Navbar />
       
-      <main className="max-w-6xl mx-auto w-full px-4 py-6 flex gap-6">
+      <main className="max-w-7xl mx-auto w-full px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left Column: Post and Comments */}
-        <div className="flex-grow space-y-4">
+        {/* LEFT COLUMN: Back button */}
+        <div className="hidden lg:block lg:col-span-2">
+           <button onClick={() => navigate('/forum')} className="sticky top-24 w-full min-h-[48px] bg-card hover:bg-pagebg text-textsecondary hover:text-primary font-bold rounded-full transition-all border border-bordercol shadow-sm flex items-center justify-center gap-2">
+             <span>←</span> Back
+           </button>
+        </div>
+
+        {/* CENTER FEED: Post and Comments */}
+        <div className="col-span-1 lg:col-span-7 space-y-6 min-w-0">
           
           {loading ? (
-            <div className="flex justify-center p-20">
-               <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="flex justify-center py-20">
+               <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : notFound ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center flex flex-col items-center gap-6 animate-fadeIn">
-              <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-4xl">🚫</div>
+            <div className="bg-card rounded-2xl shadow-sm border border-bordercol p-12 text-center flex flex-col items-center gap-6 animate-fadeIn">
+              <div className="w-20 h-20 bg-danger/10 text-danger rounded-full flex items-center justify-center text-4xl">🚫</div>
               <div>
-                <h2 className="text-xl font-black text-gray-900 mb-2">Post Not Found</h2>
-                <p className="text-sm text-gray-500 font-medium">This page is not found or was removed by the moderator.</p>
+                <h2 className="text-2xl font-bold text-textprimary mb-2">Post Not Found</h2>
+                <p className="text-textsecondary font-medium">This page is not found or was removed by the moderator.</p>
               </div>
               <button 
                 onClick={() => navigate('/forum')}
-                className="px-8 py-3 bg-[#0857d0] text-white font-bold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 flex items-center gap-2 active:scale-95 text-sm"
+                className="px-8 py-3 bg-primary text-white font-bold rounded-full hover:bg-primary-hover transition-all shadow-lg shadow-primary/20 flex items-center gap-2 active:scale-95"
               >
                 Back to Community
               </button>
             </div>
           ) : !post ? (
-            <div className="bg-white rounded-md p-20 text-center border border-gray-300">
-               <p className="text-gray-400 font-bold italic">Something went wrong.</p>
+            <div className="bg-card rounded-2xl p-20 text-center border border-bordercol shadow-sm">
+               <p className="text-textsecondary font-bold italic">Something went wrong.</p>
             </div>
           ) : (
             <>
               {/* Post Detail Card */}
-              <div className="bg-white rounded-md border border-gray-300 flex flex-col shadow-sm">
+              <div className="bg-card rounded-2xl border border-bordercol flex flex-col shadow-sm p-6">
                 
                 {/* Post Content */}
-                <div className="p-4 flex-grow">
-                  <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold mb-2">
-                    <span className="text-gray-900 hover:underline">d/{post.category || 'General'}</span>
-                    <span>•</span>
-                    <span>Posted by u/{post.user?.name || 'Anonymous'}</span>
-                    <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                <div className="w-full min-w-0">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-textsecondary mb-4">
+                    <span className="font-bold text-textprimary hover:text-primary transition-colors cursor-pointer">d/{post.category || 'General'}</span>
+                    <span className="text-bordercol">•</span>
+                    <span>Posted by <span className="font-bold hover:underline cursor-pointer">u/{post.user?.name || 'Anonymous'}</span></span>
+                    <span className="text-bordercol">•</span>
+                    <span>{new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                     {post.location_tag && (
                       <>
-                        <span>•</span>
-                        <span className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-bold">{post.location_tag}</span>
+                        <span className="text-bordercol">•</span>
+                        <span className="bg-primary/5 text-primary border border-primary/20 px-2.5 py-0.5 rounded-full font-bold text-xs">{post.location_tag}</span>
                       </>
                     )}
                   </div>
-                  <h1 className="text-xl font-bold text-gray-900 mb-4">{post.title}</h1>
-                  <p className="text-sm text-gray-700 whitespace-pre-line mb-8 leading-relaxed">
+                  <h1 className="text-[24px] md:text-[28px] font-bold text-textprimary mb-4 leading-snug">{post.title}</h1>
+                  <p className="text-[16px] text-textprimary whitespace-pre-line mb-8 leading-relaxed break-words">
                     {post.content}
                   </p>
                   
                   {/* Action Pills */}
-                  <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-gray-700 mt-2 border-t pt-4">
+                  <div className="flex flex-wrap items-center gap-3 text-sm font-bold text-textsecondary pt-4 border-t border-bordercol">
                     
                     {/* Like (Heart) Pill */}
                     <div 
                       onClick={handleLike}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-full transition cursor-pointer ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors cursor-pointer ${
                         likedPosts.includes(post.id) 
-                          ? 'bg-rose-50 hover:bg-rose-100 text-rose-600' 
-                          : 'bg-[#eaedef] hover:bg-gray-300 text-gray-700'
+                          ? 'bg-primary/10 text-primary' 
+                          : 'bg-pagebg hover:bg-bordercol/50 text-textsecondary'
                       }`}
                     >
                       {likedPosts.includes(post.id) ? (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                       ) : (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                       )}
                       <span>{post.votes || 0}</span>
                     </div>
 
                     {/* Comments Pill */}
-                    <div className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <div className="flex items-center gap-2 bg-pagebg hover:bg-bordercol/50 px-4 py-2 rounded-full transition-colors cursor-pointer">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                       <span>{post.comments?.length || 0}</span>
                     </div>
 
@@ -419,22 +402,22 @@ export default function ForumPostDetail() {
                     <div className="relative">
                       <div 
                         onClick={(e) => { e.stopPropagation(); setShareMenuOpen(prev => !prev); }}
-                        className="flex items-center gap-1.5 bg-[#eaedef] hover:bg-gray-300 px-3 py-2 rounded-full transition cursor-pointer"
+                        className="flex items-center gap-2 bg-pagebg hover:bg-bordercol/50 px-4 py-2 rounded-full transition-colors cursor-pointer"
                       >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v-2a4 4 0 0 1 4-4h14"/><path d="M14 2l7 7-7 7"/></svg>
                         <span>Share</span>
                       </div>
                       {shareMenuOpen && (
-                        <div className="absolute bottom-full mb-2 right-0 bg-white rounded-xl shadow-xl border border-gray-200 py-2 w-48 z-50" onClick={e => e.stopPropagation()}>
-                          <button onClick={handleShareFacebook} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-blue-50 flex items-center gap-3 transition-colors">
-                            <span className="text-lg">📘</span> Facebook
+                        <div className="absolute bottom-full mb-2 right-0 bg-card rounded-xl shadow-xl border border-bordercol py-2 w-48 z-50 animate-fadeIn" onClick={e => e.stopPropagation()}>
+                          <button onClick={handleShareFacebook} className="w-full text-left px-4 py-3 text-sm font-medium text-textprimary hover:bg-pagebg flex items-center gap-3 transition-colors">
+                            <span className="w-5 flex justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span> Facebook
                           </button>
-                          <button onClick={handleShareInstagram} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-pink-50 flex items-center gap-3 transition-colors">
-                            <span className="text-lg">📸</span> Instagram
+                          <button onClick={handleShareInstagram} className="w-full text-left px-4 py-3 text-sm font-medium text-textprimary hover:bg-pagebg flex items-center gap-3 transition-colors">
+                            <span className="w-5 flex justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-600"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></span> Instagram
                           </button>
-                          <div className="border-t border-gray-100 my-1"></div>
-                          <button onClick={handleCopyLink} className="w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-gray-50 flex items-center gap-3 transition-colors">
-                            <span className="text-lg">🔗</span> Copy Link
+                          <div className="border-t border-bordercol my-1"></div>
+                          <button onClick={handleCopyLink} className="w-full text-left px-4 py-3 text-sm font-medium text-textprimary hover:bg-pagebg flex items-center gap-3 transition-colors">
+                            <span className="w-5 flex justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Copy Link
                           </button>
                         </div>
                       )}
@@ -445,40 +428,40 @@ export default function ForumPostDetail() {
               </div>
 
               {/* Comment Box */}
-              <div className="bg-white rounded-md border border-gray-300 p-3 shadow-sm">
+              <div className="bg-card rounded-2xl border border-bordercol p-4 shadow-sm">
                 {!isCommentBoxExpanded ? (
                   <div 
                     onClick={() => setIsCommentBoxExpanded(true)}
-                    className="flex items-center gap-3 bg-[#f6f7f8] border border-gray-200 rounded-full px-4 py-2 hover:bg-white hover:border-blue-500 transition-all cursor-text"
+                    className="flex items-center gap-3 bg-pagebg border border-bordercol rounded-full px-5 py-3 hover:bg-white hover:border-primary transition-all cursor-text group"
                   >
-                    <span className="text-gray-400 text-sm">Join the conversation</span>
+                    <span className="text-textsecondary text-sm font-medium group-hover:text-textprimary transition-colors">Join the conversation...</span>
                   </div>
                 ) : (
                   <div className="animate-fadeIn">
-                    <p className="text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-widest px-1">Comment as <span className="text-blue-600">{user?.name || 'User'}</span></p>
+                    <p className="text-xs text-textsecondary font-bold mb-3 px-1">Comment as <span className="text-primary">{user?.name || 'User'}</span></p>
                     <form onSubmit={handleComment}>
                       <textarea 
                         rows="4" 
                         placeholder="What are your thoughts?"
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
-                        className="w-full p-4 border border-gray-200 rounded-lg outline-none focus:border-blue-500 transition-all text-sm mb-3 resize-none bg-gray-50/30"
+                        className="w-full p-4 border border-bordercol rounded-xl outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm mb-4 resize-none bg-pagebg text-textprimary"
                         autoFocus
                       ></textarea>
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-3">
                         <button 
                           type="button" 
                           onClick={() => { setIsCommentBoxExpanded(false); setCommentText(""); }}
-                          className="px-6 py-2 text-gray-500 hover:bg-gray-100 font-black rounded-full text-xs transition-all"
+                          className="min-h-[40px] px-6 text-textsecondary hover:text-textprimary hover:bg-pagebg font-bold rounded-full text-sm transition-all"
                         >
                           Cancel
                         </button>
                         <button 
                           disabled={isSubmittingComment || !commentText.trim()} 
                           type="submit" 
-                          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-full text-xs transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center min-w-[100px] disabled:opacity-50"
+                          className="min-h-[40px] px-8 bg-primary hover:bg-primary-hover text-white font-bold rounded-full text-sm transition-all shadow-md shadow-primary/20 flex items-center justify-center min-w-[100px] disabled:opacity-50"
                         >
-                          {isSubmittingComment ? <CircularProgress size={14} color="inherit" /> : "Comment"}
+                          {isSubmittingComment ? <CircularProgress size={16} color="inherit" /> : "Comment"}
                         </button>
                       </div>
                     </form>
@@ -491,15 +474,15 @@ export default function ForumPostDetail() {
                 {(post.comments || []).filter(c => !c.parent_id).map(comment => (
                   <div key={comment.id} id={`comment-${comment.id}`} className="flex gap-4 group">
                     <div className="flex flex-col items-center shrink-0">
-                       <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-black text-blue-600">
+                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
                          {comment.user?.name?.charAt(0) || 'U'}
                        </div>
-                       <div className="flex-grow w-px bg-gray-200 my-2 group-hover:bg-blue-200 transition-colors"></div>
+                       <div className="flex-grow w-[2px] bg-bordercol my-2 group-hover:bg-primary/20 transition-colors"></div>
                     </div>
                     <div className="flex-grow min-w-0">
-                       <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold mb-2">
-                         <span className="text-gray-900 font-black hover:underline cursor-pointer">u/{comment.user?.name || 'Anonymous'}</span>
-                         <span>•</span>
+                       <div className="flex items-center gap-2 text-sm text-textsecondary mb-2">
+                         <span className="text-textprimary font-bold hover:underline cursor-pointer">u/{comment.user?.name || 'Anonymous'}</span>
+                         <span className="text-bordercol">•</span>
                          <span>{new Date(comment.created_at).toLocaleDateString()}</span>
                        </div>
                        
@@ -507,20 +490,20 @@ export default function ForumPostDetail() {
 
                        {/* Reply Box for Top-Level Comment */}
                        {replyingTo === comment.id && (
-                         <div className="mt-3 bg-gray-50 p-3 rounded-md border border-gray-200">
+                         <div className="mt-4 bg-pagebg p-4 rounded-xl border border-bordercol">
                            <form onSubmit={(e) => handleReplySubmit(e, comment.id)}>
                              <textarea 
                                rows="2" 
                                placeholder={`Replying to u/${comment.user?.name || 'Anonymous'}`}
                                value={replyText}
                                onChange={(e) => setReplyText(e.target.value)}
-                               className="w-full p-2 border border-gray-200 rounded-md outline-none focus:border-blue-500 transition-all text-xs mb-2"
+                               className="w-full p-3 border border-bordercol rounded-xl outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm mb-3 bg-card text-textprimary"
                                autoFocus
                              ></textarea>
                              <div className="flex justify-end gap-2">
-                               <button disabled={isSubmittingReply} type="button" onClick={() => setReplyingTo(null)} className="px-4 py-1.5 text-gray-500 font-bold rounded-full text-[10px] hover:bg-gray-200 transition-colors disabled:opacity-50">Cancel</button>
-                               <button disabled={isSubmittingReply} type="submit" className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full text-[10px] transition-all flex items-center justify-center min-w-[70px] disabled:opacity-50">
-                                 {isSubmittingReply ? <CircularProgress size={12} color="inherit" /> : "Reply"}
+                               <button disabled={isSubmittingReply} type="button" onClick={() => setReplyingTo(null)} className="px-5 py-2 text-textsecondary font-bold rounded-full text-sm hover:bg-bordercol/50 transition-colors disabled:opacity-50">Cancel</button>
+                               <button disabled={isSubmittingReply} type="submit" className="px-6 py-2 bg-primary hover:bg-primary-hover text-white font-bold rounded-full text-sm transition-all flex items-center justify-center min-w-[80px] disabled:opacity-50 shadow-md shadow-primary/20">
+                                 {isSubmittingReply ? <CircularProgress size={14} color="inherit" /> : "Reply"}
                                </button>
                              </div>
                            </form>
@@ -529,14 +512,14 @@ export default function ForumPostDetail() {
 
                        {/* Threaded Replies */}
                        {(comment.replies || []).map(reply => (
-                         <div key={reply.id} className="mt-4 flex gap-4">
-                           <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold shrink-0">
+                         <div key={reply.id} className="mt-5 flex gap-4">
+                           <div className="w-8 h-8 rounded-full bg-pagebg flex items-center justify-center text-xs font-bold shrink-0 text-textsecondary border border-bordercol">
                              {reply.user?.name?.charAt(0) || 'U'}
                            </div>
                            <div className="min-w-0 flex-grow">
-                              <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold mb-1">
-                                <span className="text-gray-900 font-black hover:underline">u/{reply.user?.name || 'Anonymous'}</span>
-                                <span>•</span>
+                              <div className="flex items-center gap-2 text-sm text-textsecondary mb-1">
+                                <span className="text-textprimary font-bold hover:underline cursor-pointer">u/{reply.user?.name || 'Anonymous'}</span>
+                                <span className="text-bordercol">•</span>
                                 <span>{new Date(reply.created_at).toLocaleDateString()}</span>
                               </div>
                               
@@ -552,24 +535,32 @@ export default function ForumPostDetail() {
           )}
         </div>
 
-        {/* Right Column: Sidebar */}
-        <div className="hidden lg:block w-80 space-y-4">
-           <div className="bg-white rounded-md border border-gray-300 shadow-sm overflow-hidden">
-             <div className="h-9 bg-blue-600"></div>
-             <div className="p-4">
-               <h3 className="font-bold text-gray-900 mb-2">d/DesipathForum</h3>
-               <p className="text-xs text-gray-500 leading-relaxed mb-4">Indian community in USA. Ask anything!</p>
-               <div className="border-t pt-4">
-                  <p className="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest">Rules</p>
-                  <ul className="text-[10px] space-y-3 font-bold text-gray-600">
-                    <li className="flex gap-2"><span>1.</span> Be respectful to all members.</li>
-                    <li className="flex gap-2"><span>2.</span> No political or religious hate speech.</li>
-                    <li className="flex gap-2"><span>3.</span> Avoid spamming or self-promotion.</li>
-                  </ul>
-               </div>
-             </div>
-           </div>
-           <button onClick={() => navigate('/forum')} className="w-full py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-black rounded-full transition-all text-xs border border-gray-200">Back to Feed</button>
+        {/* RIGHT COLUMN: Sidebar */}
+        <div className="hidden lg:block lg:col-span-3">
+          <div className="sticky top-24 space-y-6">
+            <div className="bg-card rounded-2xl border border-bordercol shadow-sm overflow-hidden">
+              <div className="h-16 bg-gradient-to-r from-primary to-blue-400"></div>
+              <div className="p-5 relative">
+                <div className="w-16 h-16 rounded-2xl border-4 border-card -mt-12 bg-white flex items-center justify-center text-3xl shadow-sm mb-4 overflow-hidden">
+                  <img src="/img/travelCompanion/Desipath_Travelcompanion.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.target.style.display='none'; e.target.parentNode.innerText='D'; e.target.parentNode.className='w-16 h-16 rounded-2xl border-4 border-card -mt-12 bg-primary flex items-center justify-center text-3xl shadow-sm mb-4 text-white font-bold'; }} />
+                </div>
+                <h3 className="text-lg font-bold text-textprimary mb-1">d/DesipathForum</h3>
+                <p className="text-sm text-textsecondary leading-relaxed mb-6">
+                  Indian community in USA. Ask anything!
+                </p>
+                <div className="border-t border-bordercol pt-5">
+                   <p className="text-xs font-bold text-textsecondary uppercase mb-4 tracking-widest">Community Rules</p>
+                   <ul className="text-sm space-y-3 font-medium text-textprimary">
+                     <li className="flex gap-3"><span className="text-primary font-bold">1.</span> Be respectful to all members.</li>
+                     <li className="flex gap-3"><span className="text-primary font-bold">2.</span> No political or religious hate speech.</li>
+                     <li className="flex gap-3"><span className="text-primary font-bold">3.</span> Avoid spamming or self-promotion.</li>
+                   </ul>
+                </div>
+              </div>
+            </div>
+            
+            <button onClick={() => navigate('/forum')} className="w-full min-h-[48px] bg-card hover:bg-pagebg text-textsecondary hover:text-primary font-bold rounded-full transition-all text-sm border border-bordercol shadow-sm">Back to Feed</button>
+          </div>
         </div>
 
       </main>

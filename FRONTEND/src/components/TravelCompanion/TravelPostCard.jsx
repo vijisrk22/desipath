@@ -257,10 +257,10 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false }) => {
       : 'FREE';
 
   return (
-    <div className="bg-white rounded-[24px] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col font-poppins h-full">
+    <div className="bg-white rounded-[24px] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col md:flex-row font-poppins h-full">
       
-      {/* Top Row: User Profile & Trust */}
-      <div className="p-6 pb-4 border-b border-gray-50">
+      {/* Left Column: User Profile & Trust */}
+      <div className="p-6 border-b md:border-b-0 md:border-r border-gray-50 flex flex-col md:w-72 shrink-0">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <Avatar 
@@ -285,8 +285,8 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false }) => {
           </div>
         </div>
 
-        {/* Ratings Row (Mock Data) */}
-        <div className="flex items-center gap-4 mt-4">
+        {/* Ratings Row */}
+        <div className="flex items-center gap-4 mt-auto pt-6">
           <div className="flex items-center gap-1 text-[#F59E0B]">
             <Star sx={{ fontSize: 16 }} />
             <span className="text-sm font-bold text-[#1F2937]">{mockRating}</span>
@@ -298,25 +298,25 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false }) => {
         </div>
       </div>
 
-      {/* Route & Date */}
-      <div className="p-6 bg-blue-50/30 flex-grow">
-        <div className="flex items-center justify-between mb-4">
+      {/* Middle Column: Route & Date */}
+      <div className="p-6 bg-blue-50/30 flex-grow flex flex-col justify-center border-b md:border-b-0">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex-1">
-            <div className="font-bold text-[#1F2937] text-lg">{getCityName(departure)}</div>
+            <div className="font-bold text-[#1F2937] text-xl">{getCityName(departure)}</div>
             <div className="text-sm text-[#6B7280]">{departure?.iata_code}</div>
           </div>
-          <div className="flex-1 px-2 flex items-center justify-center">
+          <div className="flex-1 px-4 flex items-center justify-center">
             <div className="flex-1 border-t-2 border-dotted border-[#93C5FD]"></div>
-            <Flight sx={{ color: '#1565D8', transform: 'rotate(90deg)', mx: 1, fontSize: 20 }} />
+            <Flight sx={{ color: '#1565D8', transform: 'rotate(90deg)', mx: 2, fontSize: 24 }} />
             <div className="flex-1 border-t-2 border-dotted border-[#93C5FD]"></div>
           </div>
           <div className="flex-1 text-right">
-            <div className="font-bold text-[#1F2937] text-lg">{getCityName(destination)}</div>
+            <div className="font-bold text-[#1F2937] text-xl">{getCityName(destination)}</div>
             <div className="text-sm text-[#6B7280]">{destination?.iata_code}</div>
           </div>
         </div>
         
-        <div className="flex items-center gap-2 text-[#1565D8] font-semibold bg-white px-3 py-2 rounded-xl w-fit shadow-sm border border-blue-100">
+        <div className="flex items-center gap-2 text-[#1565D8] font-semibold bg-white px-4 py-2 rounded-xl w-fit shadow-sm border border-blue-100 mx-auto">
           <CalendarMonth fontSize="small" />
           <span className="text-sm">
             {post.travel_date_confirmed 
@@ -326,8 +326,8 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false }) => {
         </div>
       </div>
 
-      {/* Details & Tags */}
-      <div className="p-6 border-t border-gray-50 space-y-4">
+      {/* Right Column: Details & Actions */}
+      <div className="p-6 md:border-l border-gray-50 flex flex-col md:w-72 shrink-0 bg-white">
         <div>
           <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Languages</div>
           <div className="flex flex-wrap gap-2">
@@ -339,49 +339,47 @@ const TravelPostCard = ({ post, type = 'volunteer', isOwner = false }) => {
             )}
           </div>
         </div>
-
-
         
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center justify-between pt-4 mb-4">
            <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Compensation</div>
            <div className={`font-bold text-sm px-3 py-1 rounded-full ${compensation === 'FREE' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
              {compensation}
            </div>
         </div>
-      </div>
 
-      {/* Actions */}
-      <div className="p-4 bg-green-50/50 border-t border-green-100 grid grid-cols-2 gap-3 mt-auto">
-        <Button 
-          variant="outlined"
-          onClick={() => setShowDetails(true)}
-          sx={{ 
-            borderColor: '#E5E7EB',
-            color: '#4B5563',
-            fontWeight: 700, 
-            textTransform: 'none', 
-            borderRadius: '999px',
-            '&:hover': { bgcolor: '#F3F4F6', borderColor: '#D1D5DB' }
-          }}
-        >
-          View Details
-        </Button>
-        <Button 
-          variant="contained"
-          onClick={!isOwner ? handleMessage : undefined}
-          disabled={isOwner}
-          sx={{ 
-            bgcolor: '#1565D8', 
-            color: 'white', 
-            fontWeight: 700, 
-            textTransform: 'none', 
-            borderRadius: '999px',
-            boxShadow: 'none',
-            '&:hover': { bgcolor: '#1152b3', boxShadow: '0 4px 6px -1px rgba(21, 101, 216, 0.2)' }
-          }}
-        >
-          {isOwner ? 'Your Post' : 'Message'}
-        </Button>
+        {/* Actions */}
+        <div className="grid grid-cols-2 gap-3 mt-auto">
+          <Button 
+            variant="outlined"
+            onClick={() => setShowDetails(true)}
+            sx={{ 
+              borderColor: '#E5E7EB',
+              color: '#4B5563',
+              fontWeight: 700, 
+              textTransform: 'none', 
+              borderRadius: '999px',
+              '&:hover': { bgcolor: '#F3F4F6', borderColor: '#D1D5DB' }
+            }}
+          >
+            Details
+          </Button>
+          <Button 
+            variant="contained"
+            onClick={!isOwner ? handleMessage : undefined}
+            disabled={isOwner}
+            sx={{ 
+              bgcolor: '#1565D8', 
+              color: 'white', 
+              fontWeight: 700, 
+              textTransform: 'none', 
+              borderRadius: '999px',
+              boxShadow: 'none',
+              '&:hover': { bgcolor: '#1152b3', boxShadow: '0 4px 6px -1px rgba(21, 101, 216, 0.2)' }
+            }}
+          >
+            {isOwner ? 'Your Post' : 'Message'}
+          </Button>
+        </div>
       </div>
 
       <DetailsModal />
