@@ -26,9 +26,6 @@ const styles = {
     right: 0,
     backgroundColor: 'rgba(232, 148, 10, 0.9)', // #E8940A with 90% opacity (10% transparency)
     backdropFilter: 'blur(8px)',
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
     paddingTop: '12px',
     paddingBottom: '10px',
     zIndex: 1000,
@@ -77,7 +74,7 @@ export default function MobileBottomNav() {
   };
 
   return (
-    <nav style={styles.nav} className="md:hidden">
+    <nav style={styles.nav} className="md:hidden flex justify-around items-center">
       {NAV_ITEMS.map((item) => {
         const active = isMatch(location.pathname, item.path);
         const isHovered = hovered === item.path;

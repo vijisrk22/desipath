@@ -5,7 +5,7 @@ function AdminRoute({ children }) {
   const user = useSelector((state) => state.user.user);
   const location = useLocation();
 
-  const isAdmin = user && (user.role === 'admin' || user.role === 'super_admin');
+  const isAdmin = user && (user.role === 'admin' || user.role === 'super_admin' || user.role === 'superadmin');
 
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;

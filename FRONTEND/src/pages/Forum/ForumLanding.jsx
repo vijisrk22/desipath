@@ -670,7 +670,7 @@ export default function ForumLanding() {
                     </div>
                     
                     {/* Title & Content */}
-                    <h2 className="text-[20px] font-bold text-textprimary mb-2 leading-snug break-words">{post.title}</h2>
+                    <h2 className="text-[17px] font-semibold text-textprimary mb-2 leading-snug break-words">{post.title}</h2>
                     <p className="text-[16px] text-textsecondary line-clamp-3 mb-5 leading-relaxed break-words">{post.content}</p>
                     
                     {/* Actions */}
