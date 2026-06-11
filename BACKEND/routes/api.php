@@ -491,8 +491,17 @@ Route::get('/sync-marketplace-coords', function() {
     return "Synced coordinates for $count listings.";
 });
 
-Route::get('/users', function() {
-    return User::orderBy('id', 'asc')->paginate(100);
+Route::get('/users', function(\Illuminate\Http\Request $request) {
+    $query = User::orderBy('id', 'asc');
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('id', $search);
+        });
+    }
+    return $query->paginate(100);
 });
 
 // Travel Companion V2 Routes

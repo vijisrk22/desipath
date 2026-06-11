@@ -4,6 +4,8 @@ import api from '../../utils/api';
 export default function UsersAdmin() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [pagination, setPagination] = useState({
     currentPage: 1,
     lastPage: 1,
@@ -12,13 +14,13 @@ export default function UsersAdmin() {
   });
 
   useEffect(() => {
-    fetchUsers(1);
-  }, []);
+    fetchUsers(1, searchQuery);
+  }, [searchQuery]);
 
-  const fetchUsers = async (page = 1) => {
+  const fetchUsers = async (page = 1, search = '') => {
     setLoading(true);
     try {
-      const res = await api.get(`/api/users?page=${page}`);
+      const res = await api.get(`/api/users?page=${page}&search=${search}`);
       setUsers(res.data.data || []);
       setPagination({
         currentPage: res.data.current_page || 1,
@@ -40,6 +42,22 @@ export default function UsersAdmin() {
           <h1 className="text-3xl font-extrabold text-gray-900">Registered Users</h1>
           <p className="text-gray-500 font-medium mt-1">Full directory of members signed up on Desipath.</p>
         </div>
+        
+        <form onSubmit={(e) => { e.preventDefault(); setSearchQuery(searchInput); }} className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Search by name, email, or ID..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none w-64 text-sm"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors"
+          >
+            Search
+          </button>
+        </form>
       </div>
 
       {loading ? (
@@ -127,7 +145,7 @@ export default function UsersAdmin() {
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <button
-                  onClick={() => fetchUsers(pagination.currentPage - 1)}
+                  onClick={() => fetchUsers(pagination.currentPage - 1, searchQuery)}
                   disabled={pagination.currentPage === 1}
                   className="px-4 py-2 text-sm font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-gray-50 rounded-xl transition-all border border-gray-200"
                 >
@@ -137,7 +155,7 @@ export default function UsersAdmin() {
                 {Array.from({ length: pagination.lastPage }, (_, i) => i + 1).map((page) => (
                   <button
                     key={page}
-                    onClick={() => fetchUsers(page)}
+                    onClick={() => fetchUsers(page, searchQuery)}
                     className={`w-9 h-9 flex items-center justify-center text-sm font-bold rounded-xl transition-all ${
                       pagination.currentPage === page
                         ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
@@ -149,7 +167,7 @@ export default function UsersAdmin() {
                 ))}
 
                 <button
-                  onClick={() => fetchUsers(pagination.currentPage + 1)}
+                  onClick={() => fetchUsers(pagination.currentPage + 1, searchQuery)}
                   disabled={pagination.currentPage === pagination.lastPage}
                   className="px-4 py-2 text-sm font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-gray-50 rounded-xl transition-all border border-gray-200"
                 >
