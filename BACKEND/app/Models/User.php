@@ -112,6 +112,16 @@ class User extends Authenticatable
         return $this->role === 'user';
     }
 
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function secureMatchProfile()
+    {
+        return $this->hasOne(SecureMatchProfile::class);
+    }
+
     public function sentMessages()
     {
         return $this->hasMany(Message::class, 'sender_id');

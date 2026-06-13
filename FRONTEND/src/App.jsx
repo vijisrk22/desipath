@@ -116,6 +116,12 @@ import "react-toastify/dist/ReactToastify.css";
 
 const ForumLanding = lazy(() => import("./pages/Forum/ForumLanding"));
 const ForumPostDetail = lazy(() => import("./pages/Forum/ForumPostDetail"));
+const DesiSecureMatchLanding = lazy(() => import("./pages/DesiSecureMatch/DesiSecureMatchLanding"));
+const SecureMatchPost = lazy(() => import("./pages/DesiSecureMatch/SecureMatchPost"));
+const SecureMatchSearch = lazy(() => import("./pages/DesiSecureMatch/SecureMatchSearch"));
+const SecureMatchSuccess = lazy(() => import("./pages/DesiSecureMatch/SecureMatchSuccess"));
+const SecureMatchInbox = lazy(() => import("./pages/DesiSecureMatch/SecureMatchInbox"));
+const SecureMatchProfileDetail = lazy(() => import("./pages/DesiSecureMatch/SecureMatchProfileDetail"));
 
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -210,6 +216,14 @@ function App() {
           {/* Immigration News */}
           <Route path="/daily-news" element={<ImmigrationNews />} />
           <Route path="/daily-news/:slug" element={<ImmigrationNewsDetail />} />
+
+          {/* Desi SecureMatch */}
+          <Route path="/dating" element={<DesiSecureMatchLanding />} />
+          <Route path="/dating/post" element={<PrivateRoute><SecureMatchPost /></PrivateRoute>} />
+          <Route path="/dating/search" element={<PrivateRoute><SecureMatchSearch /></PrivateRoute>} />
+          <Route path="/dating/success" element={<PrivateRoute><SecureMatchSuccess /></PrivateRoute>} />
+          <Route path="/dating/inbox" element={<PrivateRoute><SecureMatchInbox /></PrivateRoute>} />
+          <Route path="/dating/profile/:id" element={<PrivateRoute><SecureMatchProfileDetail /></PrivateRoute>} />
 
           {/* Jobs */}
           <Route path="/jobs" element={<JobsLanding />} />

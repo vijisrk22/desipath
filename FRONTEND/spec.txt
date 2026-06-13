@@ -1,0 +1,1356 @@
+DesiPath
+
+SecureMatch
+
+Matrimonial Module — Technical Specification
+
+
+
+Version 1.0  |  June 2026  |  Confidential  |  NRI Platform
+
+Field
+
+Value
+
+Document Version
+
+1.0
+
+Status
+
+Draft
+
+Last Updated
+
+June 2026
+
+Author
+
+Product & Architecture Team
+
+Platform
+
+DesiPath — NRI Community Platform
+
+Module
+
+SecureMatch Matrimonial
+
+Target Launch
+
+Q4 2026
+
+Classification
+
+Confidential
+
+
+
+1. Overview
+
+DesiPath is an NRI-focused community platform serving the ~8.4 million Indian diaspora in the US and Canada. The SecureMatch matrimonial module extends the platform with a privacy-first, consent-gated matchmaking system designed specifically for the global Indian diaspora. This document defines the full technical specification covering architecture, data models, APIs, security, integrations, and infrastructure required to design, build, and operate the module.
+
+1.1 Problem Statement
+
+Existing matrimonial platforms (Shaadi.com, BharatMatrimony) were designed for India-based users and bolt on NRI support as a filter. They expose photos and personal identity by default, have no meaningful NRI credential verification, and do not support the cross-border trust requirements that NRI matches demand. The result is low female engagement, high fake-profile rates, and poor match quality for diaspora users.
+
+1.2 Solution Summary
+
+SecureMatch inverts the default: identity is private until both parties consent. Profiles are discoverable but anonymous. A mutual accept mechanism gates progressive information disclosure. NRI-specific verification (visa status, country of residence, employment) builds trust without invasive data collection.
+
+1.3 Key Differentiators
+
+Privacy-first: Photos and personal details hidden by default
+
+Consent-gated: Mutual acceptance required before profile unlock
+
+NRI-verified: Residency tier and immigration status verification
+
+Family Circle: Read-only family portal for parental involvement
+
+Voice-first: Voice note introduction before photo unlock
+
+AI Compatibility: Values-based scoring, not photo-based
+
+Masked Video: AR face blur on video calls before trust is established
+
+
+
+2. Target Users & Market
+
+2.1 Primary Audience
+
+Segment
+
+Region
+
+Profile
+
+NRI Professionals
+
+USA, Canada
+
+H1B/L1 visa holders, 25-40 age, arranged-match open
+
+NRI Permanent Residents
+
+USA, Canada
+
+Green card / PR holders, family-involved search
+
+NRI Citizens
+
+USA, Canada, UK
+
+Second-gen diaspora, semi-arranged preference
+
+Gulf NRIs
+
+UAE, Qatar, KSA
+
+Blue/white collar NRIs, strong family-involvement
+
+UK Indians
+
+UK
+
+British Indians, mix of arranged and self-choice
+
+
+
+2.2 Market Size
+
+~8.4 million Indian diaspora in US + Canada
+
+~1.8 million in UK
+
+~3.5 million in Gulf countries
+
+Indian matrimonial market: $1.5B+ globally
+
+NRI segment: underserved, high willingness to pay in USD/GBP/CAD
+
+
+
+3. Privacy Model — Seen When Chosen
+
+3.1 Profile Visibility Tiers
+
+Field
+
+Always Public
+
+After Mutual Accept
+
+Never Shared
+
+Age
+
+Yes
+
+
+
+
+
+Community / Religion
+
+Yes
+
+
+
+
+
+Education Level
+
+Yes
+
+
+
+
+
+Profession / Industry
+
+Yes
+
+
+
+
+
+City (approximate)
+
+Yes
+
+
+
+
+
+About Me Text
+
+Yes
+
+
+
+
+
+Voice Note Introduction
+
+Yes
+
+
+
+
+
+Full Name
+
+
+
+Yes
+
+
+
+Photos
+
+
+
+Yes
+
+
+
+Exact Location
+
+
+
+Yes
+
+
+
+Contact Details
+
+
+
+Yes
+
+
+
+Family Details
+
+
+
+Yes
+
+
+
+Horoscope / Kundali
+
+
+
+Yes
+
+
+
+Government ID
+
+
+
+
+
+Yes (verification only)
+
+Passport Number
+
+
+
+
+
+Yes (verification only)
+
+3.2 Consent Flow
+
+Step 1 — Discovery: User A browses anonymous profiles. No photos or names visible or Not based on User.
+
+Step 2 — Interest: User A sends interest request to User B.
+
+Step 3 — Review: User B sees User A's anonymous profile. Accepts or declines.
+
+Step 4 — Unlock: On mutual accept, both profiles unlock progressively. Photos first, then contact details.
+
+Step 5 — Connect: Messaging enabled. Video calling available with optional face blur.
+
+
+
+4. Feature Specification
+
+4.1 Core Features
+
+Feature
+
+Description
+
+Priority
+
+Anonymous Profile
+
+Browse profiles without photos or names visible
+
+P0
+
+Mutual Accept Engine
+
+Interest + acceptance gates progressive unlock
+
+P0
+
+Voice Note Intro
+
+30-second audio introduction before photo unlock
+
+P0
+
+NRI Verification using Linkedin 
+
+Get Visa/ Greencard /Citizenship Status and Linkedin
+
+P0
+
+AI Compatibility Score
+
+Values-based matching score (0-100)
+
+P1
+
+Family Circle
+
+Read-only portal for parents to co-manage profile
+
+P1
+
+Photo Watermarking
+
+Viewer user ID embedded in photo to deter leakage
+
+P1
+
+
+
+
+
+
+
+Concierge Matchmaking
+
+Human-assisted matching for premium members
+
+P1
+
+Smart Profile Prompts
+
+AI-guided profile completion for richer bios
+
+P1
+
+Community Trust Score
+
+0-100 score based on verification depth
+
+P2
+
+4.2 Anti-Harassment Features
+
+Block and report with one tap
+
+AI content moderation on messages
+
+Phone/email masked until explicit share consent
+
+Screenshot deterrence via watermark overlay on photos
+
+Admin review queue for flagged profiles
+
+
+
+5. System Architecture
+
+5.1 Architecture Overview
+
+SecureMatch is built as a module within the DesiPath Laravel + React + Capacitor monorepo, with dedicated microservices for consent, verification, and AI scoring hosted on Azure (primary) and AWS (verification pipeline).
+
+5.3 Microservices
+
+Service
+
+Responsibility
+
+Tech
+
+Consent Engine
+
+Track interest, accept, unlock events
+
+Laravel + MySQL
+
+Verification Service
+
+NRI document verification pipeline
+
+Node.js + Onfido API
+
+AI Scoring Service
+
+Compatibility score computation
+
+Python + OpenAI API
+
+Watermark Service
+
+Embed user ID into photo derivatives
+
+Node.js + Sharp
+
+Notification Service
+
+Push, email, SMS notifications
+
+Laravel + FCM + Postmark
+
+Moderation Service
+
+AI content moderation on messages
+
+Python + OpenAI
+
+
+
+
+
+
+
+
+
+6. Data Models
+
+6.1 Core Tables
+
+Table
+
+Key Fields
+
+Notes
+
+sm_profiles
+
+id, user_id, display_name, dob, gender, community, religion, education, profession, city, country, residency_tier, trust_score, status
+
+Core profile
+
+sm_profile_fields
+
+id, profile_id, field_key, field_value, visibility_tier
+
+Field-level visibility control
+
+sm_interests
+
+id, sender_id, receiver_id, status, sent_at, responded_at
+
+Interest + accept/decline
+
+sm_unlocks
+
+id, profile_id, unlocked_by, unlock_tier, unlocked_at
+
+Progressive unlock events
+
+sm_voice_notes
+
+id, profile_id, audio_url, duration_seconds, created_at
+
+Voice intro audio
+
+sm_photos
+
+id, profile_id, photo_url, watermark_key, is_primary, order_index
+
+Profile photos
+
+sm_verifications
+
+id, user_id, doc_type, doc_country, verification_status, provider_ref, verified_at
+
+NRI verification records
+
+sm_family_circle
+
+id, profile_id, member_email, member_name, relation, access_token, invited_at
+
+Family portal access
+
+sm_compatibility
+
+id, profile_a_id, profile_b_id, score, factors_json, computed_at
+
+AI compatibility scores
+
+sm_messages
+
+id, match_id, sender_id, content_encrypted, content_type, sent_at, read_at
+
+Encrypted chat
+
+sm_subscriptions
+
+id, user_id, plan, currency, amount, stripe_sub_id, starts_at, ends_at
+
+Subscription billing
+
+sm_blocks
+
+id, blocker_id, blocked_id, reason, created_at
+
+Block list
+
+6.2 Residency Tiers
+
+Tier
+
+Code
+
+Description
+
+Citizen
+
+CITIZEN
+
+Naturalised or birth citizen of USA/Canada/UK/etc.
+
+Permanent Resident
+
+PR
+
+Green Card / Canadian PR / UK ILR
+
+Work Visa
+
+WORK_VISA
+
+H1B, L1, TN, Skilled Worker visa
+
+Student Visa
+
+STUDENT
+
+F1, Study Permit — disclosed for transparency
+
+Visitor / Other
+
+OTHER
+
+Non-immigrant, disclosed to partner
+
+India-based NRI
+
+INDIA_BASED
+
+NRI status but currently in India
+
+
+
+7. API Specification
+
+7.1 Profile APIs
+
+Method
+
+Endpoint
+
+Description
+
+Auth
+
+GET
+
+/api/v1/sm/profiles
+
+Browse anonymous profiles with filters
+
+Bearer
+
+POST
+
+/api/v1/sm/profiles
+
+Create matrimonial profile
+
+Bearer
+
+GET
+
+/api/v1/sm/profiles/{id}
+
+Get profile (visibility depends on consent)
+
+Bearer
+
+PUT
+
+/api/v1/sm/profiles/{id}
+
+Update own profile
+
+Bearer
+
+POST
+
+/api/v1/sm/profiles/{id}/voice-note
+
+Upload voice introduction
+
+Bearer
+
+POST
+
+/api/v1/sm/profiles/{id}/photos
+
+Upload profile photo
+
+Bearer
+
+GET
+
+/api/v1/sm/profiles/{id}/compatibility
+
+Get compatibility score
+
+Bearer
+
+7.2 Consent & Match APIs
+
+Method
+
+Endpoint
+
+Description
+
+Auth
+
+POST
+
+/api/v1/sm/interests
+
+Send interest to a profile
+
+Bearer
+
+PUT
+
+/api/v1/sm/interests/{id}/accept
+
+Accept interest (triggers unlock)
+
+Bearer
+
+PUT
+
+/api/v1/sm/interests/{id}/decline
+
+Decline interest
+
+Bearer
+
+GET
+
+/api/v1/sm/interests/received
+
+List received interests
+
+Bearer
+
+GET
+
+/api/v1/sm/interests/sent
+
+List sent interests
+
+Bearer
+
+GET
+
+/api/v1/sm/matches
+
+List mutual matches
+
+Bearer
+
+DELETE
+
+/api/v1/sm/matches/{id}
+
+Unmatch
+
+Bearer
+
+7.3 Verification APIs
+
+Method
+
+Endpoint
+
+Description
+
+Auth
+
+POST
+
+/api/v1/sm/verification/initiate
+
+Start NRI verification flow
+
+Bearer
+
+POST
+
+/api/v1/sm/verification/webhook
+
+Onfido/Sumsub webhook callback
+
+Webhook Key
+
+GET
+
+/api/v1/sm/verification/status
+
+Get own verification status
+
+Bearer
+
+7.4 Messaging APIs
+
+Method
+
+Endpoint
+
+Description
+
+Auth
+
+GET
+
+/api/v1/sm/messages/{match_id}
+
+Get messages for a match
+
+Bearer
+
+POST
+
+/api/v1/sm/messages/{match_id}
+
+Send message
+
+Bearer
+
+POST
+
+/api/v1/sm/video/token
+
+Get Agora video call token
+
+Bearer
+
+POST
+
+/api/v1/sm/blocks
+
+Block a user
+
+Bearer
+
+POST
+
+/api/v1/sm/reports
+
+Report a user
+
+Bearer
+
+
+
+8. Security & Compliance
+
+8.1 Data Security
+
+All messages encrypted at rest using AES-256
+
+Photos served via signed Azure CDN URLs (expiry: 1 hour)
+
+Photo watermarking: viewer user ID embedded invisibly in every photo delivery
+
+Voice notes encrypted at rest, served via signed URLs
+
+Personal fields encrypted in database (field-level encryption for contact details)
+
+TLS 1.3 enforced on all endpoints
+
+8.2 NRI Verification Pipeline
+
+Step
+
+Action
+
+Provider
+
+1
+
+User submits passport / national ID / visa document
+
+User upload
+
+2
+
+Document authenticity check
+
+Onfido / Sumsub
+
+3
+
+Facial biometric liveness check
+
+Onfido / Sumsub
+
+4
+
+Residency tier classification from document
+
+Internal logic
+
+5
+
+Verification result stored (not the document)
+
+MySQL
+
+6
+
+Trust score updated (+30 points for verified)
+
+Internal
+
+7
+
+Verification badge displayed on profile
+
+Frontend
+
+8.3 Compliance
+
+Regulation
+
+Requirement
+
+Implementation
+
+GDPR (UK/EU)
+
+Right to erasure, data portability, consent logs
+
+DSAR endpoint, audit log table, consent events
+
+DPDP Act 2023 (India)
+
+Data localisation for India-resident users
+
+India region: ap-south-1 or Azure India
+
+CCPA (California)
+
+Right to know, delete, opt-out of sale
+
+Privacy dashboard in user account
+
+PIPEDA (Canada)
+
+Consent for data collection and use
+
+Explicit consent on signup
+
+App Store (Apple/Google)
+
+Matrimonial/dating app compliance rules
+
+Legal review required before Phase 6
+
+
+
+9. AI & ML Components
+
+9.1 Compatibility Scoring
+
+Factor
+
+Weight
+
+Data Source
+
+Community / Religion match
+
+15%
+
+Profile field
+
+Education compatibility
+
+10%
+
+Profile field
+
+Profession / Income tier
+
+10%
+
+Profile field
+
+
+
+Location proximity
+
+10%
+
+Profile field
+
+Residency tier compatibility
+
+15%
+
+Verification
+
+Family background similarity
+
+10%
+
+Profile field
+
+Values and lifestyle (from prompts)
+
+20%
+
+AI analysis of bio text
+
+Horoscope compatibility (optional)
+
+10%
+
+Kundali API
+
+9.2 AI Moderation
+
+Message content scanned for harassment, explicit content, contact info sharing before consent
+
+Profile bio scanned for spam, fake claims, prohibited content
+
+Flagged content queued for admin review
+
+Provider: OpenAI Moderation API + custom fine-tuned classifier
+
+9.3 Smart Profile Prompts
+
+AI-guided questions during profile setup to elicit richer personality data
+
+Examples: 'What does a perfect Sunday look like for you?', 'How involved is your family in your decisions?'
+
+Responses used for values-based compatibility scoring
+
+
+
+10. Third-Party Integrations
+
+Integration
+
+Provider
+
+Purpose
+
+Phase
+
+Identity Verification
+
+Onfido or Sumsub
+
+NRI document + liveness verification
+
+Phase 1
+
+Video Calling
+
+Agora.io
+
+Real-time video with AR face blur
+
+Phase 2
+
+Payments (international)
+
+Stripe
+
+USD, GBP, CAD subscriptions
+
+Phase 1
+
+Payments (India)
+
+Razorpay
+
+INR subscriptions
+
+Phase 3
+
+AI / LLM
+
+OpenAI API
+
+Compatibility scoring, moderation, prompts
+
+Phase 1
+
+Horoscope / Kundali
+
+Astro-Vision or Astrosage API
+
+Jyotish compatibility matching
+
+Phase 3
+
+Email
+
+Postmark
+
+Transactional email (match, unlock, alerts)
+
+Phase 1
+
+Push Notifications
+
+Firebase FCM
+
+Mobile push for matches, messages
+
+Phase 1
+
+SMS
+
+Twilio
+
+OTP for phone verification
+
+Phase 1
+
+CDN
+
+Azure CDN
+
+Photo and audio delivery via signed URLs
+
+Phase 1
+
+Search
+
+Meilisearch
+
+Fast profile search with NRI filters
+
+Phase 2
+
+
+
+11. Revenue Model
+
+11.1 Subscription Tiers
+
+Plan
+
+USD/mo
+
+GBP/mo
+
+CAD/mo
+
+INR/mo
+
+Features
+
+Free
+
+$0
+
+£0
+
+C$0
+
+₹0
+
+Create profile, browse anonymously, 3 interests/month
+
+Connect
+
+$19
+
+£15
+
+C$25
+
+₹999
+
+20 interests/month, voice note, see who liked you
+
+Verified Match
+
+$39
+
+£32
+
+C$52
+
+₹1,999
+
+Unlimited interests, NRI badge, AI score, family portal
+
+Elite
+
+$79
+
+£65
+
+C$105
+
+₹3,999
+
+All features + concierge assist + priority listing
+
+11.2 Additional Revenue Streams
+
+Assisted/Concierge matchmaking: $299-$999 per engagement
+
+Verified badge (one-time): $29 — faster NRI verification with human review
+
+Profile boost: $9-$19 — feature in top results for 7 days
+
+Wedding economy cross-sell: photographer, venue, travel affiliate commissions
+
+B2B API licensing: NRI verification stack licensed to other platforms
+
+11.3 Revenue Projections
+
+Year
+
+Users
+
+Paid Conversion
+
+ARR
+
+Year 1
+
+10,000
+
+8% (800 paid)
+
+$380K
+
+Year 2
+
+50,000
+
+10% (5,000 paid)
+
+$2.4M
+
+Year 3
+
+150,000
+
+12% (18,000 paid)
+
+$8.6M
+
+
+
+12. Delivery Roadmap
+
+Phase
+
+Weeks
+
+Deliverables
+
+Phase 1 — Foundation
+
+Weeks 1-8
+
+DB schema, profile CRUD, anonymous browse, interest/accept flow, photo upload, basic subscription (Stripe)
+
+Phase 2 — Privacy Engine
+
+Weeks 9-16
+
+Consent engine, progressive unlock, photo watermarking, voice note, masked video (Agora), WebSocket messaging
+
+Phase 3 — Verification
+
+Weeks 17-22
+
+NRI verification pipeline (Onfido/Sumsub), trust score, residency tier, verified badge
+
+Phase 4 — AI Features
+
+Weeks 23-28
+
+Compatibility scoring, smart profile prompts, AI content moderation, search (Meilisearch)
+
+Phase 5 — Family & Premium
+
+Weeks 29-34
+
+Family Circle portal, horoscope API, concierge matchmaking workflow, Razorpay (INR)
+
+Phase 6 — Launch
+
+Weeks 35-40
+
+App store submission, GDPR/DPDP compliance audit, performance testing, soft launch to beta users
+
+
+
+13. Open Questions & Decisions Required
+
+#
+
+Question
+
+Impact
+
+Owner
+
+1
+
+Horoscope API: Astro-Vision vs Astrosage vs custom Jyotish engine?
+
+Phase 5 timeline
+
+Product
+
+
+
+
+
+
+
+
+
+3
+
+Concierge matchmaking: build internal team or partner with matchmaking agency?
+
+Phase 5 model
+
+Business
+
+4
+
+App store compliance: Apple and Google have specific rules for matrimonial/dating apps. Legal review required.
+
+Phase 6 timeline
+
+Legal
+
+5
+
+Identity verification provider: Onfido vs Sumsub — pricing and NRI document coverage comparison needed.
+
+Phase 3 cost
+
+Engineering
+
+6
+
+Video provider: Agora.io vs 100ms.live vs Daily.co — evaluate AR blur support and pricing.
+
+Phase 2 cost
+
+Engineering
+
+7
+
+Family Circle: should family members be able to send interests on behalf of profile owner?
+
+Feature scope
+
+Product
+
+8
+
+Kundali matching: opt-in or opt-out by default?
+
+UX / cultural
+
+Product
+
+
+
+Appendix A: Glossary
+
+Term
+
+Definition
+
+SecureMatch
+
+Brand name for the DesiPath matrimonial module
+
+Consent Engine
+
+Service and data model governing field visibility and unlock events
+
+Trust Score
+
+Computed 0-100 score reflecting verification depth of a user profile
+
+Unlock Event
+
+System event triggered when a locked field becomes visible to a specific user
+
+NRI
+
+Non-Resident Indian — Indian national or person of Indian origin residing outside India
+
+Residency Tier
+
+Self-declared and verified immigration status category
+
+Family Portal
+
+Read-only view of a member profile made available to invited family members
+
+Watermarking
+
+Embedding the viewer user ID into photo derivatives to deter and trace leakage
+
+Masked Video
+
+Video call with client-side AR face blur applied before stream transmission
+
+DSAR
+
+Data Subject Access Request — GDPR right to receive all personal data held
+
+Kundali
+
+Hindu astrological birth chart used for compatibility matching
+
+Concierge
+
+Human-assisted premium matchmaking service
+
+
+
+DesiPath — SecureMatch Technical Specification
+
+Version 1.0  |  June 2026  |  Confidential
+

@@ -616,3 +616,24 @@ Route::prefix('rides')->group(function () {
     Route::get('/', [CommunityRideController::class, 'index']);
     Route::get('/{slug}', [CommunityRideController::class, 'show']);
 });
+
+// --- Desi SecureMatch Routes ---
+Route::middleware('auth:sanctum')->prefix('sm/profiles')->group(function () {
+    Route::get('/', [\App\Http\Controllers\API\SecureMatchProfileController::class, 'index']);
+    Route::get('/{id}', [\App\Http\Controllers\API\SecureMatchProfileController::class, 'show']);
+});
+
+Route::middleware('auth:sanctum')->prefix('sm')->group(function () {
+    Route::get('/my-profile', [\App\Http\Controllers\API\SecureMatchProfileController::class, 'myProfile']);
+    Route::post('/profiles', [\App\Http\Controllers\API\SecureMatchProfileController::class, 'store']);
+    Route::delete('/profiles/photos/{id}', [\App\Http\Controllers\API\SecureMatchProfileController::class, 'deletePhoto']);
+    
+    Route::post('/interests', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'store']);
+    Route::put('/interests/{id}/accept-step1', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'acceptStep1']);
+    Route::put('/interests/{id}/accept-step2', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'acceptStep2']);
+    Route::put('/interests/{id}/decline', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'decline']);
+    Route::get('/interests/received', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'received']);
+    Route::get('/interests/sent', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'sent']);
+    Route::post('/interests/{id}/request-album', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'requestAlbum']);
+    Route::post('/interests/{id}/toggle-album', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'toggleAlbum']);
+});

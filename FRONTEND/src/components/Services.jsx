@@ -55,7 +55,7 @@ const services = [
     path: "/desi-doctors",
   },
   {
-    name: "Desi Dating",
+    name: "Desi SecureMatch",
     image: "/img/services/Desipath_Dating.png",
     path: "/dating",
   },
