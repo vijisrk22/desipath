@@ -60,7 +60,7 @@ async function isDuplicate(url, title) {
     }
     
     // Add to dedup table
-    await db.execute('INSERT INTO news_dedup_hashes (hash, source_name, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))', [hash, 'RSS Crawler']);
+    await db.execute('INSERT INTO news_dedup_hashes (hash, source_name, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY)) ON DUPLICATE KEY UPDATE expires_at = DATE_ADD(NOW(), INTERVAL 7 DAY)', [hash, 'RSS Crawler']);
     return false;
 }
 

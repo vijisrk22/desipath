@@ -122,6 +122,7 @@ const SecureMatchSearch = lazy(() => import("./pages/DesiSecureMatch/SecureMatch
 const SecureMatchSuccess = lazy(() => import("./pages/DesiSecureMatch/SecureMatchSuccess"));
 const SecureMatchInbox = lazy(() => import("./pages/DesiSecureMatch/SecureMatchInbox"));
 const SecureMatchProfileDetail = lazy(() => import("./pages/DesiSecureMatch/SecureMatchProfileDetail"));
+const SecureMatchDashboard = lazy(() => import("./pages/DesiSecureMatch/SecureMatchDashboard"));
 
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -219,6 +220,7 @@ function App() {
 
           {/* Desi SecureMatch */}
           <Route path="/dating" element={<DesiSecureMatchLanding />} />
+          <Route path="/dating/dashboard" element={<PrivateRoute><SecureMatchDashboard /></PrivateRoute>} />
           <Route path="/dating/post" element={<PrivateRoute><SecureMatchPost /></PrivateRoute>} />
           <Route path="/dating/search" element={<PrivateRoute><SecureMatchSearch /></PrivateRoute>} />
           <Route path="/dating/success" element={<PrivateRoute><SecureMatchSuccess /></PrivateRoute>} />
