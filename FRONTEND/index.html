@@ -40,6 +40,21 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Prevent pinch zoom on iOS Safari
+      document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+      });
+      // Prevent double-tap to zoom
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function (event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
