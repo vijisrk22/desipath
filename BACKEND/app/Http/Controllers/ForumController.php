@@ -72,6 +72,46 @@ class ForumController extends Controller
         ]);
     }
 
+    public function updatePost(Request $request, $id)
+    {
+        $post = ForumPost::findOrFail($id);
+
+        if ($post->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
+
+        $post->update([
+            'title' => $request->title,
+            'content' => $request->content,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $post
+        ]);
+    }
+
+    public function destroyPost($id)
+    {
+        $post = ForumPost::findOrFail($id);
+
+        if ($post->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $post->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post deleted successfully'
+        ]);
+    }
+
     public function storeComment(Request $request)
     {
         $request->validate([

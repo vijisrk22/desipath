@@ -15,7 +15,7 @@ import {
 // --- Subcomponents ---
 
 // 1. Marketplace Stats
-const MarketplaceStats = () => (
+const MarketplaceStats = ({ stats }) => (
   <div className="bg-white border-b border-gray-100">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -24,7 +24,7 @@ const MarketplaceStats = () => (
             <Storefront />
           </div>
           <div>
-            <div className="text-2xl font-bold text-gray-900">241</div>
+            <div className="text-2xl font-bold text-gray-900">{stats.activeListings || 0}</div>
             <div className="text-sm font-medium text-gray-500">Active Listings</div>
           </div>
         </div>
@@ -33,7 +33,7 @@ const MarketplaceStats = () => (
             <TrendingUp />
           </div>
           <div>
-            <div className="text-2xl font-bold text-gray-900">58</div>
+            <div className="text-2xl font-bold text-gray-900">{stats.newToday || 0}</div>
             <div className="text-sm font-medium text-gray-500">New Today</div>
           </div>
         </div>
@@ -42,7 +42,7 @@ const MarketplaceStats = () => (
             <People />
           </div>
           <div>
-            <div className="text-2xl font-bold text-gray-900">120</div>
+            <div className="text-2xl font-bold text-gray-900">{stats.verifiedSellers || 0}</div>
             <div className="text-sm font-medium text-gray-500">Verified Sellers</div>
           </div>
         </div>
@@ -51,7 +51,7 @@ const MarketplaceStats = () => (
             <LocalOffer />
           </div>
           <div>
-            <div className="text-2xl font-bold text-gray-900">15</div>
+            <div className="text-2xl font-bold text-gray-900">{stats.categories || 0}</div>
             <div className="text-sm font-medium text-gray-500">Categories</div>
           </div>
         </div>
@@ -94,6 +94,19 @@ const BuySellItemsSearch = () => {
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('Newest First');
+  const [stats, setStats] = useState({ activeListings: 0, newToday: 0, verifiedSellers: 0, categories: 0 });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/api/buy-sell-items/stats');
+        setStats(response.data);
+      } catch (err) {
+        console.error("Failed to fetch stats", err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const fetchItems = async () => {
     setLoading(true);
@@ -192,7 +205,7 @@ const BuySellItemsSearch = () => {
         </div>
       </div>
 
-      <MarketplaceStats />
+      <MarketplaceStats stats={stats} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row gap-8 relative">
         

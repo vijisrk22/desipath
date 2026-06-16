@@ -163,6 +163,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/attorneys/my-count', [AttorneyController::class, 'getMyAdCount']);
     Route::get('/doctors/my-listings', [DoctorController::class, 'getMyListings']);
     Route::get('/doctors/my-count', [DoctorController::class, 'getMyAdCount']);
+
+    Route::get('/buy-sell-items/my-listings', [BuySellItemController::class, 'getMyListings']);
+    Route::get('/buy-sell-items/my-count', [BuySellItemController::class, 'getMyAdCount']);
 });
 
 // Public car read routes (no auth required — anyone can browse listings)
@@ -408,6 +411,8 @@ Route::get('/forum/subforums', [ForumController::class, 'listSubforums']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/forum/posts', [ForumController::class, 'storePost']);
+    Route::put('/forum/posts/{id}', [ForumController::class, 'updatePost']);
+    Route::delete('/forum/posts/{id}', [ForumController::class, 'destroyPost']);
     Route::post('/forum/comments', [ForumController::class, 'storeComment']);
     Route::put('/forum/comments/{id}', [ForumController::class, 'updateComment']);
     Route::delete('/forum/comments/{id}', [ForumController::class, 'destroyComment']);
@@ -571,6 +576,7 @@ Route::get('/attorneys/{slug}', [AttorneyController::class, 'show']);
 
 // --- Buy/Sell Items Routes ---
 Route::prefix('buy-sell-items')->group(function () {
+    Route::get('/stats', [BuySellItemController::class, 'stats']);
     Route::get('/', [BuySellItemController::class, 'index']);
     Route::get('/{id}', [BuySellItemController::class, 'show'])->where('id', '[0-9]+');
     Route::post('/{id}/report', [BuySellItemController::class, 'report'])->where('id', '[0-9]+');
@@ -579,6 +585,7 @@ Route::prefix('buy-sell-items')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/buy-sell-items', [BuySellItemController::class, 'store']);
     Route::put('/buy-sell-items/{id}', [BuySellItemController::class, 'update'])->where('id', '[0-9]+');
+    Route::patch('/buy-sell-items/{id}/status', [BuySellItemController::class, 'toggleStatus'])->where('id', '[0-9]+');
     Route::delete('/buy-sell-items/{id}', [BuySellItemController::class, 'destroy'])->where('id', '[0-9]+');
 });
 

@@ -33,6 +33,45 @@ export default function ForumPostDetail() {
   const [commentToDelete, setCommentToDelete] = useState(null);
   const [isSubmittingDelete, setIsSubmittingDelete] = useState(false);
 
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [editPostTitle, setEditPostTitle] = useState("");
+  const [editPostContent, setEditPostContent] = useState("");
+  const [isSubmittingPostEdit, setIsSubmittingPostEdit] = useState(false);
+
+  const handleEditPostClick = () => {
+    setEditPostTitle(post.title);
+    setEditPostContent(post.content);
+    setIsEditingPost(true);
+  };
+
+  const handleEditPostSubmit = (e) => {
+    e.preventDefault();
+    if (!editPostTitle.trim() || !editPostContent.trim() || isSubmittingPostEdit) return;
+
+    setIsSubmittingPostEdit(true);
+    api.put(`/api/forum/posts/${post.id}`, { title: editPostTitle, content: editPostContent })
+      .then(res => {
+        if (res.data.success) {
+          toast.success("Post updated successfully!");
+          setIsEditingPost(false);
+          fetchPost(false);
+        }
+      })
+      .finally(() => setIsSubmittingPostEdit(false));
+  };
+
+  const handleDeletePost = () => {
+    if (window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
+      api.delete(`/api/forum/posts/${post.id}`)
+        .then(res => {
+          if (res.data.success) {
+            toast.success("Post deleted successfully!");
+            navigate('/forum');
+          }
+        });
+    }
+  };
+
   const handleReplySubmit = (e, parentId) => {
     e.preventDefault();
     if (!replyText.trim() || isSubmittingReply) return;
@@ -367,10 +406,37 @@ export default function ForumPostDetail() {
                       </>
                     )}
                   </div>
-                  <h1 className="text-[24px] md:text-[28px] font-bold text-textprimary mb-4 leading-snug">{post.title}</h1>
-                  <p className="text-[16px] text-textprimary whitespace-pre-line mb-8 leading-relaxed break-words">
-                    {post.content}
-                  </p>
+                  {isEditingPost ? (
+                    <form onSubmit={handleEditPostSubmit} className="mb-8">
+                      <input 
+                        type="text" 
+                        value={editPostTitle}
+                        onChange={e => setEditPostTitle(e.target.value)}
+                        className="w-full p-3 border border-bordercol rounded-xl outline-none focus:border-primary text-[20px] font-bold mb-4 bg-card text-textprimary"
+                        placeholder="Post Title"
+                      />
+                      <textarea 
+                        rows="6" 
+                        value={editPostContent}
+                        onChange={e => setEditPostContent(e.target.value)}
+                        className="w-full p-3 border border-bordercol rounded-xl outline-none focus:border-primary text-[16px] mb-4 bg-card text-textprimary"
+                        placeholder="Post Content"
+                      ></textarea>
+                      <div className="flex gap-2">
+                        <button disabled={isSubmittingPostEdit} type="submit" className="px-6 py-2 bg-primary hover:bg-primary-hover text-white font-bold rounded-full shadow-sm disabled:opacity-50 min-w-[80px] flex justify-center">
+                          {isSubmittingPostEdit ? <CircularProgress size={16} color="inherit" /> : "Save"}
+                        </button>
+                        <button disabled={isSubmittingPostEdit} type="button" onClick={() => setIsEditingPost(false)} className="px-6 py-2 bg-pagebg hover:bg-bordercol/50 text-textsecondary font-bold rounded-full disabled:opacity-50">Cancel</button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <h1 className="text-[24px] md:text-[28px] font-bold text-textprimary mb-4 leading-snug">{post.title}</h1>
+                      <p className="text-[16px] text-textprimary whitespace-pre-line mb-8 leading-relaxed break-words">
+                        {post.content}
+                      </p>
+                    </>
+                  )}
                   
                   {/* Action Pills */}
                   <div className="flex flex-wrap items-center gap-3 text-sm font-bold text-textsecondary pt-4 border-t border-bordercol">
@@ -422,6 +488,18 @@ export default function ForumPostDetail() {
                         </div>
                       )}
                     </div>
+
+                    {/* Edit/Delete options for author */}
+                    {user && (post.user_id === user.id || post.user?.id === user.id) && !isEditingPost && (
+                      <>
+                        <div onClick={handleEditPostClick} className="flex items-center gap-2 bg-pagebg hover:bg-bordercol/50 px-4 py-2 rounded-full transition-colors cursor-pointer text-primary">
+                          <span>Edit</span>
+                        </div>
+                        <div onClick={handleDeletePost} className="flex items-center gap-2 bg-pagebg hover:bg-bordercol/50 px-4 py-2 rounded-full transition-colors cursor-pointer text-danger">
+                          <span>Delete</span>
+                        </div>
+                      </>
+                    )}
 
                   </div>
                 </div>
@@ -542,7 +620,7 @@ export default function ForumPostDetail() {
               <div className="h-16 bg-gradient-to-r from-primary to-blue-400"></div>
               <div className="p-5 relative">
                 <div className="w-16 h-16 rounded-2xl border-4 border-card -mt-12 bg-white flex items-center justify-center text-3xl shadow-sm mb-4 overflow-hidden">
-                  <img src="/img/travelCompanion/Desipath_Travelcompanion.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.target.style.display='none'; e.target.parentNode.innerText='D'; e.target.parentNode.className='w-16 h-16 rounded-2xl border-4 border-card -mt-12 bg-primary flex items-center justify-center text-3xl shadow-sm mb-4 text-white font-bold'; }} />
+                  <img src="/favicon-192x192.png" alt="DP" className="w-full h-full object-contain p-1" onError={(e) => { e.target.style.display='none'; e.target.parentNode.innerText='DP'; e.target.parentNode.className='w-16 h-16 rounded-2xl border-4 border-card -mt-12 bg-primary flex items-center justify-center text-xl shadow-sm mb-4 text-white font-bold'; }} />
                 </div>
                 <h3 className="text-lg font-bold text-textprimary mb-1">d/DesipathForum</h3>
                 <p className="text-sm text-textsecondary leading-relaxed mb-6">

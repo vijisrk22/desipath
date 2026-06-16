@@ -9,6 +9,37 @@ use Illuminate\Support\Facades\Auth;
 
 class BuySellItemController extends Controller
 {
+    public function stats()
+    {
+        $activeListings = BuySellItem::where('status', 'active')->count();
+        $newToday = BuySellItem::where('status', 'active')->whereDate('created_at', today())->count();
+        $verifiedSellers = BuySellItem::where('status', 'active')->distinct('user_id')->count('user_id');
+        $categories = BuySellItem::where('status', 'active')->distinct('category')->count('category');
+        
+        return response()->json([
+            'activeListings' => $activeListings,
+            'newToday' => $newToday,
+            'verifiedSellers' => $verifiedSellers,
+            'categories' => $categories
+        ]);
+    }
+
+    public function getMyAdCount(Request $request)
+    {
+        $count = BuySellItem::where('user_id', Auth::id())
+            ->where('status', 'active')
+            ->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function getMyListings(Request $request)
+    {
+        $items = BuySellItem::where('user_id', Auth::id())
+            ->latest()
+            ->get();
+        return response()->json($items);
+    }
+
     public function index(Request $request)
     {
         $query = BuySellItem::query()
@@ -161,6 +192,16 @@ class BuySellItemController extends Controller
             }
         }
         $item->pictures = $pictures;
+        $item->save();
+
+        return response()->json($item);
+    }
+
+    public function toggleStatus(Request $request, $id)
+    {
+        $item = BuySellItem::findOrFail($id);
+        $request->validate(['status' => 'required|string|in:active,inactive']);
+        $item->status = $request->status;
         $item->save();
 
         return response()->json($item);
