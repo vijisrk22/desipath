@@ -76,6 +76,7 @@ export default function KidsClassSubcategory() {
                         src={getFullImageUrl(cls.photoUrl)} 
                         alt={cls.instructorName} 
                         className="w-full h-full object-cover" 
+                        onError={(e) => { e.target.style.display='none'; e.target.parentNode.innerText='📸'; e.target.parentNode.classList.add('text-2xl'); }}
                       />
                     ) : (
                       <span className="text-2xl">📸</span>

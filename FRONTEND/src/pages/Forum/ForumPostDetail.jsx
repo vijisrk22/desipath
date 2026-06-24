@@ -435,6 +435,11 @@ export default function ForumPostDetail() {
                       <p className="text-[16px] text-textprimary whitespace-pre-line mb-8 leading-relaxed break-words">
                         {post.content}
                       </p>
+                      {post.image_url && (
+                        <div className="mb-8 rounded-xl overflow-hidden bg-pagebg border border-bordercol flex justify-center max-h-96">
+                          <img src={`${api.defaults.baseURL}/storage/${post.image_url}`} alt="Post attached" className="object-contain w-full h-full" />
+                        </div>
+                      )}
                     </>
                   )}
                   

@@ -53,10 +53,16 @@ class ForumController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'content' => 'nullable|string',
             'category' => 'nullable|string',
-            'location' => 'nullable|string'
+            'location' => 'nullable|string',
+            'image' => 'nullable|image|max:5120'
         ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('forum_images', 'public');
+        }
 
         $post = ForumPost::create([
             'user_id' => Auth::id(),
@@ -64,6 +70,7 @@ class ForumController extends Controller
             'content' => $request->content,
             'category' => $request->category,
             'location' => $request->location,
+            'image_url' => $imagePath,
         ]);
 
         return response()->json([
@@ -82,13 +89,20 @@ class ForumController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'content' => 'nullable|string',
+            'image' => 'nullable|image|max:5120'
         ]);
 
-        $post->update([
+        $updateData = [
             'title' => $request->title,
             'content' => $request->content,
-        ]);
+        ];
+
+        if ($request->hasFile('image')) {
+            $updateData['image_url'] = $request->file('image')->store('forum_images', 'public');
+        }
+
+        $post->update($updateData);
 
         return response()->json([
             'success' => true,

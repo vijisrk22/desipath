@@ -287,15 +287,25 @@ export default function ForumLanding() {
   };
 
   const handleCreatePost = (data) => {
-    if (!data.title || !data.content) return alert("Title and content are required");
+    if (!data.title) return alert("Title is required");
     
-    const finalData = {
-      ...data,
-      location: data.is_location_specific ? data.location : '',
-      location_tag: data.is_location_specific ? data.location_tag : ''
-    };
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('content', data.content);
+    formData.append('category', data.category);
+    
+    if (data.is_location_specific) {
+      formData.append('location', data.location || '');
+      formData.append('location_tag', data.location_tag || '');
+    }
 
-    api.post('/api/forum/posts', finalData)
+    if (data.image && data.image[0]) {
+      formData.append('image', data.image[0]);
+    }
+
+    api.post('/api/forum/posts', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
       .then(res => {
         if (res.data.success) {
           setIsPostModalOpen(false);
@@ -506,10 +516,19 @@ export default function ForumLanding() {
                   <textarea 
                     rows="5"
                     placeholder="Text (optional)"
-                    required
                     {...register("content")}
                     className="w-full p-3 bg-pagebg border border-bordercol rounded-xl font-medium text-sm text-textprimary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
                   ></textarea>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium text-textsecondary">Attach Image (optional)</label>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      {...register("image")}
+                      className="w-full p-2 bg-pagebg border border-bordercol rounded-xl font-medium text-sm text-textprimary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-hover cursor-pointer"
+                    />
+                  </div>
 
                   <div className="flex items-center justify-between p-3 bg-pagebg rounded-xl border border-bordercol">
                     <span className="text-sm font-medium text-textsecondary">Location specific?</span>

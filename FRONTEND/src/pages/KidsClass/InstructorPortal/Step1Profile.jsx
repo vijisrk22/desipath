@@ -192,80 +192,143 @@ export default function Step1Profile({ data, update, instructorId, setInstructor
           {errors.slug && <p className="text-xs text-red-500 font-medium">{errors.slug}</p>}
         </div>
 
+        {/* Has Physical Center & Country */}
+        <div className="col-span-1 md:col-span-2 space-y-4 pt-4 border-t border-gray-100 mt-4">
+          <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl">
+            <div>
+              <h4 className="font-bold text-gray-800">Do you have a physical learning center?</h4>
+              <p className="text-sm text-gray-500">Select Yes if you teach from a studio, office, or dedicated classroom.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => update({ hasPhysicalCenter: true })}
+                className={`px-4 py-2 rounded-lg font-bold transition-all ${data.hasPhysicalCenter === true ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => update({ hasPhysicalCenter: false, address: '', zipcode: '', city: '' })}
+                className={`px-4 py-2 rounded-lg font-bold transition-all ${data.hasPhysicalCenter === false ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+              >
+                No
+              </button>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="font-semibold text-gray-700">Country <span className="text-red-500">*</span></label>
+            <select 
+              value={data.country || ''}
+              onChange={(e) => update({ country: e.target.value, zipcode: '', city: '', address: '' })}
+              className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.country ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+            >
+              <option value="">Select a country...</option>
+              <option value="India">India</option>
+              <option value="Singapore">Singapore</option>
+              <option value="Dubai">Dubai</option>
+              <option value="Europe">Europe</option>
+              <option value="UK">UK</option>
+              <option value="USA">USA</option>
+            </select>
+            {errors.country && <p className="text-xs text-red-500 font-medium">{errors.country}</p>}
+          </div>
+        </div>
+
         {/* Location and Address */}
-        <div className="space-y-2">
-          <label className="font-semibold text-gray-700">
-            Location <span className="text-[11px] font-normal text-gray-400">(City,Zipcode,State)</span>
-          </label>
-          <div className="relative">
-            <input 
-              type="text" 
-              placeholder="e.g. Bridgewater, New Jersey, 08807"
-              value={data.zipcode || ''}
-              onChange={async (e) => {
-                const val = e.target.value;
-                update({ zipcode: val });
-                
-                if (val.length < 2) {
-                  setZipSuggestions([]);
-                  setShowZipDropdown(false);
-                  return;
-                }
-                
-                setIsZipLoading(true);
-                try {
-                  const res = await api.get(`/api/location/locations?filter=${val}`);
-                  const fetchedData = res.data?.value || (Array.isArray(res.data) ? res.data : []);
-                  setZipSuggestions(fetchedData);
-                  setShowZipDropdown(true);
-                } catch (err) {
-                  console.error(err);
-                } finally {
-                  setIsZipLoading(false);
-                }
-              }}
-              onBlur={() => setTimeout(() => setShowZipDropdown(false), 200)}
-              onFocus={() => {
-                if (zipSuggestions.length > 0) setShowZipDropdown(true);
-              }}
-              className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.zipcode ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-            />
-            {showZipDropdown && (isZipLoading || zipSuggestions.length > 0) && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                {isZipLoading ? (
-                  <div className="p-3 text-sm text-gray-500 text-center">Loading...</div>
-                ) : (
-                  zipSuggestions.map((loc, idx) => (
-                    <div 
-                      key={idx}
-                      className="p-3 hover:bg-gray-50 cursor-pointer text-sm text-gray-700 border-b last:border-b-0 border-gray-100"
-                      onClick={() => {
-                        update({ 
-                          zipcode: `${loc.city}, ${loc.state_name}, ${loc.zip}`
-                        });
+        {data.hasPhysicalCenter && data.country && (
+          <>
+            {data.country === 'USA' ? (
+              <div className="space-y-2">
+                <label className="font-semibold text-gray-700">
+                  Location <span className="text-[11px] font-normal text-gray-400">(City,Zipcode,State)</span> <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Bridgewater, New Jersey, 08807"
+                    value={data.zipcode || ''}
+                    onChange={async (e) => {
+                      const val = e.target.value;
+                      update({ zipcode: val });
+                      
+                      if (val.length < 2) {
+                        setZipSuggestions([]);
                         setShowZipDropdown(false);
-                      }}
-                    >
-                      {loc.city}, {loc.state_name}, {loc.zip}
+                        return;
+                      }
+                      
+                      setIsZipLoading(true);
+                      try {
+                        const res = await api.get(`/api/location/locations?filter=${val}`);
+                        const fetchedData = res.data?.value || (Array.isArray(res.data) ? res.data : []);
+                        setZipSuggestions(fetchedData);
+                        setShowZipDropdown(true);
+                      } catch (err) {
+                        console.error(err);
+                      } finally {
+                        setIsZipLoading(false);
+                      }
+                    }}
+                    onBlur={() => setTimeout(() => setShowZipDropdown(false), 200)}
+                    onFocus={() => {
+                      if (zipSuggestions.length > 0) setShowZipDropdown(true);
+                    }}
+                    className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.zipcode ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                  />
+                  {showZipDropdown && (isZipLoading || zipSuggestions.length > 0) && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                      {isZipLoading ? (
+                        <div className="p-3 text-sm text-gray-500 text-center">Loading...</div>
+                      ) : (
+                        zipSuggestions.map((loc, idx) => (
+                          <div 
+                            key={idx}
+                            className="p-3 hover:bg-gray-50 cursor-pointer text-sm text-gray-700 border-b last:border-b-0 border-gray-100"
+                            onClick={() => {
+                              update({ 
+                                zipcode: `${loc.city}, ${loc.state_name}, ${loc.zip}`
+                              });
+                              setShowZipDropdown(false);
+                            }}
+                          >
+                            {loc.city}, {loc.state_name}, {loc.zip}
+                          </div>
+                        ))
+                      )}
                     </div>
-                  ))
-                )}
+                  )}
+                </div>
+                {errors.zipcode && <p className="text-xs text-red-500 font-medium">{errors.zipcode}</p>}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <label className="font-semibold text-gray-700">City <span className="text-red-500">*</span></label>
+                <input 
+                  type="text" 
+                  placeholder="Enter city name..."
+                  value={data.city || ''}
+                  onChange={(e) => update({ city: e.target.value })}
+                  className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.city ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                />
+                {errors.city && <p className="text-xs text-red-500 font-medium">{errors.city}</p>}
               </div>
             )}
-          </div>
-          {errors.zipcode && <p className="text-xs text-red-500 font-medium">{errors.zipcode}</p>}
-        </div>
-        <div className="space-y-2">
-          <label className="font-semibold text-gray-700">Address</label>
-          <input 
-            type="text" 
-            placeholder="Street address, City, State..."
-            value={data.address || ''}
-            onChange={(e) => update({ address: e.target.value })}
-            className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.address ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-          />
-          {errors.address && <p className="text-xs text-red-500 font-medium">{errors.address}</p>}
-        </div>
+            
+            <div className="space-y-2">
+              <label className="font-semibold text-gray-700">Address</label>
+              <input 
+                type="text" 
+                placeholder="Street address, building, floor..."
+                value={data.address || ''}
+                onChange={(e) => update({ address: e.target.value })}
+                className={`w-full p-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.address ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+              />
+              {errors.address && <p className="text-xs text-red-500 font-medium">{errors.address}</p>}
+            </div>
+          </>
+        )}
 
       </div>
 

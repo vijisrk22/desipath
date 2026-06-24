@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class ForumPost extends Model
 {
-    protected $fillable = ['user_id', 'title', 'slug', 'content', 'category', 'votes', 'location', 'location_tag'];
+    protected $fillable = ['user_id', 'title', 'slug', 'content', 'category', 'votes', 'location', 'location_tag', 'image_url'];
 
     protected static function booted()
     {

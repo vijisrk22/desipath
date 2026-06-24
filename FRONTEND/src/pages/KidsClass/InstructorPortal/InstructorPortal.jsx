@@ -40,7 +40,9 @@ export default function InstructorPortal() {
       zipcode: '',
       address: '',
       email: '',
-      phone: ''
+      phone: '',
+      hasPhysicalCenter: false,
+      country: ''
     },
     // Step 2... 6
     classBasic: {},
@@ -80,7 +82,9 @@ export default function InstructorPortal() {
                 yearsExperience: instructor?.years_experience || '',
                 city: instructor?.city || '', state: instructor?.state || '', 
                 zipcode: instructor?.zipcode || '', address: instructor?.address || '',
-                email: instructor?.email || '', phone: instructor?.phone || ''
+                email: instructor?.email || '', phone: instructor?.phone || '',
+                hasPhysicalCenter: instructor?.has_physical_center || false,
+                country: instructor?.country || ''
               },
               classBasic: {
                 title: classBasic?.title || '', category: classBasic?.category || '', subcategory: classBasic?.subcategory || '',
@@ -160,6 +164,12 @@ export default function InstructorPortal() {
       if (!info.email?.trim()) errors.email = 'Email is required';
       else if (!/\S+@\S+\.\S+/.test(info.email)) errors.email = 'Invalid email format';
       if (!info.phone?.trim()) errors.phone = 'Phone Number is required';
+      
+      if (!info.country) errors.country = 'Country is required';
+      if (info.hasPhysicalCenter) {
+        if (info.country === 'USA' && !info.zipcode?.trim()) errors.zipcode = 'Location is required';
+        if (info.country !== 'USA' && !info.city?.trim()) errors.city = 'City is required';
+      }
       
       if (!info.slug?.trim()) {
         errors.slug = 'Profile Slug URL is required';
