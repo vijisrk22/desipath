@@ -1,12 +1,33 @@
 import React, { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, CircularProgress } from '@mui/material';
+import api from '../../utils/api';
+import { toast } from 'react-toastify';
 
 function SubscribeNewsletter() {
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('');
 
   const handleSubscribe = (e) => {
     e.preventDefault();
+    if (!email) return;
+    
     setLoading(true);
-    setTimeout(() => setLoading(false), 1500);
+    api.post('/api/newsletter/subscribe', { email })
+      .then(res => {
+        if (res.data.success) {
+          setDialogMessage(res.data.message);
+          setShowDialog(true);
+          setEmail('');
+        }
+      })
+      .catch(err => {
+        toast.error("Failed to subscribe. Please try again later.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -31,6 +52,8 @@ function SubscribeNewsletter() {
             <input
               type="email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent text-gray-900 text-[15px] font-medium font-dmsans outline-none placeholder:text-gray-400"
               placeholder="Enter your email address"
             />
@@ -49,6 +72,37 @@ function SubscribeNewsletter() {
           </button>
         </form>
       </div>
+
+      <Dialog 
+        open={showDialog} 
+        onClose={() => setShowDialog(false)}
+        PaperProps={{
+          style: { borderRadius: '16px', padding: '16px', maxWidth: '400px', textAlign: 'center' }
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 'bold', color: '#1565D8', pb: 1 }}>
+          <div className="flex justify-center mb-3">
+            <svg className="w-12 h-12 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          Thank You!
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: '#4B5563', lineHeight: 1.5 }}>
+            {dialogMessage || "Please check your email to confirm your subscription."}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', pt: 2 }}>
+          <Button 
+            onClick={() => setShowDialog(false)}
+            variant="contained"
+            sx={{ borderRadius: '24px', px: 4, textTransform: 'none', fontWeight: 'bold', backgroundColor: '#1565D8', '&:hover': { backgroundColor: '#104eab' } }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

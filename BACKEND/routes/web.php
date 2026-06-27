@@ -6,6 +6,7 @@ use App\Http\Controllers\BusinessUserController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\SignupController;
 use App\Http\Controllers\RoomMatesController;
+use App\Http\Controllers\NewsletterController;
 
 // Serve storage files FIRST (workaround for Windows symlink issues)
 // Match specific storage subdirectories
@@ -61,3 +62,5 @@ Route::get('/business-dashboard', [BusinessUserController::class, 'index'])->mid
 // });
 
 Route::get('/roommates', [RoomMatesController::class, 'start'])->name('room-share');
+
+Route::get('/newsletter/confirm/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm');

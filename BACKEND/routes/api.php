@@ -32,6 +32,7 @@ use App\Http\Controllers\AttorneyController;
 use App\Http\Controllers\BuySellItemController;
 use App\Http\Controllers\Api\CommunityRideController;
 use App\Http\Controllers\Api\FinancialAdvisorController;
+use App\Http\Controllers\NewsletterController;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -47,6 +48,8 @@ use Illuminate\Database\Schema\Blueprint;
 //         ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
 //         ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
 // })->where('any', '.*');
+
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe']);
 
 Route::post('/auth/google', [GoogleAuthController::class, 'login']);
 Route::post('/auth/googlecheck', [GoogleAuthController::class, 'googlecheck']);
