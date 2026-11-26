@@ -3,7 +3,7 @@ import {
   Box, Drawer, IconButton,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SignInUp from "./SignInUp";
 import Profile from "./Profile";
 
@@ -222,7 +222,8 @@ function DrawerComp({ navItems, setValue }) {
         >✕</button>
 
         {/* Mobile menu — only About Us & Contact */}
-        <div className="md:hidden flex flex-col items-center gap-2 pt-16 pb-8 px-6">
+        <div className="md:hidden flex flex-col items-center gap-2 pt-12 pb-8 px-6">
+          <Link to="/" onClick={() => setOpenDrawer(false)} className="mb-4"><img src="/desipath-logo.png" alt="Desipath" className="h-8 w-auto object-contain" /></Link>
           {mobileItems.map(item => {
             const isActive = item.path === currentPath;
             return (
@@ -278,3 +279,5 @@ function DrawerComp({ navItems, setValue }) {
 }
 
 export default DrawerComp;
+
+

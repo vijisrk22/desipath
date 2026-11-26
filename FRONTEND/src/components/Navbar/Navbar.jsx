@@ -22,9 +22,7 @@ function Navbar() {
   return (
     <nav className="flex flex-col relative z-50 bg-white w-full border-b border-gray-100">
       <div className="max-w-6xl mx-auto w-full px-[7%] lg:px-8 pt-4 pb-2 flex justify-between items-center">
-        <Link to="/" className="text-[#0857d0] text-lg sm:text-xl md:text-xl lg:text-2xl font-normal font-fredoka hover:cursor-pointer">
-          Desipath
-        </Link>
+        <Link to="/" className="flex items-center hover:opacity-90 transition-opacity"><img src="/desipath-logo.png" alt="Desipath" className="h-8 sm:h-9 md:h-10 w-auto object-contain" /></Link>
 
         <div className="md:flex gap-4 md:gap-8 hidden">
           {navItems.map((item, index) => {
@@ -66,3 +64,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

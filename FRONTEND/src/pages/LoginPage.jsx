@@ -83,7 +83,15 @@ function LoginPage() {
     return <Loader />;
   }
   return (
-    <div className="min-h-screen w-full bg-white md:bg-[#f8fafc] flex items-stretch md:items-center justify-center p-0 md:p-8 font-dmsans">
+    <div className="min-h-screen w-full bg-white md:bg-[#f8fafc] flex flex-col justify-between font-dmsans">
+      {/* Top Header */}
+      <header className="w-full max-w-6xl mx-auto px-6 py-4 sm:px-8 sm:py-6 flex items-center justify-between z-20">
+        <Link to="/" className="flex items-center hover:opacity-90 transition-opacity">
+          <img src="/desipath-logo.png" alt="Desipath" className="h-8 sm:h-9 md:h-10 w-auto object-contain" />
+        </Link>
+      </header>
+
+      <div className="flex-1 flex items-stretch md:items-center justify-center p-0 md:p-8">
       <div className="bg-white w-full max-w-[1000px] rounded-none md:rounded-3xl shadow-none md:shadow-2xl overflow-hidden flex flex-col md:flex-row border-none md:border md:border-gray-100 transform transition-all duration-500 hover:shadow-blue-100/50">
         
         {/* Visual/Branding Side (Preserving AuthPageLeft content) */}
@@ -93,9 +101,7 @@ function LoginPage() {
           <div className="absolute top-10 -right-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
           
           <div className="relative z-10">
-            <Link to="/" className="text-3xl font-normal font-fredoka tracking-tight">
-              Desipath
-            </Link>
+            <Link to="/" className="inline-block hover:opacity-95 transition-opacity"><img src="/desipath-logo-white.png" alt="Desipath" className="h-9 md:h-11 w-auto object-contain" /></Link>
           </div>
 
           <div className="relative z-10 mt-12 md:mt-0 hidden md:block">
@@ -141,7 +147,7 @@ function LoginPage() {
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                       className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-[#0857d0] focus:bg-white rounded-2xl text-center text-2xl font-bold tracking-[0.5em] text-gray-800 transition-all outline-none"
-                      placeholder="000000"
+                      placeholder="______"
                       required
                     />
                   </div>
@@ -248,9 +254,7 @@ function LoginPage() {
                         Remember me
                       </span>
                     </label>
-                    <Link to="#" className="text-sm font-bold text-[#0857d0] hover:text-[#0746a8] hover:underline transition-colors">
-                      Forgot password?
-                    </Link>
+                    <Link to="/forgot-password" className="text-sm font-bold text-[#0857d0] hover:text-[#0746a8] hover:underline transition-colors">Forgot password?</Link>
                   </div>
 
                   <button
@@ -283,7 +287,13 @@ function LoginPage() {
         </div>
       </div>
     </div>
+    </div>
   );
 }
 
 export default LoginPage;
+
+
+
+
+

@@ -13,6 +13,7 @@ const lazy = (componentImport) =>
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./Layout";
 import LoginPage from "./pages/LoginPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import RegisterPage from "./pages/RegisterPage";
 import LandingPage from "./pages/LandingPage";
 import ImmigrationNews from './pages/News/ImmigrationNews';
@@ -137,6 +138,7 @@ function App() {
           <Route path="/home" element={<Navigate to="/" replace />} />
           <Route index element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/postad" element={<PostAdPage />} />
           <Route path="/aboutus" element={<AboutUs />} />
@@ -394,3 +396,4 @@ function App() {
 }
 
 export default App;
+

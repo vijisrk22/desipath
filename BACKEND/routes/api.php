@@ -66,6 +66,9 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Check username availability (public, no auth required)
 Route::get('/check-username', function (Request $request) {
@@ -647,3 +650,5 @@ Route::middleware('auth:sanctum')->prefix('sm')->group(function () {
     Route::post('/interests/{id}/request-album', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'requestAlbum']);
     Route::post('/interests/{id}/toggle-album', [\App\Http\Controllers\API\SecureMatchInterestController::class, 'toggleAlbum']);
 });
+
+

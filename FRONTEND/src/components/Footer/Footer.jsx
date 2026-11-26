@@ -100,9 +100,14 @@ function Footer({ newsletter = "hidden", hideOnMobile = true }) {
 
           {/* Bottom Legal Bar */}
           <div className="w-full flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-[#E5E7EB]">
-            <p className="text-[14px] text-gray-500 font-medium font-dmsans text-center md:text-left">
-              © 2026 Desipath. All rights reserved.
-            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <Link to="/" className="hover:opacity-90 transition-opacity">
+                <img src="/desipath-logo.png" alt="Desipath" className="h-7 w-auto object-contain" />
+              </Link>
+              <p className="text-[14px] text-gray-500 font-medium font-dmsans text-center md:text-left">
+                © 2026 Desipath. All rights reserved.
+              </p>
+            </div>
             <div className="flex items-center gap-2 sm:gap-4 text-[14px] text-gray-500 font-medium font-dmsans flex-wrap justify-center">
               <Link to="/terms" className="hover:text-[#1565D8] hover:underline transition-colors">Terms of Service</Link>
               <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-gray-300"></span>
@@ -119,3 +124,4 @@ function Footer({ newsletter = "hidden", hideOnMobile = true }) {
 }
 
 export default Footer;
+

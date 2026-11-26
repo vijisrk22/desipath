@@ -28,6 +28,9 @@
 </head>
 <body>
     <div class="container">
+        <div style="margin-bottom: 24px;">
+            <img src="https://qa.desipath.com/desipath-logo.png" alt="Desipath" style="height: 36px; width: auto;" />
+        </div>
         <h1>Verify Your Email</h1>
         <p>Thank you for joining Desipath! Use the following code to activate your account:</p>
         <div class="otp-box">
@@ -41,3 +44,4 @@
     </div>
 </body>
 </html>
+

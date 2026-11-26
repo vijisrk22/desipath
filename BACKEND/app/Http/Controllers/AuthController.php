@@ -8,6 +8,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OTPMail;
+use App\Mail\PasswordResetMail;
+use App\Mail\PasswordChangedMail;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AuthController extends Controller
 {
@@ -252,5 +256,228 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'user' => $user
         ]);
+    }
+
+
+    public function forgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ], [
+            'email.required' => 'Enter a valid email address.',
+            'email.email' => 'Enter a valid email address.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Enter a valid email address.',
+            ], 422);
+        }
+
+        $email = strtolower(trim($request->email));
+
+        // Enforce rate limiting by IP
+        $ipKey = 'pwd_req_ip:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($ipKey, 20)) {
+            return response()->json([
+                'message' => 'Too many attempts. Please wait and try again.',
+            ], 429);
+        }
+        RateLimiter::hit($ipKey, 60);
+
+        // Enforce 60-second cooldown per email
+        $cooldownKey = 'pwd_cooldown:' . sha1($email);
+        if (Cache::has($cooldownKey)) {
+            $retryAfter = max(1, (int)Cache::get($cooldownKey . '_expires') - now()->timestamp);
+            return response()->json([
+                'message' => 'Too many attempts. Please wait and try again.',
+                'retry_after' => $retryAfter,
+            ], 429);
+        }
+
+        // Set 60-second resend cooldown for this email regardless of registration status
+        Cache::put($cooldownKey, true, 60);
+        Cache::put($cooldownKey . '_expires', now()->addSeconds(60)->timestamp, 60);
+
+        $user = User::where('email', $email)->first();
+
+        if ($user && $user->status !== 'Blocked') {
+            // Cryptographically secure 6-digit code
+            $code = sprintf('%06d', random_int(0, 999999));
+            $digest = hash_hmac('sha256', $code, config('app.key'));
+
+            // Invalidate previous code for that email
+            $codeKey = 'pwd_code:' . sha1($email);
+            Cache::forget($codeKey);
+
+            // Store keyed digest, single-use, 10-minute expiration, 5 attempts max
+            Cache::put($codeKey, [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'digest' => $digest,
+                'attempts' => 0,
+                'expires_at' => now()->addMinutes(10)->timestamp,
+            ], 600);
+
+            // Dispatch email delivery
+            try {
+                Mail::to($user->email)->send(new PasswordResetMail($code));
+            } catch (\Throwable $e) {
+                \Log::error('Password reset email delivery failure: ' . $e->getMessage());
+            }
+        } else {
+            // Equalize response timing for unregistered addresses to prevent timing attacks
+            hash_hmac('sha256', '000000', config('app.key'));
+            usleep(random_int(120000, 200000));
+        }
+
+        // Neutral confirmation response identical across registered and unregistered addresses
+        return response()->json([
+            'message' => "If a DesiPath account exists for that email address, we’ll send you a 6-digit reset code. Check your spam folder if it doesn’t arrive.",
+        ], 200);
+    }
+
+    public function verifyResetCode(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'code' => 'required|string|size:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'This code is invalid or has expired. Try again or request a new code.',
+            ], 400);
+        }
+
+        $email = strtolower(trim($request->email));
+        $codeKey = 'pwd_code:' . sha1($email);
+
+        $record = Cache::get($codeKey);
+
+        if (!$record) {
+            return response()->json([
+                'message' => 'This code is invalid or has expired. Try again or request a new code.',
+            ], 400);
+        }
+
+        // Check attempt limit (5 attempts max)
+        if (($record['attempts'] ?? 0) >= 5) {
+            Cache::forget($codeKey);
+            return response()->json([
+                'message' => 'Too many attempts. Please wait and try again.',
+            ], 429);
+        }
+
+        // Check expiration (10 minutes)
+        if (now()->timestamp > ($record['expires_at'] ?? 0)) {
+            Cache::forget($codeKey);
+            return response()->json([
+                'message' => 'This code is invalid or has expired. Try again or request a new code.',
+            ], 400);
+        }
+
+        // Verify digest constant-time
+        $expectedDigest = $record['digest'] ?? '';
+        $providedDigest = hash_hmac('sha256', $request->code, config('app.key'));
+
+        if (!hash_equals($expectedDigest, $providedDigest)) {
+            $record['attempts'] = ($record['attempts'] ?? 0) + 1;
+            if ($record['attempts'] >= 5) {
+                Cache::forget($codeKey);
+                return response()->json([
+                    'message' => 'Too many attempts. Please wait and try again.',
+                ], 429);
+            }
+            $remainingTtl = max(1, $record['expires_at'] - now()->timestamp);
+            Cache::put($codeKey, $record, $remainingTtl);
+
+            return response()->json([
+                'message' => 'This code is invalid or has expired. Try again or request a new code.',
+            ], 400);
+        }
+
+        // Code is valid: atomically consume it (single-use)
+        Cache::forget($codeKey);
+
+        // Issue short-lived authorization token scoped to setting a new password (15 minutes)
+        $resetToken = bin2hex(random_bytes(32));
+        Cache::put('pwd_auth:' . $resetToken, [
+            'user_id' => $record['user_id'],
+            'email' => $record['email'],
+            'expires_at' => now()->addMinutes(15)->timestamp,
+        ], 900);
+
+        return response()->json([
+            'message' => 'Code verified successfully.',
+            'reset_token' => $resetToken,
+        ], 200);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'reset_token' => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'password.confirmed' => 'The passwords don’t match.',
+            'password.min' => 'Password must be at least 6 characters.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $authKey = 'pwd_auth:' . $request->reset_token;
+        $authData = Cache::get($authKey);
+
+        if (!$authData || now()->timestamp > ($authData['expires_at'] ?? 0)) {
+            return response()->json([
+                'message' => 'Your reset session has expired. Request a new code.',
+            ], 400);
+        }
+
+        // Invalidate authorization token immediately (single use)
+        Cache::forget($authKey);
+
+        $user = User::find($authData['user_id']);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Your reset session has expired. Request a new code.',
+            ], 400);
+        }
+
+        // Update password, activate account & clear OTP
+        $user->update([
+            'password' => Hash::make($request->password),
+            'status' => 'Active',
+            'email_verified_at' => $user->email_verified_at ?? now(),
+            'otp' => null,
+            'otp_expires_at' => null,
+        ]);
+
+        // Invalidate outstanding sessions and tokens
+        try {
+            $user->tokens()->delete();
+        } catch (\Throwable $e) {
+            // Ignore if tokens table not populated
+        }
+
+        // Invalidate outstanding reset codes
+        Cache::forget('pwd_code:' . sha1($user->email));
+
+        // Send password change notification
+        try {
+            Mail::to($user->email)->send(new PasswordChangedMail());
+        } catch (\Throwable $e) {
+            \Log::error('Failed to send password changed notification: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'message' => 'Password updated successfully.',
+        ], 200);
     }
 }
