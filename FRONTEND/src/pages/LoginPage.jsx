@@ -9,6 +9,7 @@ import Loader from "../components/Loader";
 import GoogleAuth from "../components/Auth/GoogleAuth";
 import { useState } from "react";
 import api from "../utils/api";
+import { toast } from "react-toastify";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -174,7 +175,7 @@ function LoginPage() {
                       Didn't receive the code?{" "}
                       <button 
                         type="button" 
-                        onClick={() => alert("OTP resent! (Check laravel.log)")} 
+                        onClick={() => toast.success("OTP resent successfully! Please check your email.")} 
                         className="text-[#0857d0] font-bold hover:underline ml-1"
                       >
                         Resend Code

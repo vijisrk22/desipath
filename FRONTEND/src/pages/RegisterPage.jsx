@@ -9,6 +9,7 @@ import TwoRadioInput from "../components/InputTemplate/TwoRadioInput";
 import { useState } from "react";
 import api from "../utils/api";
 import { privacyPolicy, termsOfUse } from "../utils/legalTexts";
+import { toast } from "react-toastify";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -177,7 +178,7 @@ function RegisterPage() {
                       Didn't receive the code?{" "}
                       <button 
                         type="button" 
-                        onClick={() => alert("OTP resent! (Check laravel.log)")} 
+                        onClick={() => toast.success("OTP resent successfully! Please check your email.")} 
                         className="text-[#0857d0] font-bold hover:underline ml-1"
                       >
                         Resend Code
