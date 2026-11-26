@@ -208,7 +208,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col justify-between items-center p-4 sm:p-6 lg:p-8">`r`n      {/* Top Header with Logo */}`r`n      <header className="w-full max-w-4xl mx-auto pb-4 flex items-center justify-between z-20">`r`n        <Link to="/" className="flex items-center hover:opacity-90 transition-opacity">`r`n          <img src="/desipath-logo.png" alt="Desipath" className="h-8 sm:h-9 md:h-10 w-auto object-contain" />`r`n        </Link>`r`n      </header>
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8">
       
       {/* Container Card */}
       <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden flex flex-col md:flex-row min-h-[540px]">

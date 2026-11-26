@@ -134,24 +134,9 @@ function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] flex flex-col justify-between font-dmsans text-gray-900">
-      {/* Top Header */}
-      <header className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 flex items-center justify-start z-20">
-        <Link
-          to="/"
-          className="flex items-center hover:opacity-90 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0857D0] rounded-lg"
-        >
-          <img
-            src="/desipath-logo.png"
-            alt="Desipath"
-            className="h-8 sm:h-9 md:h-10 w-auto object-contain"
-          />
-        </Link>
-      </header>
-
+    <div className="min-h-screen w-full bg-[#f8fafc] flex flex-col justify-center items-center font-dmsans text-gray-900 p-4 sm:p-6 md:p-8">
       {/* Main Two-Panel Card Container */}
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8">
-        <div className="bg-white w-full max-w-[1020px] rounded-2xl md:rounded-3xl shadow-xl border border-gray-100 overflow-hidden flex flex-col md:flex-row transition-all duration-300">
+      <div className="w-full max-w-[1020px] rounded-2xl md:rounded-3xl shadow-xl border border-gray-100 overflow-hidden flex flex-col md:flex-row transition-all duration-300">
           
           {/* Brand Panel: on mobile renders below form (order-2), on desktop renders left (md:order-1) */}
           <div className="w-full md:w-5/12 order-2 md:order-1 bg-gradient-to-br from-[#0857D0] to-[#043382] p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden">
@@ -667,7 +652,6 @@ function RegisterPage() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Legal Modal Dialog */}
       {legalModal.open && (

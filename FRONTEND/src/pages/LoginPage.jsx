@@ -83,14 +83,7 @@ function LoginPage() {
     return <Loader />;
   }
   return (
-    <div className="min-h-screen w-full bg-white md:bg-[#f8fafc] flex flex-col justify-between font-dmsans">
-      {/* Top Header */}
-      <header className="w-full max-w-6xl mx-auto px-6 py-4 sm:px-8 sm:py-6 flex items-center justify-between z-20">
-        <Link to="/" className="flex items-center hover:opacity-90 transition-opacity">
-          <img src="/desipath-logo.png" alt="Desipath" className="h-8 sm:h-9 md:h-10 w-auto object-contain" />
-        </Link>
-      </header>
-
+    <div className="min-h-screen w-full bg-white md:bg-[#f8fafc] flex flex-col justify-center items-center font-dmsans">
       <div className="flex-1 flex items-stretch md:items-center justify-center p-0 md:p-8">
       <div className="bg-white w-full max-w-[1000px] rounded-none md:rounded-3xl shadow-none md:shadow-2xl overflow-hidden flex flex-col md:flex-row border-none md:border md:border-gray-100 transform transition-all duration-500 hover:shadow-blue-100/50">
         
