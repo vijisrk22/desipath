@@ -36,13 +36,13 @@ const TravelCompanionLanding = () => {
       
       {/* SECTION 2: HERO SECTION */}
       <section className="relative pt-4 sm:pt-8 md:pt-16 pb-14 sm:pb-16 md:pb-28 px-4 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          {/* Subtle gradient overlay to keep background image fully visible while ensuring text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/55 z-10" />
+        <div className="absolute inset-0 z-0 bg-slate-950">
+          {/* Dull tinted overlay to ensure text is crystal clear on mobile and desktop */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/60 to-black/85 z-10" />
           <img 
             src="/img/travelCompanion/Desipath_Travelcompanion.png" 
             alt="Friendly volunteers helping travelers at airport" 
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-center filter brightness-[0.42] contrast-[0.92] saturate-[0.75]"
           />
         </div>
         
