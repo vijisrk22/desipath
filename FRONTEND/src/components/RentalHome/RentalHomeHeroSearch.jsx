@@ -7,18 +7,21 @@ import LocationSelectorModal from "../LocationSelectorModal";
 
 function RentalHomeHeroSearch({ location }) {
   const dispatch = useDispatch();
-  const { control, setValue, watch, handleSubmit } = useForm();
+  const { setValue, watch, handleSubmit } = useForm();
 
   const [priceMax, setPriceMax] = useState("Any");
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResultCount, setSearchResultCount] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false);
   const selectedLocation = watch("location");
 
   useEffect(() => {
     const savedLocation = localStorage.getItem('user_location');
     if (savedLocation) {
       setValue("location", savedLocation);
-      triggerSearch(savedLocation, priceMax, selectedTypes);
+      triggerSearch(savedLocation, priceMax, selectedTypes, false);
     } else {
       setIsModalOpen(true);
     }
@@ -35,18 +38,19 @@ function RentalHomeHeroSearch({ location }) {
     setValue('location', loc);
     localStorage.setItem('user_location', loc);
     setIsModalOpen(false);
-    triggerSearch(loc, priceMax, selectedTypes);
+    triggerSearch(loc, priceMax, selectedTypes, true);
   };
 
   const propertyTypes = ["Condominium", "Single Family", "Apartment", "Basement"];
 
   const toggleType = (type) => {
-    setSelectedTypes(prev => 
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
-    );
+    setSelectedTypes(prev => {
+      const updated = prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type];
+      return updated;
+    });
   };
 
-  const triggerSearch = (locationInput, priceMaxInput, typesInput) => {
+  const triggerSearch = async (locationInput, priceMaxInput, typesInput, shouldScroll = true) => {
     const loc = locationInput || "";
     const parts = loc.split(",").map(s => s.trim());
     let city = "", state = "", zipcode = "";
@@ -58,7 +62,6 @@ function RentalHomeHeroSearch({ location }) {
       if (/^\d{5}(-\d{4})?$/.test(potentialZip) || parts.length === 3) {
         zipcode = parts[2];
       } else {
-        // e.g. Princeton, NJ, 08540, USA -> zipcode is parts[2]
         zipcode = parts[2].split(" ")[0];
       }
     } else if (parts.length === 2) {
@@ -84,7 +87,9 @@ function RentalHomeHeroSearch({ location }) {
       }
     }
 
-    const priceMaxVal = priceMax === "Any" ? 15000 : parseInt(priceMax);
+    const priceEffective = priceMaxInput !== undefined ? priceMaxInput : priceMax;
+    const priceMaxVal = priceEffective === "Any" ? 15000 : parseInt(priceEffective);
+    const typesEffective = typesInput !== undefined ? typesInput : selectedTypes;
 
     const searchQuery = {
       city,
@@ -92,18 +97,52 @@ function RentalHomeHeroSearch({ location }) {
       zipcode,
       priceMin: 0,
       priceMax: priceMaxVal,
-      rentalHomeType: selectedTypes,
+      rentalHomeType: typesEffective,
     };
 
-    dispatch(searchRentalHome({ searchQuery }));
+    try {
+      const resultAction = await dispatch(searchRentalHome({ searchQuery }));
+      const payload = resultAction?.payload;
+      const isArray = Array.isArray(payload);
+      const total = payload?.total !== undefined
+        ? payload.total
+        : (isArray ? payload.length : (payload?.data ? payload.data.length : 0));
+
+      setSearchResultCount(total);
+      setHasSearched(true);
+
+      // Scroll down to results section if search results are greater than or equal to 1
+      if (shouldScroll && total >= 1) {
+        setTimeout(() => {
+          const resultsElement = document.getElementById("rental-results");
+          if (resultsElement) {
+            const navbarOffset = -70;
+            const elementPosition = resultsElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset + navbarOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: "smooth"
+            });
+            resultsElement.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 150);
+      }
+      return total;
+    } catch (err) {
+      console.error("Search failed:", err);
+      return 0;
+    }
   };
 
-  const onSubmit = (data) => {
-    triggerSearch(data.location, priceMax, selectedTypes);
+  const onSubmit = async (data) => {
+    setIsSearching(true);
+    await triggerSearch(data.location, priceMax, selectedTypes, true);
+    setIsSearching(false);
   };
 
   return (
-    <div className="relative w-full h-auto min-h-[350px] py-12 md:py-0 md:h-[360px] bg-gradient-to-b from-blue-900 to-blue-950 flex items-center justify-center">
+    <div className="relative w-full h-auto min-h-[350px] py-12 md:py-0 md:h-[380px] bg-gradient-to-b from-blue-900 to-blue-950 flex items-center justify-center">
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-overlay"
@@ -175,21 +214,66 @@ function RentalHomeHeroSearch({ location }) {
           </div>
 
           <button 
+            type="button"
+            disabled={isSearching}
             onClick={handleSubmit(onSubmit)}
-            className="w-full md:w-auto bg-[#1565D8] hover:bg-[#1152b3] text-white px-8 py-3.5 rounded-xl md:rounded-full font-bold font-dmsans transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group whitespace-nowrap ml-auto"
+            className="w-full md:w-auto bg-[#1565D8] hover:bg-[#1152b3] disabled:bg-blue-400 text-white px-8 py-3.5 rounded-xl md:rounded-full font-bold font-dmsans transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group whitespace-nowrap ml-auto cursor-pointer"
           >
-            <SearchIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            Search Rentals
+            {isSearching ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Searching…
+              </span>
+            ) : (
+              <>
+                <SearchIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                Search Rentals
+              </>
+            )}
           </button>
         </div>
 
+        {/* Total Results Feedback Banner */}
+        {hasSearched && searchResultCount !== null && (
+          <div className="mt-4 animate-fade-in inline-flex items-center gap-2 px-5 py-2 bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-white/60 text-sm font-semibold font-dmsans text-gray-800">
+            {searchResultCount >= 1 ? (
+              <>
+                <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="text-[#0857D0] font-bold">
+                  {searchResultCount} {searchResultCount === 1 ? 'Result Found' : 'Results Found'}
+                </span>
+                <span className="text-gray-400 text-xs font-normal">•</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById("rental-results");
+                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  className="text-gray-600 hover:text-[#0857D0] text-xs font-medium underline cursor-pointer"
+                >
+                  View below ↓
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                <span className="text-gray-700">0 Results Found — try adjusting your location or filters</span>
+              </>
+            )}
+          </div>
+        )}
+
         {/* Property Type Filter Chips */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mt-8 w-full max-w-4xl">
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-6 w-full max-w-4xl">
           {propertyTypes.map(type => (
             <button
               key={type}
+              type="button"
               onClick={() => toggleType(type)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold font-dmsans transition-all duration-300 border backdrop-blur-sm shadow-sm hover:-translate-y-0.5 ${
+              className={`px-4 py-2 rounded-full text-sm font-semibold font-dmsans transition-all duration-300 border backdrop-blur-sm shadow-sm hover:-translate-y-0.5 cursor-pointer ${
                 selectedTypes.includes(type)
                   ? "bg-[#1565D8] border-[#1565D8] text-white shadow-md"
                   : "bg-white/95 border-transparent text-gray-700 hover:bg-white"

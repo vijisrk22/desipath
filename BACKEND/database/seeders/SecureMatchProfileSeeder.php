@@ -54,6 +54,14 @@ class SecureMatchProfileSeeder extends Seeder
                 'contact_phone' => $faker->phoneNumber,
                 'contact_email' => $faker->safeEmail,
                 'created_by_relative' => $faker->boolean(20),
+                'ref1_name' => $faker->name,
+                'ref1_location' => $faker->city . ', ' . $faker->stateAbbr,
+                'ref1_profession' => $faker->randomElement($professions),
+                'ref1_contact_number' => $faker->phoneNumber,
+                'ref2_name' => $faker->name,
+                'ref2_location' => $faker->city . ', ' . $faker->stateAbbr,
+                'ref2_profession' => $faker->randomElement($professions),
+                'ref2_contact_number' => $faker->phoneNumber,
                 'status' => 'active',
                 'trust_score' => $faker->numberBetween(70, 100),
             ]);
@@ -73,14 +81,14 @@ class SecureMatchProfileSeeder extends Seeder
 
             // Optional: Add some secondary album photos
             for ($i = 1; $i <= $faker->numberBetween(1, 3); $i++) {
-                $albumPhotoIndex = $faker->numberBetween(1, 99);
-                $albumPhotoUrl = $isMale 
-                    ? "https://randomuser.me/api/portraits/men/{$albumPhotoIndex}.jpg"
-                    : "https://randomuser.me/api/portraits/women/{$albumPhotoIndex}.jpg";
+                $secondaryIndex = $faker->numberBetween(1, 99);
+                $secondaryUrl = $isMale 
+                    ? "https://randomuser.me/api/portraits/men/{$secondaryIndex}.jpg"
+                    : "https://randomuser.me/api/portraits/women/{$secondaryIndex}.jpg";
 
                 SecureMatchPhoto::create([
                     'profile_id' => $profile->id,
-                    'photo_url' => $albumPhotoUrl,
+                    'photo_url' => $secondaryUrl,
                     'is_primary' => false,
                     'order_index' => $i
                 ]);
@@ -89,6 +97,6 @@ class SecureMatchProfileSeeder extends Seeder
             $count++;
         }
 
-        $this->command->info("Successfully seeded {$count} SecureMatch profiles with realistic data and photos!");
+        $this->command->info("Seeded {$count} secure match profiles.");
     }
 }

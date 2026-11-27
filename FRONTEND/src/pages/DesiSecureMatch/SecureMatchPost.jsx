@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
-import { FiShield, FiUpload, FiX } from 'react-icons/fi';
+import { FiShield, FiUpload, FiX, FiUserCheck } from 'react-icons/fi';
 import DisplayPath from '../../components/DisplayPath';
 import api from '../../utils/api';
 import { toast } from 'react-toastify';
@@ -30,6 +30,14 @@ export default function SecureMatchPost() {
     food_preference: 'No Preference',
     linkedin_url: '',
     created_by_relative: 'No',
+    ref1_name: '',
+    ref1_location: '',
+    ref1_profession: '',
+    ref1_contact_number: '',
+    ref2_name: '',
+    ref2_location: '',
+    ref2_profession: '',
+    ref2_contact_number: '',
   });
   const [profilePic, setProfilePic] = useState(null);
   const [albumPhotos, setAlbumPhotos] = useState(null);
@@ -63,6 +71,14 @@ export default function SecureMatchPost() {
             food_preference: res.data.food_preference || 'No Preference',
             linkedin_url: res.data.linkedin_url || '',
             created_by_relative: res.data.created_by_relative ? 'Yes' : 'No',
+            ref1_name: res.data.ref1_name || '',
+            ref1_location: res.data.ref1_location || '',
+            ref1_profession: res.data.ref1_profession || '',
+            ref1_contact_number: res.data.ref1_contact_number || '',
+            ref2_name: res.data.ref2_name || '',
+            ref2_location: res.data.ref2_location || '',
+            ref2_profession: res.data.ref2_profession || '',
+            ref2_contact_number: res.data.ref2_contact_number || '',
           });
           
           if (res.data.photos && res.data.photos.length > 0) {
@@ -291,6 +307,131 @@ export default function SecureMatchPost() {
                 </div>
               </div>
               <textarea name="family_details" value={formData.family_details} onChange={handleChange} rows="3" className="w-full p-3 border rounded-lg bg-gray-50" placeholder="Details about your family background..."></textarea>
+            </div>
+
+            {/* 2 References Section */}
+            <div className="border-t pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <FiUserCheck className="text-indigo-600" /> References (2 Required)
+                </h2>
+                <span className="text-xs bg-indigo-50 text-indigo-700 font-semibold px-3 py-1 rounded-full border border-indigo-200">
+                  Shared in Step 1
+                </span>
+              </div>
+              <p className="text-sm text-gray-500 mb-6">
+                Please provide details for 2 references (friends, colleagues, or family acquaintances) for verification and trust.
+              </p>
+
+              <div className="space-y-6">
+                {/* Reference 1 */}
+                <div className="bg-gray-50/70 p-5 rounded-2xl border border-gray-200">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">1</span>
+                    <h3 className="text-base font-bold text-gray-900">Reference 1</h3>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Reference 1 Name</label>
+                      <input 
+                        type="text" 
+                        name="ref1_name" 
+                        value={formData.ref1_name} 
+                        onChange={handleChange} 
+                        className="w-full p-3 border rounded-lg bg-white" 
+                        placeholder="e.g. Ramesh Sharma" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                      <input 
+                        type="text" 
+                        name="ref1_location" 
+                        value={formData.ref1_location} 
+                        onChange={handleChange} 
+                        className="w-full p-3 border rounded-lg bg-white" 
+                        placeholder="e.g. Edison, NJ" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
+                      <input 
+                        type="text" 
+                        name="ref1_profession" 
+                        value={formData.ref1_profession} 
+                        onChange={handleChange} 
+                        className="w-full p-3 border rounded-lg bg-white" 
+                        placeholder="e.g. Senior Software Engineer" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                      <input 
+                        type="tel" 
+                        name="ref1_contact_number" 
+                        value={formData.ref1_contact_number} 
+                        onChange={handleChange} 
+                        className="w-full p-3 border rounded-lg bg-white" 
+                        placeholder="e.g. +1 (555) 234-5678" 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reference 2 */}
+                <div className="bg-gray-50/70 p-5 rounded-2xl border border-gray-200">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">2</span>
+                    <h3 className="text-base font-bold text-gray-900">Reference 2</h3>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Reference 2 Name</label>
+                      <input 
+                        type="text" 
+                        name="ref2_name" 
+                        value={formData.ref2_name} 
+                        onChange={handleChange} 
+                        className="w-full p-3 border rounded-lg bg-white" 
+                        placeholder="e.g. Priya Patel" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                      <input 
+                        type="text" 
+                        name="ref2_location" 
+                        value={formData.ref2_location} 
+                        onChange={handleChange} 
+                        className="w-full p-3 border rounded-lg bg-white" 
+                        placeholder="e.g. Dallas, TX" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
+                      <input 
+                        type="text" 
+                        name="ref2_profession" 
+                        value={formData.ref2_profession} 
+                        onChange={handleChange} 
+                        className="w-full p-3 border rounded-lg bg-white" 
+                        placeholder="e.g. Physician / Director" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                      <input 
+                        type="tel" 
+                        name="ref2_contact_number" 
+                        value={formData.ref2_contact_number} 
+                        onChange={handleChange} 
+                        className="w-full p-3 border rounded-lg bg-white" 
+                        placeholder="e.g. +1 (555) 987-6543" 
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="border-t pt-6">

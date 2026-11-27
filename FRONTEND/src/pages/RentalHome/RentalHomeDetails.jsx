@@ -14,6 +14,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Menu, MenuItem } from "@mui/material";
 
 import ImageScroller from "../../components/ImageScroller";
+import FullScreenImageViewer from "../../components/FullScreenImageViewer";
 import { getFullImageUrl } from "../../utils/imageHelper";
 
 function RentalHomeDetails() {
@@ -48,6 +49,7 @@ function RentalHomeDetails() {
   const [openContact, setOpenContact] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [showPhotos, setShowPhotos] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   // Fetch rental home details when the component mounts
   useEffect(() => {
@@ -172,57 +174,55 @@ function RentalHomeDetails() {
         {/* Desktop Photo Mosaic */}
         {imgs.length > 0 && imgs[0] !== "/img/placeholder_property.jpg" && (
           <div className="hidden lg:grid grid-cols-4 grid-rows-2 gap-2 h-[500px] mt-4 mb-10 rounded-2xl overflow-hidden relative">
-            <div className="col-span-3 row-span-2 relative cursor-pointer overflow-hidden group" onClick={() => setShowPhotos(true)}>
+            <div 
+              className="col-span-3 row-span-2 relative cursor-pointer overflow-hidden group" 
+              onClick={() => { setPhotoIndex(0); setShowPhotos(true); }}
+            >
               <img src={getFullImageUrl(imgs[0])} alt="Main" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             </div>
             {imgs.length > 1 ? (
-              <div className="col-span-1 row-span-1 relative cursor-pointer overflow-hidden group" onClick={() => setShowPhotos(true)}>
+              <div 
+                className="col-span-1 row-span-1 relative cursor-pointer overflow-hidden group" 
+                onClick={() => { setPhotoIndex(1); setShowPhotos(true); }}
+              >
                 <img src={getFullImageUrl(imgs[1])} alt="Sub 1" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
             ) : (
               <div className="col-span-1 row-span-1 bg-gray-100" />
             )}
             {imgs.length > 2 ? (
-              <div className="col-span-1 row-span-1 relative cursor-pointer overflow-hidden group" onClick={() => setShowPhotos(true)}>
+              <div 
+                className="col-span-1 row-span-1 relative cursor-pointer overflow-hidden group" 
+                onClick={() => { setPhotoIndex(2); setShowPhotos(true); }}
+              >
                 <img src={getFullImageUrl(imgs[2])} alt="Sub 2" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
             ) : (
               <div className="col-span-1 row-span-1 bg-gray-100" />
             )}
             {/* View All Photos Button */}
-            <button onClick={() => setShowPhotos(true)} className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-6 py-2 rounded-full font-bold shadow-md hover:bg-white transition-colors border border-gray-200 z-10">
+            <button 
+              onClick={() => { setPhotoIndex(0); setShowPhotos(true); }} 
+              className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-6 py-2 rounded-full font-bold shadow-md hover:bg-white transition-colors border border-gray-200 z-10 cursor-pointer"
+            >
               View all {imgs.length} photos
             </button>
           </div>
         )}
 
         {/* Full Screen Photo Viewer Modal */}
-        <Dialog 
-          open={showPhotos} 
-          onClose={() => setShowPhotos(false)} 
-          maxWidth="lg" 
-          fullWidth
-          PaperProps={{ sx: { height: '80vh', borderRadius: 3, overflow: 'hidden', backgroundColor: 'black' } }}
-        >
-          <div className="relative w-full h-full flex flex-col bg-black">
-            <div className="absolute top-4 right-4 z-50">
-               <button onClick={() => setShowPhotos(false)} className="bg-black/50 text-white rounded-full p-2 hover:bg-black/80 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-               </button>
-            </div>
-            <div className="w-full h-full p-4">
-               <ImageScroller images={imgs.map(img => getFullImageUrl(img))} autoAdvance={false} />
-            </div>
-          </div>
-        </Dialog>
+        <FullScreenImageViewer
+          isOpen={showPhotos}
+          images={imgs.map((img) => getFullImageUrl(img))}
+          initialIndex={photoIndex}
+          onClose={() => setShowPhotos(false)}
+        />
 
         {/* Mobile/Tablet Photo Scroller */}
         {imgs.length > 0 && imgs[0] !== "/img/placeholder_property.jpg" && (
           <div className="lg:hidden aspect-[4/3] md:aspect-[16/9] max-h-[400px] my-5 flex justify-center items-center shadow-sm rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
             <div className="w-full h-full">
-              <ImageScroller images={imgs.map(img => getFullImageUrl(img))} />
+              <ImageScroller images={imgs.map(img => getFullImageUrl(img))} enableFullScreen={true} />
             </div>
           </div>
         )}

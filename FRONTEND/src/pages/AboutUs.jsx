@@ -13,7 +13,7 @@ const AboutUs = () => {
     ];
 
     return (
-        <div className="bg-white min-h-screen overflow-x-hidden">
+        <div className="bg-white min-h-screen">
             <Navbar />
 
             {/* Hero Section */}

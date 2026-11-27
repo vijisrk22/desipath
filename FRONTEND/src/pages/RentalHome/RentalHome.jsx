@@ -26,7 +26,7 @@ function RentalHome() {
   const showNavbar = true;
 
   return (
-    <div className="flex flex-col min-h-screen overflow-y-auto" style={{ cursor: 'default' }}>
+    <div className="flex flex-col min-h-screen" style={{ cursor: 'default' }}>
       {showNavbar && <Navbar />}
 
       {action === undefined ? (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiShield, FiLock, FiCheck, FiArrowLeft, FiUser, FiPhone, FiMail, FiUsers } from 'react-icons/fi';
+import { FiShield, FiLock, FiCheck, FiArrowLeft, FiUser, FiPhone, FiMail, FiUsers, FiUserCheck } from 'react-icons/fi';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import api from '../../utils/api';
@@ -164,11 +164,52 @@ export default function SecureMatchProfileDetail() {
                       <FiMail className="flex-shrink-0" />
                       <span className="font-semibold">{profile.contact_email || 'Not provided'}</span>
                     </div>
+
+                    {/* References */}
+                    {(profile.ref1_name || profile.ref2_name) && (
+                      <div className="border-t border-indigo-200/70 pt-4 mt-4">
+                        <p className="font-bold text-indigo-950 mb-3 flex items-center gap-2">
+                          <FiUserCheck className="text-indigo-600" /> References
+                        </p>
+                        <div className="space-y-3">
+                          {profile.ref1_name && (
+                            <div className="bg-white/90 p-3.5 rounded-xl border border-indigo-100 text-xs text-gray-700 space-y-1 shadow-sm">
+                              <p className="font-bold text-sm text-indigo-900">Reference 1: {profile.ref1_name}</p>
+                              {profile.ref1_profession && <p><span className="text-gray-500 font-medium">Profession:</span> {profile.ref1_profession}</p>}
+                              {profile.ref1_location && <p><span className="text-gray-500 font-medium">Location:</span> {profile.ref1_location}</p>}
+                              {profile.ref1_contact_number && (
+                                <p>
+                                  <span className="text-gray-500 font-medium">Contact:</span>{' '}
+                                  <a href={`tel:${profile.ref1_contact_number}`} className="text-indigo-600 font-semibold hover:underline">
+                                    {profile.ref1_contact_number}
+                                  </a>
+                                </p>
+                              )}
+                            </div>
+                          )}
+                          {profile.ref2_name && (
+                            <div className="bg-white/90 p-3.5 rounded-xl border border-indigo-100 text-xs text-gray-700 space-y-1 shadow-sm">
+                              <p className="font-bold text-sm text-indigo-900">Reference 2: {profile.ref2_name}</p>
+                              {profile.ref2_profession && <p><span className="text-gray-500 font-medium">Profession:</span> {profile.ref2_profession}</p>}
+                              {profile.ref2_location && <p><span className="text-gray-500 font-medium">Location:</span> {profile.ref2_location}</p>}
+                              {profile.ref2_contact_number && (
+                                <p>
+                                  <span className="text-gray-500 font-medium">Contact:</span>{' '}
+                                  <a href={`tel:${profile.ref2_contact_number}`} className="text-indigo-600 font-semibold hover:underline">
+                                    {profile.ref2_contact_number}
+                                  </a>
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 text-center text-gray-500">
                     <FiLock className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                    <p>Family background and contact details are hidden until Step 1 is mutually accepted.</p>
+                    <p>Family background, references, and contact details are hidden until Step 1 is mutually accepted.</p>
                   </div>
                 )}
               </div>

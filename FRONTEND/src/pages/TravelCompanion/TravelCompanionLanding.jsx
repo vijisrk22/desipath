@@ -35,9 +35,10 @@ const TravelCompanionLanding = () => {
       <Navbar />
       
       {/* SECTION 2: HERO SECTION */}
-      <section className="relative pt-20 pb-28 px-4 overflow-hidden">
+      <section className="relative pt-4 sm:pt-8 md:pt-16 pb-14 sm:pb-16 md:pb-28 px-4 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-blue-900/60 mix-blend-multiply z-10" />
+          {/* Subtle gradient overlay to keep background image fully visible while ensuring text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/55 z-10" />
           <img 
             src="/img/travelCompanion/Desipath_Travelcompanion.png" 
             alt="Friendly volunteers helping travelers at airport" 
@@ -45,40 +46,40 @@ const TravelCompanionLanding = () => {
           />
         </div>
         
-        <div className="relative z-20 max-w-6xl mx-auto text-center mt-8">
-          <h1 className="text-4xl md:text-[56px] font-bold text-white mb-6 font-dmsans leading-tight drop-shadow-lg">
+        <div className="relative z-20 max-w-6xl mx-auto text-center mt-0 md:mt-2">
+          <h1 className="text-3xl sm:text-4xl md:text-[56px] font-bold text-white mb-3 md:mb-6 font-dmsans leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
             Travel Companion Network
           </h1>
-          <p className="text-xl md:text-2xl text-white/95 max-w-3xl mx-auto font-medium mb-4 drop-shadow-md">
+          <p className="text-base sm:text-lg md:text-2xl text-white max-w-3xl mx-auto font-medium mb-2 md:mb-4 drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
             Helping travelers connect with trusted volunteers for a safer, smoother, and more comfortable journey.
           </p>
-          <p className="text-base md:text-lg text-white/90 max-w-2xl mx-auto mb-10 drop-shadow">
+          <p className="text-xs sm:text-sm md:text-lg text-white/95 max-w-2xl mx-auto mb-6 md:mb-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.75)]">
             Whether you're a senior traveler, student, parent, or first-time flyer, connect with caring volunteers traveling on similar routes.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 md:mb-12">
             <Link 
               to="/travel-companion/post-request"
               onClick={(e) => handleLinkClick(e, "/travel-companion/post-request")}
-              className="w-full sm:w-auto bg-[#1565D8] hover:bg-[#1152b3] text-white font-bold py-4 px-8 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-lg"
+              className="w-full sm:w-auto bg-[#1565D8] hover:bg-[#1152b3] text-white font-bold py-3.5 sm:py-4 px-8 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-base sm:text-lg"
             >
               Request Travel Assistance
             </Link>
             <Link 
               to="/travel-companion/post-volunteer"
               onClick={(e) => handleLinkClick(e, "/travel-companion/post-volunteer")}
-              className="w-full sm:w-auto bg-white hover:bg-gray-50 border-2 border-[#1565D8] text-[#1565D8] font-bold py-4 px-8 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-lg"
+              className="w-full sm:w-auto bg-white hover:bg-gray-50 border-2 border-[#1565D8] text-[#1565D8] font-bold py-3.5 sm:py-4 px-8 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-base sm:text-lg"
             >
               Become a Volunteer
             </Link>
           </div>
 
           {/* TRUST BADGES */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-8 text-white font-medium text-sm md:text-base drop-shadow-md">
-            <span className="flex items-center gap-2"><CheckCircle fontSize="small" className="text-green-400" /> Community Verified</span>
-            <span className="flex items-center gap-2"><CheckCircle fontSize="small" className="text-green-400" /> Free to Use</span>
-            <span className="flex items-center gap-2"><CheckCircle fontSize="small" className="text-green-400" /> Safe Communication</span>
-            <span className="flex items-center gap-2"><CheckCircle fontSize="small" className="text-green-400" /> Trusted by Families</span>
+          <div className="flex flex-wrap justify-center gap-3 md:gap-8 text-white font-medium text-xs sm:text-sm md:text-base drop-shadow-md">
+            <span className="flex items-center gap-1.5 md:gap-2"><CheckCircle fontSize="small" className="text-green-400" /> Community Verified</span>
+            <span className="flex items-center gap-1.5 md:gap-2"><CheckCircle fontSize="small" className="text-green-400" /> Free to Use</span>
+            <span className="flex items-center gap-1.5 md:gap-2"><CheckCircle fontSize="small" className="text-green-400" /> Safe Communication</span>
+            <span className="flex items-center gap-1.5 md:gap-2"><CheckCircle fontSize="small" className="text-green-400" /> Trusted by Families</span>
           </div>
         </div>
       </section>
@@ -141,7 +142,7 @@ const TravelCompanionLanding = () => {
               <ShieldMoon fontSize="large" />
             </div>
             <h3 className="text-[22px] font-bold text-[#1F2937] mb-2">Safety Guidelines</h3>
-            <p className="text-[#6B7280] mb-6 flex-grow">Learn how to travel and volunteer safely.</p>
+            <p className="text-[#6B7280] mb-6 flex-grow">Best practices for a safe, verified experience.</p>
             <div className="mt-auto flex items-center text-[#1565D8] font-bold">
               Read <TrendingFlat className="ml-2 group-hover:translate-x-2 transition-transform" />
             </div>
@@ -149,153 +150,146 @@ const TravelCompanionLanding = () => {
         </div>
       </section>
 
-      {/* SECTION 4: MAIN USER CHOICE */}
-      <section className="max-w-6xl mx-auto px-4 mb-24">
-        <h2 className="text-[36px] font-bold text-center text-[#1F2937] mb-12">How Can We Help You?</h2>
-        <div className="grid md:grid-cols-2 gap-8">
-          
-          <div className="bg-white p-10 rounded-[32px] shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col md:flex-row items-center gap-8 group">
-            <div className="bg-blue-50 p-8 rounded-full text-[#1565D8] shrink-0 group-hover:bg-[#1565D8] group-hover:text-white transition-colors duration-500">
-              <FlightTakeoff sx={{ fontSize: 64 }} />
-            </div>
-            <div className="flex-grow text-center md:text-left">
-              <h3 className="text-2xl font-bold text-[#1F2937] mb-4">Need Travel Assistance?</h3>
-              <div className="text-[#6B7280] mb-6">
-                <span className="font-semibold text-gray-800">Perfect for:</span>
-                <ul className="mt-2 space-y-1 text-left inline-block md:block">
-                  <li className="flex items-center gap-2"><CheckCircle fontSize="small" className="text-green-500"/> Senior citizens</li>
-                  <li className="flex items-center gap-2"><CheckCircle fontSize="small" className="text-green-500"/> First-time travelers</li>
-                  <li className="flex items-center gap-2"><CheckCircle fontSize="small" className="text-green-500"/> Students</li>
-                  <li className="flex items-center gap-2"><CheckCircle fontSize="small" className="text-green-500"/> Parents with children</li>
-                </ul>
-              </div>
-              <Link 
-                to="/travel-companion/post-request"
-                onClick={(e) => handleLinkClick(e, "/travel-companion/post-request")}
-                className="inline-block bg-[#1565D8] hover:bg-[#1152b3] text-white font-bold py-3 px-8 rounded-full transition-colors w-full md:w-auto text-center"
-              >
-                Request Assistance
-              </Link>
-            </div>
-          </div>
-
-          <div className="bg-white p-10 rounded-[32px] shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col md:flex-row items-center gap-8 group">
-            <div className="bg-blue-50 p-8 rounded-full text-[#1565D8] shrink-0 group-hover:bg-[#1565D8] group-hover:text-white transition-colors duration-500">
-              <VolunteerActivism sx={{ fontSize: 64 }} />
-            </div>
-            <div className="flex-grow text-center md:text-left flex flex-col h-full">
-              <h3 className="text-2xl font-bold text-[#1F2937] mb-4">Become a Travel Volunteer</h3>
-              <p className="text-[#6B7280] mb-8 flex-grow">
-                Help fellow travelers navigate airports, flights, and unfamiliar locations. Your guidance can turn a stressful journey into a smooth and pleasant experience for someone in need.
-              </p>
-              <Link 
-                to="/travel-companion/post-volunteer"
-                onClick={(e) => handleLinkClick(e, "/travel-companion/post-volunteer")}
-                className="inline-block bg-white border-2 border-[#1565D8] hover:bg-gray-50 text-[#1565D8] font-bold py-3 px-8 rounded-full transition-colors w-full md:w-auto text-center mt-auto"
-              >
-                Volunteer Now
-              </Link>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* SECTION 5: HOW IT WORKS */}
+      {/* SECTION 4: STEP-BY-STEP PROCESS */}
       <section className="bg-white py-20 border-y border-gray-100">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-[36px] font-bold text-center text-[#1F2937] mb-16">How It Works</h2>
-          <div className="grid md:grid-cols-3 gap-12 relative">
-            {/* Connecting line for desktop */}
-            <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-gray-200 z-0"></div>
-            
-            <div className="relative z-10 text-center">
-              <div className="bg-white w-24 h-24 mx-auto rounded-full border-4 border-[#1565D8] flex items-center justify-center mb-6 shadow-md text-[#1565D8]">
-                <span className="text-3xl">✈️</span>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-[36px] font-bold text-[#1F2937] mb-4">How It Works</h2>
+            <p className="text-lg text-[#6B7280]">Connecting travelers and volunteers is simple, secure, and straightforward.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* For Travelers */}
+            <div className="bg-gray-50/70 p-8 rounded-3xl border border-gray-100">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="bg-blue-100 text-[#1565D8] p-3 rounded-2xl">
+                  <FlightTakeoff fontSize="large" />
+                </div>
+                <h3 className="text-2xl font-bold text-[#1F2937]">For Travelers</h3>
               </div>
-              <h3 className="text-[22px] font-bold text-[#1F2937] mb-3">1. Post a Request</h3>
-              <p className="text-[#6B7280]">Share your travel details and assistance needs securely on our platform.</p>
+              
+              <div className="space-y-6">
+                {[
+                  { step: '1', title: 'Submit Travel Request', desc: 'Share your flight details, language preference, and assistance needs.' },
+                  { step: '2', title: 'Match with Volunteers', desc: 'Browse available volunteers or wait for someone traveling on your flight.' },
+                  { step: '3', title: 'Connect & Coordinate', desc: 'Chat safely within the platform to align meeting points at the airport.' }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#1565D8] text-white flex items-center justify-center font-bold flex-shrink-0">
+                      {item.step}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#1F2937] text-lg mb-1">{item.title}</h4>
+                      <p className="text-[#6B7280]">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="relative z-10 text-center">
-              <div className="bg-white w-24 h-24 mx-auto rounded-full border-4 border-[#1565D8] flex items-center justify-center mb-6 shadow-md text-[#1565D8]">
-                <span className="text-3xl">🤝</span>
+            {/* For Volunteers */}
+            <div className="bg-gray-50/70 p-8 rounded-3xl border border-gray-100">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="bg-green-100 text-green-700 p-3 rounded-2xl">
+                  <VolunteerActivism fontSize="large" />
+                </div>
+                <h3 className="text-2xl font-bold text-[#1F2937]">For Volunteers</h3>
               </div>
-              <h3 className="text-[22px] font-bold text-[#1F2937] mb-3">2. Get Matched</h3>
-              <p className="text-[#6B7280]">Connect with verified volunteers traveling on the same or nearby route.</p>
-            </div>
-
-            <div className="relative z-10 text-center">
-              <div className="bg-white w-24 h-24 mx-auto rounded-full border-4 border-[#1565D8] flex items-center justify-center mb-6 shadow-md text-[#1565D8]">
-                <span className="text-3xl">🧳</span>
+              
+              <div className="space-y-6">
+                {[
+                  { step: '1', title: 'Post Your Flight Details', desc: 'Let the community know your travel dates, airlines, and airports.' },
+                  { step: '2', title: 'Find Travelers Needing Help', desc: 'Review open requests from seniors, students, or families on your route.' },
+                  { step: '3', title: 'Help & Earn Community Trust', desc: 'Accompany travelers through check-in, layovers, or baggage claim.' }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex gap-4">
+                    <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                      {item.step}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#1F2937] text-lg mb-1">{item.title}</h4>
+                      <p className="text-[#6B7280]">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <h3 className="text-[22px] font-bold text-[#1F2937] mb-3">3. Travel with Confidence</h3>
-              <p className="text-[#6B7280]">Coordinate safely and enjoy a smoother, stress-free journey together.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 6: POPULAR ROUTES */}
+      {/* SECTION 5: POPULAR ROUTES */}
       <section className="max-w-6xl mx-auto px-4 py-20">
-        <h2 className="text-[36px] font-bold text-center text-[#1F2937] mb-12">Popular Travel Routes</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-[36px] font-bold text-[#1F2937] mb-4">Popular Travel Companion Routes</h2>
+          <p className="text-lg text-[#6B7280]">Connect with companions on our most frequently traveled international routes.</p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
           {[
-            ['Dallas', 'Chennai'],
-            ['Seattle', 'Bangalore'],
-            ['Toronto', 'Hyderabad'],
-            ['New Jersey', 'Mumbai'],
-            ['Vancouver', 'Delhi'],
-            ['Chicago', 'Kochi']
+            { from: 'Delhi (DEL)', to: 'New York (JFK)', freq: '40+ volunteers active' },
+            { from: 'Mumbai (BOM)', to: 'San Francisco (SFO)', freq: '35+ volunteers active' },
+            { from: 'Hyderabad (HYD)', to: 'Chicago (ORD)', freq: '25+ volunteers active' },
+            { from: 'Bengaluru (BLR)', to: 'Dallas (DFW)', freq: '20+ volunteers active' },
+            { from: 'Chennai (MAA)', to: 'Atlanta (ATL)', freq: '18+ volunteers active' },
+            { from: 'Ahmedabad (AMD)', to: 'Newark (EWR)', freq: '30+ volunteers active' }
           ].map((route, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
-              <div className="font-bold text-[#1F2937] text-lg">{route[0]}</div>
-              <ConnectingAirports className="text-gray-400 mx-2" />
-              <div className="font-bold text-[#1F2937] text-lg">{route[1]}</div>
+            <div key={idx} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-4">
+                <span className="font-bold text-[#1F2937]">{route.from}</span>
+                <ConnectingAirports className="text-[#1565D8]" />
+                <span className="font-bold text-[#1F2937]">{route.to}</span>
+              </div>
+              <div className="text-sm text-green-600 font-medium">{route.freq}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* SECTION 7: SUCCESS STORIES */}
-      <section className="bg-blue-50 py-24">
+      {/* SECTION 6: WHO BENEFITS */}
+      <section className="bg-gray-50 py-20 border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-[36px] font-bold text-center text-[#1F2937] mb-16">Community Success Stories</h2>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-[36px] font-bold text-[#1F2937] mb-4">Who Benefits From This Platform?</h2>
+            <p className="text-lg text-[#6B7280]">Connecting passengers who could use a helping hand with warm-hearted travelers.</p>
+          </div>
+
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                quote: "My parents traveled from Chennai to Dallas with confidence thanks to a volunteer who assisted them through immigration and baggage claim.",
-                author: "Priya K."
+                title: 'Elderly Parents Traveling Alone',
+                desc: 'Navigating huge foreign airports, immigration lines, and connecting gates can feel overwhelming. Companions offer reassurance.'
               },
               {
-                quote: "As a first-time international student flying to Toronto, finding a travel companion on this platform relieved so much anxiety.",
-                author: "Rahul S."
+                title: 'First-Time Students & Flyers',
+                desc: 'Flying abroad for studies for the first time? Connect with seniors or frequent flyers who know the drill and can guide you.'
               },
               {
-                quote: "I frequently fly between Chicago and Kochi and volunteering to help elderly travelers navigate layovers has been incredibly rewarding.",
-                author: "Anita M."
+                title: 'Parents with Infants or Toddlers',
+                desc: 'Handling luggage, strollers, and long transit walks alone with young children is challenging. A friendly companion makes it easy.'
               }
-            ].map((testimonial, idx) => (
-               <div key={idx} className="bg-white p-8 rounded-[32px] shadow-sm relative">
-                  <div className="text-[#1565D8] mb-4">
-                    <Star /><Star /><Star /><Star /><Star />
-                  </div>
-                  <p className="text-[#1F2937] font-medium mb-8 text-lg italic">"{testimonial.quote}"</p>
-                  <div className="font-bold text-[#6B7280]">- {testimonial.author}</div>
-               </div>
+            ].map((card, idx) => (
+              <div key={idx} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                <h3 className="text-xl font-bold text-[#1F2937] mb-3">{card.title}</h3>
+                <p className="text-[#6B7280] leading-relaxed">{card.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SECTION 8: FEATURED VOLUNTEERS */}
+      {/* SECTION 7: FEATURED VOLUNTEERS */}
       <section className="max-w-6xl mx-auto px-4 py-20">
-        <h2 className="text-[36px] font-bold text-center text-[#1F2937] mb-12">Meet Our Featured Volunteers</h2>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-[36px] font-bold text-[#1F2937] mb-4">Meet Some of Our Caring Volunteers</h2>
+          <p className="text-lg text-[#6B7280]">Verified community members ready to assist on upcoming flights.</p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
           {[
-             { name: "Vikram R.", city: "New York, NY", lang: "English, Hindi, Telugu", assists: 12 },
-             { name: "Meera P.", city: "San Francisco, CA", lang: "English, Tamil, Malayalam", assists: 8 },
-             { name: "Rohan D.", city: "Toronto, ON", lang: "English, Gujarati, Hindi", assists: 15 }
+            { name: 'Rajesh K.', city: 'San Jose, CA', lang: 'Hindi, Telugu, English', assists: '12' },
+            { name: 'Sunita M.', city: 'Edison, NJ', lang: 'Hindi, Gujarati, English', assists: '8' },
+            { name: 'Amitabh S.', city: 'Chicago, IL', lang: 'Hindi, Punjabi, English', assists: '15' }
           ].map((vol, idx) => (
              <div key={idx} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
                 <div className="w-24 h-24 bg-gray-200 rounded-full mb-4 overflow-hidden">

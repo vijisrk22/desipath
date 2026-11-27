@@ -12,7 +12,9 @@ class SecureMatchProfile extends Model
         'user_id', 'display_name', 'dob', 'gender', 'community', 'religion',
         'education', 'profession', 'company_name', 'languages_spoken', 'city', 'country', 'residency_tier',
         'trust_score', 'about_me', 'voice_note_url', 'family_details',
-        'contact_phone', 'contact_email', 'status', 'food_preference', 'linkedin_url', 'created_by_relative'
+        'contact_phone', 'contact_email', 'status', 'food_preference', 'linkedin_url', 'created_by_relative',
+        'ref1_name', 'ref1_location', 'ref1_profession', 'ref1_contact_number',
+        'ref2_name', 'ref2_location', 'ref2_profession', 'ref2_contact_number'
     ];
 
     protected $casts = [

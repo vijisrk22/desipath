@@ -83,12 +83,19 @@ function LoginPage() {
     return <Loader />;
   }
   return (
-    <div className="min-h-screen w-full bg-white md:bg-[#f8fafc] flex flex-col justify-center items-center font-dmsans">
-      <div className="flex-1 flex items-stretch md:items-center justify-center p-0 md:p-8">
+    <div className="min-h-screen w-full bg-white md:bg-[#f8fafc] flex flex-col justify-start md:justify-center items-center font-dmsans">
+      {/* Mobile Top Header: visible only on mobile */}
+      <header className="md:hidden w-full px-6 pt-5 pb-3 flex items-center justify-start z-20">
+        <Link to="/" className="inline-block hover:opacity-90 transition-opacity">
+          <img src="/desipath-logo.png" alt="Desipath" className="h-8 w-auto object-contain" />
+        </Link>
+      </header>
+
+      <div className="flex-1 w-full flex items-start md:items-center justify-center p-0 md:p-8">
       <div className="bg-white w-full max-w-[1000px] rounded-none md:rounded-3xl shadow-none md:shadow-2xl overflow-hidden flex flex-col md:flex-row border-none md:border md:border-gray-100 transform transition-all duration-500 hover:shadow-blue-100/50">
         
         {/* Visual/Branding Side (Preserving AuthPageLeft content) */}
-        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#0857d0] to-[#2e61b1] p-6 pb-12 md:p-12 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
+        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#0857d0] to-[#2e61b1] p-6 pb-12 md:p-12 flex-col justify-between text-white relative overflow-hidden shrink-0">
           {/* Background Decorative Element */}
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white opacity-5 rounded-full"></div>
           <div className="absolute top-10 -right-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
@@ -115,10 +122,9 @@ function LoginPage() {
         </div>
 
         {/* Form Side */}
-        <div className="w-full md:w-1/2 px-6 pt-6 pb-10 md:p-12 flex flex-col justify-start md:justify-center bg-white rounded-t-[32px] md:rounded-none mt-[-24px] md:mt-0 relative z-10 flex-1 shadow-[-5px_-5px_25px_rgba(0,0,0,0.06)] md:shadow-none animate-slideUp">
+        <div className="w-full md:w-1/2 px-6 pt-4 pb-10 md:p-12 flex flex-col justify-start md:justify-center bg-white relative z-10 flex-1">
           <div className="max-w-md mx-auto w-full">
-            
-            {showOtp ? (
+{showOtp ? (
                /* OTP VERIFICATION VIEW */
                <div className="animate-fade-in">
                 <div className="mb-8 text-center md:text-left">

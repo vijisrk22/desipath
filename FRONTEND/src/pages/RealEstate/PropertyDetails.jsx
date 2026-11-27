@@ -149,7 +149,7 @@ export default function PropertyDetails() {
   }
 
   return (
-    <main style={{ zoom: "0.9" }} className="overflow-x-hidden w-full">
+    <main className="w-full">
       <Navbar />
       <Box sx={{ bgcolor: '#f8fafc', minHeight: '100vh', pb: 10 }}>
         {/* Header / Navigation */}

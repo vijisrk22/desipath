@@ -109,7 +109,7 @@ export default function FindProperties() {
   ];
 
   return (
-    <main style={{ zoom: "0.9" }} className="overflow-x-hidden w-full">
+    <main className="w-full">
       <Navbar />
       <div className="bg-[#f8fafc] min-h-screen pb-20" style={{ fontFamily: "'Inter', sans-serif" }}>
         <ServiceTopBar 

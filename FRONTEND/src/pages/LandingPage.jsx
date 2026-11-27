@@ -47,7 +47,7 @@ function LandingPage() {
   };
 
   return (
-    <main style={{ zoom: "0.9" }} className="overflow-x-hidden w-full">
+    <main className="w-full">
       <Navbar />
       <LocationSelectorModal 
         open={showLocationModal}

@@ -101,7 +101,27 @@ class SecureMatchProfileController extends Controller
             'food_preference' => 'nullable|string',
             'linkedin_url' => 'nullable|string',
             'created_by_relative' => 'boolean',
+            'ref1_name' => 'nullable|string',
+            'ref1_location' => 'nullable|string',
+            'ref1_profession' => 'nullable|string',
+            'ref1_contact_number' => 'nullable|string',
+            'ref1_contact_no' => 'nullable|string',
+            'ref2_name' => 'nullable|string',
+            'ref2_location' => 'nullable|string',
+            'ref2_profession' => 'nullable|string',
+            'ref2_contact_number' => 'nullable|string',
+            'ref2_contact_no' => 'nullable|string',
         ]);
+
+        if (!empty($data['ref1_contact_no']) && empty($data['ref1_contact_number'])) {
+            $data['ref1_contact_number'] = $data['ref1_contact_no'];
+        }
+        unset($data['ref1_contact_no']);
+
+        if (!empty($data['ref2_contact_no']) && empty($data['ref2_contact_number'])) {
+            $data['ref2_contact_number'] = $data['ref2_contact_no'];
+        }
+        unset($data['ref2_contact_no']);
 
         $profile = SecureMatchProfile::updateOrCreate(
             ['user_id' => Auth::id()],
@@ -195,15 +215,23 @@ class SecureMatchProfileController extends Controller
             'status' => $profile->status,
         ];
 
-        // Progressive unlock logic based on 2-step accept
-        if ($interestStatus === 'accepted_step1' || $interestStatus === 'accepted_step2') {
+        // Progressive unlock logic based on 2-step accept or own profile
+        if ($interestStatus === 'accepted_step1' || $interestStatus === 'accepted_step2' || ($viewerId && $viewerId === $profile->user_id)) {
             $sanitized['display_name'] = $profile->display_name;
             $sanitized['family_details'] = $profile->family_details;
             $sanitized['contact_phone'] = $profile->contact_phone;
             $sanitized['contact_email'] = $profile->contact_email;
+            $sanitized['ref1_name'] = $profile->ref1_name;
+            $sanitized['ref1_location'] = $profile->ref1_location;
+            $sanitized['ref1_profession'] = $profile->ref1_profession;
+            $sanitized['ref1_contact_number'] = $profile->ref1_contact_number;
+            $sanitized['ref2_name'] = $profile->ref2_name;
+            $sanitized['ref2_location'] = $profile->ref2_location;
+            $sanitized['ref2_profession'] = $profile->ref2_profession;
+            $sanitized['ref2_contact_number'] = $profile->ref2_contact_number;
         }
 
-        if ($interestStatus === 'accepted_step2') {
+        if ($interestStatus === 'accepted_step2' || ($viewerId && $viewerId === $profile->user_id)) {
             $albumUnlocked = false;
             if ($viewerId && $interest) {
                 if ($interest->sender_id == $viewerId) {
