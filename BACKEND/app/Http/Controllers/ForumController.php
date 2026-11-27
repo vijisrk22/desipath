@@ -56,7 +56,8 @@ class ForumController extends Controller
             'content' => 'nullable|string',
             'category' => 'nullable|string',
             'location' => 'nullable|string',
-            'image' => 'nullable|image|max:5120'
+            'location_tag' => 'nullable|string',
+            'image' => 'nullable|image|max:1024'
         ]);
 
         $imagePath = null;
@@ -70,6 +71,7 @@ class ForumController extends Controller
             'content' => $request->content,
             'category' => $request->category,
             'location' => $request->location,
+            'location_tag' => $request->location_tag,
             'image_url' => $imagePath,
         ]);
 
@@ -90,7 +92,7 @@ class ForumController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
-            'image' => 'nullable|image|max:5120'
+            'image' => 'nullable|image|max:1024'
         ]);
 
         $updateData = [

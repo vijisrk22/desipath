@@ -5,6 +5,7 @@ import Services from "../components/Services";
 import Footer from "../components/Footer/Footer";
 import LocationSelectorModal from "../components/LocationSelectorModal";
 import LazySection from "../components/LazySection";
+import MobileSplashScreen from "../components/MobileSplashScreen";
 import { CircularProgress } from "@mui/material";
 
 // Lazy load carousels to reduce initial bundle size
@@ -16,17 +17,38 @@ const RentalHomesCarousel = lazy(() => import("../components/RentalHomesCarousel
 const ITTrainingsCarousel = lazy(() => import("../components/ITTrainings/ITTrainingsCarousel"));
 
 function LandingPage() {
+  const isMobile = () => {
+    if (typeof window === "undefined") return false;
+    return (
+      window.innerWidth <= 768 ||
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent || ""
+      )
+    );
+  };
+
+  const [isSplashActive, setIsSplashActive] = useState(() => isMobile());
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [currentLocation, setCurrentLocation] = useState("");
 
   useEffect(() => {
     const savedLocation = localStorage.getItem('user_location');
     if (!savedLocation) {
-      setShowLocationModal(true);
+      if (!isSplashActive) {
+        setShowLocationModal(true);
+      }
     } else {
       setCurrentLocation(savedLocation);
     }
-  }, []);
+  }, [isSplashActive]);
+
+  const handleSplashComplete = () => {
+    setIsSplashActive(false);
+    const savedLocation = localStorage.getItem('user_location');
+    if (!savedLocation) {
+      setShowLocationModal(true);
+    }
+  };
 
   const handleLocationSelect = (locationString) => {
     console.log("LandingPage handleLocationSelect received:", locationString);
@@ -48,6 +70,7 @@ function LandingPage() {
 
   return (
     <main className="w-full">
+      {isSplashActive && <MobileSplashScreen onComplete={handleSplashComplete} />}
       <Navbar />
       <LocationSelectorModal 
         open={showLocationModal}

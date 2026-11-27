@@ -5,6 +5,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, 
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { toast } from 'react-toastify';
+import { getSubforumIcon } from './forumHelpers';
 
 
 
@@ -74,6 +75,12 @@ export default function ForumPostDetail() {
 
   const handleReplySubmit = (e, parentId) => {
     e.preventDefault();
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      toast.info("Please log in to reply");
+      navigate('/login');
+      return;
+    }
     if (!replyText.trim() || isSubmittingReply) return;
 
     setIsSubmittingReply(true);
@@ -89,6 +96,10 @@ export default function ForumPostDetail() {
         setReplyText("");
         fetchPost(false);
       }
+    })
+    .catch(err => {
+      console.error("Failed to post reply:", err);
+      toast.error(err.response?.data?.message || "Failed to post reply. Please try again.");
     })
     .finally(() => {
       setIsSubmittingReply(false);
@@ -198,6 +209,12 @@ export default function ForumPostDetail() {
 
   const handleComment = (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      toast.info("Please log in to comment");
+      navigate('/login');
+      return;
+    }
     if (!commentText.trim() || isSubmittingComment) return;
     
     setIsSubmittingComment(true);
@@ -212,6 +229,10 @@ export default function ForumPostDetail() {
         setIsCommentBoxExpanded(false);
         fetchPost(false); // Refresh post to show new comment silently
       }
+    })
+    .catch(err => {
+      console.error("Failed to post comment:", err);
+      toast.error(err.response?.data?.message || "Failed to post comment. Please try again.");
     })
     .finally(() => {
       setIsSubmittingComment(false);
@@ -349,7 +370,7 @@ export default function ForumPostDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-pagebg flex flex-col font-inter text-textprimary">
+    <div className="min-h-screen bg-pagebg flex flex-col font-pretendard text-textprimary">
       <Navbar />
       
       <main className="max-w-7xl mx-auto w-full px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -394,7 +415,12 @@ export default function ForumPostDetail() {
                 {/* Post Content */}
                 <div className="w-full min-w-0">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-textsecondary mb-4">
-                    <span className="font-bold text-textprimary hover:text-primary transition-colors cursor-pointer">d/{post.category || 'General'}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-pagebg border border-bordercol flex items-center justify-center text-[15px] leading-none shrink-0 shadow-xs select-none">
+                        {getSubforumIcon(post.category)}
+                      </div>
+                      <span className="font-bold text-textprimary hover:text-primary transition-colors cursor-pointer">d/{post.category || 'General'}</span>
+                    </div>
                     <span className="text-bordercol">•</span>
                     <span>Posted by <span className="font-bold hover:underline cursor-pointer">u/{post.user?.name || 'Anonymous'}</span></span>
                     <span className="text-bordercol">•</span>

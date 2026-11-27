@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { toast } from 'react-toastify';
+import { getSubforumIcon } from './forumHelpers';
 
 const US_STATES = [
   { name: 'Alabama', abbr: 'AL' }, { name: 'Alaska', abbr: 'AK' }, { name: 'Arizona', abbr: 'AZ' }, { name: 'Arkansas', abbr: 'AR' },
@@ -65,6 +66,9 @@ export default function ForumLanding() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+  const [imageError, setImageError] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const [isSubforumModalOpen, setIsSubforumModalOpen] = useState(false);
   const [subforums, setSubforums] = useState([]);
   const [page, setPage] = useState(1);
@@ -95,11 +99,21 @@ export default function ForumLanding() {
     }
   });
 
+  const subforumIconMap = React.useMemo(() => {
+    const map = {};
+    subforums.forEach(s => {
+      map[s.name] = s.icon;
+    });
+    return map;
+  }, [subforums]);
+
   const isLocationSpecific = watch("is_location_specific");
   const locationValue = watch("location");
 
   React.useEffect(() => {
     if (isPostModalOpen) {
+      setImageError("");
+      setSelectedFile(null);
       reset({
         title: '',
         content: '',
@@ -286,36 +300,106 @@ export default function ForumLanding() {
     fetchPosts(nextPage, true);
   };
 
-  const handleCreatePost = (data) => {
-    if (!data.title) return alert("Title is required");
+  const handleOpenPostModal = () => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      toast.info("Please log in to create a post in the community");
+      navigate('/login');
+      return;
+    }
+    setIsPostModalOpen(true);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setSelectedFile(null);
+      setImageError("");
+      return;
+    }
+
+    const maxBytes = 1 * 1024 * 1024; // 1 MB
+    if (file.size > maxBytes) {
+      const errorMsg = "File size exceeds 1MB. Maximum allowed size is 1 MB.";
+      setImageError(errorMsg);
+      toast.error(errorMsg);
+      e.target.value = "";
+      setSelectedFile(null);
+      return;
+    }
+
+    setImageError("");
+    setSelectedFile(file);
+  };
+
+  const handleCreatePost = async (data) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      toast.error("Please login to post in the community");
+      navigate('/login');
+      return;
+    }
+
+    if (!data.title || !data.title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
     
     const formData = new FormData();
-    formData.append('title', data.title);
-    formData.append('content', data.content);
-    formData.append('category', data.category);
+    formData.append('title', data.title.trim());
+    formData.append('content', data.content || '');
+    formData.append('category', data.category || 'General');
     
     if (data.is_location_specific) {
       formData.append('location', data.location || '');
       formData.append('location_tag', data.location_tag || '');
     }
 
-    if (data.image && data.image[0]) {
-      formData.append('image', data.image[0]);
+    const fileToUpload = selectedFile || (data.image && data.image[0]);
+    if (fileToUpload) {
+      const maxBytes = 1 * 1024 * 1024; // 1 MB
+      if (fileToUpload.size > maxBytes) {
+        const errorMsg = "File size exceeds 1MB. Maximum allowed size is 1 MB.";
+        toast.error(errorMsg);
+        setImageError(errorMsg);
+        return;
+      }
+      formData.append('image', fileToUpload);
     }
 
-    api.post('/api/forum/posts', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-      .then(res => {
-        if (res.data.success) {
-          setIsPostModalOpen(false);
-          reset();
-          fetchPosts();
-        }
-      })
-      .catch(err => {
-        alert("Please login to post in the community");
-      });
+    setIsSubmittingPost(true);
+    try {
+      const res = await api.post('/api/forum/posts', formData);
+      if (res.data.success) {
+        toast.success("Post created successfully!");
+        setIsPostModalOpen(false);
+        reset();
+        setSelectedFile(null);
+        setImageError("");
+        fetchPosts(1, false);
+      }
+    } catch (err) {
+      console.error("Error creating post:", err);
+      const status = err.response?.status;
+      if (status === 401) {
+        toast.error("Your session has expired. Please log in again.");
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+        navigate('/login');
+      } else if (status === 422) {
+        const errors = err.response?.data?.errors;
+        const msg = errors
+          ? Object.values(errors).flat().join(" ")
+          : (err.response?.data?.message || "Validation failed. Please verify your inputs.");
+        toast.error(msg);
+      } else if (status === 413) {
+        toast.error("The uploaded image is too large. Maximum size is 1 MB.");
+      } else {
+        toast.error(err.response?.data?.message || "Failed to create post. Please try again.");
+      }
+    } finally {
+      setIsSubmittingPost(false);
+    }
   };
   const [likedPosts, setLikedPosts] = useState(() => {
     try {
@@ -427,7 +511,7 @@ export default function ForumLanding() {
   }, [hasMore, page, posts.length]);
 
   return (
-    <div className="min-h-screen bg-pagebg flex flex-col font-inter text-textprimary">
+    <div className="min-h-screen bg-pagebg flex flex-col font-pretendard text-textprimary">
       <Navbar />
       
       <main className="max-w-7xl mx-auto w-full px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -439,20 +523,22 @@ export default function ForumLanding() {
               <h3 className="text-sm font-bold text-textsecondary uppercase tracking-widest border-b border-bordercol pb-3 mb-3">Popular Communities</h3>
               <div className="space-y-1">
                 <div 
-                  className={`flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl transition-all ${selectedCategory === '' ? 'bg-primary/10 text-primary font-bold' : 'text-textsecondary hover:bg-pagebg hover:text-textprimary font-medium'}`}
+                  className={`flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl transition-all ${selectedCategory === '' ? 'bg-primary/10 text-primary font-bold shadow-sm' : 'text-textsecondary hover:bg-pagebg hover:text-textprimary font-medium'}`}
                   onClick={() => setSelectedCategory('')}
                 >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${selectedCategory === '' ? 'bg-primary text-white' : 'bg-pagebg text-textsecondary'}`}>🌐</div>
-                  <span>All Subforums</span>
+                  <span className="w-8 h-8 flex items-center justify-center text-[22px] leading-none shrink-0 select-none">🌐</span>
+                  <span className="text-[15px] font-medium leading-none">All Subforums</span>
                 </div>
                 {subforums.map((sub, i) => (
                   <div 
                     key={i} 
-                    className={`flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl transition-all ${selectedCategory === sub.name ? 'bg-primary/10 text-primary font-bold' : 'text-textsecondary hover:bg-pagebg hover:text-textprimary font-medium'}`}
+                    className={`flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl transition-all ${selectedCategory === sub.name ? 'bg-primary/10 text-primary font-bold shadow-sm' : 'text-textsecondary hover:bg-pagebg hover:text-textprimary font-medium'}`}
                     onClick={() => setSelectedCategory(sub.name)}
                   >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${selectedCategory === sub.name ? 'bg-primary text-white' : 'bg-pagebg text-textsecondary'}`}>{sub.icon || 'd/'}</div>
-                    <span>{sub.name}</span>
+                    <span className="w-8 h-8 flex items-center justify-center text-[22px] leading-none shrink-0 select-none font-sans font-bold">
+                      {sub.icon || '💬'}
+                    </span>
+                    <span className="text-[15px] font-medium leading-none">{sub.name}</span>
                   </div>
                 ))}
               </div>
@@ -481,7 +567,7 @@ export default function ForumLanding() {
             <input 
               type="text" 
               placeholder="Create Post" 
-              onClick={() => setIsPostModalOpen(true)}
+              onClick={handleOpenPostModal}
               readOnly
               className="flex-grow min-w-0 bg-pagebg border border-bordercol rounded-full px-5 py-3 hover:bg-white hover:border-primary transition-all outline-none cursor-pointer text-sm font-medium text-textprimary placeholder:text-textsecondary"
             />
@@ -522,12 +608,23 @@ export default function ForumLanding() {
 
                   <div className="flex flex-col gap-2">
                     <label className="text-sm font-medium text-textsecondary">Attach Image (optional)</label>
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      {...register("image")}
-                      className="w-full p-2 bg-pagebg border border-bordercol rounded-xl font-medium text-sm text-textprimary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-hover cursor-pointer"
-                    />
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="flex-grow">
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          {...register("image")}
+                          onChange={handleImageChange}
+                          className="w-full p-2 bg-pagebg border border-bordercol rounded-xl font-medium text-sm text-textprimary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-hover cursor-pointer"
+                        />
+                      </div>
+                      <span className="text-xs font-semibold text-textsecondary whitespace-nowrap bg-pagebg px-3 py-2 rounded-xl border border-bordercol flex items-center gap-1.5 self-start sm:self-center">
+                        <span className="text-primary font-bold">ℹ</span> Max file size is 1 MB
+                      </span>
+                    </div>
+                    {imageError && (
+                      <p className="text-xs text-red-500 font-semibold animate-fadeIn">{imageError}</p>
+                    )}
                   </div>
 
                   <div className="flex items-center justify-between p-3 bg-pagebg rounded-xl border border-bordercol">
@@ -570,8 +667,17 @@ export default function ForumLanding() {
                   )}
 
                   <div className="flex justify-end gap-3 pt-6 border-t border-bordercol">
-                    <button type="button" onClick={() => setIsPostModalOpen(false)} className="min-h-[48px] px-6 rounded-full border-2 border-bordercol text-textprimary font-bold hover:bg-pagebg transition-all">Cancel</button>
-                    <button type="submit" className="min-h-[48px] px-8 rounded-full bg-primary text-white font-bold hover:bg-primary-hover shadow-[0_8px_30px_rgb(37,99,235,0.4)] transition-all hover:-translate-y-1">Post</button>
+                    <button type="button" onClick={() => setIsPostModalOpen(false)} disabled={isSubmittingPost} className="min-h-[48px] px-6 rounded-full border-2 border-bordercol text-textprimary font-bold hover:bg-pagebg transition-all disabled:opacity-50">Cancel</button>
+                    <button type="submit" disabled={isSubmittingPost} className="min-h-[48px] px-8 rounded-full bg-primary text-white font-bold hover:bg-primary-hover shadow-[0_8px_30px_rgb(37,99,235,0.4)] transition-all hover:-translate-y-1 disabled:opacity-50 flex items-center gap-2">
+                      {isSubmittingPost ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Posting...
+                        </>
+                      ) : (
+                        "Post"
+                      )}
+                    </button>
                   </div>
                 </form>
               </div>
@@ -604,7 +710,7 @@ export default function ForumLanding() {
                       : 'bg-card text-textsecondary border-bordercol hover:border-primary hover:text-primary'
                   }`}
                 >
-                  {sub.icon && <span>{sub.icon}</span>}
+                  {sub.icon && <span className="text-[18px] leading-none">{sub.icon}</span>}
                   {sub.name}
                 </button>
               ))}
@@ -662,7 +768,7 @@ export default function ForumLanding() {
                 <div className="text-6xl mb-4">📭</div>
                 <h3 className="text-xl font-bold text-textprimary mb-2">No posts found</h3>
                 <p className="text-textsecondary">Be the first to start a discussion in this community.</p>
-                <button onClick={() => setIsPostModalOpen(true)} className="mt-6 min-h-[48px] px-8 rounded-full bg-primary text-white font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5">Create Post</button>
+                <button onClick={handleOpenPostModal} className="mt-6 min-h-[48px] px-8 rounded-full bg-primary text-white font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5">Create Post</button>
               </div>
             ) : (
               posts.map(post => (
@@ -675,7 +781,9 @@ export default function ForumLanding() {
                     {/* Header */}
                     <div className="flex items-center gap-3 text-sm text-textsecondary mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">{post.category?.[0] || 'G'}</div>
+                        <div className="w-7 h-7 rounded-full bg-pagebg border border-bordercol flex items-center justify-center text-[15px] leading-none shrink-0 shadow-xs select-none">
+                          {getSubforumIcon(post.category, subforums)}
+                        </div>
                         <span className="font-bold text-textprimary hover:text-primary transition-colors">d/{post.category || 'General'}</span>
                       </div>
                       <span className="text-bordercol">•</span>
@@ -820,7 +928,7 @@ export default function ForumLanding() {
                     <p className="text-xs text-textsecondary font-bold uppercase tracking-widest">Online</p>
                   </div>
                 </div>
-                <button onClick={() => setIsPostModalOpen(true)} className="w-full min-h-[48px] bg-primary hover:bg-primary-hover text-white font-bold rounded-full transition-all shadow-lg shadow-primary/20 hover:-translate-y-0.5">Create Post</button>
+                <button onClick={handleOpenPostModal} className="w-full min-h-[48px] bg-primary hover:bg-primary-hover text-white font-bold rounded-full transition-all shadow-lg shadow-primary/20 hover:-translate-y-0.5">Create Post</button>
               </div>
             </div>
 

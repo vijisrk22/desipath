@@ -21,7 +21,20 @@ export default {
         fredoka: ["'Fredoka One'", "cursive"],
         poppins: ["Poppins"],
         inter: ["Inter", "sans-serif"],
-        dmsans: ["DM Sans", "sans-serif"]
+        dmsans: ["DM Sans", "sans-serif"],
+        pretendard: [
+          "Pretendard",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "system-ui",
+          "Roboto",
+          '"Helvetica Neue"',
+          '"Segoe UI"',
+          '"Apple SD Gothic Neo"',
+          '"Noto Sans KR"',
+          '"Malgun Gothic"',
+          "sans-serif"
+        ],
       }
     }
   },

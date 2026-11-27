@@ -31,12 +31,14 @@ api.interceptors.response.use(
   error => {
     window.dispatchEvent(new CustomEvent('api-loading-stop'));
     if (error.response?.status === 401) {
-      console.warn('Unauthorized, redirecting to login...');
+      console.warn('Unauthorized, clearing auth state...');
       localStorage.removeItem('access_token');
-      // Only redirect if not on a guest-friendly page (home, services, or kids-class)
+      localStorage.removeItem('user');
+      // Only redirect if not on a guest-friendly page (home, services, kids-class, forum)
       const isGuestPage = window.location.pathname === '/' || 
                           window.location.pathname.startsWith('/services/') || 
-                          window.location.pathname.startsWith('/kids-class');
+                          window.location.pathname.startsWith('/kids-class') ||
+                          window.location.pathname.startsWith('/forum');
       if (!isGuestPage) {
         window.location.href = '/login';
       }
