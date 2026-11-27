@@ -5,29 +5,10 @@ import LazyImage from "./LazyImage";
 
 const services = [
   {
-    name: "Rental home",
-    image: "/img/services/Desipath_rental_home.jpeg",
-    path: "/services/rentalhomes",
-  },
-  {
-    name: "Buy/Sell Cars",
-    image: "/img/services/buysellcar_Desipath.jpeg",
-    path: "/services/cars",
-  },
-  {
-    name: "Kids class",
-    image: "/img/services/Desipath_KidsClass.jpeg",
-    path: "/kids-class",
-  },
-  {
-    name: "Buy Sell Home",
-    image: "/img/services/BuysellHome_Desipath.jpeg",
-    path: "/services/BuyHome",
-  },
-  {
-    name: "Travel Companion",
-    image: "/img/services/Desipath_Travelcompanion.jpeg",
-    path: "/travel-companion",
+    name: "Local Deals",
+    image: "/img/services/Desipath_LocalAds.jpeg",
+    path: "/services/Localdeals",
+    tooltip: "Explore exclusive local offers on dining, shopping, and a wide range of services near you."
   },
   {
     name: "Events",
@@ -35,9 +16,49 @@ const services = [
     path: "/events",
   },
   {
-    name: "Roommates",
+    name: "Desi News",
+    image: "/img/services/Immigration_Desipath.jpeg",
+    path: "/daily-news",
+  },
+  {
+    name: "Forum",
+    image: "/img/services/Desipath_Forum.png",
+    path: "/forum",
+  },
+  {
+    name: "Finance-Investment-Tax",
+    image: "/img/services/Desipath_Finance.png",
+    path: "/financial-advisors",
+  },
+  {
+    name: "Rental Home",
+    image: "/img/services/Desipath_rental_home.jpeg",
+    path: "/services/rentalhomes",
+  },
+  {
+    name: "Room Mates",
     image: "/img/services/Roommates_Desipath.jpeg",
     path: "/services/roommates",
+  },
+  {
+    name: "Buy Sell Home",
+    image: "/img/services/BuysellHome_Desipath.jpeg",
+    path: "/services/BuyHome",
+  },
+  {
+    name: "Buy/Sell Cars",
+    image: "/img/services/buysellcar_Desipath.jpeg",
+    path: "/services/cars",
+  },
+  {
+    name: "Travel Companion",
+    image: "/img/services/Desipath_Travelcompanion.jpeg",
+    path: "/travel-companion",
+  },
+  {
+    name: "Kids Class",
+    image: "/img/services/Desipath_KidsClass.jpeg",
+    path: "/kids-class",
   },
   {
     name: "IT Trainings",
@@ -45,17 +66,17 @@ const services = [
     path: "/it-training",
   },
   {
-    name: "Desi Attorneys",
-    image: "/img/services/Attorney_Desipath.jpeg",
-    path: "/desi-attorneys",
-  },
-  {
     name: "Doctors",
     image: "/img/services/Doctors_Desipath.jpeg",
     path: "/desi-doctors",
   },
   {
-    name: "Desi SecureMatch",
+    name: "Desi Attorneys",
+    image: "/img/services/Attorney_Desipath.jpeg",
+    path: "/desi-attorneys",
+  },
+  {
+    name: "Desi Secure Match",
     image: "/img/services/Desipath_Dating.png",
     path: "/dating",
   },
@@ -63,12 +84,6 @@ const services = [
     name: "Astrology",
     image: "/img/services/Desipath_Astrologers.jpeg",
     path: "/astrologer/find",
-  },
-  {
-    name: "Local Deals",
-    image: "/img/services/Desipath_LocalAds.jpeg",
-    path: "/services/Localdeals",
-    tooltip: "Explore exclusive local offers on dining, shopping, and a wide range of services near you."
   },
   {
     name: "Photography",
@@ -81,20 +96,10 @@ const services = [
     path: "/real-estate/find",
   },
   {
-    name: "Desi News",
-    image: "/img/services/Immigration_Desipath.jpeg",
-    path: "/daily-news",
-  },
-  {
     name: "Jobs",
     image: "/img/services/Desipath_jobs.jpeg",
     path: "/jobs",
     tooltip: "Land your next opportunity! Explore IT jobs, blue collar roles, or connect with someone who can refer you in."
-  },
-  {
-    name: "Forum",
-    image: "/img/services/Desipath_Forum.png",
-    path: "/forum",
   },
   {
     name: "Buy/Sell Items",
@@ -105,11 +110,6 @@ const services = [
     name: "Ride Share",
     image: "/img/services/Desipath_RideShare.png",
     path: "/rides",
-  },
-  {
-    name: "Finance/invest/Tax",
-    image: "/img/services/Desipath_Finance.png",
-    path: "/financial-advisors",
   },
 ];
 
