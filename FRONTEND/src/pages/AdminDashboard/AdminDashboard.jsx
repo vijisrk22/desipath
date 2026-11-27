@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
+import SEO from '../../components/SEO';
 
 export default function AdminDashboard() {
   const location = useLocation();
@@ -41,6 +42,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-dmsans">
+      <SEO title="Desipath Admin Dashboard" description="Desipath Administrative Portal" robots="noindex, nofollow, noarchive" />
       <Navbar />
       
       <div className="flex-grow max-w-7xl mx-auto w-full px-4 py-8 flex items-start gap-8">

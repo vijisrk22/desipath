@@ -126,11 +126,13 @@ const SecureMatchProfileDetail = lazy(() => import("./pages/DesiSecureMatch/Secu
 const SecureMatchDashboard = lazy(() => import("./pages/DesiSecureMatch/SecureMatchDashboard"));
 
 import ScrollToTop from "./components/ScrollToTop";
+import { SEORouteListener } from "./components/SEO";
 
 function App() {
   return (
     <>
       <ScrollToTop />
+      <SEORouteListener />
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
       <Suspense fallback={<div className="min-h-screen bg-white flex flex-col items-center justify-center"><div className="w-16 h-16 border-4 border-[#0857d0] border-t-transparent rounded-full animate-spin"></div><div className="mt-4 font-bold text-gray-500">Loading...</div></div>}>
       <Routes>

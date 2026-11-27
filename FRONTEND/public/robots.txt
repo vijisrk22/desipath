@@ -1,4 +1,11 @@
 User-agent: *
+Disallow: /admindashboard/
+Disallow: /admindashboard/*
+Disallow: /admindashboard
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /admin
+Disallow: /api/
 Allow: /
 
 # Sitemap
