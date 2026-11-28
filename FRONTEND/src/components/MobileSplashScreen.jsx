@@ -17,9 +17,14 @@ export default function MobileSplashScreen({ onComplete }) {
     );
   };
 
-  const [shouldRender, setShouldRender] = useState(() => isMobile());
+  const [shouldRender, setShouldRender] = useState(() => {
+    if (typeof window === "undefined") return false;
+    if (sessionStorage.getItem('desipath_splash_shown')) return false;
+    return isMobile();
+  });
 
   const handleDismiss = () => {
+    sessionStorage.setItem('desipath_splash_shown', 'true');
     setFadeOut(true);
     setTimeout(() => {
       setVisible(false);
@@ -32,6 +37,7 @@ export default function MobileSplashScreen({ onComplete }) {
   useEffect(() => {
     if (!shouldRender) return;
 
+    sessionStorage.setItem('desipath_splash_shown', 'true');
     // Lock body scroll while splash screen is active
     document.body.style.overflow = "hidden";
 

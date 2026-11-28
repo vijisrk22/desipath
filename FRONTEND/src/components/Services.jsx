@@ -171,7 +171,7 @@ export default function ServicesSection() {
             <Link
               to={service.path}
               // ensure a fixed circular container so images render with the expected size
-              className="rounded-full overflow-hidden flex justify-center items-center cursor-pointer w-[72px] h-[72px] md:w-[84px] md:h-[84px] lg:w-[100px] lg:h-[100px] hover:shadow-lg transition-all"
+              className={`${index < 5 ? "rounded-2xl" : "rounded-full"} overflow-hidden flex justify-center items-center cursor-pointer w-[72px] h-[72px] md:w-[84px] md:h-[84px] lg:w-[100px] lg:h-[100px] hover:shadow-lg transition-all`}
             >
               <LazyImage
                 className="w-full h-full object-cover"

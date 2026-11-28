@@ -17,8 +17,10 @@ const RentalHomesCarousel = lazy(() => import("../components/RentalHomesCarousel
 const ITTrainingsCarousel = lazy(() => import("../components/ITTrainings/ITTrainingsCarousel"));
 
 function LandingPage() {
-  const isMobile = () => {
+  const shouldShowSplash = () => {
     if (typeof window === "undefined") return false;
+    // Only show on first load of the app, not when navigating back to homepage
+    if (sessionStorage.getItem('desipath_splash_shown')) return false;
     return (
       window.innerWidth <= 768 ||
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -27,11 +29,15 @@ function LandingPage() {
     );
   };
 
-  const [isSplashActive, setIsSplashActive] = useState(() => isMobile());
+  const [isSplashActive, setIsSplashActive] = useState(() => shouldShowSplash());
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [currentLocation, setCurrentLocation] = useState("");
 
   useEffect(() => {
+    // Mark splash as shown in session storage once active
+    if (isSplashActive) {
+      sessionStorage.setItem('desipath_splash_shown', 'true');
+    }
     const savedLocation = localStorage.getItem('user_location');
     if (!savedLocation) {
       if (!isSplashActive) {
@@ -43,6 +49,7 @@ function LandingPage() {
   }, [isSplashActive]);
 
   const handleSplashComplete = () => {
+    sessionStorage.setItem('desipath_splash_shown', 'true');
     setIsSplashActive(false);
     const savedLocation = localStorage.getItem('user_location');
     if (!savedLocation) {
